@@ -47,6 +47,7 @@ from dotenv import load_dotenv
 load_dotenv(encoding="utf-8-sig")
 
 import asyncio
+import json
 import logging
 import secrets
 from datetime import datetime, timezone
@@ -828,6 +829,51 @@ def _serve_html_with_nonce(request: Request, file_path: str) -> HTMLResponse:
     html = html.replace("{{CSP_NONCE}}", nonce)
     return HTMLResponse(html)
 
+
+_I18N_SUPPORTED = frozenset(
+    ("en", "es", "fr", "de", "it", "pt", "ru", "ja", "ko", "zh", "ar")
+)
+
+
+def _inject_preloaded_locale(html: str, request: Request, nonce: str) -> str:
+    """Inject preloaded i18n locale data into HTML to eliminate flash on load.
+
+    Parses the ``Accept-Language`` header, loads the merged locale dict for
+    that language (plus the English fallback) from the in-memory cache in
+    ``routes.i18n_routes``, and inserts a ``<script>`` block that sets
+    ``window.__preloadedLang``, ``window.__preloadedLocale`` and
+    ``window.__preloadedFallback`` before the i18n module script runs.
+    """
+    from routes.i18n_routes import _cached_translations
+
+    # Determine preferred language from Accept-Language header.
+    lang = "en"
+    accept = request.headers.get("accept-language", "")
+    if accept:
+        lang = accept.split(",")[0].split("-")[0].split(";")[0].strip().lower()
+    if lang not in _I18N_SUPPORTED:
+        lang = "en"
+
+    _, fallback_data = _cached_translations("en")
+    if lang == "en":
+        locale_data = fallback_data
+    else:
+        _, locale_data = _cached_translations(lang)
+
+    preload_script = (
+        f'<script nonce="{nonce}">'
+        f"window.__preloadedLang={json.dumps(lang)};"
+        f"window.__preloadedLocale={json.dumps(locale_data, ensure_ascii=False)};"
+        f"window.__preloadedFallback={json.dumps(fallback_data, ensure_ascii=False)};"
+        f"</script>"
+    )
+
+    # Insert before the i18n module script block.
+    marker = '<script type="module" nonce="{{CSP_NONCE}}">\nimport { init'
+    replacement = preload_script + '\n<script type="module" nonce="' + nonce + '">\nimport { init'
+    html = html.replace(marker, replacement, 1)
+    return html
+
 @app.get("/")
 async def serve_index(request: Request):
     static_path = abs_join(BASE_DIR, "static/index.html")
@@ -883,7 +929,10 @@ async def serve_backgrounds(request: Request):
 async def serve_login(request: Request):
     if not AUTH_ENABLED:
         return RedirectResponse(url="/", status_code=302)
-    return _serve_html_with_nonce(request, abs_join(BASE_DIR, "static/login.html"))
+    resp = _serve_html_with_nonce(request, abs_join(BASE_DIR, "static/login.html"))
+    nonce = getattr(request.state, "csp_nonce", "")
+    resp.body = _inject_preloaded_locale(resp.body.decode("utf-8"), request, nonce).encode("utf-8")
+    return resp
 
 @app.get("/api/version")
 async def get_version():

@@ -9,11 +9,6 @@ import {
   esc,
   modelLogo,
   _detectBackend,
-  _runModelDownload,
-  _runPanelCmd,
-  _buildDownloadCmd,
-  _addTask,
-  _renderRunningTab,
   _detectToolParser,
   _lastCacheHost,
   _setLastCacheHost,
@@ -25,10 +20,16 @@ import {
   _MODELDIR_CHECK_OFF,
   _serverEntryHtml,
   _copyText,
-  // Import cookbook.js WITHOUT a ?v= query — the same plain specifier every other
-  // importer uses. A query mismatch loads cookbook.js twice as two separate modules
-  // (two _envState objects), which silently sent downloads to the wrong server.
-} from './cookbook.js';
+} from './cookbook-shared.js';
+import {
+  _runModelDownload,
+  _runPanelCmd,
+  _buildDownloadCmd,
+} from './cookbookDownload.js';
+import {
+  _addTask,
+  _renderRunningTab,
+} from './cookbookRunning.js';
 import uiModule from './ui.js';
 import spinnerModule from './spinner.js';
 import { _loadTasks, _tmuxGracefulKill, _nextAvailablePort, _taskPort } from './cookbookRunning.js';

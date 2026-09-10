@@ -90,8 +90,22 @@ export function setLanguage(code) {
 
 export async function init() {
   _lang = _detectLanguage()
-  _fallbackLocale = await _loadLocale(FALLBACK_LANG)
-  _locale = _lang === FALLBACK_LANG ? _fallbackLocale : await _loadLocale(_lang)
+  // Use preloaded locale data if available (injected by server for login page)
+  // to eliminate the English-flash before translations load.
+  if (window.__preloadedLocale && window.__preloadedFallback) {
+    if (_lang === window.__preloadedLang) {
+      _locale = window.__preloadedLocale
+    } else {
+      _locale = _lang === FALLBACK_LANG ? window.__preloadedFallback : await _loadLocale(_lang)
+    }
+    _fallbackLocale = window.__preloadedFallback
+    delete window.__preloadedLocale
+    delete window.__preloadedFallback
+    delete window.__preloadedLang
+  } else {
+    _fallbackLocale = await _loadLocale(FALLBACK_LANG)
+    _locale = _lang === FALLBACK_LANG ? _fallbackLocale : await _loadLocale(_lang)
+  }
   _ready = true
   _applyTranslations()
   document.documentElement.lang = _lang

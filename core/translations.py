@@ -6,7 +6,6 @@ import json
 import os
 import re
 import logging
-import locale as _locale_mod
 from functools import lru_cache
 from typing import Optional
 
@@ -132,19 +131,17 @@ def tn(key: str, count: int, **vars) -> str:
 
 
 def format_number(value, decimals: int = 0) -> str:
-    """Format a number with the current language's grouping and decimal rules."""
+    """Format a number with the current language's grouping and decimal rules.
+
+    Uses Babel for thread-safe locale-aware formatting (no global state).
+    """
+    from babel.numbers import format_decimal
+
     lang = current_language.get()
-    lang_to_locale = {"en": "en_US.UTF-8", "es": "es_ES.UTF-8", "fr": "fr_FR.UTF-8",
-                      "de": "de_DE.UTF-8", "it": "it_IT.UTF-8",
-                      "pt": "pt_BR.UTF-8", "ja": "ja_JP.UTF-8",
-                      "zh": "zh_CN.UTF-8", "ko": "ko_KR.UTF-8",
-                      "ru": "ru_RU.UTF-8", "ar": "ar_AE.UTF-8"}
-    loc = lang_to_locale.get(lang, "en_US.UTF-8")
     try:
-        old = _locale_mod.setlocale(_locale_mod.LC_NUMERIC, loc)
-        formatted = _locale_mod.format_string(f"%.{decimals}f", value, grouping=True)
-        _locale_mod.setlocale(_locale_mod.LC_NUMERIC, old)
-        return formatted
+        if decimals > 0:
+            return format_decimal(value, format="#,##0." + "0" * decimals, locale=lang)
+        return format_decimal(value, format="#,##0", locale=lang)
     except Exception:
         return f"{value:.{decimals}f}"
 
@@ -155,24 +152,21 @@ def format_date(date, fmt: str = "short") -> str:
     ``fmt`` is one of ``"short"``, ``"medium"``, ``"long"``, or a custom
     strftime pattern.  When not a known short name the value is passed
     directly to ``strftime``.
+
+    Uses Babel for thread-safe locale-aware formatting (no global state).
     """
-    import time as _time
+    from babel.dates import format_date as _babel_format_date
+
     lang = current_language.get()
-    lang_to_locale = {"en": "C", "es": "es_ES.UTF-8", "fr": "fr_FR.UTF-8",
-                      "de": "de_DE.UTF-8", "it": "it_IT.UTF-8",
-                      "pt": "pt_BR.UTF-8", "ja": "ja_JP.UTF-8",
-                      "zh": "zh_CN.UTF-8", "ko": "ko_KR.UTF-8",
-                      "ru": "ru_RU.UTF-8", "ar": "ar_AE.UTF-8"}
-    patterns = {"short": "%x", "medium": "%x %H:%M", "long": "%c"}
-    strf = patterns.get(fmt, fmt)
-    loc = lang_to_locale.get(lang, "C")
-    try:
-        old = _locale_mod.setlocale(_locale_mod.LC_TIME, loc)
-        result = date.strftime(strf)
-        _locale_mod.setlocale(_locale_mod.LC_TIME, old)
-        return result
-    except Exception:
+    fmt_map = {"short": "short", "medium": "medium", "long": "long"}
+    babel_fmt = fmt_map.get(fmt)
+    if babel_fmt:
         try:
-            return date.strftime(strf)
+            return _babel_format_date(date, format=babel_fmt, locale=lang)
         except Exception:
-            return str(date)
+            pass
+    # Fallback: treat as a strftime pattern
+    try:
+        return date.strftime(fmt)
+    except Exception:
+        return str(date)

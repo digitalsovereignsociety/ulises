@@ -12,6 +12,29 @@ import { _diagnose, _showDiagnosis, _clearDiagnosis, _runQuickCmd, ERROR_PATTERN
 import { RECIPE_BACKENDS, recipesForBackend, pickRecipe, recipeCommands, RECIPE_DEFAULT_VARIANT } from './cookbook-deps-recipes.js';
 import { _hwfitCache, _hwfitDebounce, _hwfitFetch, _hwfitInit, _hwfitRenderList, _hwfitRenderHw, _renderGpuToggles, _expandModelRow, _fitColors, _hwfitColumns, _cachedModelIds, _gpuToggleTotal, _resetGpuToggleState } from './cookbook-hwfit.js';
 
+// Shared state & utilities (leaf module — no cookbook circular deps)
+import {
+  _envState,
+  _lastCacheHost, _setLastCacheHost,
+  _isLocalEntry, _serverKey, _serverByVal, _selectedServer, _currentServerValue,
+  _sshCmd, _shellQuote,
+  _copyText,
+  _persistEnvState,
+  _MODELDIR_CHECK_ON, _MODELDIR_CHECK_OFF,
+  modelLogo,
+  _detectBackend, _detectToolParser, _detectReasoningParser,
+  _serverEntryHtml,
+} from './cookbook-shared.js';
+// Re-export shared symbols so the init*({ ...shared }) pattern still works
+// for sub-modules that receive dependencies via factory functions.
+export {
+  _envState, _sshCmd, _serverByVal, _serverKey, _selectedServer,
+  _shellQuote, _copyText, _persistEnvState, modelLogo,
+  _detectBackend, _detectToolParser,
+  _MODELDIR_CHECK_ON, _MODELDIR_CHECK_OFF, _serverEntryHtml,
+  _lastCacheHost, _setLastCacheHost, _isLocalEntry, _currentServerValue,
+};
+
 // Sub-modules
 import {
   initRunning,
@@ -53,33 +76,6 @@ if (typeof window !== 'undefined' && !window._tagScrollGuardWired) {
   });
 }
 
-// Radio-style check marking which model directory is a server's download target.
-// OFF = hollow circle (pickable); ON = checked circle (accent-tinted via CSS).
-export const _MODELDIR_CHECK_OFF = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/></svg>';
-export const _MODELDIR_CHECK_ON = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="8 12 11 15 16 9"/></svg>';
-
-// Monochrome platform glyphs (currentColor) for a server's OS tag: a penguin for
-// Linux, the four-pane logo for Windows, an Android robot for Termux/Android.
-function _platformIcon(platform) {
-  const k = (platform || '').toLowerCase();
-  if (k === 'windows') {
-    return '<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M3 4.6l8-1.2v8.1H3V4.6zm9-1.3L21 2v9.5h-9V3.3zM3 12.5h8v8.1l-8-1.2v-6.9zm9 0h9V22l-9-1.3v-8.2z"/></svg>';
-  }
-  if (k === 'termux' || k === 'android') {
-    return '<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M7 9h10v6.6a1 1 0 0 1-1 1h-.7v2.6a1.15 1.15 0 1 1-2.3 0V16.6h-1.5v2.6a1.15 1.15 0 1 1-2.3 0V16.6H8a1 1 0 0 1-1-1V9zM4.3 9.1a1.15 1.15 0 0 1 2.3 0v4.6a1.15 1.15 0 1 1-2.3 0V9.1zm13.1 0a1.15 1.15 0 0 1 2.3 0v4.6a1.15 1.15 0 1 1-2.3 0V9.1zM8 8a4 4 0 0 1 8 0H8zm1.7-2.6-.8-1.2a.28.28 0 0 1 .47-.3l.83 1.25a4.8 4.8 0 0 1 3.66 0l.83-1.25a.28.28 0 0 1 .47.3L14.3 5.4M9.8 6.6a.62.62 0 1 0 0-1.24.62.62 0 0 0 0 1.24zm4.4 0a.62.62 0 1 0 0-1.24.62.62 0 0 0 0 1.24z"/></svg>';
-  }
-  if (k === 'linux' || k === 'termux-linux') {
-    return '<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M12 2a4 4 0 0 0-4 4v4.7c0 .9-.4 1.7-1 2.4-1.2 1.4-2 3-2 4.5C5 20.4 8.1 22 12 22s7-1.6 7-4.4c0-1.5-.8-3.1-2-4.5-.6-.7-1-1.5-1-2.4V6a4 4 0 0 0-4-4zm-1.7 4.8a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm3.4 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2zM12 9.4c.75 0 1.4.45 1.7 1.1h-3.4c.3-.65.95-1.1 1.7-1.1z"/></svg>';
-  }
-  return '';
-}
-
-export let _envState = { env: 'none', envPath: '', hfToken: '', hfTokenConfigured: false, hfTokenMasked: '', gpus: '', remoteHost: '', servers: [], modelPaths: [], platform: '', hostPlatform: '', defaultServer: '' };
-let _lastCacheHostVal = null;
-let _cookbookOpeningSpinners = [];
-export function _lastCacheHost() { return _lastCacheHostVal; }
-export function _setLastCacheHost(v) { _lastCacheHostVal = v; }
-
 function _setCookbookOpening(on) {
   // Sidebar (tool-cookbook-btn) deliberately excluded — the inline
   // whirlpool on the sidebar row read as "the click didn't register"
@@ -110,49 +106,6 @@ function _setCookbookOpening(on) {
     spinner.start();
     _cookbookOpeningSpinners.push({ spinner, wrap, target });
   });
-}
-
-/** Build server <option> HTML from _envState.servers. excludeLocal skips local-only entries. */
-// True for the local server entry (empty / "local" / "localhost" host).
-function _isLocalEntry(s) { return !s || !s.host || s.host === 'local' || s.host.toLowerCase() === 'localhost'; }
-
-// Resolve a dropdown option value to a server entry. New option values are
-// stable per-profile keys, so same-host SSH profiles stay distinguishable.
-// Host strings and numeric indices remain accepted for stale saved state.
-export function _serverKey(s) {
-  if (_isLocalEntry(s)) return 'local';
-  return 'srv:' + [
-    s?.name || '',
-    s?.host || '',
-    s?.port || '',
-    s?.envPath || '',
-    s?.platform || '',
-  ].map(v => encodeURIComponent(String(v).trim())).join('|');
-}
-
-export function _serverByVal(val) {
-  if (val == null || val === 'local' || val === '') return null;
-  const raw = String(val);
-  let s = _envState.servers.find(x => _serverKey(x) === raw);
-  if (!s) s = _envState.servers.find(x => x.host === raw);
-  if (!s) s = _envState.servers.find(x => x.name === raw);
-  if (!s && /^\d+$/.test(String(val))) s = _envState.servers[parseInt(val)];
-  return s || null;
-}
-
-export function _selectedServer() {
-  if (_envState.remoteServerKey) {
-    const keyed = _serverByVal(_envState.remoteServerKey);
-    if (keyed) return keyed;
-  }
-  if (_envState.remoteHost) return _envState.servers.find(s => s.host === _envState.remoteHost) || null;
-  return null;
-}
-
-export function _currentServerValue() {
-  const selected = _selectedServer();
-  if (selected) return _serverKey(selected);
-  return _envState.remoteHost || 'local';
 }
 
 const GEMMA4_THINKING_CHAT_TEMPLATE = `{% for message in messages %}{% if message['role'] == 'system' %}<|turn>system\n<|think|>{{ message['content'] }}<turn|>\n{% elif message['role'] == 'user' %}<|turn>user\n{{ message['content'] }}<turn|>\n{% elif message['role'] == 'assistant' %}<|turn>model\n{{ message['content'] }}<turn|>\n{% endif %}{% endfor %}{% if add_generation_prompt %}<|turn>model\n<|channel>thought{% endif %}`;
@@ -192,12 +145,6 @@ function _buildServerOpts(excludeLocal = false) {
     html += `<option value="${esc(value)}"${selected ? ' selected' : ''}>${esc(label)}</option>`;
   }
   return html;
-}
-
-/** Wrap a command in SSH for a remote host, with proper single-quote escaping. */
-export function _sshCmd(host, cmd, port) {
-  const portFlag = port && port !== '22' ? `-p ${port} ` : '';
-  return `ssh ${portFlag}${host} '${cmd.replace(/'/g, "'\\''")}'`;
 }
 
 /** Get SSH port for a given host (or task object) */
@@ -326,139 +273,7 @@ function _detectModelOptimizations(modelName) {
   return opts;
 }
 
-/** Detect the right vLLM --reasoning-parser based on model name.
- *  Returns the parser slug (matches vLLM's official list) or null when the
- *  model isn't a reasoning model. Without the right parser, thinking tokens
- *  leak as plain text instead of being split into a separate channel.
- *  Source: vllm/reasoning/__init__.py registered parsers.
- */
-export function _detectReasoningParser(modelName) {
-  const n = (modelName || '').toLowerCase();
-  // StepFun Step-3.x uses Step's native <think> / tool-call tokens. vLLM
-  // registers this parser as step3p5.
-  if (_isStepFunStepModel(modelName)) return 'step3p5';
-  // MiniMax M3 — newer vLLM nightly/parser builds use minimax_m3. This must
-  // be checked before the M2.x rule and before the generic MiniMax tool parser.
-  if (n.includes('minimax') && /\bm3\b/.test(n)) return 'minimax_m3';
-  // MiniMax M2 / M2.5 / M2.7 — released with a dedicated parser. Catch M2
-  // before plain "minimax" so M2.x doesn't fall through to a wrong parser.
-  if (n.includes('minimax') && n.match(/\bm2(?:\.\d)?\b/)) return 'minimax_m2';
-  // DeepSeek-R1 / V3-Thinking / V3.1-Thinking variants. Bare V3/V3.1 (non-
-  // thinking) skip this — they're not reasoning models.
-  if (n.includes('deepseek') && (n.includes('r1') || n.includes('thinking'))) return 'deepseek_r1';
-  // Qwen3 / Qwen3.5 reasoning models. Qwen3-Coder + Qwen3-Instruct don't
-  // emit <think> blocks, so skip the parser there.
-  if (n.includes('qwen3') && !n.includes('coder') && !n.includes('instruct')) return 'qwen3';
-  // GLM-4 / GLM-4.5 / GLM-4.6 with reasoning.
-  if (n.includes('glm-4') || n.includes('glm-5')) return 'glm45';
-  // OpenAI gpt-oss family.
-  if (n.includes('gpt-oss')) return 'gpt_oss';
-  // Hunyuan A13B reasoning.
-  if (n.includes('hunyuan') && n.includes('a13b')) return 'hunyuan_a13b';
-  // IBM Granite reasoning.
-  if (n.includes('granite') && (n.includes('reason') || n.includes('think'))) return 'granite';
-  // InternLM reasoning.
-  if (n.includes('internlm')) return 'internlm';
-  return null;
-}
-
-/** Detect the right vLLM tool-call-parser based on model name.
- *  Qwen tool-call formats split by generation:
- *   - Qwen3-Coder           → qwen3_coder  (XML <tool_call> with named params)
- *   - Qwen3 (non-coder)     → qwen3_xml    (reasoning/instruct, XML wrapper)
- *   - Qwen2.5 / Qwen2 / 1.5 → hermes       (Qwen2.5 was trained on Hermes format)
- *  Catching "qwen" first and labelling everything qwen3_xml breaks tool
- *  calls on the Qwen2.5 line (the model emits hermes-style which the
- *  qwen3_xml parser doesn't recognise, so the call leaks through as text).
- */
-export function _detectToolParser(modelName) {
-  const n = (modelName || '').toLowerCase();
-  if (_isStepFunStepModel(modelName)) return 'step3p5';
-  if (n.includes('qwen3') && n.includes('coder')) return 'qwen3_coder';
-  if (n.includes('qwen3')) return 'qwen3_xml';
-  if (n.includes('qwen')) return 'hermes';   // Qwen2.5 / Qwen2 / Qwen1.5
-  if (n.includes('llama-4') || n.includes('llama4')) return 'llama4_json';
-  if (n.includes('llama') || n.includes('nemotron')) return 'llama3_json';
-  if (n.includes('mistral') || n.includes('mixtral')) return 'mistral';
-  if (n.includes('deepseek-v3')) return 'deepseek_v3';
-  if (n.includes('deepseek')) return 'deepseek_v3';
-  if (n.includes('minimax') && /\bm3\b/.test(n)) return 'minimax_m3';
-  if (n.includes('minimax') && n.includes('m2')) return 'minimax_m2';
-  if (n.includes('minimax')) return 'minimax';
-  if (n.includes('gemma')) return 'pythonic';
-  if (n.includes('glm-4')) return 'glm45';
-  if (n.includes('internlm')) return 'internlm';
-  if (n.includes('granite')) return 'granite';
-  return 'hermes'; // default fallback
-}
-
-// ── Backend detection ──
-
-export function _detectBackend(model) {
-  const _ollamaName = String(model?.repo_id || model?.name || model?.id || '').trim();
-  const _ollamaMeta = `${model?.backend || ''} ${model?.endpoint_kind || ''} ${model?.provider || ''} ${model?.source || ''}`.toLowerCase();
-  const _looksLikeOllamaTag = /^[A-Za-z0-9][A-Za-z0-9._-]*(?::[A-Za-z0-9][A-Za-z0-9._-]*)$/.test(_ollamaName);
-  if (model?.backend === 'ollama' || model?.is_ollama || _ollamaMeta.includes('ollama') || _looksLikeOllamaTag) {
-    return { backend: 'ollama', label: 'Ollama' };
-  }
-  const q = (model.quant || '').toUpperCase();
-  const sysBackend = String(_hwfitCache?.system?.backend || '').toLowerCase();
-  const isRocm = sysBackend === 'rocm';
-  const isAppleSilicon = ['metal', 'mps', 'apple'].includes(sysBackend);
-  const _nm = `${model.repo_id || ''} ${model.path || ''} ${model.name || ''}`.toLowerCase();
-  if (/\bmlx\b|mlx-|_mlx/i.test(_nm) || q.startsWith('MLX')) {
-    return { backend: 'unsupported', label: 'Unsupported' };
-  }
-  const isAwqLike = /^AWQ|^GPTQ|^NVFP4/.test(q) || ['FP8', 'FP4', 'MXFP4', 'NF4', 'INT4', 'INT8', 'W4A16', 'W8A8', 'W8A16'].includes(q) || /\b(awq|gptq|fp8|fp4|nvfp4|mxfp4|nf4|int4|int8|w4a16|w8a8|w8a16)\b/i.test(_nm);
-  const hasGgufFile = Array.isArray(model.gguf_files)
-    && model.gguf_files.some(f => f && typeof f.rel_path === 'string' && /\.gguf$/i.test(f.rel_path));
-  const isGgufLike = model.is_gguf || hasGgufFile || /^Q[2-8]/.test(q) || /^IQ/.test(q) || q === 'GGUF' || _nm.includes('gguf');
-
-  // Image gen models → diffusers
-  if (model.is_image_gen || model.is_diffusion || model._tag === 'image') {
-    return { backend: 'diffusers', label: 'Diffusers' };
-  }
-
-  // AWQ / GPTQ / FP8 are safetensors GPU-serving formats. Never route them
-  // through llama.cpp/Ollama just because the host is Mac/Windows; those engines
-  // need GGUF. The UI will warn/block on Metal where vLLM/SGLang aren't viable.
-  if (isAwqLike) {
-    return { backend: 'vllm', label: 'vLLM' };
-  }
-
-  // GGUF → llama.cpp/Ollama-compatible.
-  if (isGgufLike) {
-    return { backend: 'llamacpp', label: 'llama.cpp' };
-  }
-
-  // Windows → default to llama.cpp (no vLLM support on Windows)
-  if (_isWindows()) {
-    return { backend: 'llamacpp', label: 'llama.cpp' };
-  }
-
-  // Apple Silicon (Metal) → llama.cpp (GGUF). vLLM/SGLang are CUDA/ROCm-only and
-  // don't run on macOS; vLLM-native quantized models are already filtered out
-  // of metal Cookbook results, so llama.cpp is always the right engine here.
-  if (['metal', 'mps', 'apple'].includes(sysBackend)) {
-    return { backend: 'llamacpp', label: 'llama.cpp' };
-  }
-
-  // ROCm/AMD machines should not blindly default HF safetensors models to
-  // vLLM. SGLang is the safer OpenAI-compatible default for plain HF text
-  // repos there; llama.cpp still wins above whenever the model is GGUF.
-  if (isRocm) {
-    return { backend: 'sglang', label: 'SGLang' };
-  }
-
-  // Unquantized / BF16 / F16 → vLLM
-  return { backend: 'vllm', label: 'vLLM' };
-}
-
 // ── Command builders ──
-
-export function _shellQuote(value) {
-  return "'" + String(value ?? '').replace(/'/g, "'\\''") + "'";
-}
 
 export function _psQuote(value) {
   return "'" + String(value ?? '').replace(/'/g, "''") + "'";
@@ -814,36 +629,6 @@ export function _buildServeCmd(f, modelName, backend) {
   return cmd;
 }
 
-/** Get inline logo HTML for a model name/repo_id */
-export function modelLogo(name) {
-  const logo = providerLogo(name);
-  const svg = logo || '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="4"/></svg>';
-  return `<span style="width:12px;height:12px;display:inline-flex;align-items:center;vertical-align:-2px;margin-right:3px;opacity:${logo ? '0.5' : '0.2'};">${svg}</span>`;
-}
-
-// Use shared esc() from ui module
-export const esc = uiModule.esc;
-
-// ── Clipboard ──
-
-export function _copyText(text) {
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    return navigator.clipboard.writeText(text).catch(() => _fallbackCopy(text));
-  }
-  return _fallbackCopy(text);
-}
-
-function _fallbackCopy(text) {
-  const ta = document.createElement('textarea');
-  ta.value = text;
-  ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px';
-  document.body.appendChild(ta);
-  ta.select();
-  try { document.execCommand('copy'); } catch (_) {}
-  document.body.removeChild(ta);
-  return Promise.resolve();
-}
-
 // ── Presets (server-synced; localStorage is offline cache) ──
 // Presets sync to/from cookbook_state.json via _syncToServer / _syncFromServer.
 // _loadPresets reads the cache (which gets refreshed at app boot and on modal open).
@@ -856,23 +641,6 @@ export function _loadPresets() {
 export function _savePresets(presets) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(presets));
   // Trigger sync to server (via running module's _syncToServer debounce)
-  _saveTasks(_loadTasks());
-}
-
-function _envStateForStorage() {
-  const { hfToken, ...safeState } = _envState;
-  return safeState;
-}
-
-function _readStoredEnvState() {
-  const stored = JSON.parse(localStorage.getItem(LAST_STATE_KEY) || '{}');
-  delete stored.hfToken;
-  return stored;
-}
-
-export function _persistEnvState() {
-  try { localStorage.setItem(LAST_STATE_KEY, JSON.stringify(_envStateForStorage())); }
-  catch (_) {}
   _saveTasks(_loadTasks());
 }
 
@@ -2518,79 +2286,6 @@ function _wireTabEvents(body) {
 
 // ── Main render ──
 
-// Build one server entry's HTML — shared by the Settings render loop AND the
-// "+ Add server" handler, so a freshly-added server has the IDENTICAL layout
-// (Model Directory header, default-server checkmark, trash delete, platform icon).
-// forceRemote renders an editable remote entry even before a host is typed
-// (a new server's host is empty, which would otherwise read as "Local").
-export function _serverEntryHtml(s, i, defaultServer, forceRemote, isNew) {
-  const isLocal = (forceRemote || isNew) ? false : (!s.host || s.host === 'local');
-  const envOpts = [['none', 'None'], ['venv', 'venv'], ['conda', 'conda']].map(([value, label]) => `<option value="${value}"${s.env === value ? ' selected' : ''}>${label}</option>`).join('');
-  let html = '';
-  html += `<div class="cookbook-server-entry" data-idx="${i}" data-platform="${esc(s.platform || '')}">`;
-  const _srvTitle = s.name || (isLocal ? 'Local' : (s.host || `Server ${i + 1}`));
-  const _srvKey = isLocal ? 'local' : (s.host || '');
-  const _isDefaultSrv = (defaultServer || '') === _srvKey;
-  const _pIco = _platformIcon(s.platform);
-  const _keyBtn = `<button class="cookbook-server-key-btn" title="Set up SSH key for this server" style="height:22px;box-sizing:border-box;display:inline-flex;align-items:center;position:relative;top:-2px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;flex-shrink:0;"><circle cx="7.5" cy="15.5" r="5.5"/><path d="M12 11l8-8"/><path d="M17 6l3 3"/></svg>Key</button>`;
-  const _checkBtn = `<button class="cookbook-server-check-btn" title="Check SSH connection" style="height:22px;box-sizing:border-box;display:inline-flex;align-items:center;position:relative;top:-2px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>Check</button>`;
-  html += `<span class="cookbook-server-title" style="display:flex;align-items:center;gap:6px;width:100%;font-size:13px;font-weight:600;margin-bottom:4px;">`;
-  html += `${esc(_srvTitle)}`;
-  html += _pIco ? `<span class="cookbook-srv-platform" title="${esc(s.platform || '')}" style="display:inline-flex;align-items:center;opacity:0.55;">${_pIco}</span>` : '';
-  html += `<span class="cookbook-srv-test-msg" style="font-size:10px;font-weight:400;opacity:0.55;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative;top:1px;"></span>`;
-  if (isNew) {
-    // New server: Cancel (discard) sits top-right; the default toggle only makes
-    // sense once the server is saved.
-    html += `<span style="margin-left:auto;display:inline-flex;gap:4px;align-items:center;">${_checkBtn}${_keyBtn}<button class="cookbook-server-cancel-btn" title="Discard this new server" style="height:22px;box-sizing:border-box;display:inline-flex;align-items:center;position:relative;top:-2px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;flex-shrink:0;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Cancel</button></span>`;
-  } else {
-    html += `<span style="margin-left:auto;display:inline-flex;gap:4px;align-items:center;">${!isLocal ? _checkBtn + _keyBtn : ''}<span class="cookbook-srv-default${_isDefaultSrv ? ' active' : ''}" title="${_isDefaultSrv ? 'Default server — Cookbook opens here' : 'Make this the default server'}" data-srv-key="${esc(_srvKey)}">${_isDefaultSrv ? _MODELDIR_CHECK_ON : _MODELDIR_CHECK_OFF}<span class="cookbook-srv-default-label">default</span></span></span>`;
-  }
-  html += `</span>`;
-  html += `<div class="cookbook-server-row">`;
-  html += `<input type="text" class="hwfit-sf cookbook-srv-name" value="${esc(s.name || (isLocal ? 'Local' : ''))}" placeholder="Name (optional)" style="width:92px;flex-shrink:0;" />`;
-  html += `<input type="text" class="hwfit-sf cookbook-srv-host" value="${isLocal ? '' : esc(s.host || '')}" placeholder="e.g. user@ip" style="width:214.5px;flex-shrink:0;box-sizing:border-box;" ${isLocal ? 'readonly' : ''} />`;
-  html += `<input type="text" class="hwfit-sf cookbook-srv-port" value="${esc(s.port || '')}" placeholder="Port" title="SSH port (default 22)" style="width:48px;flex-shrink:0;" ${isLocal ? 'readonly' : ''} />`;
-  html += `<select class="hwfit-sf cookbook-srv-env">${envOpts}</select>`;
-  html += `<input type="text" class="hwfit-sf cookbook-srv-path" value="${esc(s.envPath || '')}" placeholder="${s.platform === 'windows' ? 'venv/conda env' : '~/venv or conda-env'}" />`;
-  html += `<span class="cookbook-dep-tag cookbook-dep-target" style="font-size:8px;flex-shrink:0;min-width:46px;text-align:center;visibility:hidden;">placeholder</span>`;
-  html += `<span class="cookbook-srv-actions" style="display:inline-flex;gap:4px;align-items:center;width:78px;flex-shrink:0;justify-content:flex-end;"></span>`;
-  html += `</div>`;
-  const modelDirs = Array.isArray(s.modelDirs) && s.modelDirs.length ? s.modelDirs : ['~/.cache/huggingface/hub'];
-  const activeDlDir = s.downloadDir || '';
-  html += `<div class="cookbook-modeldirs" style="margin:2px 0 0 0;display:flex;flex-wrap:wrap;gap:4px;align-items:center;">`;
-  html += `<span style="width:100%;font-size:13px;font-weight:600;margin-bottom:3px;">Model Directory <span style="font-weight:400;opacity:0.5;font-size:11px;">— check the one downloads should go to</span></span>`;
-  for (let j = 0; j < modelDirs.length; j++) {
-    const isDefault = modelDirs[j] === '~/.cache/huggingface/hub';
-    const dirVal = isDefault ? '' : modelDirs[j];
-    const isTarget = activeDlDir === dirVal;
-    const dlBtn = `<span class="cookbook-modeldir-dl${isTarget ? ' active' : ''}" title="${isTarget ? 'Downloads go here' : 'Send downloads here'}" data-dl-dir="${esc(dirVal)}">${isTarget ? _MODELDIR_CHECK_ON : _MODELDIR_CHECK_OFF}</span>`;
-    const rmBtn = isDefault ? '' : ' <span class="cookbook-modeldir-rm" title="Remove">✖</span>';
-    html += `<span class="cookbook-modeldir-tag${isDefault ? ' cookbook-modeldir-default' : ''}${isTarget ? ' cookbook-modeldir-target' : ''}" data-dir-idx="${j}" data-dir="${esc(modelDirs[j])}">${dlBtn} ${esc(modelDirs[j])}${rmBtn}</span>`;
-  }
-  html += `<button class="cookbook-modeldir-add" title="Add model directory">+ Add</button>`;
-  const _btnStyle = 'margin-left:auto;position:relative;top:-2px;height:22px;box-sizing:border-box;display:inline-flex;align-items:center;';
-  if (isNew) {
-    // A brand-new server: Save (confirm) sits where Delete would be; Cancel is
-    // top-right in the title. Save confirms with a checkmark (auto-saves on edit too).
-    html += `<button class="cookbook-server-save-btn" title="Save this server" style="${_btnStyle}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;flex-shrink:0;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save</button>`;
-  } else if (!isLocal) {
-    html += `<button class="cookbook-server-rm cookbook-server-rm-btn" title="Delete this server" style="${_btnStyle}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;flex-shrink:0;"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>Delete</button>`;
-  }
-  html += `</div>`;
-  if (!isLocal) {
-    html += `<div class="cookbook-server-key-panel hidden" style="margin-top:6px;flex-direction:column;gap:5px;">`;
-    html += `<div style="display:flex;gap:4px;align-items:center;">`;
-    html += `<button type="button" class="memory-toolbar-btn cookbook-server-key-gen" style="height:23px;">Generate key</button>`;
-    html += `<button type="button" class="memory-toolbar-btn cookbook-server-key-copy" style="height:23px;" disabled>Copy command</button>`;
-    html += `<span style="font-size:10px;opacity:0.55;line-height:1.25;">Docker: run this command in your terminal once.</span>`;
-    html += `</div>`;
-    html += `<textarea class="memory-search-input cookbook-server-key-command" readonly rows="3" style="min-height:58px;resize:vertical;font-family:var(--mono,monospace);font-size:10px;line-height:1.35;">Enter user@host, then generate the key.</textarea>`;
-    html += `</div>`;
-  }
-  html += `</div>`;
-  return html;
-}
-
 function _renderRecipes() {
   const body = document.querySelector('#cookbook-modal .cookbook-body');
   if (!body) return;
@@ -3215,19 +2910,6 @@ initServe({
   _retryDownload,
   _nextAvailablePort,
 });
-
-// ── Re-exports for cookbook-diagnosis.js and cookbook-hwfit.js ──
-// These modules import from cookbook.js, so we re-export what they need
-
-export {
-  _loadTasks, _saveTasks, _addTask, _removeTask,
-  _tmuxCmd, _renderRunningTab,
-  _launchServeTask, _serveAutoFix, _serveAutoRetry, _serveAutoRetryReplace, _serveAutoRetryRemove,
-  _startBackgroundMonitor,
-  _setPanelField, _setPanelCheckbox,
-  _wirePanelEvents, _runPanelCmd, _runModelDownload, _buildDownloadCmd,
-  _isLocalEntry,
-};
 
 const cookbookModule = { open, close, isVisible, startBackgroundMonitor: _startBackgroundMonitor };
 

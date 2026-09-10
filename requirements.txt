@@ -42,3 +42,7 @@ mcp>=1.0.0,<2.0.0
 pyotp>=2.9.0,<3.0.0
 qrcode[pil]>=7.4.0,<8.0.0
 croniter>=2.0.0,<3.0.0
+# Locale-aware number/date formatting (core/translations.py).
+# Thread-safe alternative to locale.setlocale() — operates per-call
+# without touching process-wide global state.
+babel>=2.14.0,<3.0.0

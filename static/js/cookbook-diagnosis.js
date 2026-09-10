@@ -5,23 +5,25 @@
 
 import {
   _envState,
+  _buildEnvPrefix,
+  _sshCmd,
+  _copyText,
+  _persistEnvState,
+} from './cookbook-shared.js';
+import {
   _loadTasks,
   _removeTask,
   _launchServeTask,
-  _buildEnvPrefix,
-  _sshCmd,
-  _setPanelField,
-  _setPanelCheckbox,
-  _copyText,
-  _persistEnvState,
   _tmuxCmd,
   _serveAutoRetry,
   _serveAutoRetryReplace,
   _serveAutoRetryRemove,
   _serveAutoFix,
-  // Plain specifier (no ?v=) — must match every other cookbook.js importer so the
-  // browser loads it once. See cookbook-hwfit.js.
-} from './cookbook.js';
+} from './cookbookRunning.js';
+import {
+  _setPanelField,
+  _setPanelCheckbox,
+} from './cookbookDownload.js';
 import uiModule from './ui.js';
 
 // Tiny HTML-escape — keeps the file standalone instead of leaning on a
