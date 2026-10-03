@@ -6,7 +6,9 @@
 
 import uiModule from './ui.js';
 import { t } from './i18n.js';
-import { _diagnose, _showDiagnosis, _clearDiagnosis } from './cookbook-diagnosis.js';
+// Leaf module, not cookbook-diagnosis.js: that module imports the panel-field
+// helpers this file owns, so importing it created a cycle.
+import { _diagnose, _showDiagnosis, _clearDiagnosis } from './cookbook-diagnosis-core.js';
 
 // Shared state/functions injected by init()
 let _envState;

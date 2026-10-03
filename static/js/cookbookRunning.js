@@ -6,7 +6,9 @@
 
 import { t } from './i18n.js';
 import uiModule from './ui.js';
-import { _diagnose, _showDiagnosis, _clearDiagnosis } from './cookbook-diagnosis.js';
+// Leaf module, not cookbook-diagnosis.js: that module imports the serve/auto-fix
+// helpers this file also owns, so importing it created a cycle.
+import { _diagnose, _showDiagnosis, _clearDiagnosis } from './cookbook-diagnosis-core.js';
 import { registerMenuDismiss } from './escMenuStack.js';
 import { computeProgressSignal } from './cookbookProgressSignal.js';
 import { portOf, nextFreePort } from './cookbookPorts.js';

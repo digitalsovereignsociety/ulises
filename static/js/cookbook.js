@@ -9,6 +9,7 @@ import spinnerModule from './spinner.js';
 import { providerLogo } from './providers.js';
 import { makeWindowDraggable } from './windowDrag.js';
 import { _diagnose, _showDiagnosis, _clearDiagnosis, _runQuickCmd, ERROR_PATTERNS } from './cookbook-diagnosis.js';
+import { initDiagnosisCore } from './cookbook-diagnosis-core.js';
 import { RECIPE_BACKENDS, recipesForBackend, pickRecipe, recipeCommands, RECIPE_DEFAULT_VARIANT } from './cookbook-deps-recipes.js';
 import { _hwfitCache, _hwfitDebounce, _hwfitFetch, _hwfitInit, _hwfitRenderList, _hwfitRenderHw, _renderGpuToggles, _expandModelRow, _fitColors, _hwfitColumns, _cachedModelIds, _gpuToggleTotal, _resetGpuToggleState } from './cookbook-hwfit.js';
 
@@ -2909,6 +2910,24 @@ initServe({
   _launchServeTask,
   _retryDownload,
   _nextAvailablePort,
+});
+
+// Init diagnosis core. The ERROR_PATTERNS fix actions and _showDiagnosis call
+// back into the serve/download modules. Those imports used to run through
+// cookbook-diagnosis.js, which made cookbookRunning.js and cookbookDownload.js
+// import their way back into a module that needed them. Injecting here — at the
+// composition root, which owns every one of these — removes both cycles. Must
+// stay after the imports above; the values are read at click time, so callers
+// never observe an unwired module.
+initDiagnosisCore({
+  _serveAutoRetry,
+  _serveAutoRetryReplace,
+  _serveAutoRetryRemove,
+  _serveAutoFix,
+  _launchServeTask,
+  _loadTasks,
+  _setPanelField,
+  _setPanelCheckbox,
 });
 
 const cookbookModule = { open, close, isVisible, startBackgroundMonitor: _startBackgroundMonitor };
