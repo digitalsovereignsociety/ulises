@@ -21,9 +21,13 @@ _HAS_NODE = shutil.which("node") is not None
 
 
 def _run_node_test(extra_args: Optional[list[str]] = None) -> subprocess.CompletedProcess:
-    cmd = ["node", "--test", str(_TEST_JS)]
+    # node parses everything after the test file as additional file paths, so
+    # flags like --test-name-pattern must precede it (node 20 otherwise fails
+    # with "Could not find '<path>/--test-name-pattern'").
+    cmd = ["node", "--test"]
     if extra_args:
         cmd.extend(extra_args)
+    cmd.append(str(_TEST_JS))
     proc = subprocess.run(
         cmd,
         capture_output=True,

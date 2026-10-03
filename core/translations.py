@@ -134,11 +134,13 @@ def format_number(value, decimals: int = 0) -> str:
     """Format a number with the current language's grouping and decimal rules.
 
     Uses Babel for thread-safe locale-aware formatting (no global state).
+    Falls back to plain ``str`` formatting when Babel is unavailable or
+    rejects the locale.
     """
-    from babel.numbers import format_decimal
-
     lang = current_language.get()
     try:
+        from babel.numbers import format_decimal
+
         if decimals > 0:
             return format_decimal(value, format="#,##0." + "0" * decimals, locale=lang)
         return format_decimal(value, format="#,##0", locale=lang)
@@ -154,14 +156,15 @@ def format_date(date, fmt: str = "short") -> str:
     directly to ``strftime``.
 
     Uses Babel for thread-safe locale-aware formatting (no global state).
+    Falls back to ``strftime`` when Babel is unavailable or rejects the locale.
     """
-    from babel.dates import format_date as _babel_format_date
-
     lang = current_language.get()
     fmt_map = {"short": "short", "medium": "medium", "long": "long"}
     babel_fmt = fmt_map.get(fmt)
     if babel_fmt:
         try:
+            from babel.dates import format_date as _babel_format_date
+
             return _babel_format_date(date, format=babel_fmt, locale=lang)
         except Exception:
             pass

@@ -839,12 +839,12 @@ def _inject_preloaded_locale(html: str, request: Request, nonce: str) -> str:
     """Inject preloaded i18n locale data into HTML to eliminate flash on load.
 
     Parses the ``Accept-Language`` header, loads the merged locale dict for
-    that language (plus the English fallback) from the in-memory cache in
-    ``routes.i18n_routes``, and inserts a ``<script>`` block that sets
-    ``window.__preloadedLang``, ``window.__preloadedLocale`` and
-    ``window.__preloadedFallback`` before the i18n module script runs.
+    that language (plus the English fallback) via ``routes.i18n_routes``, and
+    inserts a ``<script>`` block that sets ``window.__preloadedLang``,
+    ``window.__preloadedLocale`` and ``window.__preloadedFallback`` before the
+    i18n module script runs.
     """
-    from routes.i18n_routes import _cached_translations
+    from routes.i18n_routes import _load_frontend_translations
 
     # Determine preferred language from Accept-Language header.
     lang = "en"
@@ -854,11 +854,11 @@ def _inject_preloaded_locale(html: str, request: Request, nonce: str) -> str:
     if lang not in _I18N_SUPPORTED:
         lang = "en"
 
-    _, fallback_data = _cached_translations("en")
+    fallback_data = _load_frontend_translations("en")
     if lang == "en":
         locale_data = fallback_data
     else:
-        _, locale_data = _cached_translations(lang)
+        locale_data = _load_frontend_translations(lang)
 
     preload_script = (
         f'<script nonce="{nonce}">'
@@ -868,10 +868,12 @@ def _inject_preloaded_locale(html: str, request: Request, nonce: str) -> str:
         f"</script>"
     )
 
-    # Insert before the i18n module script block.
-    marker = '<script type="module" nonce="{{CSP_NONCE}}">\nimport { init'
-    replacement = preload_script + '\n<script type="module" nonce="' + nonce + '">\nimport { init'
-    html = html.replace(marker, replacement, 1)
+    # Insert before the i18n module script block. ``html`` has already had its
+    # ``{{CSP_NONCE}}`` placeholders substituted by ``_serve_html_with_nonce``,
+    # so the marker must carry the real nonce — a literal ``{{CSP_NONCE}}``
+    # placeholder would never match and the injection would silently no-op.
+    marker = f'<script type="module" nonce="{nonce}">\nimport {{ init'
+    html = html.replace(marker, preload_script + "\n" + marker, 1)
     return html
 
 @app.get("/")
@@ -931,7 +933,13 @@ async def serve_login(request: Request):
         return RedirectResponse(url="/", status_code=302)
     resp = _serve_html_with_nonce(request, abs_join(BASE_DIR, "static/login.html"))
     nonce = getattr(request.state, "csp_nonce", "")
-    resp.body = _inject_preloaded_locale(resp.body.decode("utf-8"), request, nonce).encode("utf-8")
+    # Locale preloading is a progressive enhancement — never let it break login.
+    try:
+        html = _inject_preloaded_locale(resp.body.decode("utf-8"), request, nonce)
+    except Exception:
+        logger.debug("i18n preload injection skipped", exc_info=True)
+    else:
+        resp.body = html.encode("utf-8")
     return resp
 
 @app.get("/api/version")
