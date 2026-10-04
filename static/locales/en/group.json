@@ -1,0 +1,10 @@
+{
+  "group": {
+    "max8": "You can select at most 8 models",
+    "max8_models": "You can select at most 8 models",
+    "need_at_least_2": "Select at least 2 models",
+    "ready": "Group ready ({{count}} models)",
+    "delete": "Delete",
+    "delete_preset": "Delete the group \"{{name}}\"?"
+  }
+}

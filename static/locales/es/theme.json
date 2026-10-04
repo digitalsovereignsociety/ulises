@@ -95,6 +95,20 @@
       "apply": "Aplicar",
       "cancel": "Cancelar",
       "reset_default": "Restablecer valores predeterminados"
-    }
+    },
+    "theme": "tema",
+    "saved": "Guardado",
+    "theme_saved": "Tema guardado",
+    "auto_saved": "Guardado",
+    "export": "Exportado",
+    "downloaded": "Descargado",
+    "enter_name": "Introduce un nombre",
+    "invalid_name": "Ese nombre no es válido (usa letras, números y guiones)",
+    "bad_hex": "\"{{key}}\" no es un color hex válido",
+    "cannot_overwrite": "No se puede sobrescribir un tema integrado",
+    "max_themes": "Puedes tener como máximo {{n}} temas personalizados",
+    "missing_keys": "Al archivo le faltan: {{keys}}",
+    "invalid_json": "Ese archivo no es JSON válido",
+    "delete_confirm": "¿Eliminar el tema «{{name}}»?"
   }
 }

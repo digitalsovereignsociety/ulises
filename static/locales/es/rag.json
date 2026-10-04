@@ -5,6 +5,15 @@
     "no_valid_documents": "No hay documentos válidos",
     "no_embedding_accepted": "Ningún carril de embedding aceptó el lote",
     "no_docs_found": "No se encontraron documentos",
-    "removed_chunks": "{{count}} fragmentos eliminados"
+    "removed_chunks": "{{count}} fragmentos eliminados",
+    "loading": "Cargando…",
+    "drop_files_hint": "Suelta archivos aquí",
+    "failed_load_files": "No se pudieron cargar los archivos",
+    "remove_from_rag": "Quitar del índice",
+    "remove_confirm": "¿Quitar «{{name}}» del índice?",
+    "delete_failed": "No se pudo eliminar: {{msg}}",
+    "uploading": "Subiendo…",
+    "drop_files_here": "Suelta archivos aquí",
+    "upload_failed": "Falló la subida: {{msg}}"
   }
 }

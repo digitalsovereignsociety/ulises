@@ -99,6 +99,22 @@
       "max_skills": "Max skills per request",
       "max_skills_aria": "Max skills to inject",
       "max_skills_hint": "Set to 0 to disable skill injection."
-    }
+    },
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "auto_extract_enabled": "Auto-extract: on",
+    "auto_extract_disabled": "Auto-extract: off",
+    "added": "Memory added",
+    "updated": "Memory updated",
+    "saved": "Saved",
+    "deleted": "Memory deleted",
+    "deleted_format": "Deleted {{count}} memory/memories",
+    "saved_format": "Saved {{count}} memory/memories",
+    "pinned": "Pinned",
+    "unpinned": "Unpinned",
+    "already_clean": "Nothing to tidy up",
+    "tidied_format": "Tidied up: {{removed}} removed, {{before}} → {{after}}",
+    "no_memories_to_export": "There are no memories to export",
+    "exported_format": "Exported {{count}} memory/memories"
   }
 }

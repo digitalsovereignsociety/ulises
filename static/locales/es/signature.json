@@ -1,0 +1,13 @@
+{
+  "signature": {
+    "draw_title": "Dibuja una firma",
+    "smoothness": "Suavizado",
+    "name_placeholder": "Escribe un nombre en su lugar",
+    "default_name": "Firma",
+    "choose_title": "Elige una firma",
+    "draw_new": "Dibujar una nueva",
+    "no_saved": "Aún no hay firmas guardadas",
+    "save_failed": "No se pudo guardar: {{msg}}",
+    "delete_confirm": "¿Eliminar esta firma?"
+  }
+}

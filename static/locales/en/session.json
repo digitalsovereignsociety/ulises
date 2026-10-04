@@ -9,6 +9,18 @@
     "no_unfiled": "No unfiled sessions to sort",
     "errors": {
       "topic_analysis_failed": "Topic analysis failed: {{error}}"
-    }
+    },
+    "archived": "Session archived",
+    "archived_format": "Archived {{count}} session(s)",
+    "deleted": "Session deleted",
+    "deleted_format": "Deleted {{count}} session(s)",
+    "renamed": "Session renamed",
+    "unfavorited": "Removed from favourites",
+    "unfavorite_before_delete": "Remove it from favourites before deleting",
+    "no_messages_to_copy": "That session has no messages to copy",
+    "restored": "Session restored",
+    "restore_failed": "Could not restore the session",
+    "restored_format": "Restored {{count}} session(s)",
+    "toggle_research_and_rerun": "Deep Research was toggled — re-run to apply"
   }
 }

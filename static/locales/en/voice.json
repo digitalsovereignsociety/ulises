@@ -3,6 +3,17 @@
     "stt_unavailable": "STT service not available or set to browser mode",
     "empty_audio": "Empty audio file",
     "transcription_failed": "Transcription failed",
-    "tts_cache_cleared": "Cache cleared"
+    "tts_cache_cleared": "Cache cleared",
+    "requiresHttps": "Voice input needs HTTPS or localhost",
+    "notSupported": "This browser does not support voice input",
+    "transcribing": "Transcribing…",
+    "noSpeechDetected": "No speech detected",
+    "no_speech": "Nothing was transcribed",
+    "transcriptionFailed": "Transcription failed: {{message}}",
+    "access_denied": "Microphone access was denied",
+    "no_microphone": "No microphone was found",
+    "microphone_error": "Microphone error: {{message}}",
+    "recording": "Recording…",
+    "transcribed": "Transcribed"
   }
 }

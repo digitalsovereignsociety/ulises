@@ -1,0 +1,10 @@
+{
+  "modelPicker": {
+    "favorited": "Added to favourites",
+    "unfavorited": "Removed from favourites",
+    "using": "Using {{model}}",
+    "setFailed": "Could not update the model",
+    "setError": "Could not update the model: {{error}}",
+    "refreshFailed": "Could not refresh the models"
+  }
+}

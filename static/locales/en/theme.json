@@ -95,6 +95,20 @@
       "apply": "Apply",
       "cancel": "Cancel",
       "reset_default": "Reset to Default"
-    }
+    },
+    "theme": "theme",
+    "saved": "Saved",
+    "theme_saved": "Theme saved",
+    "auto_saved": "Saved",
+    "export": "Exported",
+    "downloaded": "Downloaded",
+    "enter_name": "Enter a name",
+    "invalid_name": "That name is not valid (use letters, numbers and dashes)",
+    "bad_hex": "\"{{key}}\" is not a valid hex colour",
+    "cannot_overwrite": "A built-in theme cannot be overwritten",
+    "max_themes": "You can keep at most {{n}} custom themes",
+    "missing_keys": "The file is missing: {{keys}}",
+    "invalid_json": "That file is not valid JSON",
+    "delete_confirm": "Delete the theme \"{{name}}\"?"
   }
 }

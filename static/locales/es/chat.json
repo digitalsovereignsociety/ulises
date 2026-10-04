@@ -91,6 +91,13 @@
       "tool_blocked": "Herramienta bloqueada por la política"
     },
     "response_ready": "Respuesta lista en {{name}}",
-    "default_session": "sesión"
+    "default_session": "sesión",
+    "delete": "Eliminar",
+    "cancel": "Cancelar",
+    "delete_image_confirm": "¿Eliminar esta imagen?",
+    "add_message_failed": "No se pudo añadir el mensaje: {{message}}",
+    "followup_failed": "No se pudo enviar el seguimiento: {{message}}",
+    "saved": "Guardado",
+    "ocr_save_failed": "No se pudo guardar el texto"
   }
 }

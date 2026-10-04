@@ -1,0 +1,6 @@
+{
+  "fileHandler": {
+    "uploadFailed": "Upload failed ({{status}}): {{detail}}",
+    "maxFiles": "You can attach at most {{max}} files"
+  }
+}

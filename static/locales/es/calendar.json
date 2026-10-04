@@ -31,6 +31,21 @@
       "could_not_extract_json": "No se pudo extraer el JSON",
       "invalid_json": "JSON inválido: {{error}}",
       "no_start_time": "El modelo no generó una hora de inicio"
-    }
+    },
+    "this_event": "este evento",
+    "delete_confirm": "¿Eliminar «{{name}}»?",
+    "delete": "Eliminar",
+    "undo": "Deshacer",
+    "no_title": "(sin título)",
+    "default_name": "Calendario sin título",
+    "saved": "Se guardó «{{name}}»",
+    "create_event_failed": "No se pudo crear el evento: {{error}}",
+    "update_event_failed": "No se pudo actualizar el evento: {{error}}",
+    "delete_event_failed": "No se pudo eliminar el evento: {{error}}",
+    "reminder_create_failed": "No se pudo crear el recordatorio",
+    "quick_add_error": "No se pudo añadir el evento: {{detail}}",
+    "quick_add_failed": "No se pudo añadir el evento: {{error}}",
+    "create_calendar_failed": "No se pudo crear el calendario",
+    "delete_calendar_confirm": "¿Eliminar el calendario «{{name}}» y todos sus eventos?"
   }
 }

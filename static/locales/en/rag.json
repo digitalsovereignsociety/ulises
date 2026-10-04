@@ -5,6 +5,15 @@
     "no_valid_documents": "No valid documents",
     "no_embedding_accepted": "No embedding lane accepted the batch",
     "no_docs_found": "No docs found",
-    "removed_chunks": "Removed {{count}} chunks"
+    "removed_chunks": "Removed {{count}} chunks",
+    "loading": "Loading…",
+    "drop_files_hint": "Drop files here",
+    "failed_load_files": "Could not load the files",
+    "remove_from_rag": "Remove from the index",
+    "remove_confirm": "Remove \"{{name}}\" from the index?",
+    "delete_failed": "Could not delete: {{msg}}",
+    "uploading": "Uploading…",
+    "drop_files_here": "Drop files here",
+    "upload_failed": "Upload failed: {{msg}}"
   }
 }

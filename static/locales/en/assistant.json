@@ -7,6 +7,8 @@
     "saved": "Assistant settings saved",
     "save_failed": "Save failed",
     "not_found": "Assistant not found",
-    "not_available": "Assistant not available"
+    "not_available": "Assistant not available",
+    "session_unavailable": "No chat session is available",
+    "settings_saved": "Assistant settings saved"
   }
 }

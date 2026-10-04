@@ -1,0 +1,17 @@
+{
+  "markdown": {
+    "view_thinking_process": "Ver el proceso de razonamiento",
+    "task_completed": "Tarea completada",
+    "view": "Ver",
+    "hide": "Ocultar",
+    "model_endpoint": "endpoint de modelo",
+    "add_endpoint_title": "Añadir este endpoint al selector de modelos",
+    "add_to_picker": "Añadir al selector",
+    "adding": "Añadiendo…",
+    "added": "Añadido",
+    "already_added": "Ya añadido",
+    "already_in_picker": "«{{name}}» ya está en el selector",
+    "endpoint_added": "Se añadió «{{name}}» al selector",
+    "add_endpoint_failed": "No se pudo añadir el endpoint: {{msg}}"
+  }
+}

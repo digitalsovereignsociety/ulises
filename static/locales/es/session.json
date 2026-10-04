@@ -9,6 +9,18 @@
     "no_unfiled": "No hay sesiones sin clasificar para ordenar",
     "errors": {
       "topic_analysis_failed": "Análisis de tema fallido: {{error}}"
-    }
+    },
+    "archived": "Sesión archivada",
+    "archived_format": "Se archivaron {{count}} sesión(es)",
+    "deleted": "Sesión eliminada",
+    "deleted_format": "Se eliminaron {{count}} sesión(es)",
+    "renamed": "Sesión renombrada",
+    "unfavorited": "Quitada de favoritas",
+    "unfavorite_before_delete": "Quítala de favoritas antes de eliminarla",
+    "no_messages_to_copy": "Esa sesión no tiene mensajes que copiar",
+    "restored": "Sesión restaurada",
+    "restore_failed": "No se pudo restaurar la sesión",
+    "restored_format": "Se restauraron {{count}} sesión(es)",
+    "toggle_research_and_rerun": "Se cambió Deep Research: vuelve a ejecutar para aplicarlo"
   }
 }

@@ -91,6 +91,13 @@
       "tool_blocked": "Tool blocked by policy"
     },
     "response_ready": "Response ready in {{name}}",
-    "default_session": "session"
+    "default_session": "session",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "delete_image_confirm": "Delete this image?",
+    "add_message_failed": "Could not add the message: {{message}}",
+    "followup_failed": "Could not send the follow-up: {{message}}",
+    "saved": "Saved",
+    "ocr_save_failed": "Could not save the text"
   }
 }

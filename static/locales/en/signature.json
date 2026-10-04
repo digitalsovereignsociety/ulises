@@ -1,0 +1,13 @@
+{
+  "signature": {
+    "draw_title": "Draw a signature",
+    "smoothness": "Smoothness",
+    "name_placeholder": "Type a name instead",
+    "default_name": "Signature",
+    "choose_title": "Choose a signature",
+    "draw_new": "Draw a new one",
+    "no_saved": "No saved signatures yet",
+    "save_failed": "Could not save: {{msg}}",
+    "delete_confirm": "Delete this signature?"
+  }
+}

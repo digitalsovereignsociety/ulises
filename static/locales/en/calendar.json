@@ -31,6 +31,21 @@
       "could_not_extract_json": "Could not extract JSON",
       "invalid_json": "Invalid JSON: {{error}}",
       "no_start_time": "Model did not produce a start time"
-    }
+    },
+    "this_event": "this event",
+    "delete_confirm": "Delete \"{{name}}\"?",
+    "delete": "Delete",
+    "undo": "Undo",
+    "no_title": "(no title)",
+    "default_name": "Untitled calendar",
+    "saved": "Saved \"{{name}}\"",
+    "create_event_failed": "Could not create the event: {{error}}",
+    "update_event_failed": "Could not update the event: {{error}}",
+    "delete_event_failed": "Could not delete the event: {{error}}",
+    "reminder_create_failed": "Could not create the reminder",
+    "quick_add_error": "Could not add the event: {{detail}}",
+    "quick_add_failed": "Could not add the event: {{error}}",
+    "create_calendar_failed": "Could not create the calendar",
+    "delete_calendar_confirm": "Delete the calendar \"{{name}}\" and all its events?"
   }
 }

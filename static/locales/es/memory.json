@@ -99,6 +99,22 @@
       "max_skills": "Máx. de skills por solicitud",
       "max_skills_aria": "Máx. de skills a inyectar",
       "max_skills_hint": "Establece en 0 para desactivar la inyección de skills."
-    }
+    },
+    "enabled": "Activado",
+    "disabled": "Desactivado",
+    "auto_extract_enabled": "Extracción automática: activada",
+    "auto_extract_disabled": "Extracción automática: desactivada",
+    "added": "Recuerdo añadido",
+    "updated": "Recuerdo actualizado",
+    "saved": "Guardado",
+    "deleted": "Recuerdo eliminado",
+    "deleted_format": "Se eliminaron {{count}} recuerdos",
+    "saved_format": "Se guardaron {{count}} recuerdos",
+    "pinned": "Fijado",
+    "unpinned": "Desfijado",
+    "already_clean": "No hay nada que ordenar",
+    "tidied_format": "Ordenado: {{removed}} eliminados, {{before}} → {{after}}",
+    "no_memories_to_export": "No hay recuerdos que exportar",
+    "exported_format": "Se exportaron {{count}} recuerdos"
   }
 }
