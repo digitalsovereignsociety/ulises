@@ -1,0 +1,33 @@
+{
+  "galleryEditor": {
+    "selection_inverted": "Selección invertida",
+    "selection_inverted_wand": "Selección invertida",
+    "layer_pixels_selected": "Se seleccionaron los píxeles de la capa",
+    "selection_added_to_mask": "Selección añadida a la máscara",
+    "selection_deleted": "Selección eliminada",
+    "selection_copied_to_new_layer": "Selección copiada a una capa nueva",
+    "copied_to_new_layer": "Copiado a una capa nueva",
+    "select_unlocked_layer": "Selecciona primero una capa no bloqueada",
+    "filled": "Rellenado",
+    "filter_applied": "{{label}} aplicado",
+    "nothing_to_save": "No hay nada que guardar",
+    "save_failed": "Falló el guardado: {{msg}}",
+    "saved_over_original": "Guardado sobre el original ({{size}} MB, {{seconds}} s)",
+    "saved_copy_to_gallery": "Guardado una copia en la galería ({{size}} MB, {{seconds}} s)",
+    "project_saved": "Proyecto guardado",
+    "not_project_file": "Ese archivo no es un proyecto del editor de galería",
+    "load_failed": "No se pudo cargar: {{msg}}",
+    "project_loaded": "Proyecto cargado",
+    "invalid_size": "Introduce un tamaño válido",
+    "open_cookbook_to_install": "Abre el Cookbook para instalar {{pkg}}",
+    "open_cookbook_img2img": "Abre el Cookbook para servir esta imagen",
+    "editor_container_missing": "No se encontró el contenedor del editor: recarga la página",
+    "editor_build_failed": "El editor no se pudo cargar: {{msg}}",
+    "draft_not_found": "Ese borrador ya no existe",
+    "load_draft_failed": "No se pudo cargar el borrador",
+    "resumed_draft": "Borrador reanudado",
+    "resumed_previous_edit": "Se restauró tu edición anterior",
+    "load_image_failed": "No se pudo cargar la imagen",
+    "close_edit_tab_first": "Cierra la pestaña del editor antes de continuar"
+  }
+}

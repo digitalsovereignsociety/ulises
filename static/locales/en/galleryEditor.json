@@ -1,0 +1,33 @@
+{
+  "galleryEditor": {
+    "selection_inverted": "Selection inverted",
+    "selection_inverted_wand": "Selection inverted",
+    "layer_pixels_selected": "The layer pixels were selected",
+    "selection_added_to_mask": "Selection added to the mask",
+    "selection_deleted": "Selection deleted",
+    "selection_copied_to_new_layer": "Selection copied to a new layer",
+    "copied_to_new_layer": "Copied to a new layer",
+    "select_unlocked_layer": "Select an unlocked layer first",
+    "filled": "Filled",
+    "filter_applied": "{{label}} applied",
+    "nothing_to_save": "There is nothing to save",
+    "save_failed": "Save failed: {{msg}}",
+    "saved_over_original": "Saved over the original ({{size}} MB, {{seconds}}s)",
+    "saved_copy_to_gallery": "Saved a copy in the gallery ({{size}} MB, {{seconds}}s)",
+    "project_saved": "Project saved",
+    "not_project_file": "That file is not a gallery-editor project",
+    "load_failed": "Could not load: {{msg}}",
+    "project_loaded": "Project loaded",
+    "invalid_size": "Enter a valid size",
+    "open_cookbook_to_install": "Open the Cookbook to install {{pkg}}",
+    "open_cookbook_img2img": "Open the Cookbook to serve this image",
+    "editor_container_missing": "The editor container was not found — reload the page",
+    "editor_build_failed": "The editor failed to load: {{msg}}",
+    "draft_not_found": "That draft no longer exists",
+    "load_draft_failed": "Could not load the draft",
+    "resumed_draft": "Draft resumed",
+    "resumed_previous_edit": "Your previous edit was restored",
+    "load_image_failed": "Could not load the image",
+    "close_edit_tab_first": "Close the editor tab before continuing"
+  }
+}
