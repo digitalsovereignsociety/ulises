@@ -259,6 +259,61 @@ def test_i18n_baseline_has_no_stale_entries(lang):
     )
 
 
+def _split_top_level(obj):
+    """Split an object-literal body on commas that are not nested.
+
+    Naive str.split(',') misreads real call sites such as
+    t('tasks.notification_body', { title, body: n.body.slice(0, 140) })
+    or errors: fails.slice(0, 3).join(', ') — the comma inside the argument list
+    and the one inside the string literal each look like separators.
+    """
+    parts, buf, depth, quote = [], [], 0, None
+    i = 0
+    while i < len(obj):
+        ch = obj[i]
+        if quote:
+            if ch == "\\":
+                buf.append(ch)
+                if i + 1 < len(obj):
+                    buf.append(obj[i + 1])
+                    i += 2
+                    continue
+            elif ch == quote:
+                quote = None
+            buf.append(ch)
+        elif ch in "\"'`":
+            quote = ch
+            buf.append(ch)
+        elif ch in "{[(":
+            depth += 1
+            buf.append(ch)
+        elif ch in "}])":
+            depth -= 1
+            buf.append(ch)
+        elif ch == "," and depth == 0:
+            parts.append("".join(buf))
+            buf = []
+        else:
+            buf.append(ch)
+        i += 1
+    if "".join(buf).strip():
+        parts.append("".join(buf))
+    return parts
+
+
+def _passed_var_names(obj):
+    names = set()
+    for part in _split_top_level(obj):
+        part = part.strip()
+        if not part or part.startswith("..."):
+            continue
+        # `key: value` or shorthand `key`
+        head = part.split(":")[0].strip()
+        if head and re.fullmatch(r"[A-Za-z_$][\w$]*", head):
+            names.add(head)
+    return names
+
+
 @pytest.mark.parametrize("lang", LANGS)
 def test_js_t_call_interpolation_vars_exist_in_locale(lang):
     """A t('key', {a: 1}) call whose locale string has no {a} placeholder means
@@ -276,11 +331,7 @@ def test_js_t_call_interpolation_vars_exist_in_locale(lang):
                 value = _resolve(locale, key)
                 if not isinstance(value, str):
                     continue
-                passed = {
-                    p.split(":")[0].strip()
-                    for p in obj.split(",")
-                    if p.strip() and not p.strip().startswith("...")
-                }
+                passed = _passed_var_names(obj)
                 expected = set(re.findall(r"\{\{\s*(\w+)\s*\}\}", value))
                 if passed != expected:
                     problems.append(

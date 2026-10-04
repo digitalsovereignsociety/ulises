@@ -1832,15 +1832,20 @@ async function _doToggleAll() {
     if (uiModule) uiModule.showToast(hasActive ? t('tasks.no_tasks_to_pause') : t('tasks.no_tasks_to_resume'));
     return;
   }
-  const verb = hasActive ? 'Pause' : 'Resume';
+  // The verb and its past participle are translated, not interpolated as
+  // English words: `verb.toLowerCase()` produced "pause"/"resume" inside
+  // otherwise-translated sentences. The participle is a separate key because
+  // Spanish must agree in gender and number ("3 tareas pausadas").
+  const verb = hasActive ? t('tasks.action_pause') : t('tasks.action_resume');
+  const done = hasActive ? t('tasks.action_paused') : t('tasks.action_resumed');
   let confirmed = true;
   if (uiModule?.styledConfirm) {
     confirmed = await uiModule.styledConfirm(
-      t('tasks.toggle_all_confirm', { action: verb.toLowerCase(), count: targets.length, status: hasActive ? 'active' : 'paused' }),
+      t('tasks.toggle_all_confirm', { action: verb, count: targets.length }),
       { confirmText: t('common.action_all', { action: verb }) }
     );
   } else if (typeof confirm === 'function') {
-    confirmed = confirm(t('tasks.toggle_all_confirm_short', { action: verb.toLowerCase(), count: targets.length }));
+    confirmed = confirm(t('tasks.toggle_all_confirm_short', { action: verb, count: targets.length }));
   }
   if (!confirmed) return;
   let ok = 0, fails = [];
@@ -1854,8 +1859,8 @@ async function _doToggleAll() {
     }
   }
   if (uiModule) {
-    if (fails.length === 0) uiModule.showToast(t('tasks.toggle_all_success', { action: verb.toLowerCase(), count: ok }));
-    else uiModule.showError(t('tasks.toggle_all_failed', { action: verb.toLowerCase(), ok, total: targets.length, errors: fails.slice(0, 3).join(', ') }));
+    if (fails.length === 0) uiModule.showToast(t('tasks.toggle_all_success', { action: done, count: ok }));
+    else uiModule.showError(t('tasks.toggle_all_failed', { action: done, ok, total: targets.length, errors: fails.slice(0, 3).join(', ') }));
   }
   await _fetchTasks();
   _renderMainView();

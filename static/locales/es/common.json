@@ -80,6 +80,16 @@
       "rewrite": "Error al reescribir: {{error}}",
       "save_failed_with_error": "Error al guardar: {{error}}",
       "import_failed": "Error al importar: {{error}}"
-    }
+    },
+    "clear": "Vaciar",
+    "remove": "Eliminar",
+    "revert": "Revertir",
+    "undo": "Deshacer",
+    "action_all": "{{action}} todo",
+    "copied_to_clipboard": "Copiado al portapapeles",
+    "deleted": "Eliminado",
+    "document_deleted": "Documento eliminado",
+    "no_changes": "Sin cambios",
+    "unarchived": "Sacado del archivo"
   }
 }

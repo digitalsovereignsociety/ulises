@@ -2263,9 +2263,11 @@ export function openGallery() {
         return;
       }
       if (tagAllBtn.disabled) return;
+      // The fallbacks were hardcoded English ('this album', 'entire gallery') and
+      // were interpolated straight into the toast and the confirm below.
       const scope = _activeAlbum
-        ? (_albums.find(a => a.id === _activeAlbum)?.name || 'this album')
-        : 'entire gallery';
+        ? (_albums.find(a => a.id === _activeAlbum)?.name || t('gallery.this_album'))
+        : t('gallery.entire_gallery');
       const params = new URLSearchParams();
       if (_activeAlbum) params.set('album_id', _activeAlbum);
       let listRes;
@@ -2282,8 +2284,8 @@ export function openGallery() {
       const total = listRes.image_ids.length;
       const untagged = listRes.total_untagged || total;
       if (!await uiModule.styledConfirm(
-        `Tag ${total} of ${untagged} untagged photo${total > 1 ? 's' : ''} in ${scope}?`,
-        { confirmText: 'Tag All' }
+        t('gallery.tag_all_confirm', { total, untagged, scope }),
+        { confirmText: t('gallery.tag_all') }
       )) return;
 
       const bar = document.getElementById('gallery-tag-bar');

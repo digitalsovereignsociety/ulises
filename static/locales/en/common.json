@@ -80,6 +80,16 @@
       "rewrite": "Rewrite failed: {{error}}",
       "save_failed_with_error": "Save failed: {{error}}",
       "import_failed": "Import failed: {{error}}"
-    }
+    },
+    "clear": "Clear",
+    "remove": "Remove",
+    "revert": "Revert",
+    "undo": "Undo",
+    "action_all": "{{action}} all",
+    "copied_to_clipboard": "Copied to the clipboard",
+    "deleted": "Deleted",
+    "document_deleted": "Document deleted",
+    "no_changes": "No changes",
+    "unarchived": "Moved out of the archive"
   }
 }
