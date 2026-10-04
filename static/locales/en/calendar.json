@@ -1,6 +1,6 @@
 {
   "calendar": {
-    "reminder_title": "Calendar Reminder",
+    "reminder_title": "Calendar Reminder: {{summary}}",
     "reminder_set": "Reminder set for {{time}}",
     "refreshed": "Calendar refreshed",
     "moved": "Moved",

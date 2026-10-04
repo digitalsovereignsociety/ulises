@@ -1449,7 +1449,15 @@ function initEndpointForm() {
       ));
       try { await loadEndpoints(); } catch (_) {}
       _refreshOfflineCount();
-      if (uiModule && uiModule.showToast) uiModule.showToast(t('admin.removed_offline', { count: ids.length }), 1800);
+      // The locale string ends in {{s}} for plural agreement, and Spanish
+      // repeats it per noun, so it has to be supplied — otherwise the raw
+      // placeholder renders in the toast.
+      if (uiModule && uiModule.showToast) {
+        uiModule.showToast(
+          t('admin.removed_offline', { count: ids.length, s: ids.length === 1 ? '' : 's' }),
+          1800,
+        );
+      }
     });
   }
 

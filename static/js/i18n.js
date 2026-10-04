@@ -46,12 +46,34 @@ async function _loadLocale(lang) {
   }
 }
 
+const _reportedMissing = new Set()
+
+// Turn a bare key into something readable: 'admin.add_directory' -> 'Add directory'.
+// Used only as the last resort, so a key with no translation anywhere renders as
+// prose instead of leaking 'admin.add_directory' into the UI.
+function _humanizeKey(key) {
+  const tail = String(key).split('.').pop() || String(key)
+  const words = tail.replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim()
+  if (!words) return String(key)
+  return words.charAt(0).toUpperCase() + words.slice(1)
+}
+
 export function t(key, vars) {
   let val = _resolve(_locale, key)
   if (val === null && _fallbackLocale) {
     val = _resolve(_fallbackLocale, key)
   }
-  if (val === null) return key
+  if (val === null) {
+    // Warn once per key. The key is still returned humanized rather than
+    // verbatim: a missing translation should look like untranslated UI, not
+    // like a crash. tests/test_i18n_html_coverage.py is the gate that keeps
+    // this list from growing — it fails on any t() key missing from a locale.
+    if (!_reportedMissing.has(key)) {
+      _reportedMissing.add(key)
+      console.warn(`[i18n] missing translation for "${key}"`)
+    }
+    val = _humanizeKey(key)
+  }
   return _interpolate(val, vars)
 }
 

@@ -1,6 +1,6 @@
 {
   "calendar": {
-    "reminder_title": "Recordatorio de calendario",
+    "reminder_title": "Recordatorio de calendario: {{summary}}",
     "reminder_set": "Recordatorio configurado para {{time}}",
     "refreshed": "Calendario actualizado",
     "moved": "Movido",
