@@ -20,6 +20,27 @@
     "nothing_to_tidy": "Nothing to tidy up",
     "tidy_failed": "Could not tidy up: {{msg}}",
     "sorted_sessions": "Sorted {{updated}} session(s) into {{folders}} folder(s)",
-    "start_discussion_failed": "Could not start the discussion: {{msg}}"
+    "start_discussion_failed": "Could not start the discussion: {{msg}}",
+    "load_more": "Load more ({{shown}} of {{total}})",
+    "actions": "Actions",
+    "open": "Open",
+    "clone": "Clone",
+    "open_in_editor": "Open in the editor",
+    "clone_to_session": "Clone to active session",
+    "open_in_original_session": "Open in original session",
+    "clone_copy_to_session": "Clone — copy to active session",
+    "cancel": "Cancel",
+    "select": "Select",
+    "delete": "Delete",
+    "chats": "Chats",
+    "documents": "Documents",
+    "research": "Research",
+    "archive": "Archive",
+    "copy": "Copy",
+    "restore": "Restore",
+    "creating": "Creating…",
+    "untitled_document": "Untitled Document",
+    "export": "Export",
+    "all_count": "all ({{count}})"
   }
 }

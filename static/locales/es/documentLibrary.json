@@ -20,6 +20,27 @@
     "nothing_to_tidy": "No hay nada que ordenar",
     "tidy_failed": "No se pudo ordenar: {{msg}}",
     "sorted_sessions": "Se ordenaron {{updated}} sesión(es) en {{folders}} carpeta(s)",
-    "start_discussion_failed": "No se pudo iniciar la discusión: {{msg}}"
+    "start_discussion_failed": "No se pudo iniciar la discusión: {{msg}}",
+    "load_more": "Cargar más ({{shown}} de {{total}})",
+    "actions": "Acciones",
+    "open": "Abrir",
+    "clone": "Clonar",
+    "open_in_editor": "Abrir en el editor",
+    "clone_to_session": "Clonar en la sesión activa",
+    "open_in_original_session": "Abrir en la sesión original",
+    "clone_copy_to_session": "Clonar: copiar en la sesión activa",
+    "cancel": "Cancelar",
+    "select": "Seleccionar",
+    "delete": "Eliminar",
+    "chats": "Chats",
+    "documents": "Documentos",
+    "research": "Investigación",
+    "archive": "Archivar",
+    "copy": "Copiar",
+    "restore": "Restaurar",
+    "creating": "Creando…",
+    "untitled_document": "Documento sin título",
+    "export": "Exportar",
+    "all_count": "todas ({{count}})"
   }
 }

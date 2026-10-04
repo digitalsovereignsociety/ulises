@@ -119,25 +119,25 @@ function _serveBackendWarning(model, repo, backend, fields = {}) {
   const ggufLike = _repoLooksGgufLike(model, repo);
   if (awqLike && (backend === 'llamacpp' || backend === 'ollama')) {
     return {
-      title: 'AWQ needs vLLM or SGLang',
+      title: t('cookbookServe.awq_needs_vllm'),
       body: 'This model looks like AWQ/GPTQ/FP8 safetensors. llama.cpp and Ollama need GGUF files, so this backend cannot serve it. Choose vLLM/SGLang on a CUDA/ROCm GPU server, or download a GGUF version for llama.cpp/Ollama.',
     };
   }
   if (awqLike && _isMetal() && (backend === 'vllm' || backend === 'sglang')) {
     return {
-      title: 'AWQ is not a unified-memory path',
+      title: t('cookbookServe.awq_not_unified'),
       body: 'This model looks like AWQ/GPTQ/FP8 safetensors. AWQ is for vLLM/SGLang on CUDA/ROCm-style GPU servers, not local unified-memory llama.cpp/Ollama serving. For unified memory, download a GGUF model and use llama.cpp/Ollama.',
     };
   }
   if (awqLike && fields.unified_mem) {
     return {
-      title: 'AWQ is not a unified-memory path',
+      title: t('cookbookServe.awq_not_unified'),
       body: 'This model looks like AWQ/GPTQ/FP8 safetensors, but unified-memory local serving expects GGUF. Use vLLM/SGLang on a compatible GPU server, or download a GGUF version for llama.cpp/Ollama.',
     };
   }
   if (ggufLike && (backend === 'vllm' || backend === 'sglang')) {
     return {
-      title: 'GGUF needs llama.cpp or Ollama',
+      title: t('cookbookServe.gguf_needs_llamacpp'),
       body: 'This model looks like GGUF. vLLM/SGLang expect HuggingFace safetensors-style repos. Choose llama.cpp/Ollama for GGUF, or download a safetensors model for vLLM/SGLang.',
     };
   }
@@ -993,11 +993,11 @@ function _rerenderCachedModels() {
         : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
       const items = [];
       items.push({ label: _favNow ? 'Unfavorite' : 'Favorite', icon: _favIco, action: 'favorite' });
-      if (m && m.status === 'ready') items.push({ label: 'Serve', icon: _serveIco, action: 'serve' });
-      if (m && m.status === 'downloading') items.push({ label: 'Retry', icon: _retryIco, action: 'retry' });
-      if (m && m.status === 'ready') items.push({ label: 'Schedule…', icon: _schedIco, action: 'schedule' });
-      items.push({ label: 'Select', icon: _selectIco, action: 'select' });
-      items.push({ label: 'Delete', icon: _deleteIco, action: 'delete', danger: true });
+      if (m && m.status === 'ready') items.push({ label: t('cookbookServe.serve'), icon: _serveIco, action: 'serve' });
+      if (m && m.status === 'downloading') items.push({ label: t('cookbookServe.retry'), icon: _retryIco, action: 'retry' });
+      if (m && m.status === 'ready') items.push({ label: t('cookbookServe.schedule'), icon: _schedIco, action: 'schedule' });
+      items.push({ label: t('cookbookServe.select'), icon: _selectIco, action: 'select' });
+      items.push({ label: t('cookbookServe.delete'), icon: _deleteIco, action: 'delete', danger: true });
       for (const opt of items) {
         const div = document.createElement('div');
         div.className = 'dropdown-item-compact' + (opt.danger ? ' dropdown-item-danger' : '');
@@ -1027,7 +1027,7 @@ function _rerenderCachedModels() {
             const bulkBar = document.getElementById('serve-bulk-bar');
             if (selectBtn) {
               selectBtn.classList.add('active');
-              selectBtn.textContent = 'Cancel';
+              selectBtn.textContent = t('cookbookServe.cancel');
             }
             if (bulkBar) bulkBar.classList.remove('hidden');
             document.querySelectorAll('.serve-select-cb').forEach(dot => {
@@ -1665,7 +1665,7 @@ function _rerenderCachedModels() {
           return;
         }
         if (_ctxAutoNote) {
-          _ctxAutoNote.textContent = `Auto ${fit.ctx.toLocaleString()} · ${fit.reason}`;
+          _ctxAutoNote.textContent = t('cookbookServe.auto_ctx', { ctx: fit.ctx.toLocaleString(), reason: fit.reason });
           const _llamaMemoryLabel = String(f.llama_mode || '').toLowerCase() === 'unified' || f.unified_mem
             ? 'unified system memory'
             : 'selected GPU memory';
@@ -1717,7 +1717,12 @@ function _rerenderCachedModels() {
         const v = parseInt(_ctxEl0.value, 10);
         if (Number.isFinite(v) && v > cap) {
           _ctxEl0.value = String(cap);
-          _ctxEl0.title = `Capped to ${panel._modelCtxMax > 0 ? "this model's trained limit" : "the maximum sane context"} (${cap}).`;
+          _ctxEl0.title = t('cookbookServe.capped_ctx', {
+            ctx: cap,
+            source: panel._modelCtxMax > 0
+              ? t('cookbookServe.ctx_source_model_limit')
+              : t('cookbookServe.ctx_source_max_sane'),
+          });
           if (announce) uiModule.showToast(t('cookbookServe.contextCapped', { cap }));
           updateCmd();
         }
@@ -1745,7 +1750,7 @@ function _rerenderCachedModels() {
               await _loadContextProfile();
             } catch (err) {
               if (_ctxAutoNote) {
-                _ctxAutoNote.textContent = 'context scan failed';
+                _ctxAutoNote.textContent = t('cookbookServe.context_scan_failed');
                 _ctxAutoNote.title = err?.message || 'context scan failed';
               }
             } finally {
@@ -1807,7 +1812,7 @@ function _rerenderCachedModels() {
           const res = await fetch('/api/cookbook/gpus' + (params.toString() ? '?' + params : ''));
           const data = await res.json();
           const gpus = Array.isArray(data) ? data : (data.gpus || []);
-          if (!gpus.length) { el.textContent = 'no GPU detected'; el.style.color = ''; return true; }
+          if (!gpus.length) { el.textContent = t('cookbookServe.no_gpu_detected_note'); el.style.color = ''; return true; }
           const g = gpus[0];
           const usedG = (g.used_mb / 1024), totG = (g.total_mb / 1024);
           const pct = totG ? Math.round((usedG / totG) * 100) : 0;
@@ -1830,7 +1835,7 @@ function _rerenderCachedModels() {
           el.style.color = color;
           return true;
         } catch {
-          el.textContent = 'unavailable';
+          el.textContent = t('cookbookServe.unavailable');
           el.style.color = '';
           return true;
         }
@@ -2178,7 +2183,7 @@ function _rerenderCachedModels() {
         }
         if (modelSlots.length >= 5) { uiModule.showToast(t('cookbookServe.maxSavePerModel')); return false; }
         const label = await uiModule.styledPrompt('Name this config so you can recall it later.', {
-          title: 'Save Config', placeholder: 'e.g. LoRA, 8-bit, fast', confirmText: 'Save',
+          title: t('cookbookServe.save_config'), placeholder: 'e.g. LoRA, 8-bit, fast', confirmText: t('cookbookServe.save'),
         });
         if (!label) return false;
         const host = panel._host || '';
@@ -2218,7 +2223,7 @@ function _rerenderCachedModels() {
         if (!modelSlots.length) {
           const empty = document.createElement('div');
           empty.style.cssText = 'padding:6px 8px;opacity:0.5;position:relative;top:1px;';
-          empty.textContent = 'No saved configs yet';
+          empty.textContent = t('cookbookServe.no_saved_configs');
           dropdown.appendChild(empty);
         }
         modelSlots.forEach(({ preset: p, slotIdx }, idx) => {
@@ -2236,7 +2241,7 @@ function _rerenderCachedModels() {
           const del = document.createElement('button');
           del.type = 'button';
           del.innerHTML = '×';
-          del.title = 'Delete';
+          del.title = t('cookbookServe.delete');
           del.style.cssText = 'background:none;border:none;color:var(--fg-muted);cursor:pointer;font-size:15px;line-height:1;padding:0 2px;flex-shrink:0;';
           del.addEventListener('mouseenter', () => { del.style.color = '#f44'; });
           del.addEventListener('mouseleave', () => { del.style.color = 'var(--fg-muted)'; });
@@ -2244,13 +2249,13 @@ function _rerenderCachedModels() {
           if (p.favorite) {
             const badge = document.createElement('span');
             badge.className = 'memory-cat-badge memory-cat-pinned cookbook-saved-fav-badge';
-            badge.textContent = 'pinned';
+            badge.textContent = t('cookbookServe.pinned');
             it.appendChild(badge);
           }
           if (p.confirmedWorking) {
             const badge = document.createElement('span');
             badge.className = 'cookbook-saved-confirmed';
-            badge.title = 'Confirmed working — this config launched and registered an endpoint';
+            badge.title = t('cookbookServe.confirmed_working');
             badge.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#50fa7b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
             it.appendChild(badge);
           }
@@ -2286,7 +2291,7 @@ function _rerenderCachedModels() {
           del.addEventListener('click', async (e) => {
             e.stopPropagation();
             const label = p.label || `Config ${idx + 1}`;
-            if (!await window.styledConfirm(`Delete saved config "${label}"?`, { confirmText: 'Delete', danger: true })) return;
+            if (!await window.styledConfirm(`Delete saved config "${label}"?`, { confirmText: t('cookbookServe.delete'), danger: true })) return;
             const cur = _loadPresets();
             const toRemove = _presetsForModel(cur, repo)[slotIdx];
             if (toRemove) {
@@ -2584,7 +2589,7 @@ function _rerenderCachedModels() {
               const row = btn.closest('.cookbook-gpu-proc');
               const pid = parseInt(row.dataset.pid);
               const sig = btn.dataset.sig;
-              if (sig === 'KILL' && !await window.styledConfirm(`SIGKILL PID ${pid}? This force-terminates without cleanup.`, { confirmText: 'SIGKILL', danger: true })) return;
+              if (sig === 'KILL' && !await window.styledConfirm(`SIGKILL PID ${pid}? This force-terminates without cleanup.`, { confirmText: t('cookbookServe.sigkill'), danger: true })) return;
               btn.disabled = true;
               btn.textContent = '…';
               const ok = await _doKill(pid, sig, hostVal);
@@ -2686,7 +2691,9 @@ function _rerenderCachedModels() {
               ? `\n${procCount} process(es) — click to view/kill`
               : '';
             const backendLine = g.backend || data.backend ? `\nprobe: ${g.source || data.source || g.backend || data.backend}` : '';
-            b.title = `GPU ${idx} ${g.name}\n${freeGb} / ${totalGb} GB free · util ${g.util_pct}%${procLine}${backendLine}`;
+            b.title = t('cookbookServe.gpu_title', {
+            index: idx, name: g.name, free: freeGb, total: totalGb, util: g.util_pct,
+          }) + procLine + backendLine;
             // Treat any GPU with attached compute processes OR <85% free as busy.
             const isBusy = procCount > 0 || g.busy;
             b.classList.add(isBusy ? 'gpu-busy' : 'gpu-free');
@@ -2731,7 +2738,7 @@ function _rerenderCachedModels() {
                   return;
                 }
                 const summary = pids.map(p => `${p.pid} (${p.name})`).join(', ');
-                if (!await window.styledConfirm(`Clear server GPU memory by sending SIGTERM to ${pids.length} process(es)?\n\n${summary}\n\nIf any survive, the next prompt can force-kill them with SIGKILL.`, { confirmText: 'SIGTERM', danger: true })) return;
+                if (!await window.styledConfirm(`Clear server GPU memory by sending SIGTERM to ${pids.length} process(es)?\n\n${summary}\n\nIf any survive, the next prompt can force-kill them with SIGKILL.`, { confirmText: t('cookbookServe.sigterm'), danger: true })) return;
                 // First pass: SIGTERM
                 const hostVal = panel._gpuProbe.host;
                 const results = await Promise.all(pids.map(p =>
@@ -2757,7 +2764,7 @@ function _rerenderCachedModels() {
                   uiModule.showToast(t('cookbookServe.clearedGpuProcesses', { count: pids.length }), 4000);
                   return;
                 }
-                if (!await window.styledConfirm(`${survivors.length} process(es) survived SIGTERM:\n\n${survivors.map(p => p.pid + ' (' + p.name + ')').join(', ')}\n\nForce-kill with SIGKILL?`, { confirmText: 'SIGKILL', danger: true })) return;
+                if (!await window.styledConfirm(`${survivors.length} process(es) survived SIGTERM:\n\n${survivors.map(p => p.pid + ' (' + p.name + ')').join(', ')}\n\nForce-kill with SIGKILL?`, { confirmText: t('cookbookServe.sigkill'), danger: true })) return;
                 const killResults = await Promise.all(survivors.map(p =>
                   fetch('/api/cookbook/kill-pid', {
                     method: 'POST', credentials: 'same-origin',
@@ -2960,7 +2967,7 @@ function _rerenderCachedModels() {
           _launchingWrap.appendChild(_launchingWp.element);
         }
         const _launchingLabel = document.createElement('span');
-        _launchingLabel.textContent = 'Launching…';
+        _launchingLabel.textContent = t('cookbookServe.launching');
         _launchingWrap.appendChild(_launchingLabel);
         _launchBtn.appendChild(_launchingWrap);
         // Final safety net: never launch with ctx beyond the model's trained
@@ -3020,7 +3027,7 @@ function _rerenderCachedModels() {
               const _portNote = _newPort ? ` on port ${_newPort}` : '';
               const _ok = await window.styledConfirm(
                 `${_clashing.length} model${_clashing.length === 1 ? '' : 's'} already serving on ${_hostStr || 'local'} (${_names.join(', ')})${_portNote}. Stop it and launch this one?`,
-                { title: _newPort ? `Port ${_newPort} in use` : 'Server already running', confirmText: 'Stop & launch', cancelText: 'Cancel' },
+                { title: _newPort ? `Port ${_newPort} in use` : 'Server already running', confirmText: t('cookbookServe.stop_and_launch'), cancelText: t('cookbookServe.cancel') },
               );
               if (!_ok) { _restoreLaunchBtn(); return; }
               // Kill each clashing serve; prefer the rendered Stop button so
@@ -3210,7 +3217,7 @@ function _rerenderCachedModels() {
             if (!_probeGpus.length) {
               const _proceed = await window.styledConfirm(
                 `No GPU detected on ${_probeHost ? _probeHost : 'this host'}. ${serveState.backend.toUpperCase()} needs a visible CUDA/ROCm accelerator to start — launching now will most likely crash early.\n\nLaunch anyway?`,
-                { title: 'No GPU detected', confirmText: 'Launch anyway', cancelText: 'Cancel', danger: true },
+                { title: t('cookbookServe.no_gpu_detected'), confirmText: t('cookbookServe.launch_anyway'), cancelText: t('cookbookServe.cancel'), danger: true },
               );
               if (!_proceed) { _restoreLaunchBtn(); return; }
             }
@@ -3257,9 +3264,9 @@ function _rerenderCachedModels() {
               const _proceed = await window.styledConfirm(
                 `Port ${_port} on ${_hostLabel} is already in use by ${_procDesc}. Launching ${serveState.backend.toUpperCase()} now will fail with "Address already in use".\n\nStop the existing process first, OR change the --port in the command above, OR launch anyway and watch it crash.`,
                 {
-                  title: `Port ${_port} taken`,
-                  confirmText: 'Launch anyway',
-                  cancelText: 'Cancel',
+                  title: t('cookbookServe.port_taken', { port: _port }),
+                  confirmText: t('cookbookServe.launch_anyway'),
+                  cancelText: t('cookbookServe.cancel'),
                   danger: true,
                 },
               );
@@ -3324,9 +3331,9 @@ function _rerenderCachedModels() {
             const _proceed = await window.styledConfirm(
               `The local (in-container) target has no GPU backend detected (hwfit reports: "${_detectedBackend || 'none'}"). ${serveState.backend.toUpperCase()} will run on CPU only and may be unusably slow.\n\nIf this machine has a GPU on the host, add the host as a server in Settings and target that instead. Otherwise launch anyway for CPU inference.`,
               {
-                title: 'No GPU on local target',
-                confirmText: 'Launch anyway (CPU)',
-                cancelText: 'Cancel',
+                title: t('cookbookServe.no_gpu_local'),
+                confirmText: t('cookbookServe.launch_anyway_cpu'),
+                cancelText: t('cookbookServe.cancel'),
                 danger: true,
               },
             );
@@ -3426,7 +3433,7 @@ async function _deleteCachedModel(repo, itemEl, skipConfirm = false, model = nul
     if (ggufFiles.length > 1) {
       deleteChoice = await _ggufDeleteChoice(repo, ggufFiles);
       if (!deleteChoice) return;
-    } else if (!(await uiModule.styledConfirm(`Delete ${repo} from cache?`, { confirmText: 'Delete', danger: true }))) {
+    } else if (!(await uiModule.styledConfirm(`Delete ${repo} from cache?`, { confirmText: t('cookbookServe.delete'), danger: true }))) {
       return;
     }
   }
@@ -3633,7 +3640,7 @@ export async function _fetchCachedModels() {
   _dlWrap.style.cssText = 'flex-direction:column;gap:6px;';
   _dlWrap.appendChild(_dlWp.element);
   const _dlLabel = document.createElement('div');
-  _dlLabel.textContent = 'Scanning cached models…';
+  _dlLabel.textContent = t('cookbookServe.scanning_cached_models');
   _dlLabel.style.cssText = 'opacity:0.5;font-size:11px;';
   _dlWrap.appendChild(_dlLabel);
   list.appendChild(_dlWrap);
