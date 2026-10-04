@@ -82,6 +82,13 @@ if (typeof window !== 'undefined' && !window._tagScrollGuardWired) {
   });
 }
 
+// Private to _setCookbookOpening. The afa14a7 cookbook split moved a batch of
+// module-level declarations into cookbook-shared.js and dropped this one
+// without recreating it, so opening the Cookbook threw
+// "ReferenceError: _cookbookOpeningSpinners is not defined". Only this
+// function touches it, so it stays local rather than moving to the leaf.
+let _cookbookOpeningSpinners = [];
+
 function _setCookbookOpening(on) {
   // Sidebar (tool-cookbook-btn) deliberately excluded — the inline
   // whirlpool on the sidebar row read as "the click didn't register"

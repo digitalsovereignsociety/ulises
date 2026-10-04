@@ -34,27 +34,43 @@ after(() => {
 });
 
 // Evaluate exactly one module in a pristine registry and report what happened.
-function evalIsolated(relPath) {
+// `exercise` optionally calls into the module so runtime-only ReferenceErrors
+// surface too — module evaluation alone misses those. The afa14a7 split dropped
+// the `_cookbookOpeningSpinners` declaration, which only blew up when open()
+// ran, long after the module had evaluated cleanly.
+function evalIsolated(relPath, exercise) {
   const target = pathToFileURL(path.join(JS, relPath)).href;
   const script = `
     import ${JSON.stringify(STUB)};
     const t = ${JSON.stringify(target)};
+    const out = (fn, v) => console.log(fn + ' ' + JSON.stringify(v));
     try {
       const m = await import(t);
-      const keys = Object.keys(m).sort();
-      console.log('EVAL_OK ' + JSON.stringify({
-        exports: keys,
+      const info = {
+        exports: Object.keys(m).sort(),
         hasDefault: !!m.default,
         defaultKeys: m.default && typeof m.default === 'object' ? Object.keys(m.default).sort() : [],
-      }));
+      };
+      ${exercise ? `
+      try {
+        const r = await m.default.open({});
+        // Let deferred work inside open() (setTimeout chains, render passes) run.
+        await new Promise((res) => setTimeout(res, 50));
+        out('EXERCISE_OK', { returned: typeof r });
+      } catch (e) {
+        out('EXERCISE_FAIL', (e && e.constructor ? e.constructor.name : 'Error') + ': ' + (e && e.message));
+      }` : ''}
+      out('EVAL_OK', info);
     } catch (e) {
-      console.log('EVAL_FAIL ' + (e && e.constructor ? e.constructor.name : 'Error') + ': ' + (e && e.message));
+      out('EVAL_FAIL', (e && e.constructor ? e.constructor.name : 'Error') + ': ' + (e && e.message));
     }
     process.exit(0);
   `;
   const out = execFileSync(process.execPath, ['--input-type=module', '-e', script], {
-    encoding: 'utf8', timeout: 60000,
+    encoding: 'utf8', timeout: 120000,
   });
+  const exFail = out.match(/^EXERCISE_FAIL (.*)$/m);
+  if (exFail) return { ok: false, error: `open() threw: ${exFail[1]}` };
   const ok = out.match(/^EVAL_OK (.*)$/m);
   const bad = out.match(/^EVAL_FAIL (.*)$/m);
   if (bad) return { ok: false, error: bad[1] };
@@ -92,6 +108,16 @@ check('regression: cookbook.js does not depend on an unbound esc', () => {
   for (const fn of ['open', 'close', 'isVisible']) {
     assert.ok(r.defaultKeys.includes(fn), `default export missing ${fn}()`);
   }
+});
+
+// Second regression, same shape but runtime-only: the afa14a7 split dropped the
+// `_cookbookOpeningSpinners` declaration, so cookbook.js evaluated fine and then
+// threw "ReferenceError: _cookbookOpeningSpinners is not defined" from
+// _setCookbookOpening the moment the Cookbook was opened. Evaluating the module
+// is not enough; open() has to run.
+check('regression: opening the Cookbook runs without ReferenceError', () => {
+  const r = evalIsolated('cookbook.js', true);
+  assert.ok(r.ok, r.error || 'cookbook.js open() failed');
 });
 
 check('cookbook-shared.js esc escapes HTML', () => {

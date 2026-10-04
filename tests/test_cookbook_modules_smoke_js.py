@@ -37,4 +37,4 @@ def test_cookbook_modules_smoke_js_passes():
     assert proc.returncode == 0
     ran = re.search(r"COOKBOOK_SMOKE_OK (\d+)", proc.stdout)
     assert ran, f"no sentinel in output:\n{proc.stdout}"
-    assert int(ran.group(1)) >= 14, f"only {ran.group(1)} checks ran:\n{proc.stdout}"
+    assert int(ran.group(1)) >= 15, f"only {ran.group(1)} checks ran:\n{proc.stdout}"
