@@ -50,7 +50,7 @@ docker run --rm --entrypoint /bin/bash -v "$PWD":/app -w /app ulises-ulises:late
 
 ## i18n
 See [MULTILANG.md](MULTILANG.md) for the multilanguage system. Current state:
-73 namespaces, 1470 keys, `en` and `es` in lockstep (enforced by
+73 namespaces, 1571 keys, `en` and `es` in lockstep (enforced by
 `tests/test_locale_files.py`).
 
 `tests/test_i18n_html_coverage.py` is the gate that matters:
@@ -79,10 +79,25 @@ files are clean. All relative import specifiers resolve; 783 named imports
 resolve to real exports.
 
 ### Known Issues
-- **Untranslated strings (i18n debt)** — no test covers strings used without a
-  key. Roughly 140 JS strings remain plus 82 `data-i18n`-less nodes in
-  `static/index.html`. Largest remaining: `slashCommands.js` (~150, mostly the
-  78 tour steps), then `admin.js`, `calendar.js`, `sessions.js` (~26 each).
+- **Untranslated strings (i18n debt)** — no test covers strings used WITHOUT a
+  key, so nothing in CI catches them. A broad sweep of `static/js` for literals
+  assigned to `textContent` / `innerHTML` / `placeholder` / `title`, to dialog
+  and toast helpers, and to `label:` / `title:` fields counts **672 distinct
+  values across 840 occurrences in 50 files**. That figure includes false
+  positives — SVG markup and class names match the same shapes — so treat it as
+  a ceiling, not a tally. Largest real offenders: `cookbook-diagnosis-core.js`,
+  `emailLibrary.js`, `chat.js`, `settings.js`, `cookbookRunning.js`, `tasks.js`.
+
+  Two traps in this work, both of which cost real time:
+  - A literal with an embedded English fragment inside a template expression
+    (a ternary branch, a concatenated fragment) does not match a naive
+    literal scan. Six strings that begin with a lowercase letter were missed
+    until a second pass.
+  - Display text parsed back out of a display string is not localisable.
+    `admin.js` and `settings.js` both derived a token-scope name by stripping
+    an English suffix off a label; translating the label would have silently
+    shown the whole label. `tests/token_scope_labels.test.mjs` guards it.
+
 - **No browser-level test.** Everything above is static analysis or headless
   node. Three real runtime bugs (`esc`, `_cookbookOpeningSpinners`,
   `allowNetwork`) shipped because no check evaluated the modules in a browser.
@@ -97,6 +112,10 @@ resolve to real exports.
 - **Env var rename.** Commit `d13276a` renamed `ODYSSEUS_*` → `ULISES_*`.
   `setup.py` now accepts both, but a pre-rename `.env` silently configured
   nothing before that. Only the admin vars have a fallback.
+- **Two signing identities.** The 1142 pre-existing commits are signed with SSH
+  key `B5690EEEBB952194`; commits since `9cbc6af` use GPG `E791C5B7A60B5A80`.
+  There is no `allowedSignersFile`, so the older ones verify as `E` (unchecked)
+  rather than `G`. Tag `pre-gpg-sign-20261004` points at the pre-rewrite HEAD.
 
 ### Completed
 - 12 commits fixing runtime bugs, each with a regression test: `/login` 500
