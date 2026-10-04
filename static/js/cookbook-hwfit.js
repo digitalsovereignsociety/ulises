@@ -6,6 +6,7 @@
 import {
   _envState,
   _persistEnvState,
+  ALLOW_NETWORK_SCAN,
   esc,
   modelLogo,
   _detectBackend,
@@ -587,7 +588,7 @@ export async function _hwfitFetch(fresh = false) {
     }
     _hwfitRenderList(list, _applyEngineFilter(_cached.models));
   } else {
-    if (!allowNetwork) {
+    if (!ALLOW_NETWORK_SCAN) {
       _hwfitCache = null;
       _hwfitRenderHw(hw, null);
       const loadingDiv = document.createElement('div');

@@ -12,6 +12,7 @@ import { modelColor } from './chatRenderer.js';
 import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
 import { openCookbookDependencies } from './cookbook-diagnosis.js';
 import { _hwfitCache } from './cookbook-hwfit.js';
+import { ALLOW_NETWORK_SCAN } from './cookbook-shared.js';
 
 // Shared state/functions injected by init()
 let _envState;
@@ -3695,7 +3696,7 @@ export async function _fetchCachedModels() {
       _renderCachedModelsData(list, cached, host);
       return;
     }
-    if (!allowNetwork) {
+    if (!ALLOW_NETWORK_SCAN) {
       _dlWp.destroy();
       list.innerHTML = '<div class="hwfit-loading" style="flex-direction:column;gap:8px;text-align:center;"><div>No cached model scan yet</div><div style="font-size:11px;opacity:0.55;max-width:420px;line-height:1.4;">Check this server\'s model cache.</div><button type="button" class="hwfit-gpu-btn serve-empty-scan-btn" style="height:26px;padding:3px 10px;">Scan</button></div>';
       list.querySelector('.serve-empty-scan-btn')?.addEventListener('click', () => {

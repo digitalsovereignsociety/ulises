@@ -273,3 +273,24 @@ export function _serverEntryHtml(s, i, defaultServer, forceRemote, isNew) {
   html += `</div>`;
   return html;
 }
+
+// ── Cookbook auto-scan gate ──
+//
+// ALLOW_NETWORK_SCAN gates whether Cookbook may hit the network on its own
+// instead of showing an empty state with a manual "Scan" button.
+//
+// The gate was introduced in e857807 ("Add cookbook empty scan buttons") as a
+// bare `allowNetwork` identifier in cookbook-hwfit.js and cookbookServe.js with
+// no definition anywhere in the tree, so both call sites have thrown
+// "ReferenceError: allowNetwork is not defined" ever since — which aborts
+// open() and leaves the Cookbook unusable.
+//
+// The scans it guards are same-origin calls to this app's own backend
+// (/api/model/cached, the hardware probe), so there is no meaningful
+// "network not allowed" condition here: if the page loaded, the backend is
+// reachable. Auto-scan is therefore the correct default, and that is also the
+// behaviour that predated the empty-state buttons.
+//
+// The empty-state branches are kept so a genuine offline/degraded mode can
+// drive this later; change it here and both call sites follow.
+export const ALLOW_NETWORK_SCAN = true;

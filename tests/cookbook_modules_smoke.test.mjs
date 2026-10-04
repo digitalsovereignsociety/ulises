@@ -24,6 +24,18 @@ const ROOT = path.resolve(import.meta.dirname, '..');
 const JS = path.join(ROOT, 'static/js');
 const STUB = pathToFileURL(path.join(ROOT, 'tests/helpers/dom_stub.mjs')).href;
 
+const MODULES = [
+  'cookbook-shared.js',
+  'cookbook-diagnosis-core.js',
+  'cookbook-diagnosis.js',
+  'cookbookRunning.js',
+  'cookbookDownload.js',
+  'cookbookServe.js',
+  'cookbook-hwfit.js',
+  'cookbook-deps-recipes.js',
+  'cookbook.js',
+];
+
 const ran = [];
 const check = (name, fn) => { ran.push(name); return test(name, fn); };
 
@@ -44,6 +56,16 @@ function evalIsolated(relPath, exercise) {
     import ${JSON.stringify(STUB)};
     const t = ${JSON.stringify(target)};
     const out = (fn, v) => console.log(fn + ' ' + JSON.stringify(v));
+    // Unhandled rejections are the third way these bugs hide. open() kicks off
+    // detached async work (hardware scan, model list) whose rejections do NOT
+    // propagate back to the caller, so a ReferenceError deep in _hwfitFetch
+    // leaves open() resolving cleanly while the browser logs
+    // "Uncaught (in promise) ReferenceError". Capture them explicitly.
+    const unhandled = [];
+    process.on('unhandledRejection', (reason) => {
+      const name = reason && reason.constructor ? reason.constructor.name : 'Error';
+      unhandled.push(name + ': ' + (reason && reason.message));
+    });
     try {
       const m = await import(t);
       const info = {
@@ -54,12 +76,15 @@ function evalIsolated(relPath, exercise) {
       ${exercise ? `
       try {
         const r = await m.default.open({});
-        // Let deferred work inside open() (setTimeout chains, render passes) run.
+        // Let deferred work inside open() (setTimeout chains, render passes)
+        // run, then give any resulting rejection a turn to be reported.
         await new Promise((res) => setTimeout(res, 50));
+        await new Promise((res) => setImmediate(res));
         out('EXERCISE_OK', { returned: typeof r });
       } catch (e) {
         out('EXERCISE_FAIL', (e && e.constructor ? e.constructor.name : 'Error') + ': ' + (e && e.message));
       }` : ''}
+      if (unhandled.length) out('UNHANDLED', unhandled);
       out('EVAL_OK', info);
     } catch (e) {
       out('EVAL_FAIL', (e && e.constructor ? e.constructor.name : 'Error') + ': ' + (e && e.message));
@@ -71,6 +96,10 @@ function evalIsolated(relPath, exercise) {
   });
   const exFail = out.match(/^EXERCISE_FAIL (.*)$/m);
   if (exFail) return { ok: false, error: `open() threw: ${exFail[1]}` };
+  const unhandled = out.match(/^UNHANDLED (\[.*\])$/m);
+  if (unhandled) {
+    return { ok: false, error: `unhandled rejection during open(): ${unhandled[1]}` };
+  }
   const ok = out.match(/^EVAL_OK (.*)$/m);
   const bad = out.match(/^EVAL_FAIL (.*)$/m);
   if (bad) return { ok: false, error: bad[1] };
@@ -78,17 +107,64 @@ function evalIsolated(relPath, exercise) {
   return { ok: true, ...JSON.parse(ok[1]) };
 }
 
-const MODULES = [
-  'cookbook-shared.js',
-  'cookbook-diagnosis-core.js',
-  'cookbook-diagnosis.js',
-  'cookbookRunning.js',
-  'cookbookDownload.js',
-  'cookbookServe.js',
-  'cookbook-hwfit.js',
-  'cookbook-deps-recipes.js',
-  'cookbook.js',
-];
+// Invoke every exported function in a fresh registry and fail on ReferenceError
+// only.
+//
+// ReferenceError from a plain call means exactly one thing: an identifier that
+// is read but never bound. Other throw types are expected here — these
+// functions touch real network, storage and DOM state that the stub cannot
+// fully model — so they are reported but not failed. This is what caught
+// `allowNetwork`, which open() never reached under the stub and therefore
+// slipped past the open() regression test above.
+function probeCalls(relPath) {
+  const target = pathToFileURL(path.join(JS, relPath)).href;
+  const script = `
+    import ${JSON.stringify(STUB)};
+    const m = await import(${JSON.stringify(target)});
+    const results = [];
+    for (const [name, value] of Object.entries(m)) {
+      if (typeof value !== 'function') continue;
+      if (/^(init|default|render|register|install|apply|bind|setup)/i.test(name) &&
+          !/^(initDiagnosisCore)$/.test(name)) continue;
+      let outcome = 'ok';
+      try {
+        // Functions needing arguments throw TypeError or bail early; that is
+        // fine. We only care about ReferenceError.
+        const r = value();
+        if (r && typeof r.then === 'function') {
+          await Promise.race([r.catch((e) => { throw e; }), new Promise((res) => setTimeout(res, 30))]);
+        }
+      } catch (e) {
+        const kind = e && e.constructor ? e.constructor.name : 'Error';
+        outcome = kind === 'ReferenceError' ? 'REFERENCE_ERROR' : kind;
+        if (outcome === 'REFERENCE_ERROR') outcome += ' -> ' + e.message;
+      }
+      results.push([name, outcome]);
+    }
+    console.log('CALLS ' + JSON.stringify(results));
+    process.exit(0);
+  `;
+  const out = execFileSync(process.execPath, ['--input-type=module', '-e', script], {
+    encoding: 'utf8', timeout: 180000,
+  });
+  const m = out.match(/^CALLS (\[.*\])$/m);
+  assert.ok(m, `no CALLS marker in child output:\n${out}`);
+  return JSON.parse(m[1]);
+}
+
+check('no exported function throws ReferenceError when invoked', () => {
+  const offenders = [];
+  for (const rel of MODULES) {
+    for (const [name, outcome] of probeCalls(rel)) {
+      if (String(outcome).startsWith('REFERENCE_ERROR')) {
+        offenders.push(`${rel}: ${name}() -> ${outcome}`);
+      }
+    }
+  }
+  assert.deepEqual(offenders, [],
+    `unbound identifier(s) reached at runtime:\n  ${offenders.join('\n  ')}`);
+});
+
 
 for (const rel of MODULES) {
   check(`${rel} evaluates in a fresh module registry`, () => {
