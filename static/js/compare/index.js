@@ -1262,23 +1262,33 @@ function _setupEvalPicker() {
       menu.innerHTML = '<div class="cmp-eval-empty">No prompts for this type</div>';
       return;
     }
-    // Group by sub-category in original order
+    // Group by sub-category in original order. Grouping keys on the RAW `sub`
+    // string; only the rendered heading is localised. Keying on the translated
+    // text would make the grouping depend on the active locale.
     const order = [];
     const groups = {};
     for (const p of list) {
+      // 'Other' is the grouping key for an entry with no sub; it doubles as the
+      // locale lookup, hence sub_other.
       const sub = p.sub || 'Other';
       if (!groups[sub]) { groups[sub] = []; order.push(sub); }
       groups[sub].push(p);
     }
     let html = '';
     for (const sub of order) {
-      html += '<div class="cmp-eval-group-label">' + escapeHtml(sub) + '</div>';
+      // Any entry in the group carries the same subKey; an unknown or missing
+      // one falls back to the raw English name rather than to a raw i18n key.
+      const subKey = groups[sub][0] && groups[sub][0].subKey;
+      const subText = subKey ? t(subKey) : (sub === 'Other' ? t('compare.sub_other') : sub);
+      html += '<div class="cmp-eval-group-label">' + escapeHtml(subText) + '</div>';
       for (const p of groups[sub]) {
         const data = encodeURIComponent(p.prompt);
         const ans = p.answer ? ' data-answer="' + encodeURIComponent(p.answer) + '"' : '';
-        const checkMark = p.answer ? '<span class="cmp-eval-item-tick" title="Has expected answer">✓</span>' : '';
+        const checkMark = p.answer ? '<span class="cmp-eval-item-tick" title="' + escapeHtml(t('compare.has_expected_answer')) + '">✓</span>' : '';
+        // `p.prompt` above is the benchmark payload and is never localised.
+        const labelText = p.labelKey ? t(p.labelKey) : p.label;
         html += '<button type="button" class="cmp-eval-item" data-prompt="' + data + '"' + ans + '>'
-          + escapeHtml(p.label) + checkMark + '</button>';
+          + escapeHtml(labelText) + checkMark + '</button>';
       }
     }
     menu.innerHTML = html;
