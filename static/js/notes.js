@@ -4725,11 +4725,11 @@ function _editNote(id) {
 
 async function _deleteNote(id) {
   const ok = uiModule?.styledConfirm
-    ? await uiModule.styledConfirm('Delete this note?', { confirmText: 'Delete', danger: true })
-    : confirm('Delete this note?');
+    ? await uiModule.styledConfirm(t('notes.delete_confirm'), { confirmText: t('common.delete'), danger: true })
+    : confirm(t('notes.delete_confirm'));
   if (!ok) return;
   try { await _deleteNoteApi(id); await _fetchNotes(); _renderNotes(); uiModule.showToast(t('common.deleted')); }
-  catch (err) { uiModule.showError(t('notes.delete_failed', { msg: err.message })); }
+  catch (err) { uiModule.showError(t('notes.delete_failed_format', { msg: err.message })); }
 }
 
 // ────────────────────────────────────────────────────────────────────

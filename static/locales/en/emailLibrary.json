@@ -1,0 +1,24 @@
+{
+  "emailLibrary": {
+    "emailCopied": "Email copied",
+    "copyFailed": "Could not copy",
+    "movedToTrash": "Moved to trash",
+    "failedToDeleteEmail": "Could not delete the email",
+    "failedToUpdateEmails": "{{count}} email(s) could not be marked as read",
+    "selectEmailsFirst": "Select at least one email first",
+    "noSenderAddress": "No sender address — set one in your email account",
+    "noSenderAddressAvailable": "No sender address is available for this account",
+    "alreadyInContacts": "That contact already exists",
+    "savedToContacts": "Saved to contacts",
+    "failedToSaveContact": "Could not save the contact",
+    "failedToSummarize": "Could not summarize the email",
+    "failedToCreateReminder": "Could not create the reminder",
+    "reminderSet": "Reminder set for {{fmt}}",
+    "replyNoteSaved": "Reply note saved",
+    "deletedReminders": "Cleared {{count}} reminder(s)",
+    "failedToClearReminders": "Could not clear the reminders",
+    "couldNotOpen": "Could not open {{name}}",
+    "couldNotOpenWithMsg": "Could not open {{name}}: {{msg}}",
+    "panelCouldNotMount": "The message panel could not be opened"
+  }
+}

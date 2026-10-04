@@ -1,0 +1,30 @@
+{
+  "notes": {
+    "archived": "Archived",
+    "archived_count": "Archived {{count}} note(s)",
+    "archive_failed": "Could not archive the note",
+    "unarchive_failed": "Could not unarchive the note",
+    "deleted_count": "Deleted {{count}} note(s)",
+    "delete_failed": "Could not delete the note",
+    "undo": "Undo",
+    "undo_failed": "Could not undo",
+    "pin_failed": "Could not pin the note",
+    "update_color_failed": "Could not change the colour",
+    "save_failed": "Could not save: {{msg}}",
+    "add_item_failed": "Could not add the item",
+    "remove_item_failed": "Could not remove the item",
+    "image_upload_failed": "Could not upload the image",
+    "save_drawing_failed": "Could not save the drawing",
+    "restored_unsaved_note": "Your unsaved changes were restored",
+    "restored_unsaved_changes": "Your unsaved changes were restored",
+    "no_default_chat_model": "Set a default chat model first",
+    "create_agent_session_failed": "Could not create the agent session",
+    "agent_failed": "The agent failed: {{msg}}",
+    "agent_working_background": "The agent is working on this in the background",
+    "agent_working_item": "The agent is working on this item",
+    "nothing_to_solve_note_empty": "That note has no text to work with",
+    "nothing_to_solve_item_empty": "That item has no text to work with",
+    "delete_failed_format": "Could not delete the note: {{msg}}",
+    "delete_confirm": "Delete this note?"
+  }
+}

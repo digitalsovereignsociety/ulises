@@ -6,6 +6,27 @@
     "running": "ejecutando",
     "done": "completado",
     "no_skills_to_audit": "No hay skills para auditar.",
-    "tidy_reason": "Nada que limpiar"
+    "tidy_reason": "Nada que limpiar",
+    "enabled": "Activado",
+    "disabled": "Desactivado",
+    "auto_extract_enabled": "Extracción automática: activada",
+    "auto_extract_disabled": "Extracción automática: desactivada",
+    "auto_approve_enabled": "Aprobación automática: activada",
+    "auto_approve_disabled": "Aprobación automática: desactivada",
+    "confidence_all": "Todas las skills",
+    "confidence_format": "Solo skills con más del {{pct}} % de confianza",
+    "no_injected": "No se ha inyectado ninguna skill",
+    "max_injected_format": "{{count}} skill(s) inyectadas (en el límite)",
+    "approved": "Skill aprobada",
+    "moved_to_draft": "Devuelta a borrador",
+    "deleted": "Skill eliminada",
+    "deleted_format": "Se eliminaron {{count}} skill(s)",
+    "no_nonpassing": "No hay skills seleccionadas que suspendan sus pruebas",
+    "deleted_nonpassing_format": "Se eliminaron {{count}} skill(s) que suspendían",
+    "published_format": "Se publicaron {{count}} skill(s)",
+    "imported_format": "Se importó «{{name}}» ({{files}} archivo(s))",
+    "added_draft": "Añadida como borrador",
+    "builtin_updated": "Skill integrada actualizada",
+    "builtin_reverted": "Skill integrada restaurada a su versión original"
   }
 }

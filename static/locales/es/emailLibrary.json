@@ -1,0 +1,24 @@
+{
+  "emailLibrary": {
+    "emailCopied": "Correo copiado",
+    "copyFailed": "No se pudo copiar",
+    "movedToTrash": "Movido a la papelera",
+    "failedToDeleteEmail": "No se pudo eliminar el correo",
+    "failedToUpdateEmails": "No se pudieron marcar {{count}} correo(s) como leídos",
+    "selectEmailsFirst": "Selecciona primero al menos un correo",
+    "noSenderAddress": "Sin dirección de remitente: configura una en tu cuenta de correo",
+    "noSenderAddressAvailable": "No hay dirección de remitente disponible para esta cuenta",
+    "alreadyInContacts": "Ese contacto ya existe",
+    "savedToContacts": "Guardado en contactos",
+    "failedToSaveContact": "No se pudo guardar el contacto",
+    "failedToSummarize": "No se pudo resumir el correo",
+    "failedToCreateReminder": "No se pudo crear el recordatorio",
+    "reminderSet": "Recordatorio puesto para {{fmt}}",
+    "replyNoteSaved": "Nota de respuesta guardada",
+    "deletedReminders": "Se borraron {{count}} recordatorio(s)",
+    "failedToClearReminders": "No se pudieron borrar los recordatorios",
+    "couldNotOpen": "No se pudo abrir {{name}}",
+    "couldNotOpenWithMsg": "No se pudo abrir {{name}}: {{msg}}",
+    "panelCouldNotMount": "No se pudo abrir el panel de mensajes"
+  }
+}

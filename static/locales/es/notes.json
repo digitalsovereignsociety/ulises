@@ -1,0 +1,30 @@
+{
+  "notes": {
+    "archived": "Archivado",
+    "archived_count": "Se archivaron {{count}} nota(s)",
+    "archive_failed": "No se pudo archivar la nota",
+    "unarchive_failed": "No se pudo sacar la nota del archivo",
+    "deleted_count": "Se eliminaron {{count}} nota(s)",
+    "delete_failed": "No se pudo eliminar la nota",
+    "undo": "Deshacer",
+    "undo_failed": "No se pudo deshacer",
+    "pin_failed": "No se pudo fijar la nota",
+    "update_color_failed": "No se pudo cambiar el color",
+    "save_failed": "No se pudo guardar: {{msg}}",
+    "add_item_failed": "No se pudo añadir el elemento",
+    "remove_item_failed": "No se pudo quitar el elemento",
+    "image_upload_failed": "No se pudo subir la imagen",
+    "save_drawing_failed": "No se pudo guardar el dibujo",
+    "restored_unsaved_note": "Se restauraron tus cambios sin guardar",
+    "restored_unsaved_changes": "Se restauraron tus cambios sin guardar",
+    "no_default_chat_model": "Configura primero un modelo de chat por defecto",
+    "create_agent_session_failed": "No se pudo crear la sesión del agente",
+    "agent_failed": "El agente falló: {{msg}}",
+    "agent_working_background": "El agente está trabajando en esto en segundo plano",
+    "agent_working_item": "El agente está trabajando en este elemento",
+    "nothing_to_solve_note_empty": "Esa nota no tiene texto con el que trabajar",
+    "nothing_to_solve_item_empty": "Ese elemento no tiene texto con el que trabajar",
+    "delete_failed_format": "No se pudo eliminar la nota: {{msg}}",
+    "delete_confirm": "¿Eliminar esta nota?"
+  }
+}
