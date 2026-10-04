@@ -21,6 +21,17 @@
     "mode_parallel": "Mode: Parallel",
     "mode_sequential": "Mode: Sequential",
     "mode_save_on": "Mode: Save on",
-    "mode_save_off": "Mode: Save off"
+    "mode_save_off": "Mode: Save off",
+    "fastest": " · Fastest",
+    "no_votes": "No {{mode}} votes yet. Run a comparison and vote!",
+    "clear_history": "Clear History",
+    "clear_all_confirm": "Clear all vote history?",
+    "clear": "Clear",
+    "mode_chat": "chat",
+    "mode_agent": "agent",
+    "mode_search": "search",
+    "mode_research": "research",
+    "tie": "Tie",
+    "scoreboard": "Scoreboard"
   }
 }

@@ -25,6 +25,7 @@
  * }}
  */
 import { state } from '../state.js';
+import { t } from '../../i18n.js';
 
 export function buildRightPanel({ controlsHTML, layerPanelHTML }) {
   const rightPanel = document.createElement('div');
@@ -162,7 +163,7 @@ export function buildRightPanel({ controlsHTML, layerPanelHTML }) {
   // cramped LAYER ROWS are about width, not height.)
   const panelResize = document.createElement('div');
   panelResize.className = 'ge-panel-resize';
-  panelResize.title = 'Drag to resize panel';
+  panelResize.title = t('editor.resize_panel');
   rightPanel.appendChild(panelResize);
   try {
     const savedW = parseInt(localStorage.getItem('ge-right-panel-width') || '', 10);

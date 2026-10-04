@@ -1,6 +1,7 @@
 {
   "search": {
     "query_required": "La consulta es obligatoria",
-    "unknown_provider": "Proveedor desconocido"
+    "unknown_provider": "Proveedor desconocido",
+    "no_results": "No se encontraron resultados"
   }
 }

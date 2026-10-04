@@ -1,0 +1,7 @@
+{
+  "modalManager": {
+    "restore": "Restaurar {{label}}",
+    "close": "Cerrar",
+    "minimize": "Minimizar"
+  }
+}

@@ -89,6 +89,8 @@
       "no_active_stream": "No active stream for this session",
       "image_gen_disabled": "Image generation is disabled by the administrator.",
       "tool_blocked": "Tool blocked by policy"
-    }
+    },
+    "response_ready": "Response ready in {{name}}",
+    "default_session": "session"
   }
 }

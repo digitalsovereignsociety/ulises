@@ -1,0 +1,6 @@
+{
+  "slashAutocomplete": {
+    "aria_label": "Comandos con barra",
+    "no_match": "Ningún comando coincide con <code>{{query}}</code>"
+  }
+}

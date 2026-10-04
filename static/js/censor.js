@@ -5,6 +5,7 @@
  * and blurs them. Click to reveal individual items.
  */
 
+import { t } from './i18n.js';
 let _enabled = true;
 let _observer = null;
 const PREF_KEY = 'ulises-sensitive-blur';
@@ -40,6 +41,23 @@ const PATTERNS = [
   // IP addresses with ports (internal networks)
   { re: /\b(?:10\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])|192\.168)\.\d{1,3}\.\d{1,3}(?::\d+)?\b/g, label: 'internal-ip' },
 ];
+
+// Category labels double as the dataset.type value, so they stay stable
+// identifiers; only the text shown to the user is translated.
+const LABEL_KEYS = {
+  'email': 'censor.label_email',
+  'api-key': 'censor.label_api_key',
+  'token': 'censor.label_token',
+  'credential': 'censor.label_credential',
+  'private-key': 'censor.label_private_key',
+  'hash': 'censor.label_hash',
+  'jwt': 'censor.label_jwt',
+  'internal-ip': 'censor.label_internal_ip',
+};
+function _labelText(label) {
+  const key = LABEL_KEYS[label];
+  return key ? t(key) : label;
+}
 
 export function init() {
   // Load enabled state from feature flags
@@ -177,7 +195,7 @@ function _processElement(el) {
       const span = document.createElement('span');
       span.className = 'censored-item';
       span.dataset.type = match.label;
-      span.title = 'Click to reveal ' + match.label;
+      span.title = t('censor.reveal', { label: _labelText(match.label) });
       span.textContent = match.text;
       frag.appendChild(span);
       lastIdx = match.end;
@@ -216,7 +234,7 @@ function _contextCensor(el) {
           const span = document.createElement('span');
           span.className = 'censored-item';
           span.dataset.type = 'credential';
-          span.title = 'Click to reveal credential';
+          span.title = t('censor.reveal_credential');
           span.textContent = sibling.textContent;
           sibling.parentNode.replaceChild(span, sibling);
           censored = true;
@@ -261,7 +279,7 @@ function _contextCensor(el) {
             const span = document.createElement('span');
             span.className = 'censored-item';
             span.dataset.type = 'credential';
-            span.title = 'Click to reveal credential';
+            span.title = t('censor.reveal_credential');
             span.textContent = child.textContent;
             child.parentNode.replaceChild(span, child);
             break;
@@ -300,7 +318,7 @@ function _censorValueInElement(el, value) {
     const span = document.createElement('span');
     span.className = 'censored-item';
     span.dataset.type = 'credential';
-    span.title = 'Click to reveal credential';
+    span.title = t('censor.reveal_credential');
     span.textContent = value;
     frag.appendChild(span);
     if (after) frag.appendChild(document.createTextNode(after));
@@ -324,7 +342,7 @@ function _censorAllText(el) {
     const span = document.createElement('span');
     span.className = 'censored-item';
     span.dataset.type = 'credential';
-    span.title = 'Click to reveal credential';
+    span.title = t('censor.reveal_credential');
     span.textContent = tn.textContent;
     tn.parentNode.replaceChild(span, tn);
   }

@@ -1,0 +1,7 @@
+{
+  "editor": {
+    "serve_in_cookbook": "+ Serve a model in Cookbook…",
+    "auto": "Auto",
+    "resize_panel": "Drag to resize panel"
+  }
+}

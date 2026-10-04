@@ -89,6 +89,8 @@
       "no_active_stream": "No hay transmisión activa para esta sesión",
       "image_gen_disabled": "La generación de imágenes está desactivada por el administrador.",
       "tool_blocked": "Herramienta bloqueada por la política"
-    }
+    },
+    "response_ready": "Respuesta lista en {{name}}",
+    "default_session": "sesión"
   }
 }

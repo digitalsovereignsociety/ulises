@@ -133,7 +133,7 @@ function _ensurePopup(textarea) {
   el.id = POPUP_ID;
   el.className = 'slash-autocomplete-popup';
   el.setAttribute('role', 'listbox');
-  el.setAttribute('aria-label', 'Slash commands');
+  el.setAttribute('aria-label', t('slashAutocomplete.aria_label'));
   document.body.appendChild(el);
   return el;
 }
@@ -158,7 +158,7 @@ function _position(popup, textarea) {
 
 function _render(popup, items, selectedIdx, query) {
   if (!items.length) {
-    popup.innerHTML = `<div class="slash-ac-empty">No commands match <code>${_esc(query)}</code></div>`;
+    popup.innerHTML = `<div class="slash-ac-empty">${t('slashAutocomplete.no_match', { query: _esc(query) })}</div>`;
     return;
   }
   // Group by category for the headers

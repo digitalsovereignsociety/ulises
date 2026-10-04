@@ -21,6 +21,17 @@
     "mode_save_on": "Guardar: Sí",
     "mode_sequential": "Modo secuencial",
     "search_failed": "Error en la búsqueda: {{message}}",
-    "select_at_least_one": "Selecciona al menos un modelo"
+    "select_at_least_one": "Selecciona al menos un modelo",
+    "fastest": " · Más rápida",
+    "no_votes": "Aún no hay votos de {{mode}}. Ejecuta una comparación y vota!",
+    "clear_history": "Borrar historial",
+    "clear_all_confirm": "¿Borrar todo el historial de votos?",
+    "clear": "Borrar",
+    "mode_chat": "chat",
+    "mode_agent": "agente",
+    "mode_search": "búsqueda",
+    "mode_research": "investigación",
+    "tie": "Empate",
+    "scoreboard": "Clasificación"
   }
 }

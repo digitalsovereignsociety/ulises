@@ -4,6 +4,7 @@
 // their .value stays the source of truth, and we dispatch 'input'
 // events so existing listeners keep working.
 
+import { t } from './i18n.js';
 const LS_RECENT = 'ulises-recent-colors';
 const MAX_RECENT = 12;
 
@@ -261,7 +262,7 @@ function wireHandlers(p) {
   } else {
     eye.disabled = true;
     eye.style.opacity = '0.3';
-    eye.title = 'Eyedropper not supported in this browser';
+    eye.title = t('colorPicker.eyedropper_unsupported');
   }
 }
 

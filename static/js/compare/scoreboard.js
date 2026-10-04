@@ -1,5 +1,6 @@
 // compare/scoreboard.js — vote history display
 import Storage from '../storage.js';
+import { t } from '../i18n.js';
 import state from './state.js';
 import { VOTES_STORAGE_KEY } from './icons.js';
 import themeModule from '../theme.js';
@@ -71,6 +72,19 @@ export function showScoreboard() {
   }
 
   // Mode tabs
+// Vote modes are stored as stable ids ('chat', 'agent', 'search', 'research');
+// only the label shown in the sentence is translated.
+const MODE_KEYS = {
+  chat: 'compare.mode_chat',
+  agent: 'compare.mode_agent',
+  search: 'compare.mode_search',
+  research: 'compare.mode_research',
+};
+function _modeText(mode) {
+  const key = MODE_KEYS[mode];
+  return key ? t(key) : mode;
+}
+
   const modes = ['chat', 'agent', 'search', 'research'];
   const modeLabels = { chat: 'Chat', agent: 'Agent', search: 'Search', research: 'Research' };
   const tabBar = document.createElement('div');
@@ -121,7 +135,7 @@ export function showScoreboard() {
     if (sorted.length === 0) {
       const empty = document.createElement('p');
       empty.style.cssText = 'color:color-mix(in srgb, var(--fg) 50%, transparent);text-align:center;padding:24px 0;';
-      empty.textContent = 'No ' + activeMode + ' votes yet. Run a comparison and vote!';
+      empty.textContent = t('compare.no_votes', { mode: _modeText(activeMode) });
       wrap.appendChild(empty);
     } else {
       const table = document.createElement('table');
@@ -178,7 +192,7 @@ export function showScoreboard() {
   // Clear history button
   const clearBtn = document.createElement('button');
   clearBtn.className = 'scoreboard-clear-btn';
-  clearBtn.textContent = 'Clear History';
+  clearBtn.textContent = t('compare.clear_history');
   clearBtn.style.cssText = 'display:block;margin:16px 0 4px auto;padding:4px 12px;background:none;border:1px solid var(--border);color:var(--fg);border-radius:4px;cursor:pointer;font-size:11px;opacity:0.4;transition:opacity 0.15s;';
   clearBtn.addEventListener('mouseenter', () => { clearBtn.style.opacity = '1'; });
   clearBtn.addEventListener('mouseleave', () => { clearBtn.style.opacity = '0.6'; });
@@ -188,9 +202,9 @@ export function showScoreboard() {
     confirmRow.style.cssText = 'display:flex;gap:8px;justify-content:center;align-items:center;margin-top:8px;padding:8px 12px;border:1px solid color-mix(in srgb, var(--red) 40%, var(--border));border-radius:6px;background:color-mix(in srgb, var(--red) 5%, transparent);';
     const confirmLabel = document.createElement('span');
     confirmLabel.style.cssText = 'font-size:12px;opacity:0.7;';
-    confirmLabel.textContent = 'Clear all vote history?';
+    confirmLabel.textContent = t('compare.clear_all_confirm');
     const yesBtn = document.createElement('button');
-    yesBtn.textContent = 'Clear';
+    yesBtn.textContent = t('compare.clear');
     yesBtn.style.cssText = 'padding:4px 12px;background:var(--red);color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:12px;font-weight:600;';
     yesBtn.addEventListener('click', () => {
       Storage.setJSON(VOTES_STORAGE_KEY, []);
@@ -198,7 +212,7 @@ export function showScoreboard() {
       showScoreboard();
     });
     const noBtn = document.createElement('button');
-    noBtn.textContent = 'Cancel';
+    noBtn.textContent = t('common.cancel');
     noBtn.className = 'cmp-btn-secondary';
     noBtn.style.cssText = 'padding:4px 12px;border-radius:4px;font-size:12px;';
     noBtn.addEventListener('click', () => confirmRow.remove());

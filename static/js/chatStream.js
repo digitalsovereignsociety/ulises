@@ -3,6 +3,7 @@
 // Handles: ui_control events, background stream management
 
 import uiModule from './ui.js';
+import { t } from './i18n.js';
 import Storage from './storage.js';
 import themeModule from './theme.js';
 import markdownModule from './markdown.js';
@@ -232,7 +233,7 @@ export function insertStreamDoneToast(sessionId, query) {
   div.className = 'msg msg-system stream-done-toast';
   div.innerHTML = '<div class="body">'
     + '<span class="stream-done-indicator">●</span>'
-    + '<span>Response ready in <strong>' + (name || 'session').replace(/</g, '&lt;') + '</strong>'
+    + '<span>' + t('chat.response_ready', { name: (name || t('chat.default_session')).replace(/</g, '&lt;') }) + '</strong></span>'
     + (preview ? ' &mdash; ' + preview.replace(/</g, '&lt;') : '')
     + '</span>'
     + '</div>';

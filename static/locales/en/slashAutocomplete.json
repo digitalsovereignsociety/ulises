@@ -1,0 +1,6 @@
+{
+  "slashAutocomplete": {
+    "aria_label": "Slash commands",
+    "no_match": "No commands match <code>{{query}}</code>"
+  }
+}
