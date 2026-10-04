@@ -821,12 +821,26 @@ app.include_router(setup_i18n_routes())
 
 # ========= ROUTES (kept in app.py) =========
 
-def _serve_html_with_nonce(request: Request, file_path: str) -> HTMLResponse:
-    """Read an HTML file and inject the CSP nonce into inline <script> tags."""
+def _serve_html_with_nonce(
+    request: Request,
+    file_path: str,
+    transform=None,
+) -> HTMLResponse:
+    """Read an HTML file and inject the CSP nonce into inline <script> tags.
+
+    ``transform`` is an optional ``(html, nonce) -> html`` hook applied after
+    nonce substitution and *before* the response is built. It has to run here
+    rather than on ``response.body`` afterwards: HTMLResponse computes its
+    ``content-length`` header at construction time, so mutating ``.body``
+    afterwards leaves the header describing a different document and the
+    client aborts the read.
+    """
     with open(file_path, "r", encoding="utf-8") as f:
         html = f.read()
     nonce = getattr(request.state, "csp_nonce", "")
     html = html.replace("{{CSP_NONCE}}", nonce)
+    if transform is not None:
+        html = transform(html, nonce)
     return HTMLResponse(html)
 
 
@@ -931,16 +945,19 @@ async def serve_backgrounds(request: Request):
 async def serve_login(request: Request):
     if not AUTH_ENABLED:
         return RedirectResponse(url="/", status_code=302)
-    resp = _serve_html_with_nonce(request, abs_join(BASE_DIR, "static/login.html"))
-    nonce = getattr(request.state, "csp_nonce", "")
-    # Locale preloading is a progressive enhancement — never let it break login.
-    try:
-        html = _inject_preloaded_locale(resp.body.decode("utf-8"), request, nonce)
-    except Exception:
-        logger.debug("i18n preload injection skipped", exc_info=True)
-    else:
-        resp.body = html.encode("utf-8")
-    return resp
+
+    def inject(html: str, nonce: str) -> str:
+        # Locale preloading is a progressive enhancement — never let it break
+        # the login page.
+        try:
+            return _inject_preloaded_locale(html, request, nonce)
+        except Exception:
+            logger.debug("i18n preload injection skipped", exc_info=True)
+            return html
+
+    return _serve_html_with_nonce(
+        request, abs_join(BASE_DIR, "static/login.html"), transform=inject
+    )
 
 @app.get("/api/version")
 async def get_version():
