@@ -10,8 +10,8 @@ Python 3.10+ · FastAPI · SQLAlchemy 2.0+ (SQLite) · ChromaDB · vanilla ES6 m
 | `src/` | Business logic (LLM, RAG, search, tools, memory) |
 | `core/` | Shared abstractions (db, auth, middleware, models) |
 | `services/` | Subsystems (memory, search, research, TTS, STT, shell) |
-| `static/js/` | Frontend ES6 modules (~90 files, no build step) |
-| `tests/` | pytest tests (~600 files, asyncio_mode=auto) |
+| `static/js/` | Frontend ES6 modules (155 files incl. subdirs, no build step) |
+| `tests/` | pytest tests (~670 files, asyncio_mode=auto) |
 
 ## Conventions
 - **snake_case** for Python identifiers, **kebab-case** for URL paths
@@ -25,23 +25,96 @@ Python 3.10+ · FastAPI · SQLAlchemy 2.0+ (SQLite) · ChromaDB · vanilla ES6 m
 python -m uvicorn app:app --host 127.0.0.1 --port 7000
 ```
 
+Docker (the container runs `setup.py` on boot, so admin credentials in `.env`
+must use the `ULISES_ADMIN_*` names — see Known Issues):
+
+```bash
+docker compose up -d --build      # http://127.0.0.1:7000
+```
+
+> The host `docker` group GID rarely matches the compose default (963). If the
+> socket mount misbehaves, put the real GID in `.env` as `DOCKER_GID=<gid>`.
+
 ## Test
 ```bash
 python -m pytest tests/ -v -x
 ```
 
+There is no local venv guaranteed to have the deps; running the suite in the
+compose image works and needs no extra image:
+
+```bash
+docker run --rm --entrypoint /bin/bash -v "$PWD":/app -w /app ulises-ulises:latest -c \
+  'pip install -q -r requirements-dev.txt && mkdir -p data && python -m pytest -q'
+```
+
 ## i18n
-See [MULTILANG.md](MULTILANG.md) for the multilanguage system.
+See [MULTILANG.md](MULTILANG.md) for the multilanguage system. Current state:
+73 namespaces, 1470 keys, `en` and `es` in lockstep (enforced by
+`tests/test_locale_files.py`).
+
+`tests/test_i18n_html_coverage.py` is the gate that matters:
+- every `data-i18n*` attribute in `static/*.html` must resolve in every locale
+- every `t()` / `tn()` key used in JS must resolve in every locale
+- the `{{vars}}` passed to `t()` must match the ones the locale string expects
+- keys carrying HTML (`data-i18n-html`) must keep balanced markup
+
+`tests/i18n_missing_keys_baseline.txt` is a **ratchet**: it is empty. A future
+`t()` key with no translation must either be added to `en`+`es` or recorded
+there; the suite fails on keys missing from the baseline, and fails again when a
+baseline entry becomes translated (the signal to delete the line).
+
+Not covered by any test: strings used **without** a key. Those are the remaining
+i18n debt.
 
 ## Work State
 
 ### Objective
 Get CI green across all test suites and Docker build for the Ulises project.
 
+### Status
+`pytest -q` → **4463 passed, 4 skipped, 0 failed** (was 61 failures at the
+start of this work). `python -m compileall` and `node --check` over all 156 JS
+files are clean. All relative import specifiers resolve; 783 named imports
+resolve to real exports.
+
 ### Known Issues
-- **CI test failures**: 61 failures after committed fixes (down from 93). Clusters around workspace confinement, web_fetch size caps, locale-loading edge cases. Most recent commits fixed Docker build and glob/grep escape handling; need a CI run to confirm current count.
+- **Untranslated strings (i18n debt)** — no test covers strings used without a
+  key. Roughly 140 JS strings remain plus 82 `data-i18n`-less nodes in
+  `static/index.html`. Largest remaining: `slashCommands.js` (~150, mostly the
+  78 tour steps), then `admin.js`, `calendar.js`, `sessions.js` (~26 each).
+- **No browser-level test.** Everything above is static analysis or headless
+  node. Three real runtime bugs (`esc`, `_cookbookOpeningSpinners`,
+  `allowNetwork`) shipped because no check evaluated the modules in a browser.
+  `tests/cookbook_modules_smoke.test.mjs` covers the cookbook graph, but the
+  SPA itself is unverified.
+- **Pre-existing import cycles** outside Cookbook: `admin → ui ↔ theme` and
+  `emailInbox ↔ emailLibrary`.
+- **`/backgrounds` is dead**: the route says "No auth required" but
+  `static/backgrounds.html` does not exist in the repo. Masked because auth
+  redirects to `/login` before the handler runs. Restore the page or drop the
+  route.
+- **Env var rename.** Commit `d13276a` renamed `ODYSSEUS_*` → `ULISES_*`.
+  `setup.py` now accepts both, but a pre-rename `.env` silently configured
+  nothing before that. Only the admin vars have a fallback.
 
 ### Completed
+- 12 commits fixing runtime bugs, each with a regression test: `/login` 500
+  (`_cached_translations` did not exist), `/login` sending `content-length` then
+  zero bytes (`response.body` mutated after construction), `esc` /
+  `_cookbookOpeningSpinners` / `allowNetwork` unbound identifiers that broke the
+  Cookbook, legacy `ODYSSEUS_ADMIN_*` ignored, and two interpolation bugs
+  (`admin.removed_offroom` raw `{{s}}`, `calendar.reminder_title` dropping
+  `{{summary}}`).
+- Removed the dead `initForegroundActivityHeartbeat` (posted to a
+  non-existent `/api/activity/heartbeat` every 15s) and the `content.js`
+  confusion documented in Known Issues.
+- Split the cookbook import graph: `cookbook-diagnosis-core.js` is a leaf,
+  which eliminated the last two Cookbook cycles. `t()` now humanises a missing
+  key instead of leaking `some.key` into the UI.
+- Service worker bumped to `v328` with the cookbook sub-modules precached.
+- **i18n: 655 missing `t()` keys → 0.** Ten batches across every namespace,
+   en+es in lockstep. The ratchet keeps it at zero.
 - `{{var}}` → `{var}` in both locale files for Python `.format()` compat.
 - Added `cookbook.diagnosis.*` (21 keys) + `invalid_remote_host` to both locales.
 - Fixed validator namespace (`validation.*` → `validators.*`).
