@@ -33,26 +33,29 @@
       "export": "Exportar",
       "import_desc": "Importa un archivo .txt, .md, .pdf, .csv, .log, .json, .py, .js o .html — la IA lo lee y sugiere posibles recuerdos que puedes aprobar.",
       "input_aria": "Texto del nuevo recuerdo",
-      "input_placeholder": "Agrega un recuerdo — ej. 'Prefiero respuestas concisas'",
-      "category_aria": "Categoría del recuerdo"
+      "input_placeholder": "<span class=\"k\">Agregar un recuerdo</span> — ej. 'Prefiero respuestas concisas'",
+      "category_aria": "Categoría del recuerdo",
+      "import_desc_html": "Importa un archivo <code>.txt</code>, <code>.md</code>, <code>.pdf</code>, <code>.csv</code>, <code>.log</code>, <code>.json</code>, <code>.py</code>, <code>.js</code> o <code>.html</code> — la IA lo lee y sugiere recuerdos que puedes aprobar."
     },
     "add_skill": {
       "heading": "Agregar skill",
       "import_desc": "Importa un skill desde GitHub o skills.sh (carpeta con SKILL.md y plantillas opcionales).",
       "url_aria": "URL de importación del skill",
-      "url_placeholder": "URL de importación — ej. enlace de GitHub tree a una carpeta de skill",
+      "url_placeholder": "<span class=\"k\">URL de importación</span> — ej. enlace de GitHub tree a una carpeta de skill",
       "import_title": "Importar skill desde URL",
       "import": "Importar",
       "create_desc": "O crea un skill manualmente — título, qué problema resuelve y un enfoque.",
       "title_aria": "Título del skill",
-      "title_placeholder": "Título — nombre corto, ej. \"build-vllm-wheel\"",
+      "title_placeholder": "<span class=\"k\">Título</span> — nombre corto, ej. \"build-vllm-wheel\"",
       "when_aria": "Cuándo usar este skill",
-      "when_placeholder": "Cuándo usarlo — ¿qué problema resuelve este skill?",
+      "when_placeholder": "<span class=\"k\">Cuándo usarlo</span> — ¿qué problema resuelve este skill?",
       "how_aria": "Cómo — el enfoque o los pasos",
-      "how_placeholder": "Cómo — el enfoque, pasos, comandos o reglas a seguir",
+      "how_placeholder": "<span class=\"k\">Cómo</span> — el enfoque, pasos, comandos o reglas a seguir",
       "tags_aria": "Etiquetas",
-      "tags_placeholder": "Etiquetas — separadas por comas, ej. python, build, vllm",
-      "submit": "Agregar skill"
+      "tags_placeholder": "<span class=\"k\">Etiquetas</span> — separadas por comas, ej. python, build, vllm",
+      "submit": "Agregar skill",
+      "input_placeholder": "<span class=\"k\">Agregar un recuerdo</span> — ej. 'Prefiero respuestas concisas'",
+      "skill_import_desc_html": "Importa un skill desde GitHub o <a href=\"https://skills.sh\" rel=\"noopener noreferrer\" target=\"_blank\">skills.sh</a> (carpeta con <code>SKILL.md</code> y plantillas opcionales)."
     },
     "skills": {
       "heading": "Skills",

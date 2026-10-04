@@ -4,6 +4,8 @@
 // fullscreened by dragging the title bar. Shown once globally — once the
 // user has dismissed it (or it auto-hides), it never returns.
 
+import { t } from './i18n.js';
+
 const HINT_SEEN_KEY = 'ulises-hint-drag-to-snap-seen';
 
 // Allow-list of modals where the snap/fullscreen hint makes sense.
@@ -88,8 +90,8 @@ function _show(modal) {
         <path class="th-cursor" d="M0 0 L0 9 L2.5 7 L4.5 10 L6 9 L4 6 L7 6 Z" fill="currentColor" />
       </svg>
     </div>
-    <div class="tour-hint-text"><b>Pro tip:</b> drag any window's title bar to a screen edge to snap it. Drag to the top for fullscreen.</div>
-    <button class="tour-hint-dismiss" type="button">Got it</button>
+    <div class="tour-hint-text">${t('tourHints.snap_pro_tip')}</div>
+    <button class="tour-hint-dismiss" type="button">${t('tourHints.dismiss')}</button>
   `;
   document.body.appendChild(pop);
 

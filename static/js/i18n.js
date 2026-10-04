@@ -61,6 +61,14 @@ function _applyTranslations(root) {
     const key = el.getAttribute('data-i18n')
     el.textContent = t(key)
   })
+  // For strings that legitimately contain markup (<code>, <a>, <b>, the
+  // <span class="k"> keyword prefix on the rich input hints). `data-i18n` uses
+  // textContent, which would flatten that markup, so these keys carry HTML and
+  // are applied as innerHTML. Never interpolate untrusted values into one.
+  root.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html')
+    el.innerHTML = t(key)
+  })
   root.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
     el.setAttribute('placeholder', t(el.getAttribute('data-i18n-placeholder')))
   })

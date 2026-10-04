@@ -7,7 +7,10 @@
 //   - Other static assets (images/fonts/libs): cache-first with bg refresh.
 //   - API / non-GET: never cached.
 // Bump CACHE_NAME whenever the precache list or SW logic changes.
-const CACHE_NAME = 'ulises-v327';
+// v328: added the cookbook sub-modules (only cookbook.js was listed, so the
+// split modules were never precached) and dropped the stale pre-rebrand
+// content.js that browsers kept serving out of the old cache.
+const CACHE_NAME = 'ulises-v328';
 
 // Core shell precached on install so repeat opens are instant without any
 // network wait. Keep this list in sync with the <script type="module"> tags
@@ -39,6 +42,17 @@ const PRECACHE = [
   '/static/js/chatStream.js',
   '/static/js/chat.js',
   '/static/js/cookbook.js',
+  '/static/js/cookbook-shared.js',
+  '/static/js/cookbook-diagnosis.js',
+  '/static/js/cookbook-diagnosis-core.js',
+  '/static/js/cookbookRunning.js',
+  '/static/js/cookbookDownload.js',
+  '/static/js/cookbookServe.js',
+  '/static/js/cookbook-hwfit.js',
+  '/static/js/cookbook-deps-recipes.js',
+  '/static/js/cookbookPorts.js',
+  '/static/js/cookbookProgressSignal.js',
+  '/static/js/cookbookSchedule.js',
   '/static/js/search-chat.js',
   '/static/js/compare/index.js',
   '/static/js/theme.js',

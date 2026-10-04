@@ -7,6 +7,7 @@
 <link href="/static/icons/icon-192.png" rel="icon" type="image/png"/>
 <link href="/static/manifest.json" rel="manifest"/>
 <meta content="#282c34" name="theme-color"/>
+<meta content="yes" name="mobile-web-app-capable"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
 <!-- Disable iOS / Android auto-linkifying of numbers (phone/date/address)
@@ -307,13 +308,11 @@
 <button class="theme-io-btn" data-i18n="common.export" data-i18n-title="memory.add.export_title" id="memory-export-btn" style="height:26px;font-size:12px;" title="Export all memories as JSON"><svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="vertical-align:-2px;margin-right:4px;" viewbox="0 0 24 24" width="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" x2="12" y1="3" y2="15"></line></svg>Export</button>
 <input accept=".txt,.md,.pdf,.csv,.log,.json,.py,.js,.html" hidden="" id="memory-import-file" type="file"/>
 </div>
-<p class="memory-desc doclib-desc" style="margin:4px 0 6px;">
-              Import a <code>.txt</code>, <code>.md</code>, <code>.pdf</code>, <code>.csv</code>, <code>.log</code>, <code>.json</code>, <code>.py</code>, <code>.js</code>, or <code>.html</code> file — the AI reads it and suggests candidate memories you can approve.
-            </p>
+<p class="memory-desc doclib-desc" data-i18n-html="memory.add.import_desc_html" style="margin:4px 0 6px;"></p>
 <div class="memory-add-row" style="margin-top:8px;">
 <div class="skill-ph-wrap" style="flex:1;min-width:0;">
 <input aria-label="New memory text" class="memory-add-input skill-hint-input" data-i18n-aria-label="memory.add.input_aria" id="new-memory-input" placeholder=" " type="text"/>
-<span class="skill-rich-ph"><span class="k">Add a memory</span> — e.g. 'I prefer concise replies' <svg aria-hidden="true" class="k" fill="none" height="12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="vertical-align:-2px;margin-left:4px;" viewbox="0 0 24 24" width="12"><polyline points="9 10 4 15 9 20"></polyline><path d="M20 4v7a4 4 0 0 1-4 4H4"></path></svg></span>
+<span class="skill-rich-ph" data-i18n-html="memory.add.input_placeholder"></span>
 </div>
 <select aria-label="Memory category" class="memory-edit-cat-select" data-i18n-aria-label="memory.add.category_aria" id="new-memory-category"></select>
 </div>
@@ -322,33 +321,33 @@
 <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:2px;">
 <h2 data-i18n="memory.add_skill.heading" style="margin:0;padding:0;line-height:1;"><svg fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="vertical-align:-2px;margin-right:6px;color:var(--accent, var(--red));" viewbox="0 0 24 24" width="14"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>Add Skill</h2>
 </div>
-<p class="memory-desc doclib-desc" style="margin-top:6px;">Import a skill from GitHub or <a href="https://skills.sh" rel="noopener noreferrer" target="_blank">skills.sh</a> (folder with <code>SKILL.md</code> and optional templates).</p>
+<p class="memory-desc doclib-desc" data-i18n-html="memory.add_skill.skill_import_desc_html" style="margin-top:6px;"></p>
 <div class="memory-add-row" style="margin-top:6px;margin-bottom:10px;">
 <div class="skill-ph-wrap" style="flex:1;min-width:0;">
 <input aria-label="Skill import URL" class="memory-add-input skill-hint-input" data-i18n-aria-label="memory.add_skill.url_aria" id="skill-import-url" placeholder=" " type="url"/>
-<span class="skill-rich-ph"><span class="k">Import URL</span> — e.g. GitHub tree link to a skill folder</span>
+<span class="skill-rich-ph" data-i18n-html="memory.add_skill.url_placeholder"></span>
 </div>
 <button class="theme-io-btn" data-i18n="common.import" data-i18n-title="memory.add_skill.import_title" id="skill-import-url-btn" style="flex:none;height:28px;font-size:12px;" title="Import skill from URL" type="button"><svg aria-hidden="true" fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="vertical-align:-2px;margin-right:4px;" viewbox="0 0 24 24" width="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg>Import</button>
 </div>
 <p class="memory-desc doclib-desc" data-i18n="memory.add_skill.create_desc" style="margin-top:0;">Or create a skill by hand — title, what it solves, and an approach.</p>
 <div class="skill-ph-wrap" style="margin-top:4px;margin-bottom:6px;">
 <input aria-label="Skill title" class="memory-add-input skill-hint-input" data-i18n-aria-label="memory.add_skill.title_aria" id="new-skill-title" placeholder=" " type="text"/>
-<span class="skill-rich-ph"><span class="k">Title</span> — short name, e.g. “build-vllm-wheel”</span>
+<span class="skill-rich-ph" data-i18n-html="memory.add_skill.title_placeholder"></span>
 </div>
 <div class="skill-ph-wrap" style="margin-bottom:6px;">
 <input aria-label="When to use this skill" class="memory-add-input skill-hint-input" data-i18n-aria-label="memory.add_skill.when_aria" id="new-skill-problem" placeholder=" " type="text"/>
-<span class="skill-rich-ph"><span class="k">When to use</span> — what problem does this skill solve?</span>
+<span class="skill-rich-ph" data-i18n-html="memory.add_skill.when_placeholder"></span>
 </div>
 <div class="skill-ph-wrap" style="margin-bottom:6px;">
 <textarea aria-label="How — the approach or steps" class="memory-add-input skill-hint-input" data-i18n-aria-label="memory.add_skill.how_aria" id="new-skill-solution" placeholder=" " rows="2" style="resize:vertical;"></textarea>
-<span class="skill-rich-ph skill-rich-ph-top"><span class="k">How</span> — the approach, steps, commands, or rules to follow</span>
+<span class="skill-rich-ph skill-rich-ph-top" data-i18n-html="memory.add_skill.how_placeholder"></span>
 </div>
 <div class="skill-ph-wrap" style="margin-bottom:8px;">
 <input aria-label="Tags" class="memory-add-input skill-hint-input" data-i18n-aria-label="memory.add_skill.tags_aria" id="new-skill-tags" placeholder=" " type="text"/>
-<span class="skill-rich-ph"><span class="k" data-i18n="memory.add_skill.tags_aria">Tags</span> — comma-separated, e.g. python, build, vllm</span>
+<span class="skill-rich-ph" data-i18n-html="memory.add_skill.tags_placeholder"></span>
 </div>
 <div style="display:flex;justify-content:flex-end;">
-<button class="confirm-btn confirm-btn-primary" data-i18n="memory.add_skill.heading" id="add-skill-btn">Add Skill</button>
+<button class="confirm-btn confirm-btn-primary" data-i18n="memory.add_skill.submit" id="add-skill-btn">Add Skill</button>
 </div>
 </div>
 </div>

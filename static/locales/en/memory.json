@@ -33,26 +33,29 @@
       "export": "Export",
       "import_desc": "Import a .txt, .md, .pdf, .csv, .log, .json, .py, .js, or .html file — the AI reads it and suggests candidate memories you can approve.",
       "input_aria": "New memory text",
-      "input_placeholder": "Add a memory — e.g. 'I prefer concise replies'",
-      "category_aria": "Memory category"
+      "input_placeholder": "<span class=\"k\">Add a memory</span> — e.g. 'I prefer concise replies'",
+      "category_aria": "Memory category",
+      "import_desc_html": "Import a <code>.txt</code>, <code>.md</code>, <code>.pdf</code>, <code>.csv</code>, <code>.log</code>, <code>.json</code>, <code>.py</code>, <code>.js</code>, or <code>.html</code> file — the AI reads it and suggests candidate memories you can approve."
     },
     "add_skill": {
       "heading": "Add Skill",
       "import_desc": "Import a skill from GitHub or skills.sh (folder with SKILL.md and optional templates).",
       "url_aria": "Skill import URL",
-      "url_placeholder": "Import URL — e.g. GitHub tree link to a skill folder",
+      "url_placeholder": "<span class=\"k\">Import URL</span> — e.g. GitHub tree link to a skill folder",
       "import_title": "Import skill from URL",
       "import": "Import",
       "create_desc": "Or create a skill by hand — title, what it solves, and an approach.",
       "title_aria": "Skill title",
-      "title_placeholder": "Title — short name, e.g. \"build-vllm-wheel\"",
+      "title_placeholder": "<span class=\"k\">Title</span> — short name, e.g. \"build-vllm-wheel\"",
       "when_aria": "When to use this skill",
-      "when_placeholder": "When to use — what problem does this skill solve?",
+      "when_placeholder": "<span class=\"k\">When to use</span> — what problem does this skill solve?",
       "how_aria": "How — the approach or steps",
-      "how_placeholder": "How — the approach, steps, commands, or rules to follow",
+      "how_placeholder": "<span class=\"k\">How</span> — the approach, steps, commands, or rules to follow",
       "tags_aria": "Tags",
-      "tags_placeholder": "Tags — comma-separated, e.g. python, build, vllm",
-      "submit": "Add Skill"
+      "tags_placeholder": "<span class=\"k\">Tags</span> — comma-separated, e.g. python, build, vllm",
+      "submit": "Add Skill",
+      "input_placeholder": "<span class=\"k\">Add a memory</span> — e.g. 'I prefer concise replies'",
+      "skill_import_desc_html": "Import a skill from GitHub or <a href=\"https://skills.sh\" rel=\"noopener noreferrer\" target=\"_blank\">skills.sh</a> (folder with <code>SKILL.md</code> and optional templates)."
     },
     "skills": {
       "heading": "Skills",
