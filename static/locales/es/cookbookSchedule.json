@@ -1,0 +1,8 @@
+{
+  "cookbookSchedule": {
+    "couldNotFindPanel": "No se encontró dónde insertar la programación",
+    "saveFailed": "No se pudo guardar la programación: {{error}}",
+    "createdTask": "Se creó la tarea «{{fullName}}»",
+    "save_btn": "Guardar programación"
+  }
+}

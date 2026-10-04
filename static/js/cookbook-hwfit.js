@@ -2232,7 +2232,7 @@ export function _hwfitInit() {
         }
         const defaultSrv = _serverByVal(_envState.defaultServer);
         uiModule.showToast(_envState.defaultServer
-          ? t('cookbook.defaultServerSet', { server: _envState.defaultServer === 'local' ? 'Local' : (defaultSrv?.name || defaultSrv?.host || 'selected server') })
+          ? t('cookbook.defaultServerSet', { server: _envState.defaultServer === 'local' ? t('cookbook.server_local') : (defaultSrv?.name || defaultSrv?.host || t('cookbook.server_selected')) })
           : t('cookbook.defaultServerCleared'));
       });
     }
@@ -2401,7 +2401,7 @@ export function _hwfitInit() {
           } else {
             setupBtn.textContent = 'Failed';
             setupBtn.style.color = 'var(--red)';
-            uiModule.showError(t('cookbook.setupFailed', { error: data.error || data.output || 'Setup failed' }));
+            uiModule.showError(t('cookbook.setupFailed', { error: data.error || data.output || t('cookbook.setupFailedGeneric') }));
           }
         } catch (e) {
           setupBtn.textContent = 'Error';

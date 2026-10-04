@@ -284,7 +284,7 @@ try { (function () {
         if (!r.ok || data.error) {
           fail(data.error || data.detail || `HTTP ${r.status}`);
           saveBtn.disabled = false;
-          saveBtn.textContent = "Save schedule";
+          saveBtn.textContent = t('cookbookSchedule.save_btn');
           toast(t('cookbookSchedule.saveFailed', { error: data.error || data.detail || r.status }));
           return;
         }

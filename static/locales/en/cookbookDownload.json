@@ -1,0 +1,12 @@
+{
+  "cookbookDownload": {
+    "downloading": "Downloading {{taskName}}…",
+    "downloadFailed": "The download failed{{error}}",
+    "downloadFailedHttp": "The download failed (HTTP {{status}})",
+    "alreadyDownloading": "{{shortName}} is already being downloaded ({{status}})",
+    "queuedDownload": "{{shortName}} was queued behind the current download",
+    "revivedDownload": "{{shortName}} was marked as finished after a restart — the download resumed",
+    "missingGgufSource": "No GGUF file selected for {{name}}",
+    "presetSaved": "Preset saved"
+  }
+}

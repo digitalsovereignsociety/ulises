@@ -1,0 +1,24 @@
+{
+  "cookbookServe": {
+    "contextCapped": "Context capped at {{cap}}",
+    "maxSavePerModel": "You can save at most 5 configs per model",
+    "config_default": "Config {{count}}",
+    "savedConfig": "Saved \"{{label}}\"",
+    "loadedConfig": "Loaded \"{{label}}\"",
+    "deletedConfig": "Deleted \"{{label}}\"",
+    "mixedGpuTypes": "Mixed GPU types selected — this usually runs slower than a uniform set",
+    "launchCommandCopied": "Launch command copied",
+    "killPidFailed": "Could not kill PID {{pid}}: {{reason}}",
+    "sentSigToPid": "Sent SIG{{sig}} to PID {{pid}}",
+    "gpuProbeFailed": "GPU probe failed: {{error}}{{hint}}",
+    "gpuProbeError": "GPU probe error: {{reason}}",
+    "noGpuProbeData": "No GPU memory data available",
+    "sigtermResult": "SIGTERM → {{ok}}/{{total}} processes",
+    "noGpuProcesses": "No GPU processes to clear",
+    "clearedGpuProcesses": "Cleared {{count}} GPU process(es)",
+    "sigkillResult": "SIGKILL → {{ok}}/{{total}} processes",
+    "clearServerError": "Could not clear the server: {{reason}}",
+    "diffusersWindowsUnsupported": "Diffusers serving is not supported on Windows servers",
+    "edit_settings": "Edit settings"
+  }
+}

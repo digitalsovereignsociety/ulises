@@ -2173,7 +2173,7 @@ function _rerenderCachedModels() {
         const _norm = s => String(s || '').replace(/\s+/g, ' ').trim();
         const _existing = modelSlots.find(p => _norm(p.cmd) === _norm(cmd));
         if (_existing) {
-          await window.styledConfirm(`This config is already saved as "${_existing.label || 'Unnamed'}".`, { confirmText: 'OK', cancelText: 'Close' });
+          await window.styledConfirm(`This config is already saved as "${_existing.label || 'Unnamed'}".`, { confirmText: 'OK', cancelText: t('common.close') });
           return false;
         }
         if (modelSlots.length >= 5) { uiModule.showToast(t('cookbookServe.maxSavePerModel')); return false; }
@@ -2264,7 +2264,7 @@ function _rerenderCachedModels() {
             _loadSlotIntoPanel(slotIdx);
             // Confirm the click landed — loading is silent otherwise, so it was
             // unclear the settings actually changed.
-            uiModule.showToast(t('cookbookServe.loadedConfig', { label: p.label || `Config ${idx + 1}` }));
+            uiModule.showToast(t('cookbookServe.loadedConfig', { label: p.label || t('cookbookServe.config_default', { count: idx + 1 }) }));
             // Briefly flash the command box so the user sees the panel update.
             const _cmdBox = panel.querySelector('.hwfit-serve-cmd');
             if (_cmdBox) {
@@ -3051,8 +3051,8 @@ function _rerenderCachedModels() {
           _restoreLaunchBtn();
           await window.styledConfirm(backendWarning.body, {
             title: backendWarning.title,
-            confirmText: 'Edit settings',
-            cancelText: 'Close',
+            confirmText: t('cookbookServe.edit_settings'),
+            cancelText: t('common.close'),
           });
           return;
         }
