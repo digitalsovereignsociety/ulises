@@ -247,13 +247,13 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
         const hasQueuedText = !!(msgInput && msgInput.value && msgInput.value.trim());
         submitBtn.innerHTML = hasQueuedText && icons ? icons.send : _stopSvg;
         submitBtn.dataset.phase = hasQueuedText ? 'queue' : 'processing';
-        submitBtn.title = hasQueuedText ? 'Queue message' : 'Stop generation';
+        submitBtn.title = hasQueuedText ? 'Queue message' : t('chat.stop_generation');
         submitBtn.classList.remove('anim-launch');
         void submitBtn.offsetWidth;
         submitBtn.classList.add('anim-land');
         submitBtn.addEventListener('animationend', () => submitBtn.classList.remove('anim-land'), { once: true });
       }, 300);
-      submitBtn.title = 'Stop generation';
+      submitBtn.title = t('chat.stop_generation');
       submitBtn.dataset.mode = 'streaming';
       submitBtn.dataset.phase = 'processing';
       isStreaming = true;
@@ -270,7 +270,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
       } else {
         var icons = window._ulisesBtnIcons;
         submitBtn.innerHTML = icons ? icons.send : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
-        submitBtn.title = 'Send message';
+        submitBtn.title = t('chat.send_message');
         submitBtn.classList.remove('mic-mode', 'newchat-mode');
       }
     }
@@ -314,7 +314,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
     const wrap = document.createElement('div');
     wrap.className = 'msg msg-user msg-user-queued';
     wrap.dataset.queueId = item.id;
-    wrap.title = 'Queued - click to send now and stop the current response';
+    wrap.title = t('chat.queued_hint');
     wrap.innerHTML = `<div class="role">You <span class="queued-pill"><svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>Queued</span></div><div class="body">${_escapeQueueText(item.message)}</div>`;
     wrap.addEventListener('click', (ev) => {
       if (ev.target && ev.target.closest && ev.target.closest('button, a, textarea, input')) return;
@@ -342,7 +342,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
     setTimeout(() => {
       handleChatSubmit({ preventDefault() {} }).catch(err => {
         console.error('queued send failed', err);
-        try { uiModule.showError && uiModule.showError('Queued send failed: ' + (err?.message || err)); } catch (_) {}
+        try { uiModule.showError && uiModule.showError(t('chat.queued_send_failed', { error: err?.message || err })); } catch (_) {}
       });
     }, 0);
     return true;
@@ -369,7 +369,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
       _setComposerAndSend(item.message);
       return;
     }
-    try { uiModule.showToast && uiModule.showToast('Sending queued request now'); } catch (_) {}
+    try { uiModule.showToast && uiModule.showToast(t('chat.sending_queued_now')); } catch (_) {}
     const input = uiModule.el('message');
     const submitBtn = document.querySelector('.send-btn');
     if (input) {
@@ -396,7 +396,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
     const queuedText = (queuedInput && queuedInput.value || '').trim();
     if (!queuedText) return false;
     if (fileHandlerModule.getPendingCount && fileHandlerModule.getPendingCount()) {
-      try { uiModule.showError && uiModule.showError('Finish the current response before queueing messages with attachments.'); } catch (_) {}
+      try { uiModule.showError && uiModule.showError(t('chat.attachment_queue_blocked')); } catch (_) {}
       return true;
     }
     if (_queueAgentRequest(queuedText)) {
@@ -532,7 +532,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
         stoppedIndicator.appendChild(stoppedLabel);
         const continueBtn = document.createElement('button');
         continueBtn.className = 'continue-btn';
-        continueBtn.title = 'Continue';
+        continueBtn.title = t('chat.continue_label');
         continueBtn.textContent = '\u25B8';
         const _stoppedHolder = currentHolder; // capture before it gets cleared
         continueBtn.addEventListener('click', () => {
@@ -683,7 +683,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
 
     // --- API key guard: warn if message looks like an API key ---
     if (API_KEY_RE.test(msg.trim())) {
-      if (!await window.styledConfirm('This looks like an API key. Sending it to the AI could expose it.\n\nDid you mean to use /setup instead?', { confirmText: 'Send anyway', danger: true })) {
+      if (!await window.styledConfirm('This looks like an API key. Sending it to the AI could expose it.\n\nDid you mean to use /setup instead?', { confirmText: t('chat.send_anyway'), danger: true })) {
         _releaseSendFlag();
         return;
       }
@@ -853,7 +853,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
       if (_pendingAttachInfo && !ids.length && !(_pendingRegenAttachments && _pendingRegenAttachments.length)) {
         if (_userMsgEl && _userMsgEl.parentNode) _userMsgEl.remove();
         if (fileHandlerModule.wasLastUploadCancelled && !fileHandlerModule.wasLastUploadCancelled()) {
-          uiModule.showError && uiModule.showError('Upload failed. Attachment kept so you can retry.');
+          uiModule.showError && uiModule.showError(t('chat.attachments_kept'));
         }
         updateSubmitButton('idle', submitBtn);
         _releaseSendFlag();
@@ -902,10 +902,10 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
         textEl.textContent = label;
         banner.appendChild(textEl);
         const importBtn = document.createElement('button');
-        importBtn.textContent = 'Import';
+        importBtn.textContent = t('chat.import');
         importBtn.addEventListener('click', async () => {
           importBtn.disabled = true;
-          importBtn.textContent = 'Importing…';
+          importBtn.textContent = t('chat.importing');
           const EXT_LANG = {'.py':'python','.js':'javascript','.ts':'typescript','.html':'html','.css':'css','.md':'markdown','.json':'json','.yml':'yaml','.yaml':'yaml','.sh':'bash','.sql':'sql','.rs':'rust','.go':'go','.java':'java','.c':'c','.cpp':'cpp','.rb':'ruby','.php':'php','.xml':'xml','.jsx':'javascript','.tsx':'typescript'};
           let imported = 0;
           for (const { info, file } of _importableFiles) {
@@ -930,7 +930,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
         dismissBtn.textContent = '\u00d7';
         dismissBtn.className = 'import-prompt-dismiss';
         dismissBtn.setAttribute('aria-label', 'Dismiss');
-        dismissBtn.title = 'Dismiss';
+        dismissBtn.title = t('chat.dismiss');
         dismissBtn.addEventListener('click', () => banner.remove());
         banner.appendChild(dismissBtn);
         const chatBar = document.querySelector('.chat-input-bar');
@@ -1520,7 +1520,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
                   accumulated = accumulated.replace(/<think>/i, '<think time="' + _elapsedDone + '">');
                   roundText = roundText.replace(/<think>/i, '<think time="' + _elapsedDone + '">');
                 }
-                if (_liveThinkHeader) _liveThinkHeader.textContent = 'View thinking process';
+                if (_liveThinkHeader) _liveThinkHeader.textContent = t('chat.view_thinking');
                 if (_liveThinkSpinnerSlot) _liveThinkSpinnerSlot.remove();
                 if (_liveThinkTimerEl && _elapsedDone) {
                   _liveThinkTimerEl.textContent = _formatThinkStats(_elapsedDone, _liveThinkTokenCount);
@@ -1799,7 +1799,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
                     accumulated = accumulated.replace(/<think>/i, '<think time="' + elapsed + '">');
                     roundText = roundText.replace(/<think>/i, '<think time="' + elapsed + '">');
                   }
-                  if (_liveThinkHeader) _liveThinkHeader.textContent = 'View thinking process';
+                  if (_liveThinkHeader) _liveThinkHeader.textContent = t('chat.view_thinking');
                   if (_liveThinkSpinnerSlot) _liveThinkSpinnerSlot.remove();
                   // Move timer to right side of header
                   if (_liveThinkTimerEl && elapsed) {
@@ -2074,8 +2074,8 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
                   note.appendChild(label);
                   const contBtn = document.createElement('button');
                   contBtn.className = 'continue-btn';
-                  contBtn.title = 'Continue the task';
-                  contBtn.textContent = 'Continue ▸';
+                  contBtn.title = t('chat.continue_task');
+                  contBtn.textContent = t('chat.continue_arrow');
                   const _holder = currentHolder;
                   contBtn.addEventListener('click', () => {
                     note.remove();
@@ -2121,7 +2121,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
                           if (_att.vision_model && !_existingPreview.querySelector('.attach-vision-model')) {
                             const _vl = document.createElement('div');
                             _vl.className = 'attach-vision-model';
-                            _vl.textContent = 'Vision: ' + String(_att.vision_model).split('/').pop();
+                            _vl.textContent = t('chat.vision_model', { model: String(_att.vision_model).split('/').pop() });
                             const _name = _existingPreview.querySelector('.attach-image-name');
                             if (_name) _existingPreview.insertBefore(_vl, _name);
                             else _existingPreview.appendChild(_vl);
@@ -2142,7 +2142,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
                         if (_att.vision_model) {
                           const _vl = document.createElement('div');
                           _vl.className = 'attach-vision-model';
-                          _vl.textContent = 'Vision: ' + String(_att.vision_model).split('/').pop();
+                          _vl.textContent = t('chat.vision_model', { model: String(_att.vision_model).split('/').pop() });
                           _iw.appendChild(_vl);
                         }
                         if (_att.name) {
@@ -2203,7 +2203,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
                   isThinking = false;
                   cancelAnimationFrame(_thinkTimerRAF);
                   var _elapsed2 = thinkingStartTime ? ((Date.now() - thinkingStartTime) / 1000).toFixed(1) : null;
-                  if (_liveThinkHeader) _liveThinkHeader.textContent = 'View thinking process';
+                  if (_liveThinkHeader) _liveThinkHeader.textContent = t('chat.view_thinking');
                   if (_liveThinkTimerEl) _liveThinkTimerEl.textContent = _elapsed2 ? _formatThinkStats(_elapsed2, _liveThinkTokenCount) : '';
                   if (_liveThinkSpinnerSlot) _liveThinkSpinnerSlot.remove();
                   // Assign stable IDs
@@ -2407,7 +2407,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
                       const details = document.createElement('details');
                       details.className = 'agent-tool-output';
                       const summary = document.createElement('summary');
-                      summary.textContent = 'Screenshot';
+                      summary.textContent = t('chat.screenshot');
                       const img = document.createElement('img');
                       img.src = screenshotSrc;
                       img.style.cssText = 'max-width:100%;border-radius:6px;margin-top:6px;border:1px solid var(--border)';
@@ -2682,11 +2682,11 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
             _stall.className = 'stopped-indicator';
             const _lbl = document.createElement('span');
             _lbl.style.cssText = 'font-style:italic;opacity:0.7;';
-            _lbl.textContent = 'Paused mid-task';
+            _lbl.textContent = t('chat.paused_mid_task');
             _stall.appendChild(_lbl);
             const _cont = document.createElement('button');
             _cont.className = 'continue-btn agent-continue-btn';
-            _cont.title = 'Continue — pick up where it left off';
+            _cont.title = t('chat.continue_hint');
             _cont.textContent = '▸';
             _cont.addEventListener('click', () => {
               _stall.remove();
@@ -2843,7 +2843,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
               ttsBtn.innerHTML = ICON_PLAY_TTS;
               ttsBtn.classList.remove('playing', 'loading');
               ttsBtn.style.color = '#6b7280';
-              ttsBtn.title = 'Read aloud';
+              ttsBtn.title = t('chat.read_aloud');
             };
             if (streamingTTS) {
               // Flush remaining partial sentence and attach the real button
@@ -2854,7 +2854,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
                 ttsBtn.innerHTML = ICON_STOP_TTS;
                 ttsBtn.classList.add('playing');
                 ttsBtn.style.color = '#ccc';
-                ttsBtn.title = 'Stop';
+                ttsBtn.title = t('chat.stop');
               }
             } else {
               // Non-streaming fallback (autoPlay toggled mid-stream, etc.)
@@ -3032,7 +3032,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
             stoppedIndicator.appendChild(stoppedLabel);
             const continueBtn = document.createElement('button');
             continueBtn.className = 'continue-btn';
-            continueBtn.title = 'Continue';
+            continueBtn.title = t('chat.continue_label');
             continueBtn.textContent = '\u25B8';
             continueBtn.addEventListener('click', () => {
               stoppedIndicator.remove();
@@ -3290,8 +3290,8 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
     bar.innerHTML = `<span class="stall-banner-txt">Quiet for ${label} — still working?</span>`;
     const cont = document.createElement('button');
     cont.className = 'stall-banner-btn';
-    cont.textContent = 'Nudge it';
-    cont.title = 'Stop the stalled stream and ask it to continue';
+    cont.textContent = t('chat.nudge_it');
+    cont.title = t('chat.stop_stalled_hint');
     cont.addEventListener('click', () => {
       _removeStallBanner();
       const mi = uiModule.el('message');
@@ -3303,7 +3303,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
     });
     const stop = document.createElement('button');
     stop.className = 'stall-banner-btn stall-banner-stop';
-    stop.textContent = 'Stop';
+    stop.textContent = t('chat.stop');
     stop.addEventListener('click', () => { _removeStallBanner(); abortCurrentRequest(true); });
     bar.appendChild(cont);
     bar.appendChild(stop);
@@ -3780,7 +3780,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
         if (runBtn) runBtn.setAttribute('data-code', newCode);
         // Swap icon back to pencil
         btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
-        btn.title = 'Edit';
+        btn.title = t('chat.edit');
         btn.classList.remove('active');
       } else {
         // Enter edit mode. Firefox (especially on mobile) historically lacks
@@ -3798,7 +3798,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
         try { codeEl.focus({ preventScroll: true }); } catch (_) { codeEl.focus(); }
         // Swap icon to checkmark
         btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-        btn.title = 'Done editing';
+        btn.title = t('chat.done_editing');
         btn.classList.add('active');
       }
     });
@@ -3946,10 +3946,10 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
 
     const saveBtn = document.createElement('button');
     saveBtn.className = 'edit-save-btn';
-    saveBtn.textContent = 'Send';
+    saveBtn.textContent = t('chat.send');
     const cancelBtn = document.createElement('button');
     cancelBtn.className = 'edit-cancel-btn';
-    cancelBtn.textContent = 'Cancel';
+    cancelBtn.textContent = t('chat.cancel');
     btnRow.appendChild(saveBtn);
     btnRow.appendChild(cancelBtn);
 
@@ -3992,7 +3992,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
         if (submitBtn) submitBtn.click();
       } catch (err) {
         console.error('Edit failed:', err);
-        if (uiModule) uiModule.showError('Edit failed: ' + err.message);
+        if (uiModule) uiModule.showError(t('chat.edit_failed', { error: err.message }));
         bodyEl.innerHTML = originalHTML;
       }
     });
@@ -4090,7 +4090,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
       if (submitBtn) submitBtn.click();
     } catch (err) {
       console.error('Resend failed:', err);
-      if (uiModule) uiModule.showError('Resend failed: ' + err.message);
+      if (uiModule) uiModule.showError(t('chat.resend_failed', { error: err.message }));
     }
   }
 
@@ -4120,7 +4120,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
     }
 
     if (userIndex < 0) {
-      if (uiModule) uiModule.showError('Could not find the user message to regenerate');
+      if (uiModule) uiModule.showError(t('chat.regenerate_not_found'));
       return;
     }
 
@@ -4160,7 +4160,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
     // because the attachments themselves are the message. Bail only if there
     // is no text AND no attachments to send.
     if (!userText && !_pendingRegenAttachments.length) {
-      if (uiModule) uiModule.showError('Nothing to regenerate — the user message has no text and no attachments');
+      if (uiModule) uiModule.showError(t('chat.regenerate_nothing'));
       return;
     }
 
@@ -4204,7 +4204,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
 
     } catch (err) {
       console.error('Regenerate failed:', err);
-      if (uiModule) uiModule.showError('Regenerate failed: ' + err.message);
+      if (uiModule) uiModule.showError(t('chat.regenerate_failed', { error: err.message }));
     }
   }
 
@@ -4369,7 +4369,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
       if (uiModule) uiModule.showToast(t('chat.forked', { name: data.name }));
     } catch (err) {
       console.error('Fork failed:', err);
-      if (uiModule) uiModule.showError('Fork failed: ' + err.message);
+      if (uiModule) uiModule.showError(t('chat.fork_failed', { error: err.message }));
     }
   }
 
@@ -4619,8 +4619,8 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
   export async function deleteMessage(msgElement) {
     if (uiModule && uiModule.styledConfirm) {
       const ok = await uiModule.styledConfirm('Delete this message?', {
-        confirmText: 'Delete',
-        cancelText: 'Cancel',
+        confirmText: t('chat.delete'),
+        cancelText: t('chat.cancel'),
         danger: true,
       });
       if (!ok) return;
@@ -4731,7 +4731,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
       if (uiModule) uiModule.showToast(t('chat.message_deleted'));
     } catch (err) {
       console.error('Delete failed:', err);
-      if (uiModule) uiModule.showError('Delete failed: ' + err.message);
+      if (uiModule) uiModule.showError(t('chat.delete_failed', { error: err.message }));
     }
   }
 
@@ -4762,10 +4762,10 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
     bar.className = 'msg-edit-bar';
     const saveBtn = document.createElement('button');
     saveBtn.className = 'msg-edit-save';
-    saveBtn.textContent = 'Save';
+    saveBtn.textContent = t('chat.save');
     const cancelBtn = document.createElement('button');
     cancelBtn.className = 'msg-edit-cancel';
-    cancelBtn.textContent = 'Cancel';
+    cancelBtn.textContent = t('chat.cancel');
     bar.appendChild(saveBtn);
     bar.appendChild(cancelBtn);
     textarea.parentNode.insertBefore(bar, textarea.nextSibling);
@@ -4787,7 +4787,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
       if (newContent === originalRaw) { cleanup(); return; }
 
       const msgId = msgElement.dataset.dbId;
-      if (!msgId) { if (uiModule) uiModule.showError('Cannot edit: message ID not found'); cleanup(); return; }
+      if (!msgId) { if (uiModule) uiModule.showError(t('chat.edit_not_found')); cleanup(); return; }
 
       const sessionId = sessionModule.getCurrentSessionId();
       if (!sessionId) { cleanup(); return; }
@@ -4816,7 +4816,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
         if (uiModule) uiModule.showToast(t('chat.message_edited'));
       } catch (err) {
         console.error('Edit failed:', err);
-        if (uiModule) uiModule.showError('Edit failed: ' + err.message);
+        if (uiModule) uiModule.showError(t('chat.edit_failed', { error: err.message }));
       }
     });
   }
@@ -4835,7 +4835,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
     const oldHtml = aiMsgElement.querySelector('.body')?.innerHTML || '';
 
     if (!oldRaw.trim()) {
-      if (uiModule) uiModule.showError('No text to rewrite');
+      if (uiModule) uiModule.showError(t('chat.no_text_to_rewrite'));
       return;
     }
 
@@ -4977,7 +4977,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
       _killRwSpin();
       // Restore original content on failure
       if (bodyEl) bodyEl.innerHTML = oldHtml;
-      if (uiModule) uiModule.showError('Rewrite failed: ' + err.message);
+      if (uiModule) uiModule.showError(t('chat.rewrite_failed', { error: err.message }));
     }
   }
 
@@ -5082,7 +5082,7 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
       }
     } catch (e) {
       console.error('open attachment as document failed', e);
-      import('./ui.js').then(m => m.showError && m.showError('Could not open attachment')).catch(() => {});
+      import('./ui.js').then(m => m.showError && m.showError(t('chat.attachment_open_failed'))).catch(() => {});
       window.open(url, '_blank');  // fallback so the file is still reachable
     }
   }

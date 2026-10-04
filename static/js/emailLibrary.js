@@ -213,11 +213,11 @@ function _wireRecipientChips(root) {
         const copied = await _copyTextToClipboard(email);
         if (!copied) throw new Error('copy failed');
         copyBtn.classList.add('copied');
-        copyBtn.title = 'Copied';
+        copyBtn.title = t('emailLibrary.copied');
         showToast?.(t('emailLibrary.emailCopied'));
         setTimeout(() => {
           copyBtn.classList.remove('copied');
-          copyBtn.title = 'Copy email';
+          copyBtn.title = t('emailLibrary.copy_email');
         }, 900);
       } catch (_) {
         showToast?.(t('emailLibrary.copyFailed'));
@@ -341,7 +341,7 @@ function _syncUnreadTabBadge(count) {
       chip.title = `Open ${label}`;
     } else {
       delete chip.dataset.emailUnreadLabel;
-      chip.title = 'Restore Email';
+      chip.title = t('emailLibrary.restore_email');
     }
   });
 }
@@ -567,7 +567,7 @@ async function _deleteEmailAndAdvance(em, card, opts = {}) {
   if (!em || em.uid == null) return;
   if (opts.confirm !== false) {
     const subject = em.subject || '(no subject)';
-    const ok = await styledConfirm(`Delete "${subject}"?`, { confirmText: 'Delete', cancelText: 'Cancel', danger: true });
+    const ok = await styledConfirm(`Delete "${subject}"?`, { confirmText: t('emailLibrary.delete'), cancelText: t('emailLibrary.cancel'), danger: true });
     if (!ok) return;
   }
   const wasExpanded = !!card?.classList?.contains('doclib-card-expanded');
@@ -716,7 +716,7 @@ function _resetEmailListForFreshLoad() {
   const grid = document.getElementById('email-lib-grid');
   if (grid) _renderEmailLoading(grid);
   const stats = document.getElementById('email-lib-stats');
-  if (stats) stats.textContent = 'Loading...';
+  if (stats) stats.textContent = t('emailLibrary.loading');
 }
 
 function _loadEmailsFresh() {
@@ -970,7 +970,7 @@ export function openEmailLibrary(opts = {}) {
   // expanded inside stays expanded.
   try {
     Modals.register('email-lib-modal', {
-      label: 'Email',
+      label: t('emailLibrary.email'),
       icon: 'M2 4h20v16H2zM22 7l-9.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7',
       closeFn: () => {
         const m = document.getElementById('email-lib-modal');
@@ -1086,8 +1086,8 @@ export function openEmailLibrary(opts = {}) {
   });
   document.getElementById('email-reminders-clear-btn')?.addEventListener('click', async () => {
     const ok = await styledConfirm('Permanently delete all Ulises reminder emails?', {
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
+      confirmText: t('emailLibrary.delete'),
+      cancelText: t('emailLibrary.cancel'),
       danger: true,
     });
     if (!ok) return;
@@ -1377,7 +1377,7 @@ export function openEmailLibrary(opts = {}) {
     // Don't hijack arrows / delete while the user is typing somewhere.
     const t = e.target;
     if (_isEmailTypingTarget(t)) return;
-    const isDeleteKey = e.key === 'Delete' || e.key === 'Backspace';
+    const isDeleteKey = e.key === t('emailLibrary.delete') || e.key === 'Backspace';
     if (isDeleteKey && state._selectMode && state._selectedUids.size > 0) {
       e.preventDefault();
       _bulkAction('delete');
@@ -1712,7 +1712,7 @@ async function _loadFolders({ resetMissing = false } = {}) {
     sel.appendChild(sep2);
     const schedOpt = document.createElement('option');
     schedOpt.value = '__scheduled__';
-    schedOpt.textContent = 'Scheduled';
+    schedOpt.textContent = t('emailLibrary.scheduled');
     if (state._libFolder === '__scheduled__') schedOpt.selected = true;
     sel.appendChild(schedOpt);
     sel.value = state._libFolder;
@@ -1799,19 +1799,19 @@ function _scoreSuggestion(s, needle) {
 // corresponding filter row with its icon; picking it pins a filter
 // pill that drives state._libFilter or the has-attachments toggle.
 const _LIB_FILTER_OPTIONS = [
-  { value: 'filter:has-attachments', label: 'Has attachments', keywords: ['attachment', 'attachments', 'has attachment', 'attach'] },
-  { value: 'filter:unread',          label: 'Unread',          keywords: ['unread', 'new', 'unseen'] },
-  { value: 'filter:favorites',       label: 'Favorites',       keywords: ['favorite', 'favorites', 'starred', 'star', 'flagged'] },
-  { value: 'filter:undone',          label: 'Undone',          keywords: ['undone', 'pending', 'todo'] },
-  { value: 'filter:reminders',       label: 'Reminders',       keywords: ['reminder', 'reminders'] },
-  { value: 'filter:unanswered',      label: 'Unanswered',      keywords: ['unanswered', 'unreplied', 'no reply'] },
-  { value: 'filter:pending_30d',     label: 'Pending · 30d',   keywords: ['pending 30d', 'pending', 'recent pending'] },
+  { value: 'filter:has-attachments', label: t('emailLibrary.has_attachments'), keywords: ['attachment', 'attachments', 'has attachment', 'attach'] },
+  { value: 'filter:unread',          label: t('emailLibrary.unread'),          keywords: ['unread', 'new', 'unseen'] },
+  { value: 'filter:favorites',       label: t('emailLibrary.favorites'),       keywords: ['favorite', 'favorites', 'starred', 'star', 'flagged'] },
+  { value: 'filter:undone',          label: t('emailLibrary.undone'),          keywords: ['undone', 'pending', 'todo'] },
+  { value: 'filter:reminders',       label: t('emailLibrary.reminders'),       keywords: ['reminder', 'reminders'] },
+  { value: 'filter:unanswered',      label: t('emailLibrary.unanswered'),      keywords: ['unanswered', 'unreplied', 'no reply'] },
+  { value: 'filter:pending_30d',     label: t('emailLibrary.pending_30d'),   keywords: ['pending 30d', 'pending', 'recent pending'] },
   { value: 'filter:stale_30d',       label: 'Stale · >30d',    keywords: ['stale', 'old', 'stale 30d'] },
-  { value: 'filter:tag:urgent',      label: 'Urgent',          keywords: ['urgent', 'critical'] },
-  { value: 'filter:tag:reply-soon',  label: 'Reply soon',      keywords: ['reply soon', 'reply', 'follow up'] },
-  { value: 'filter:tag:spam',        label: 'Spam',            keywords: ['spam', 'junk'] },
-  { value: 'filter:tag:newsletter',  label: 'Newsletter',      keywords: ['newsletter', 'newsletters', 'subscriptions'] },
-  { value: 'filter:tag:marketing',   label: 'Marketing',       keywords: ['marketing', 'promo', 'promotional'] },
+  { value: 'filter:tag:urgent',      label: t('emailLibrary.urgent'),          keywords: ['urgent', 'critical'] },
+  { value: 'filter:tag:reply-soon',  label: t('emailLibrary.reply_soon'),      keywords: ['reply soon', 'reply', 'follow up'] },
+  { value: 'filter:tag:spam',        label: t('emailLibrary.spam'),            keywords: ['spam', 'junk'] },
+  { value: 'filter:tag:newsletter',  label: t('emailLibrary.newsletter'),      keywords: ['newsletter', 'newsletters', 'subscriptions'] },
+  { value: 'filter:tag:marketing',   label: t('emailLibrary.marketing'),       keywords: ['marketing', 'promo', 'promotional'] },
 ];
 
 function _libFilterIconFor(value) {
@@ -2363,7 +2363,7 @@ async function _doSearch() {
   // the server search is still grinding.
   const stats = document.getElementById('email-lib-stats');
   const originalStatsText = stats?.textContent || '';
-  if (stats) stats.textContent = 'Searching…';
+  if (stats) stats.textContent = t('emailLibrary.searching');
   _libSearchInFlight = true;
   // Force a re-render so the "Searching…" empty-state shows (and any
   // existing "No emails" gets replaced) while the fetch is in flight.
@@ -2535,7 +2535,7 @@ function _renderEmailLoading(grid) {
   } catch (_) {}
   const label = document.createElement('div');
   label.className = 'email-loading-label';
-  label.textContent = 'Loading emails';
+  label.textContent = t('emailLibrary.loading_emails');
   wrap.appendChild(label);
   grid.appendChild(wrap);
   return sp;
@@ -2564,16 +2564,16 @@ async function _refreshUnreadBadge() {
         const allData = await allRes.json();
         const t = allData.total || 0;
         badge.textContent = `${t} all`;
-        badge.title = 'Show all emails';
+        badge.title = t('emailLibrary.show_all_emails');
         badge.style.display = '';
       } catch (_) {
-        badge.textContent = 'Show all';
-        badge.title = 'Show all emails';
+        badge.textContent = t('emailLibrary.show_all');
+        badge.title = t('emailLibrary.show_all_emails');
         badge.style.display = '';
       }
     } else if (n > 0) {
       badge.textContent = n > 999 ? '999+ unread' : `${n} unread`;
-      badge.title = 'Show unread emails';
+      badge.title = t('emailLibrary.show_unread_emails');
       badge.style.display = '';
     } else {
       badge.style.display = 'none';
@@ -2721,12 +2721,12 @@ async function _loadScheduled(grid, sp) {
     // Cancel button
     const cancelBtn = document.createElement('button');
     cancelBtn.className = 'memory-item-btn';
-    cancelBtn.title = 'Cancel scheduled send';
+    cancelBtn.title = t('emailLibrary.cancel_scheduled_send');
     cancelBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
     cancelBtn.addEventListener('click', async (e) => {
       e.stopPropagation();
       const { styledConfirm } = await import('./ui.js');
-      const ok = await styledConfirm(`Cancel scheduled email "${subject}"?`, { confirmText: 'Cancel Send', cancelText: 'Keep', danger: true });
+      const ok = await styledConfirm(`Cancel scheduled email "${subject}"?`, { confirmText: t('emailLibrary.cancel_send'), cancelText: t('emailLibrary.keep'), danger: true });
       if (!ok) return;
       try {
         await fetch(`${API_BASE}/api/email/scheduled/${it.id}`, { method: 'DELETE' });
@@ -2783,10 +2783,10 @@ function _renderGrid() {
         w.element.style.cssText = 'margin:0;display:block;';
         wrap.appendChild(w.element);
         const lbl = document.createElement('span');
-        lbl.textContent = 'Searching…';
+        lbl.textContent = t('emailLibrary.searching');
         wrap.appendChild(lbl);
       }).catch(() => {
-        wrap.textContent = 'Searching…';
+        wrap.textContent = t('emailLibrary.searching');
       });
       return;
     }
@@ -2930,7 +2930,7 @@ function _createCard(em) {
 
   if (em.has_attachments) {
     const att = document.createElement('span');
-    att.title = 'Has attachments';
+    att.title = t('emailLibrary.has_attachments');
     att.style.cssText = 'opacity:0.6;flex-shrink:0;display:inline-flex;';
     att.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 17.93 8.8l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>';
     titleRow.appendChild(att);
@@ -2998,7 +2998,7 @@ function _createCard(em) {
 
   if (em.is_flagged) {
     const star = document.createElement('span');
-    star.title = 'Favorited';
+    star.title = t('emailLibrary.favorited');
     star.style.cssText = 'color:var(--accent, var(--red));opacity:0.85;flex-shrink:0;display:inline-flex;';
     star.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
     titleRow.appendChild(star);
@@ -3050,7 +3050,7 @@ function _createCard(em) {
     actionsWrap.className = 'memory-item-actions';
     const menuBtn = document.createElement('button');
     menuBtn.className = 'memory-item-btn';
-    menuBtn.title = 'Actions';
+    menuBtn.title = t('emailLibrary.actions');
     menuBtn.style.position = 'relative';
     menuBtn.style.top = '-1px';
     menuBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>';
@@ -4100,7 +4100,7 @@ function _showCachedSummary(reader, summary, btn) {
   if (btn) {
     btn.classList.add('active');
     const label = btn.querySelector('.btn-label');
-    if (label) label.textContent = 'Summary';
+    if (label) label.textContent = t('emailLibrary.summary');
   }
 }
 
@@ -4587,10 +4587,10 @@ function _wireAttachmentHandlers(reader, folder) {
         btn.textContent = '';
         btn.appendChild(wp.element);
         const label = document.createElement('span');
-        label.textContent = 'All';
+        label.textContent = t('emailLibrary.all');
         btn.appendChild(label);
       } catch (_) {
-        btn.textContent = 'All...';
+        btn.textContent = t('emailLibrary.all_short');
       }
       try {
         const url = `${API_BASE}/api/email/attachments-download/${encodeURIComponent(uid)}?folder=${encodeURIComponent(sourceFolder)}${_acct()}`;
@@ -4613,7 +4613,7 @@ function _wireAttachmentHandlers(reader, folder) {
         try { uiModule.showToast && uiModule.showToast(`Downloading ${count || 'all'} attachments`); } catch (_) {}
       } catch (e) {
         console.error('attachments zip download error', e);
-        try { const { showError } = await import('./ui.js'); showError('Could not download attachments'); } catch (_) {}
+        try { const { showError } = await import('./ui.js'); showError(t('emailLibrary.download_attachments_failed')); } catch (_) {}
       } finally {
         delete btn.dataset.downloading;
         btn.classList.remove('is-loading');
@@ -4951,7 +4951,7 @@ async function _openEmailAsTab(em, folder) {
   document.body.classList.add('email-front');
 
   Modals.register(modalId, {
-    label: 'Email',
+    label: t('emailLibrary.email'),
     icon: _EMAIL_ICON_PATH,
     closeFn: () => {
       modal.remove();
@@ -5407,13 +5407,13 @@ async function _summarizeEmail(reader, data, btn) {
       existing.style.display = '';
       if (btn) {
         btn.classList.add('active');
-        btn.querySelector('.btn-label').textContent = 'Summary';
+        btn.querySelector('.btn-label').textContent = t('emailLibrary.summary');
       }
     } else {
       existing.style.display = 'none';
       if (btn) {
         btn.classList.remove('active');
-        btn.querySelector('.btn-label').textContent = 'Summary';
+        btn.querySelector('.btn-label').textContent = t('emailLibrary.summary');
       }
     }
     return;
@@ -5435,7 +5435,7 @@ async function _summarizeEmail(reader, data, btn) {
     if (btn) {
       btn.classList.add('active');
       const label = btn.querySelector('.btn-label');
-      if (label) label.textContent = 'Summary';
+      if (label) label.textContent = t('emailLibrary.summary');
     }
     // No Cancel button — toggling the Summary button again hides this panel
     // (handled by the existing-panel branch above), so it'd be redundant.
@@ -5507,7 +5507,7 @@ async function _generateSummary(reader, data, btn) {
       if (btn) {
         btn.classList.add('active');
         const label = btn.querySelector('.btn-label');
-        if (label) label.textContent = 'Summary';
+        if (label) label.textContent = t('emailLibrary.summary');
       }
     } else {
       content.innerHTML = `<span style="color:var(--red)">${_esc(result.error || 'Failed to summarize')}</span>`;
@@ -5618,7 +5618,7 @@ function _showReaderMoreMenu(em, card, reader, anchor) {
   //   3. Move to Spam / Move to Trash / Delete — destructive
   const actions = [
     {
-      label: 'Open in new tab',
+      label: t('emailLibrary.open_in_new_tab'),
       icon: _newTabIcon,
       action: async () => {
         const folder = state._libFolder || 'INBOX';
@@ -5626,7 +5626,7 @@ function _showReaderMoreMenu(em, card, reader, anchor) {
       },
     },
     {
-      label: 'Remind to reply',
+      label: t('emailLibrary.remind_to_reply'),
       icon: _bellIcon,
       submenu: 'remind',
     },
@@ -5687,7 +5687,7 @@ function _showReaderMoreMenu(em, card, reader, anchor) {
       },
     },
     {
-      label: 'Move to Archive',
+      label: t('emailLibrary.move_to_archive'),
       icon: _archIcon,
       action: async () => {
         try {
@@ -5699,7 +5699,7 @@ function _showReaderMoreMenu(em, card, reader, anchor) {
     {
       // Save the sender to CardDAV contacts. Pulls name + address off the
       // list-item (em); falls back to splitting the local-part for a name.
-      label: 'Save sender to contacts',
+      label: t('emailLibrary.save_sender_contacts'),
       icon: _contactIcon,
       action: async () => {
         const email = (em.from_address || em.from || '').trim();
@@ -5728,7 +5728,7 @@ function _showReaderMoreMenu(em, card, reader, anchor) {
     },
     { separator: true },
     {
-      label: 'Move to Spam',
+      label: t('emailLibrary.move_to_spam'),
       icon: _spamIcon,
       action: async () => {
         try {
@@ -5738,7 +5738,7 @@ function _showReaderMoreMenu(em, card, reader, anchor) {
       },
     },
     {
-      label: 'Move to Trash',
+      label: t('emailLibrary.move_to_trash'),
       icon: _trashIcon,
       action: async () => {
         try {
@@ -5748,14 +5748,14 @@ function _showReaderMoreMenu(em, card, reader, anchor) {
       },
     },
     {
-      label: 'Delete Permanently',
+      label: t('emailLibrary.delete_permanently'),
       icon: _deleteForeverIcon,
       danger: true,
       action: async () => {
         const subject = em.subject || '(no subject)';
         const ok = await styledConfirm(
           `Permanently delete "${subject}"? This cannot be undone.`,
-          { confirmText: 'Delete', cancelText: 'Cancel', danger: true }
+          { confirmText: t('emailLibrary.delete'), cancelText: t('emailLibrary.cancel'), danger: true }
         );
         if (!ok) return;
         try {
@@ -5834,21 +5834,21 @@ function _showCardMenu(em, anchor) {
 
   const _newTabIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
   const actions = [
-    { label: 'Open', icon: _replyIcon, action: async () => {
+    { label: t('emailLibrary.open'), icon: _replyIcon, action: async () => {
       // Just expand inline (same as tapping the row).
       const card = anchor.closest('.doclib-card');
       if (card && !card.classList.contains('doclib-card-expanded')) {
         await _toggleCardPreview(card, em);
       }
     }},
-    { label: 'Open in new tab', icon: _newTabIcon, action: async () => {
+    { label: t('emailLibrary.open_in_new_tab'), icon: _newTabIcon, action: async () => {
       // Open this email as its own in-app modal that registers a dock
       // chip — multiple emails can be opened simultaneously, each gets
       // its own chip in the minimized dock.
       const folder = state._libFolder || 'INBOX';
       await _openEmailAsTab(em, folder);
     }},
-    { label: 'Remind to reply', icon: _cardBellIcon, submenu: 'remind' },
+    { label: t('emailLibrary.remind_to_reply'), icon: _cardBellIcon, submenu: 'remind' },
   ];
 
   if (!isSentFolder) {
@@ -5859,7 +5859,7 @@ function _showCardMenu(em, anchor) {
     const _checkForLabel = _cardForLabel ? _cardForLabel.querySelector('.email-card-done') : null;
     const _currentlyDone = _checkForLabel ? _checkForLabel.classList.contains('active') : !!em.is_answered;
     actions.push({
-      label: _currentlyDone ? 'Not Done' : 'Done',
+      label: _currentlyDone ? 'Not Done' : t('emailLibrary.done'),
       icon: _checkIcon,
       action: async () => {
         const card = anchor.closest('.doclib-card');
@@ -5899,7 +5899,7 @@ function _showCardMenu(em, anchor) {
       },
     });
     actions.push({
-      label: 'Archive',
+      label: t('emailLibrary.archive'),
       icon: _archIcon,
       action: async () => {
         await fetch(`${API_BASE}/api/email/archive/${em.uid}?folder=${encodeURIComponent(state._libFolder)}${_acct()}`, { method: 'POST' });
@@ -5927,7 +5927,7 @@ function _showCardMenu(em, anchor) {
       },
     });
     actions.push({
-      label: 'Archive',
+      label: t('emailLibrary.archive'),
       icon: _archIcon,
       action: async () => {
         await fetch(`${API_BASE}/api/email/archive/${em.uid}?folder=${encodeURIComponent(state._libFolder)}${_acct()}`, { method: 'POST' });
@@ -5946,7 +5946,7 @@ function _showCardMenu(em, anchor) {
   // center lines up with the SVG icons above (which sit a bit higher).
   const _selectIcon = '<span style="font-size:16px;line-height:1;position:relative;top:-2px;">●</span>';
   actions.push({
-    label: 'Select',
+    label: t('emailLibrary.select'),
     icon: _selectIcon,
     action: () => {
       state._selectMode = true;
@@ -5957,9 +5957,9 @@ function _showCardMenu(em, anchor) {
   });
 
   actions.push(
-    { label: 'Delete', icon: _delIcon, danger: true, action: async () => {
+    { label: t('emailLibrary.delete'), icon: _delIcon, danger: true, action: async () => {
       const subject = em.subject || '(no subject)';
-      const ok = await styledConfirm(`Delete "${subject}"?`, { confirmText: 'Delete', cancelText: 'Cancel', danger: true });
+      const ok = await styledConfirm(`Delete "${subject}"?`, { confirmText: t('emailLibrary.delete'), cancelText: t('emailLibrary.cancel'), danger: true });
       if (!ok) return;
       await fetch(`${API_BASE}/api/email/delete/${em.uid}?folder=${encodeURIComponent(state._libFolder)}${_acct()}`, { method: 'DELETE' });
       await _animateEmailCardRemoval([em.uid]);
@@ -6022,9 +6022,9 @@ function _showBulkActionsMenu(anchor) {
   const _unreadIco = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>';
   const _doneIco = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
   const items = [
-    { label: 'Done', icon: _doneIco, action: () => _bulkAction('done') },
-    { label: 'Mark Read', icon: _readIco, action: () => _bulkAction('read') },
-    { label: 'Mark Unread', icon: _unreadIco, action: () => _bulkAction('unread') },
+    { label: t('emailLibrary.done'), icon: _doneIco, action: () => _bulkAction('done') },
+    { label: t('emailLibrary.mark_read'), icon: _readIco, action: () => _bulkAction('read') },
+    { label: t('emailLibrary.mark_unread'), icon: _unreadIco, action: () => _bulkAction('unread') },
   ];
   for (const a of items) {
     const it = document.createElement('div');
@@ -6065,7 +6065,7 @@ function _updateBulkBar() {
   const selectBtn = document.getElementById('email-lib-select-btn');
   if (bar) bar.classList.toggle('hidden', !state._selectMode);
   if (selectBtn) {
-    selectBtn.textContent = state._selectMode ? 'Cancel' : 'Select';
+    selectBtn.textContent = state._selectMode ? 'Cancel' : t('emailLibrary.select');
     selectBtn.classList.toggle('active', state._selectMode);
   }
   const count = document.getElementById('email-lib-selected-count');
@@ -6087,7 +6087,7 @@ async function _bulkAction(action) {
   if (action === 'delete') {
     const ok = await styledConfirm(
       `Delete ${uids.length} selected email${uids.length === 1 ? '' : 's'}?`,
-      { confirmText: 'Delete', cancelText: 'Cancel', danger: true },
+      { confirmText: t('emailLibrary.delete'), cancelText: t('emailLibrary.cancel'), danger: true },
     );
     if (!ok) return;
   }
@@ -6432,9 +6432,9 @@ function _showLibRemindSubmenu(em, parentDropdown) {
   const nextWeek = new Date(now); nextWeek.setDate(now.getDate()+daysUntilMon); nextWeek.setHours(8,0,0,0);
 
   const presets = [
-    { label: 'Later today', sub: laterToday.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' }), date: laterToday },
-    { label: 'Tomorrow', sub: tomorrow.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' }), date: tomorrow },
-    { label: 'Next week', sub: nextWeek.toLocaleDateString([], { weekday:'short' }) + ' ' + nextWeek.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' }), date: nextWeek },
+    { label: t('emailLibrary.later_today'), sub: laterToday.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' }), date: laterToday },
+    { label: t('emailLibrary.tomorrow'), sub: tomorrow.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' }), date: tomorrow },
+    { label: t('emailLibrary.next_week'), sub: nextWeek.toLocaleDateString([], { weekday:'short' }) + ' ' + nextWeek.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' }), date: nextWeek },
   ];
   for (const p of presets) {
     const item = document.createElement('div');
