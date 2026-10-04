@@ -289,12 +289,12 @@
       </div>
     </div>
 
-    <button type="submit" id="submitBtn">Sign In</button>
+    <button type="submit" id="submitBtn" data-i18n="auth.sign_in">Sign In</button>
   </form>
 
   <div class="toggle" id="toggleArea" style="display:none">
-    <span id="toggleText">Don't have an account? </span>
-    <a id="toggleLink" href="#">Sign up</a>
+    <span id="toggleText" data-i18n="auth.dont_have_account">Don't have an account? </span>
+    <a id="toggleLink" href="#" data-i18n="auth.sign_up">Sign up</a>
   </div>
 </main>
 
@@ -542,7 +542,8 @@
       const show = inp.type === 'password';
       inp.type = show ? 'text' : 'password';
       btn.innerHTML = show ? eyeOpen : eyeClosed;
-      btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+      btn.setAttribute('aria-label', _t(show ? 'auth.hide_password' : 'auth.show_password',
+        show ? 'Hide password' : 'Show password'));
       // Update data-i18n-aria-label so language switches re-translate it
       btn.setAttribute('data-i18n-aria-label', show ? 'auth.hide_password' : 'auth.show_password');
       inp.focus();
