@@ -14,6 +14,10 @@ import { RECIPE_BACKENDS, recipesForBackend, pickRecipe, recipeCommands, RECIPE_
 import { _hwfitCache, _hwfitDebounce, _hwfitFetch, _hwfitInit, _hwfitRenderList, _hwfitRenderHw, _renderGpuToggles, _expandModelRow, _fitColors, _hwfitColumns, _cachedModelIds, _gpuToggleTotal, _resetGpuToggleState } from './cookbook-hwfit.js';
 
 // Shared state & utilities (leaf module — no cookbook circular deps)
+// `esc` is load-bearing: 56 call sites below plus a module-scope read in the
+// `shared` object near the end of this file. It was never imported, so
+// cookbook.js threw "ReferenceError: esc is not defined" on evaluation and the
+// whole Cookbook tool failed to load. cookbook-shared.js re-exports ui.js's esc.
 import {
   _envState,
   _lastCacheHost, _setLastCacheHost,
@@ -23,6 +27,7 @@ import {
   _persistEnvState,
   _MODELDIR_CHECK_ON, _MODELDIR_CHECK_OFF,
   modelLogo,
+  esc,
   _detectBackend, _detectToolParser, _detectReasoningParser,
   _serverEntryHtml,
 } from './cookbook-shared.js';

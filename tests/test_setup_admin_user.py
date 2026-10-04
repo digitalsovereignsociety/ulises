@@ -70,3 +70,61 @@ def test_main_loads_admin_password_from_env_file(tmp_path, monkeypatch):
     assert bcrypt.checkpw(
         b"fromenvfile12345", data["users"]["presetuser"]["password_hash"].encode()
     ), "admin password from .env was ignored; a random one was generated"
+
+
+def test_create_default_admin_accepts_legacy_odysseus_env_names(tmp_path, monkeypatch):
+    """Regression: commit d13276a renamed ODYSSEUS_* -> ULISES_* with no
+    fallback, so a pre-rename .env silently configured nothing and setup fell
+    through to a random admin password. Legacy spellings must still work."""
+    setup_module = _load_setup_module()
+    monkeypatch.setattr(setup_module, "AUTH_FILE", str(tmp_path / "auth.json"))
+    monkeypatch.delenv("ULISES_ADMIN_USER", raising=False)
+    monkeypatch.delenv("ULISES_ADMIN_PASSWORD", raising=False)
+    monkeypatch.setenv("ODYSSEUS_ADMIN_USER", "legacyuser")
+    monkeypatch.setenv("ODYSSEUS_ADMIN_PASSWORD", "legacy-password-123")
+
+    assert setup_module.create_default_admin() == "created"
+
+    data = json.loads((tmp_path / "auth.json").read_text(encoding="utf-8"))
+    assert "legacyuser" in data["users"], data
+    import bcrypt
+
+    assert bcrypt.checkpw(
+        b"legacy-password-123", data["users"]["legacyuser"]["password_hash"].encode()
+    ), "legacy ODYSSEUS_ADMIN_PASSWORD was ignored; a random one was generated"
+
+
+def test_modern_env_names_win_over_legacy(tmp_path, monkeypatch):
+    setup_module = _load_setup_module()
+    monkeypatch.setattr(setup_module, "AUTH_FILE", str(tmp_path / "auth.json"))
+    monkeypatch.setenv("ULISES_ADMIN_USER", "modernuser")
+    monkeypatch.setenv("ULISES_ADMIN_PASSWORD", "modern-password-123")
+    monkeypatch.setenv("ODYSSEUS_ADMIN_USER", "legacyuser")
+    monkeypatch.setenv("ODYSSEUS_ADMIN_PASSWORD", "legacy-password-123")
+
+    assert setup_module.create_default_admin() == "created"
+
+    data = json.loads((tmp_path / "auth.json").read_text(encoding="utf-8"))
+    assert "modernuser" in data["users"], "ULISES_* must take precedence"
+    assert "legacyuser" not in data["users"]
+
+
+def test_admin_env_ignores_blank_values_and_false_flags(monkeypatch):
+    setup_module = _load_setup_module()
+
+    monkeypatch.setenv("ULISES_ADMIN_USER", "   ")
+    monkeypatch.setenv("ODYSSEUS_ADMIN_USER", "legacyuser")
+    monkeypatch.delenv("ULISES_ADMIN_PASSWORD", raising=False)
+    monkeypatch.delenv("ODYSSEUS_ADMIN_PASSWORD", raising=False)
+    # A blank modern value must not shadow the legacy one.
+    assert setup_module._admin_env("ULISES_ADMIN_USER", "ODYSSEUS_ADMIN_USER") == "legacyuser"
+    assert setup_module._admin_env("ULISES_ADMIN_PASSWORD", "ODYSSEUS_ADMIN_PASSWORD") == ""
+
+    for falsey in ("", "0", "false", "FALSE", "no", "off"):
+        monkeypatch.setenv("ULISES_SKIP_ADMIN_PROMPT", falsey)
+        assert setup_module._admin_env_flag("ULISES_SKIP_ADMIN_PROMPT") is False, falsey
+    for truthy in ("1", "true", "yes", "anything"):
+        monkeypatch.setenv("ULISES_SKIP_ADMIN_PROMPT", truthy)
+        assert setup_module._admin_env_flag("ULISES_SKIP_ADMIN_PROMPT") is True, truthy
+    monkeypatch.delenv("ULISES_SKIP_ADMIN_PROMPT", raising=False)
+    assert setup_module._admin_env_flag("ULISES_SKIP_ADMIN_PROMPT") is False

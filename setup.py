@@ -88,6 +88,29 @@ def _prompt_admin_credentials():
     return username, password
 
 
+def _admin_env(*names: str) -> str:
+    """First non-empty value among ``names``.
+
+    Commit d13276a ("rebase: Odysseus -> Ulises") renamed every ODYSSEUS_*
+    variable to ULISES_* without a fallback, so a pre-rename .env silently
+    stopped configuring anything. Legacy names are accepted here (same
+    candidate-list approach as src/upload_limits.py:read_byte_limit_env) so an
+    un-migrated config keeps working instead of quietly producing a random
+    admin password.
+    """
+    for name in names:
+        value = os.getenv(name)
+        if value is not None and value.strip():
+            return value.strip()
+    return ""
+
+
+def _admin_env_flag(name: str) -> bool:
+    """True when a boolean-ish env var is set to something other than false."""
+    value = os.getenv(name, "").strip().lower()
+    return value not in ("", "0", "false", "no", "off")
+
+
 def create_default_admin():
     """Create an initial admin user if none exists."""
     auth_path = AUTH_FILE
@@ -100,8 +123,9 @@ def create_default_admin():
         import json
 
         # Priority: env vars > interactive prompt > random password
-        username = os.getenv("ULISES_ADMIN_USER", "").strip().lower()
-        password = os.getenv("ULISES_ADMIN_PASSWORD", "").strip()
+        username = _admin_env("ULISES_ADMIN_USER", "ODYSSEUS_ADMIN_USER").lower()
+        password = _admin_env("ULISES_ADMIN_PASSWORD", "ODYSSEUS_ADMIN_PASSWORD")
+        password_from_env = bool(password)
 
         if username and password:
             # Both provided via env — validate before using
@@ -111,7 +135,7 @@ def create_default_admin():
             if len(password) < PASSWORD_MIN_LENGTH:
                 print(f"  [error] ULISES_ADMIN_PASSWORD must be at least {PASSWORD_MIN_LENGTH} characters")
                 return "failed"
-        elif sys.stdin.isatty() and not os.getenv("ULISES_SKIP_ADMIN_PROMPT"):
+        elif sys.stdin.isatty() and not _admin_env_flag("ULISES_SKIP_ADMIN_PROMPT"):
             # Interactive terminal — ask the user
             username, password = _prompt_admin_credentials()
         else:
@@ -132,11 +156,14 @@ def create_default_admin():
         with open(auth_path, "w", encoding="utf-8") as f:
             json.dump(auth_data, f, indent=2)
 
-        if sys.stdin.isatty() and not os.getenv("ULISES_ADMIN_PASSWORD"):
+        # `password_from_env` is decided before the prompt fallback above, so a
+        # prompt- or random-derived password still prints the temporary warning
+        # while a legacy ODYSSEUS_ADMIN_PASSWORD does not.
+        if sys.stdin.isatty() and password_from_env:
             print(f"  [ok] Admin account created ({username})")
         else:
             print(f"  [ok] Initial admin user created ({username})")
-            if not os.getenv("ULISES_ADMIN_PASSWORD"):
+            if not password_from_env:
                 print(f"        Temporary password: {password}")
                 print(f"        ** Change it after first login. Set ULISES_ADMIN_PASSWORD to choose your own. **")
         return "created"
@@ -241,21 +268,13 @@ def check_arch():
 def main():
     print("\n=== Ulises Setup ===\n")
 
-    # Load .env so pre-seeded ODYSSEUS_ADMIN_USER / ODYSSEUS_ADMIN_PASSWORD (and
-    # other deployment vars) are honored on native installs, not just when they
-    # are exported in the shell. Mirrors app.py: encoding="utf-8-sig" tolerates a
-    # UTF-8 BOM in a Notepad-saved .env. load_dotenv does not override already
-    # exported OS env vars, so the existing precedence is preserved. python-dotenv
-    # is a hard dependency (requirements.txt) and is verified by check_deps below.
-    from dotenv import load_dotenv
-    load_dotenv(os.path.join(BASE_DIR, ".env"), encoding="utf-8-sig")
-
-    # Load .env so pre-seeded ODYSSEUS_ADMIN_USER / ODYSSEUS_ADMIN_PASSWORD (and
-    # other deployment vars) are honored on native installs, not just when they
-    # are exported in the shell. Mirrors app.py: encoding="utf-8-sig" tolerates a
-    # UTF-8 BOM in a Notepad-saved .env. load_dotenv does not override already
-    # exported OS env vars, so the existing precedence is preserved. python-dotenv
-    # is a hard dependency (requirements.txt) and is verified by check_deps below.
+    # Load .env so pre-seeded ULISES_ADMIN_USER / ULISES_ADMIN_PASSWORD (and the
+    # legacy ODYSSEUS_* spellings, see _admin_env) are honored on native
+    # installs, not just when they are exported in the shell. Mirrors app.py:
+    # encoding="utf-8-sig" tolerates a UTF-8 BOM in a Notepad-saved .env.
+    # load_dotenv does not override already exported OS env vars, so the existing
+    # precedence is preserved. python-dotenv is a hard dependency
+    # (requirements.txt) and is verified by check_deps below.
     from dotenv import load_dotenv
     load_dotenv(os.path.join(BASE_DIR, ".env"), encoding="utf-8-sig")
 
