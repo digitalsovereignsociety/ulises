@@ -1,0 +1,25 @@
+{
+  "documentLibrary": {
+    "exported_zip": "ZIP de {{count}} documento(s) descargado",
+    "zipping_documents": "Preparando un ZIP de {{count}} documento(s)…",
+    "create_zip_failed": "No se pudo crear el ZIP",
+    "exported_documents": "Se exportaron {{count}} documento(s)",
+    "export_failed": "No se pudieron exportar los documentos",
+    "import_failed": "No se pudo importar el documento",
+    "create_failed": "No se pudo crear el documento",
+    "create_session_failed": "No se pudo crear la sesión de chat",
+    "cloned_to_session": "Documento clonado en la sesión",
+    "copy_chat_failed": "No se pudo copiar el enlace del chat",
+    "delete_failed": "No se pudo eliminar el documento: {{msg}}",
+    "select_documents_first": "Selecciona primero al menos un documento",
+    "deleted_count": "Se eliminaron {{count}} documento(s)",
+    "archive_failed": "No se pudo archivar el documento",
+    "restore_failed": "No se pudo restaurar el documento",
+    "archive_chat_failed": "Se archivaron {{total}} chat(s); no se pudieron archivar {{failed}}",
+    "delete_chat_failed": "Se eliminaron {{total}} chat(s); no se pudieron eliminar {{failed}}",
+    "nothing_to_tidy": "No hay nada que ordenar",
+    "tidy_failed": "No se pudo ordenar: {{msg}}",
+    "sorted_sessions": "Se ordenaron {{updated}} sesión(es) en {{folders}} carpeta(s)",
+    "start_discussion_failed": "No se pudo iniciar la discusión: {{msg}}"
+  }
+}

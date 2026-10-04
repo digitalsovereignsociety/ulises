@@ -1,0 +1,25 @@
+{
+  "documentLibrary": {
+    "exported_zip": "ZIP of {{count}} document(s) downloaded",
+    "zipping_documents": "Preparing a ZIP of {{count}} document(s)…",
+    "create_zip_failed": "Could not create the ZIP",
+    "exported_documents": "Exported {{count}} document(s)",
+    "export_failed": "Could not export the documents",
+    "import_failed": "Could not import the document",
+    "create_failed": "Could not create the document",
+    "create_session_failed": "Could not create the chat session",
+    "cloned_to_session": "Document cloned into the session",
+    "copy_chat_failed": "Could not copy the chat link",
+    "delete_failed": "Could not delete the document: {{msg}}",
+    "select_documents_first": "Select at least one document first",
+    "deleted_count": "Deleted {{count}} document(s)",
+    "archive_failed": "Could not archive the document",
+    "restore_failed": "Could not restore the document",
+    "archive_chat_failed": "Archived {{total}} chat(s); {{failed}} could not be archived",
+    "delete_chat_failed": "Deleted {{total}} chat(s); {{failed}} could not be deleted",
+    "nothing_to_tidy": "Nothing to tidy up",
+    "tidy_failed": "Could not tidy up: {{msg}}",
+    "sorted_sessions": "Sorted {{updated}} session(s) into {{folders}} folder(s)",
+    "start_discussion_failed": "Could not start the discussion: {{msg}}"
+  }
+}
