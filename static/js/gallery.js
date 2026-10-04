@@ -841,7 +841,7 @@ function _draftsShowLoading(section) {
       _draftsSpinner.element.style.cssText = 'width:28px;height:28px;margin:0;';
       ov.appendChild(_draftsSpinner.element);
     } catch (_) {
-      ov.textContent = 'Loading…';
+      ov.textContent = t('gallery.loading');
     }
     section.appendChild(ov);
   }
@@ -1699,7 +1699,7 @@ function _openDetail(img) {
         spinner = spinnerModule.createWhirlpool(36);
         spinner.element.style.cssText = 'width:36px;height:36px;margin:0;';
         overlay.appendChild(spinner.element);
-      } catch (_) { overlay.textContent = 'Rotating…'; }
+      } catch (_) { overlay.textContent = t('gallery.rotating'); }
       if (getComputedStyle(stage).position === 'static') stage.style.position = 'relative';
       stage.appendChild(overlay);
     }
@@ -1845,12 +1845,12 @@ function _openDetail(img) {
           const b = document.createElement('button');
           b.className = 'gallery-ai-chip gallery-user-chip';
           b.dataset.tagFilter = t;
-          b.title = `Filter to photos tagged “${t}”`;
+          b.title = t('gallery.filter_by_tag', { tag: t });
           b.textContent = t;
           const x = document.createElement('span');
           x.className = 'gallery-tag-x';
-          x.title = 'Remove tag';
-          x.setAttribute('aria-label', 'Remove tag');
+          x.title = t('gallery.remove_tag');
+          x.setAttribute('aria-label', t('gallery.remove_tag'));
           x.textContent = '×';
           b.appendChild(x);
           chips.appendChild(b);
@@ -2072,7 +2072,7 @@ export function openGallery() {
       const input = document.createElement('input');
       input.type = 'text';
       input.value = current === 'Edit' ? '' : current;
-      input.placeholder = 'Edit name';
+      input.placeholder = t('gallery.edit_name');
       input.className = 'gallery-tab-rename-input';
       // Replace only the label span's contents so the icon SVG next to
       // it stays visible during the rename.
@@ -2082,7 +2082,7 @@ export function openGallery() {
       input.select();
       const finish = (commit) => {
         if (commit && input.value.trim()) {
-          labelEl.textContent = `Edit: ${input.value.trim().slice(0, 24)}`;
+          labelEl.textContent = t('gallery.editing_name', { name: input.value.trim().slice(0, 24) });
         } else {
           labelEl.textContent = oldText;
         }
@@ -2257,8 +2257,8 @@ export function openGallery() {
       if (_tagging) {
         _tagCancelRequested = true;
         const _se = document.getElementById('gallery-tag-status');
-        if (_se) _se.textContent = 'Cancelling…';
-        tagAllBtn.textContent = 'Cancelling…';
+        if (_se) _se.textContent = t('gallery.cancelling');
+        tagAllBtn.textContent = t('gallery.cancelling');
         tagAllBtn.disabled = true;
         return;
       }
@@ -2299,9 +2299,9 @@ export function openGallery() {
       _tagging = true;
       _tagCancelRequested = false;
       tagAllBtn.classList.add('active', 'gallery-tag-cancelling');
-      tagAllBtn.textContent = 'Cancel';
+      tagAllBtn.textContent = t('gallery.cancel');
       if (cancelBtn) cancelBtn.style.display = 'none';   // start button covers it now
-      cancelBtn.onclick = () => { _tagCancelRequested = true; statusEl.textContent = 'Cancelling...'; };
+      cancelBtn.onclick = () => { _tagCancelRequested = true; statusEl.textContent = t('gallery.cancelling'); };
 
       let done = 0, failed = 0;
       for (const id of listRes.image_ids) {
@@ -2315,7 +2315,10 @@ export function openGallery() {
         } catch (_) { failed++; }
         done++;
         progEl.style.width = `${Math.round((done / total) * 100)}%`;
-        statusEl.textContent = `Tagging ${done}/${total}${failed ? ` — ${failed} failed` : ''}`;
+        statusEl.textContent = t('gallery.tagging_progress', {
+      done, total,
+      failed: failed ? t('gallery.tagging_failed_suffix', { count: failed }) : '',
+    });
       }
 
       statusEl.textContent = _tagCancelRequested

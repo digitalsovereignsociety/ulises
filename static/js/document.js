@@ -547,7 +547,7 @@ import { t } from './i18n.js';
     const badge = document.getElementById('doc-version-badge');
 
     if (textarea) textarea.value = '';
-    if (textarea) textarea.placeholder = 'Start typing or paste text to create a document...';
+    if (textarea) textarea.placeholder = t('document.empty_hint');
     if (textarea) textarea.disabled = false;
     if (langSelect) langSelect.value = '';
     if (badge) badge.textContent = '';
@@ -727,7 +727,7 @@ import { t } from './i18n.js';
       for (const p of pages) {
         const a = document.createElement('button');
         a.textContent = String(p);
-        a.title = `Jump to page ${p}`;
+        a.title = t('document.jump_to_page', { page: p });
         a.className = _smallBtnClass;
         a.style.cssText = _smallBtnStyle;
         a.addEventListener('click', () => pageAnchors[p]?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
@@ -745,7 +745,7 @@ import { t } from './i18n.js';
       jumpBar.appendChild(topBtn);
       const botBtn = document.createElement('button');
       botBtn.textContent = '↓ Bottom';
-      botBtn.title = 'Jump to the last page (signature fields are usually here)';
+      botBtn.title = t('document.jump_to_last_page');
       botBtn.className = _smallBtnClass;
       botBtn.style.cssText = _smallBtnStyle;
       botBtn.addEventListener('click', () => body.scrollTo({ top: body.scrollHeight, behavior: 'smooth' }));
@@ -779,7 +779,7 @@ import { t } from './i18n.js';
             thumb.style.cssText = 'max-height:32px;max-width:140px;object-fit:contain;border:1px solid var(--border);border-radius:3px;background:#fff;display:none;';
             const clearBtn = document.createElement('button');
             clearBtn.textContent = '×';
-            clearBtn.title = 'Remove signature from this field';
+            clearBtn.title = t('document.remove_signature');
             clearBtn.className = 'confirm-btn confirm-btn-secondary';
             clearBtn.style.cssText = 'padding:0 8px;font-size:0.85rem;line-height:1;display:none;';
             const apply = (sig) => {
@@ -787,16 +787,16 @@ import { t } from './i18n.js';
               thumb.src = sig.dataUrl;
               thumb.style.display = '';
               clearBtn.style.display = '';
-              btn.textContent = 'Change';
+              btn.textContent = t('document.change');
             };
             const clear = () => {
               delete wrap.dataset.signatureId;
               thumb.removeAttribute('src');
               thumb.style.display = 'none';
               clearBtn.style.display = 'none';
-              btn.textContent = 'Sign here';
+              btn.textContent = t('document.sign_here');
             };
-            btn.textContent = 'Sign here';
+            btn.textContent = t('document.sign_here');
             btn.addEventListener('click', async () => {
               const sig = await signatureModule.pick();
               if (sig) apply(sig);
@@ -821,8 +821,8 @@ import { t } from './i18n.js';
             ti.dataset.fieldName = f.name;
             ti.dataset.fieldType = f.type;
             const today = document.createElement('button');
-            today.textContent = 'Today';
-            today.title = "Set to today's date";
+            today.textContent = t('document.today');
+            today.title = t('document.set_to_today_date');
             today.className = 'confirm-btn confirm-btn-secondary';
             today.style.cssText = 'padding:3px 8px;font-size:0.72rem;';
             today.addEventListener('click', () => {
@@ -886,7 +886,7 @@ import { t } from './i18n.js';
           }
         }
         downloadBtn.disabled = true;
-        overlay.querySelector('#pdf-export-status').textContent = 'Building PDF…';
+        overlay.querySelector('#pdf-export-status').textContent = t('document.building_pdf');
         try {
           const r = await fetch(`${API_BASE}/api/document/${activeDocId}/export-pdf`, {
             method: 'POST',
@@ -911,7 +911,7 @@ import { t } from './i18n.js';
           setTimeout(() => URL.revokeObjectURL(url), 1000);
           close();
         } catch (e) {
-          overlay.querySelector('#pdf-export-status').textContent = 'Error: ' + e.message;
+          overlay.querySelector('#pdf-export-status').textContent = t('document.error_with', { error: e.message });
           downloadBtn.disabled = false;
         }
       });
@@ -1241,7 +1241,7 @@ import { t } from './i18n.js';
               el.style.background = 'color-mix(in srgb, var(--accent, var(--red)) 10%, transparent)';
               const span = document.createElement('span');
               span.style.cssText = 'color:var(--accent, var(--red));font-size:11px;';
-              span.textContent = 'Sign here';
+              span.textContent = t('document.sign_here');
               el.appendChild(span);
             }
           };
@@ -1299,8 +1299,8 @@ import { t } from './i18n.js';
         if (isDate) {
           const today = document.createElement('button');
           today.type = 'button';
-          today.textContent = 'Today';
-          today.title = "Set to today's date";
+          today.textContent = t('document.today');
+          today.title = t('document.set_to_today_date');
           today.style.cssText = `position:absolute;left:calc(${lPct}% + ${wPct}%);top:${tPct}%;height:${hPct}%;margin-left:4px;padding:0 6px;border:1px solid color-mix(in srgb, var(--accent, var(--red)) 55%, transparent);background:rgba(255,255,255,0.95);color:var(--accent, var(--red));border-radius:3px;cursor:pointer;font-size:10px;line-height:1;white-space:nowrap;`;
           today.addEventListener('click', () => {
             const d = new Date();
@@ -1395,7 +1395,7 @@ import { t } from './i18n.js';
     } else if (kind === 'signature') {
       input = document.createElement('div');
       input.style.cssText = `width:100%;height:100%;box-sizing:border-box;border:1px dashed color-mix(in srgb, var(--accent, var(--red)) 65%, transparent);background:color-mix(in srgb, var(--accent, var(--red)) 10%, transparent);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;font-size:10px;color:var(--accent, var(--red));`;
-      input.textContent = (ann.value && ann.value.startsWith('signature:')) ? '' : 'Sign here';
+      input.textContent = (ann.value && ann.value.startsWith('signature:')) ? '' : t('document.sign_here');
       input.dataset.signatureId = (ann.value && ann.value.startsWith('signature:')) ? ann.value.slice(10) : '';
     } else {
       // Multi-line text input. Browser resize disabled — we use the custom
@@ -1406,7 +1406,7 @@ import { t } from './i18n.js';
       // a fullscreen toggle.
       input = document.createElement('textarea');
       input.value = ann.value || '';
-      input.placeholder = 'Type…';
+      input.placeholder = t('document.type_hint');
       input.rows = 1;
       input.spellcheck = false;
       const lh = ann.lineHeight || 1.3;
@@ -1427,18 +1427,18 @@ import { t } from './i18n.js';
     const del = document.createElement('button');
     del.type = 'button';
     del.textContent = '✖';
-    del.title = 'Delete annotation';
+    del.title = t('document.delete_annotation');
     del.style.cssText = `position:absolute;top:${OFF}px;right:${OFF}px;width:${HS}px;height:${HS}px;padding:0 0 0 1px;border:1px solid var(--accent, var(--red));background:#fff;color:var(--accent, var(--red));border-radius:50%;cursor:pointer;font-size:11px;line-height:1;display:${HIDE};font-weight:bold;touch-action:none;`;
 
     // ☰ drag handle — same size as the × button.
     const grip = document.createElement('div');
-    grip.title = 'Drag to move';
+    grip.title = t('document.drag_to_move');
     grip.textContent = '☰';
     grip.style.cssText = `position:absolute;top:${OFF}px;left:${OFF}px;width:${HS}px;height:${HS}px;border:1px solid color-mix(in srgb, var(--accent, var(--red)) 65%, transparent);background:#fff;color:var(--accent, var(--red));border-radius:3px;cursor:move;font-size:11px;line-height:${HS - 2}px;text-align:center;display:${HIDE};touch-action:none;`;
 
     // ↘ resize handle — same size as the × button.
     const resize = document.createElement('div');
-    resize.title = 'Drag to resize';
+    resize.title = t('document.drag_to_resize');
     resize.style.cssText = `position:absolute;bottom:${OFF}px;right:${OFF}px;width:${HS}px;height:${HS}px;border:1px solid color-mix(in srgb, var(--accent, var(--red)) 65%, transparent);background:#fff;color:var(--accent, var(--red));border-radius:3px;cursor:nwse-resize;display:${HIDE};touch-action:none;`;
     resize.innerHTML = '<svg width="14" height="14" viewBox="0 0 10 10" style="display:block;margin:auto;height:100%;"><path d="M2 8 L8 2 M5 8 L8 5" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg>';
 
@@ -1447,7 +1447,7 @@ import { t } from './i18n.js';
       menuBtn = document.createElement('button');
       menuBtn.type = 'button';
       menuBtn.textContent = '…';
-      menuBtn.title = 'Text annotation options';
+      menuBtn.title = t('document.annotation_options');
       menuBtn.style.cssText = `position:absolute;bottom:${OFF}px;left:${OFF}px;width:${HS}px;height:${HS}px;padding:0;border:1px solid color-mix(in srgb, var(--accent, var(--red)) 65%, transparent);background:#fff;color:var(--accent, var(--red));border-radius:50%;cursor:pointer;font-size:15px;line-height:0.8;display:${HIDE};font-weight:bold;touch-action:none;`;
     }
 
@@ -1489,7 +1489,7 @@ import { t } from './i18n.js';
           input.style.background = 'color-mix(in srgb, var(--accent, var(--red)) 10%, transparent)';
           input.style.border = '1px dashed color-mix(in srgb, var(--accent, var(--red)) 65%, transparent)';
           const span = document.createElement('span');
-          span.textContent = 'Sign here';
+          span.textContent = t('document.sign_here');
           input.appendChild(span);
           return;
         }
@@ -1781,7 +1781,7 @@ import { t } from './i18n.js';
 
     _setPdfSaveStatus('saving');
     const btn = document.getElementById('doc-pdf-ai-fill-btn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Thinking…'; }
+    if (btn) { btn.disabled = true; btn.textContent = t('document.thinking'); }
     try {
       const res = await fetch(`${API_BASE}/api/document/${docId}/ai-fill-annotations`, {
         method: 'POST',
@@ -1834,7 +1834,7 @@ import { t } from './i18n.js';
       console.error('AI fill failed:', e);
       _setPdfSaveStatus('error', `AI fill failed: ${e.message || e}`);
     } finally {
-      if (btn) { btn.disabled = false; btn.textContent = 'AI fill'; }
+      if (btn) { btn.disabled = false; btn.textContent = t('document.ai_fill'); }
     }
   }
 
@@ -2060,11 +2060,11 @@ import { t } from './i18n.js';
       const _replyable = !!(_ad && _ad.sourceEmailUid && _ad.sourceEmailFolder);
       if (_replyable && _copyBtn.dataset.mode !== 'reply') {
         _copyBtn.dataset.mode = 'reply';
-        _copyBtn.title = 'Reply to the sender with this filled file attached';
+        _copyBtn.title = t('document.reply_with_attachment');
         _copyBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>Attach';
       } else if (!_replyable && _copyBtn.dataset.mode !== 'copy') {
         _copyBtn.dataset.mode = 'copy';
-        _copyBtn.title = 'Copy document';
+        _copyBtn.title = t('document.copy_document');
         _copyBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy';
       }
     }
@@ -2607,7 +2607,7 @@ import { t } from './i18n.js';
             chip.type = 'button';
             chip.className = 'email-attachment-chip';
             // Full filename on hover for the chip ellipsis-truncated label.
-            chip.title = `Download ${att.filename}`;
+            chip.title = t('document.download_attachment', { filename: att.filename });
             chip.innerHTML = chipHtml;
             chip.addEventListener('click', () => _withSpinner(chip, async () => {
               try {
@@ -3231,7 +3231,7 @@ import { t } from './i18n.js';
     const body = (_rich ? (_rich.innerText || _rich.textContent || '') : (textarea?.value || '')).trim();
     const bodyHtml = _rich ? _rich.innerHTML : null;
     const btn = document.getElementById('doc-email-draft-btn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
+    if (btn) { btn.disabled = true; btn.textContent = t('document.saving'); }
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 18000);
     try {
@@ -3262,7 +3262,7 @@ import { t } from './i18n.js';
       if (uiModule) uiModule.showError(timedOut ? t('document.save_draft_timed_out') : t('document.save_draft_failed'));
     } finally {
       clearTimeout(timeout);
-      if (btn) { btn.disabled = false; btn.textContent = 'Draft'; }
+      if (btn) { btn.disabled = false; btn.textContent = t('document.draft'); }
     }
   }
 
@@ -3892,7 +3892,7 @@ import { t } from './i18n.js';
       // Update textarea (keep existing content the user typed)
       const textarea = document.getElementById('doc-editor-textarea');
       if (textarea) {
-        textarea.placeholder = 'Document content...';
+        textarea.placeholder = t('document.content_placeholder');
       }
       syncHighlighting();
       renderTabs();
@@ -4315,7 +4315,7 @@ import { t } from './i18n.js';
         if (isFull) {
           if (_divCollapse.dataset.mode !== 'unfullscreen') {
             _divCollapse.dataset.mode = 'unfullscreen';
-            _divCollapse.title = 'Exit fullscreen';
+            _divCollapse.title = t('document.exit_fullscreen');
           }
           return;
         }
@@ -4325,10 +4325,10 @@ import { t } from './i18n.js';
         const cur = _divCollapse.dataset.mode;
         if (ev.clientX > midX + HYSTERESIS && cur !== 'collapse') {
           _divCollapse.dataset.mode = 'collapse';
-          _divCollapse.title = 'Collapse panel';
+          _divCollapse.title = t('document.collapse_panel');
         } else if (ev.clientX < midX - HYSTERESIS && cur !== 'fullscreen') {
           _divCollapse.dataset.mode = 'fullscreen';
-          _divCollapse.title = 'Fullscreen';
+          _divCollapse.title = t('document.fullscreen');
         }
       };
       const _onMove = (ev) => _applyMode(ev);
@@ -6148,7 +6148,7 @@ import { t } from './i18n.js';
       let textarea = document.getElementById('doc-editor-textarea');
       if (textarea) {
         textarea.disabled = false;
-        textarea.placeholder = 'Document content...';
+        textarea.placeholder = t('document.content_placeholder');
       }
       // Capture text typed during the round-trip (only when starting from the
       // empty editor — don't steal another doc's content).
@@ -6995,7 +6995,7 @@ import { t } from './i18n.js';
       badge = document.createElement('span');
       badge.id = 'doc-selection-badge';
       badge.className = 'doc-selection-badge';
-      badge.title = 'Selected regions — type in chat to edit';
+      badge.title = t('document.selected_regions_hint');
       // Sits directly under the formatting toolbar so it reads as part
       // of the toolbar row, not buried in the page header. Falls back
       // to the editor header if the toolbar isn't on screen.
@@ -7725,12 +7725,12 @@ import { t } from './i18n.js';
 
     const acceptAll = document.createElement('button');
     acceptAll.className = 'diff-toolbar-btn diff-toolbar-btn-accept';
-    acceptAll.textContent = 'Accept All';
+    acceptAll.textContent = t('document.accept_all');
     acceptAll.addEventListener('click', () => _resolveAllChunks(true));
 
     const rejectAll = document.createElement('button');
     rejectAll.className = 'diff-toolbar-btn diff-toolbar-btn-reject';
-    rejectAll.textContent = 'Reject All';
+    rejectAll.textContent = t('document.reject_all');
     rejectAll.addEventListener('click', () => _resolveAllChunks(false));
 
     toolbar.appendChild(status);
@@ -7767,13 +7767,13 @@ import { t } from './i18n.js';
 
         const acceptBtn = document.createElement('button');
         acceptBtn.className = 'diff-chunk-btn diff-chunk-btn-accept';
-        acceptBtn.title = 'Accept change';
+        acceptBtn.title = t('document.accept_change');
         acceptBtn.innerHTML = '✓';
         acceptBtn.addEventListener('click', (e) => { e.stopPropagation(); _resolveChunk(chunk.id, true); });
 
         const rejectBtn = document.createElement('button');
         rejectBtn.className = 'diff-chunk-btn diff-chunk-btn-reject';
-        rejectBtn.title = 'Reject change';
+        rejectBtn.title = t('document.reject_change');
         rejectBtn.innerHTML = '✗';
         rejectBtn.addEventListener('click', (e) => { e.stopPropagation(); _resolveChunk(chunk.id, false); });
 
@@ -9376,7 +9376,7 @@ import { t } from './i18n.js';
     const textarea = document.getElementById('doc-editor-textarea');
     if (textarea) {
       textarea.disabled = false;
-      textarea.placeholder = 'Document content...';
+      textarea.placeholder = t('document.content_placeholder');
       textarea.value = '';
     }
     // Show streaming indicator
@@ -9655,7 +9655,7 @@ import { t } from './i18n.js';
     // Re-enable editor if it was in empty state
     if (textarea) {
       textarea.disabled = false;
-      textarea.placeholder = 'Document content...';
+      textarea.placeholder = t('document.content_placeholder');
     }
     if (badge) badge.textContent = `v${data.version || 1}`;
     if (data.title && titleInput) titleInput.value = data.title;

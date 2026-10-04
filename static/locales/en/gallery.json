@@ -46,6 +46,16 @@
     "create_zip_failed": "Could not create the ZIP",
     "no_images_in_drop": "No images or videos in that drop",
     "folder_drop_unsupported": "Dragging a folder is not supported — drop the files instead",
-    "no_images_or_videos": "No images or videos found"
+    "no_images_or_videos": "No images or videos found",
+    "loading": "Loading…",
+    "rotating": "Rotating…",
+    "filter_by_tag": "Filter to photos tagged “{{tag}}”",
+    "remove_tag": "Remove tag",
+    "edit_name": "Edit name",
+    "editing_name": "Edit: {{name}}",
+    "cancelling": "Cancelling…",
+    "cancel": "Cancel",
+    "tagging_progress": "Tagging {{done}}/{{total}}{{failed}}",
+    "tagging_failed_suffix": " — {{count}} failed"
   }
 }

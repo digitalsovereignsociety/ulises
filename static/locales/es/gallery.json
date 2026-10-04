@@ -46,6 +46,16 @@
     "create_zip_failed": "No se pudo crear el ZIP",
     "no_images_in_drop": "No hay imágenes ni vídeos en lo que soltaste",
     "folder_drop_unsupported": "No se admite soltar una carpeta — suelta los archivos",
-    "no_images_or_videos": "No se encontraron imágenes ni vídeos"
+    "no_images_or_videos": "No se encontraron imágenes ni vídeos",
+    "loading": "Cargando…",
+    "rotating": "Rotando…",
+    "filter_by_tag": "Filtrar por fotos etiquetadas «{{tag}}»",
+    "remove_tag": "Quitar etiqueta",
+    "edit_name": "Editar nombre",
+    "editing_name": "Editando: {{name}}",
+    "cancelling": "Cancelando…",
+    "cancel": "Cancelar",
+    "tagging_progress": "Etiquetando {{done}}/{{total}}{{failed}}",
+    "tagging_failed_suffix": " — {{count}} fallidas"
   }
 }
