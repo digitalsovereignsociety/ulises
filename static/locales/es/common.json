@@ -90,6 +90,11 @@
     "deleted": "Eliminado",
     "document_deleted": "Documento eliminado",
     "no_changes": "Sin cambios",
-    "unarchived": "Sacado del archivo"
+    "unarchived": "Sacado del archivo",
+    "token_action_read": "lectura",
+    "token_action_write": "escritura",
+    "token_action_draft": "borrador",
+    "token_action_send": "envío",
+    "token_action_launch": "lanzamiento"
   }
 }

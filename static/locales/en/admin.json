@@ -85,6 +85,19 @@
     "deleting_all": "Deleting all…",
     "wipe_all_confirm": "This will permanently delete {{label}} data. This cannot be undone.",
     "wipe_all_confirm2": "You are about to delete {{label}} data across every category. This cannot be undone.",
-    "delete_everything": "Delete everything"
+    "delete_everything": "Delete everything",
+    "token_detail_todos_read": "Read notes and checklists",
+    "token_detail_todos_write": "Create, update, delete, and toggle todo items",
+    "token_detail_documents_read": "Read documents when a document API is enabled",
+    "token_detail_documents_write": "Create and update draft documents",
+    "token_detail_email_read": "Read email when an email API is enabled",
+    "token_detail_email_draft": "Create email reply drafts without sending",
+    "token_detail_email_send": "Send email directly",
+    "token_detail_calendar_read": "Read calendar events when enabled",
+    "token_detail_calendar_write": "Create and update calendar events",
+    "token_detail_memory_read": "Read memory when enabled",
+    "token_detail_memory_write": "Write memory when enabled",
+    "token_detail_cookbook_read": "List cookbook tasks + tail their tmux output",
+    "token_detail_cookbook_launch": "Launch and stop cookbook serve tasks"
   }
 }

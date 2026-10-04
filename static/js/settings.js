@@ -5233,20 +5233,23 @@ async function initUnifiedIntegrations() {
       if (tokRes.ok) tokens = await tokRes.json();
     } catch (_) {}
 
+    // Keys are the wire contract with the backend scope allowlist; the display
+    // name is derived from the key and the prose comes from
+    // settings.token_detail.*, so no English label is parsed at render time.
     const toolScopes = [
-      { key: 'todos:read', label: 'Todos', detail: 'Read notes and checklists' },
-      { key: 'todos:write', label: 'Todos write', detail: 'Create, update, delete, and toggle todo items' },
-      { key: 'documents:read', label: 'Documents', detail: 'Read documents when a document API is enabled' },
-      { key: 'documents:write', label: 'Documents write', detail: 'Create and update draft documents' },
-      { key: 'email:read', label: 'Email', detail: 'Read email when an email API is enabled' },
-      { key: 'email:draft', label: 'Email drafts', detail: 'Create email reply drafts without sending' },
-      { key: 'email:send', label: 'Email send', detail: 'Send email directly' },
-      { key: 'calendar:read', label: 'Calendar', detail: 'Read calendar events when enabled' },
-      { key: 'calendar:write', label: 'Calendar write', detail: 'Create and update calendar events' },
-      { key: 'memory:read', label: 'Memory', detail: 'Read memory when enabled' },
-      { key: 'memory:write', label: 'Memory write', detail: 'Write memory when enabled' },
-      { key: 'cookbook:read', label: 'Cookbook', detail: 'List cookbook tasks + tail their tmux output (debug a model serve from outside the UI)' },
-      { key: 'cookbook:launch', label: 'Cookbook launch', detail: 'Launch and stop cookbook serve tasks. Powerful: runs SSH commands on your configured servers, bounded by the same allowlist the UI uses (vllm/python3/sglang/llama-server/...)' },
+      { key: 'todos:read', detail: 'todos_read' },
+      { key: 'todos:write', detail: 'todos_write' },
+      { key: 'documents:read', detail: 'documents_read' },
+      { key: 'documents:write', detail: 'documents_write' },
+      { key: 'email:read', detail: 'email_read' },
+      { key: 'email:draft', detail: 'email_draft' },
+      { key: 'email:send', detail: 'email_send' },
+      { key: 'calendar:read', detail: 'calendar_read' },
+      { key: 'calendar:write', detail: 'calendar_write' },
+      { key: 'memory:read', detail: 'memory_read' },
+      { key: 'memory:write', detail: 'memory_write' },
+      { key: 'cookbook:read', detail: 'cookbook_read' },
+      { key: 'cookbook:launch', detail: 'cookbook_launch' },
     ];
     // Strict name-prefix match keeps Codex and Claude tokens in their own forms.
     const agentTokens = (Array.isArray(tokens) ? tokens : []).filter(tok =>
@@ -5261,7 +5264,6 @@ async function initUnifiedIntegrations() {
       memory: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2a2.5 2.5 0 0 0-2.5 2.5 2.5 2.5 0 0 0-2.5 2.5A2.5 2.5 0 0 0 2 9.5v3A2.5 2.5 0 0 0 4.5 15a2.5 2.5 0 0 0 2.5 2.5A2.5 2.5 0 0 0 9.5 20H10V2z"/><path d="M14.5 2a2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1 2.5 2.5A2.5 2.5 0 0 1 22 9.5v3A2.5 2.5 0 0 1 19.5 15a2.5 2.5 0 0 1-2.5 2.5A2.5 2.5 0 0 1 14.5 20H14V2z"/></svg>',
       cookbook: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
     };
-    const _scopeNiceLabel = (label) => label.replace(/\s+(write|drafts?|send)$/i, '');
     const _scopeAction = (key) => (key.split(':')[1] || '').toLowerCase();
     const _pillStyle = (action) => {
       if (action === 'read') return 'background:rgba(150,150,150,0.18);color:var(--fg-muted,#888);';
@@ -5273,13 +5275,16 @@ async function initUnifiedIntegrations() {
         const tool = scope.key.split(':')[0];
         const action = _scopeAction(scope.key);
         const icon = _scopeIcons[tool] || '';
-        const niceLabel = _scopeNiceLabel(scope.label);
+        // Was _scopeNiceLabel(scope.label): an English suffix stripped off the
+        // label. The regex never covered 'launch', so 'Cookbook launch' was
+        // left untrimmed, and any translation would have leaked through whole.
+        const niceLabel = tool.charAt(0).toUpperCase() + tool.slice(1);
         return `
         <label class="settings-row" style="align-items:center;gap:8px;display:flex;min-height:30px;padding:2px 0;">
           <span style="opacity:0.7;display:inline-flex;align-items:center;justify-content:center;width:16px;flex-shrink:0;">${icon}</span>
           <span class="settings-label" style="width:75px;flex-shrink:0;padding:0;">${esc(niceLabel)}</span>
-          <span style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;padding:1px 7px;border-radius:999px;flex-shrink:0;min-width:44px;text-align:center;margin-left:-3px;box-sizing:border-box;${_pillStyle(action)}">${esc(action)}</span>
-          <span style="font-size:11px;line-height:1.35;opacity:0.62;flex:1;min-width:0;">${esc(scope.detail)}</span>
+          <span style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;padding:1px 7px;border-radius:999px;flex-shrink:0;min-width:44px;text-align:center;margin-left:-3px;box-sizing:border-box;${_pillStyle(action)}">${esc(t(`common.token_action_${action}`))}</span>
+          <span style="font-size:11px;line-height:1.35;opacity:0.62;flex:1;min-width:0;">${esc(t(`settings.token_detail_${scope.detail}`))}</span>
           <label class="admin-switch" style="margin-left:auto;flex-shrink:0;"><input type="checkbox" class="uf-codex-scope" data-token-id="${esc(t.id)}" data-scope="${esc(scope.key)}" ${scopes.has(scope.key) ? 'checked' : ''}><span class="admin-slider"></span></label>
         </label>`;
       }).join('');

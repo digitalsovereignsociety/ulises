@@ -90,6 +90,11 @@
     "deleted": "Deleted",
     "document_deleted": "Document deleted",
     "no_changes": "No changes",
-    "unarchived": "Moved out of the archive"
+    "unarchived": "Moved out of the archive",
+    "token_action_read": "read",
+    "token_action_write": "write",
+    "token_action_draft": "draft",
+    "token_action_send": "send",
+    "token_action_launch": "launch"
   }
 }

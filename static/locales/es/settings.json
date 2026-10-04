@@ -407,6 +407,19 @@
     "press_a_key": "pulsa una tecla",
     "ntfy_needs_integration": "ntfy (añade primero Integraciones)",
     "key_set": " (clave configurada)",
-    "no_key": " (sin clave)"
+    "no_key": " (sin clave)",
+    "token_detail_todos_read": "Leer notas y listas de comprobación",
+    "token_detail_todos_write": "Crear, actualizar, eliminar y marcar tareas",
+    "token_detail_documents_read": "Leer documentos cuando hay una API de documentos activa",
+    "token_detail_documents_write": "Crear y actualizar borradores de documentos",
+    "token_detail_email_read": "Leer correo cuando hay una API de correo activa",
+    "token_detail_email_draft": "Crear borradores de respuesta sin enviar",
+    "token_detail_email_send": "Enviar correo directamente",
+    "token_detail_calendar_read": "Leer eventos del calendario cuando está activo",
+    "token_detail_calendar_write": "Crear y actualizar eventos del calendario",
+    "token_detail_memory_read": "Leer memoria cuando está activa",
+    "token_detail_memory_write": "Escribir en memoria cuando está activa",
+    "token_detail_cookbook_read": "Listar tareas del cookbook y ver su salida tmux (depurar un serve desde fuera de la UI)",
+    "token_detail_cookbook_launch": "Lanzar y detener tareas serve del cookbook. Potente: ejecuta comandos SSH en tus servidores configurados, limitado por la misma lista blanca que usa la UI (vllm/python3/sglang/llama-server/...)"
   }
 }

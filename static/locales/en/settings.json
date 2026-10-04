@@ -407,6 +407,19 @@
     "press_a_key": "press a key",
     "ntfy_needs_integration": "ntfy (add in Integrations first)",
     "key_set": " (key set)",
-    "no_key": " (no key)"
+    "no_key": " (no key)",
+    "token_detail_todos_read": "Read notes and checklists",
+    "token_detail_todos_write": "Create, update, delete, and toggle todo items",
+    "token_detail_documents_read": "Read documents when a document API is enabled",
+    "token_detail_documents_write": "Create and update draft documents",
+    "token_detail_email_read": "Read email when an email API is enabled",
+    "token_detail_email_draft": "Create email reply drafts without sending",
+    "token_detail_email_send": "Send email directly",
+    "token_detail_calendar_read": "Read calendar events when enabled",
+    "token_detail_calendar_write": "Create and update calendar events",
+    "token_detail_memory_read": "Read memory when enabled",
+    "token_detail_memory_write": "Write memory when enabled",
+    "token_detail_cookbook_read": "List cookbook tasks + tail their tmux output (debug a model serve from outside the UI)",
+    "token_detail_cookbook_launch": "Launch and stop cookbook serve tasks. Powerful: runs SSH commands on your configured servers, bounded by the same allowlist the UI uses (vllm/python3/sglang/llama-server/...)"
   }
 }

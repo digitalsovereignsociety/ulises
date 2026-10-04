@@ -2376,37 +2376,45 @@ function initRag() {
    SYSTEM TAB — Tokens
    ═══════════════════════════════════════════ */
 // Catalog mirrors the one in settings.js integration form. Keep keys in
-// sync with the backend scope allowlist.
+// sync with the backend scope allowlist — the key is the only wire value, so
+// the display name and the prose both come from locales. `detail` is a suffix
+// under admin.token_detail.*, not text.
 const _TOKEN_SCOPES = [
-  { key: 'todos:read',        label: 'Todos read',        detail: 'Read notes and checklists' },
-  { key: 'todos:write',       label: 'Todos write',       detail: 'Create, update, delete, and toggle todo items' },
-  { key: 'documents:read',    label: 'Documents read',    detail: 'Read documents when a document API is enabled' },
-  { key: 'documents:write',   label: 'Documents write',   detail: 'Create and update draft documents' },
-  { key: 'email:read',        label: 'Email read',        detail: 'Read email when an email API is enabled' },
-  { key: 'email:draft',       label: 'Email draft',       detail: 'Create email reply drafts without sending' },
-  { key: 'email:send',        label: 'Email send',        detail: 'Send email directly' },
-  { key: 'calendar:read',     label: 'Calendar read',     detail: 'Read calendar events when enabled' },
-  { key: 'calendar:write',    label: 'Calendar write',    detail: 'Create and update calendar events' },
-  { key: 'memory:read',       label: 'Memory read',       detail: 'Read memory when enabled' },
-  { key: 'memory:write',      label: 'Memory write',      detail: 'Write memory when enabled' },
-  { key: 'cookbook:read',     label: 'Cookbook read',     detail: 'List cookbook tasks + tail their tmux output' },
-  { key: 'cookbook:launch',   label: 'Cookbook launch',   detail: 'Launch and stop cookbook serve tasks' },
+  { key: 'todos:read',        detail: 'todos_read' },
+  { key: 'todos:write',       detail: 'todos_write' },
+  { key: 'documents:read',    detail: 'documents_read' },
+  { key: 'documents:write',   detail: 'documents_write' },
+  { key: 'email:read',        detail: 'email_read' },
+  { key: 'email:draft',       detail: 'email_draft' },
+  { key: 'email:send',        detail: 'email_send' },
+  { key: 'calendar:read',     detail: 'calendar_read' },
+  { key: 'calendar:write',    detail: 'calendar_write' },
+  { key: 'memory:read',       detail: 'memory_read' },
+  { key: 'memory:write',      detail: 'memory_write' },
+  { key: 'cookbook:read',     detail: 'cookbook_read' },
+  { key: 'cookbook:launch',   detail: 'cookbook_launch' },
 ];
 
-function _renderTokenScopeRows(t) {
-  const have = new Set(t.scopes || []);
+// `token` is the token row, deliberately not named `t`: a parameter called `t`
+// shadowed the imported i18n `t` and made it uncallable in this scope.
+function _renderTokenScopeRows(token) {
+  const have = new Set(token.scopes || []);
   return _TOKEN_SCOPES.map(s => {
-    const action = (s.key.split(':')[1] || '').toLowerCase();
+    const [rawTool, rawAction] = s.key.split(':');
+    const action = (rawAction || '').toLowerCase();
     const pill = action === 'read'
       ? 'background:rgba(150,150,150,0.18);color:var(--fg-muted,#888);'
       : 'background:color-mix(in srgb, var(--accent, var(--red)) 18%, transparent);color:var(--accent, var(--red));';
-    const tool = s.label.replace(/\s+(read|write|draft|send|launch)$/i, '');
+    // Derive the tool name from the key, never from a label. It used to be
+    // stripped out of the English label with a regex, which silently degraded
+    // to the whole label as soon as the label was translated.
+    const tool = rawTool.charAt(0).toUpperCase() + rawTool.slice(1);
     return `
       <label style="display:flex;align-items:center;gap:8px;min-height:28px;padding:1px 0;">
         <span class="settings-label" style="width:90px;flex-shrink:0;padding:0;font-size:12px;">${esc(tool)}</span>
-        <span style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;padding:1px 7px;border-radius:999px;flex-shrink:0;min-width:44px;text-align:center;box-sizing:border-box;${pill}">${esc(action)}</span>
-        <span style="font-size:11px;line-height:1.35;opacity:0.62;flex:1;min-width:0;">${esc(s.detail)}</span>
-        <label class="admin-switch" style="margin-left:auto;flex-shrink:0;"><input type="checkbox" class="adm-tok-scope" data-token-id="${esc(t.id)}" data-scope="${esc(s.key)}" ${have.has(s.key) ? 'checked' : ''}><span class="admin-slider"></span></label>
+        <span style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;padding:1px 7px;border-radius:999px;flex-shrink:0;min-width:44px;text-align:center;box-sizing:border-box;${pill}">${esc(t(`common.token_action_${action}`))}</span>
+        <span style="font-size:11px;line-height:1.35;opacity:0.62;flex:1;min-width:0;">${esc(t(`admin.token_detail_${s.detail}`))}</span>
+        <label class="admin-switch" style="margin-left:auto;flex-shrink:0;"><input type="checkbox" class="adm-tok-scope" data-token-id="${esc(token.id)}" data-scope="${esc(s.key)}" ${have.has(s.key) ? 'checked' : ''}><span class="admin-slider"></span></label>
       </label>`;
   }).join('');
 }
