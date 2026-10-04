@@ -78,6 +78,10 @@ const localAddBtn = {{ disabled: false, textContent: '' }};
 async function fetch() {{
   return {{ ok: true, async json() {{ return {{ id: 'x', models: [], online: true, status: 'ok' }}; }} }};
 }}
+// The handler routes its button and status text through the i18n t(). This
+// harness asserts only what reaches FormData, so echoing the key is enough;
+// resolving real strings is tests/test_i18n_html_coverage.py's job.
+function t(key) {{ return key; }}
 async function run() {{ {body} }}
 run().then(() => console.log(JSON.stringify(appended)))
      .catch((e) => {{ console.error(e); process.exit(2); }});

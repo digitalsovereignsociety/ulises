@@ -7,7 +7,7 @@ import { providerLogo, providerLogoFromUrl } from './providers.js';
 import { sortModelObjects } from './modelSort.js';
 import { PROVIDER_DEVICE_FLOWS, formatDeviceFlowError, runProviderDeviceFlow } from './providerDeviceFlow.js';
 import { API_BASE } from './apiBase.js';
-import { t } from './i18n.js';
+import { t, tn } from './i18n.js';
 
 let initialized = false;
 let modalEl = null;
@@ -352,7 +352,7 @@ function initAddUser() {
       if (!policy) return;
       _authPolicy = policy;
       const admPw = el('adm-newPassword');
-      if (admPw) admPw.placeholder = `Password (min ${policy.password_min_length})`;
+      if (admPw) admPw.placeholder = t('admin.password_min', { n: policy.password_min_length });
     })
     .catch(() => {});
   el('adm-addBtn').addEventListener('click', async () => {
@@ -361,16 +361,16 @@ function initAddUser() {
     const username = el('adm-newUsername').value.trim();
     const password = el('adm-newPassword').value;
     const is_admin = el('adm-newIsAdmin').checked;
-    if (!username) { msg.textContent = 'Username required'; msg.className = 'admin-error'; return; }
-    if (password.length < _authPolicy.password_min_length) { msg.textContent = `Password must be at least ${_authPolicy.password_min_length} characters`; msg.className = 'admin-error'; return; }
-    if (_authPolicy.reserved_usernames.includes(username.toLowerCase())) { msg.textContent = 'This username is reserved'; msg.className = 'admin-error'; return; }
+    if (!username) { msg.textContent = t('admin.username_required'); msg.className = 'admin-error'; return; }
+    if (password.length < _authPolicy.password_min_length) { msg.textContent = t('admin.password_min_chars', { n: _authPolicy.password_min_length }); msg.className = 'admin-error'; return; }
+    if (_authPolicy.reserved_usernames.includes(username.toLowerCase())) { msg.textContent = t('admin.username_reserved'); msg.className = 'admin-error'; return; }
     el('adm-addBtn').disabled = true;
     try {
       const res = await fetch('/api/auth/users', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password, is_admin }) });
       const data = await res.json();
-      if (res.ok) { msg.textContent = 'User created'; msg.className = 'admin-success'; el('adm-newUsername').value = ''; el('adm-newPassword').value = ''; el('adm-newIsAdmin').checked = false; loadUsers(); }
+      if (res.ok) { msg.textContent = t('admin.user_created'); msg.className = 'admin-success'; el('adm-newUsername').value = ''; el('adm-newPassword').value = ''; el('adm-newIsAdmin').checked = false; loadUsers(); }
       else { msg.textContent = data.detail || 'Failed'; msg.className = 'admin-error'; }
-    } catch (e) { msg.textContent = 'Request failed'; msg.className = 'admin-error'; }
+    } catch (e) { msg.textContent = t('admin.request_failed'); msg.className = 'admin-error'; }
     el('adm-addBtn').disabled = false;
   });
 }
@@ -798,7 +798,7 @@ function initEndpointForm() {
       urlInput.readOnly = true;
       if (apiKey) {
         apiKey.value = '';
-        apiKey.placeholder = 'No API key needed';
+        apiKey.placeholder = t('admin.no_api_key_needed');
         apiKey.disabled = true;
       }
       if (testBtn) {
@@ -808,7 +808,7 @@ function initEndpointForm() {
       }
       if (addBtn) {
         addBtn.disabled = false;
-        addBtn.textContent = 'Add';
+        addBtn.textContent = t('admin.add');
         addBtn.style.width = '55px';
         addBtn.style.display = '';
       }
@@ -818,10 +818,10 @@ function initEndpointForm() {
         msg.className = '';
       }
     } else {
-      urlInput.placeholder = 'Base URL or pick provider';
+      urlInput.placeholder = t('admin.base_url_or_pick_provider');
       urlInput.readOnly = false;
       if (apiKey) {
-        apiKey.placeholder = 'API key';
+        apiKey.placeholder = t('admin.api_key');
         apiKey.disabled = false;
       }
       if (testBtn) {
@@ -831,7 +831,7 @@ function initEndpointForm() {
       }
       if (addBtn) {
         addBtn.disabled = false;
-        addBtn.textContent = 'Add';
+        addBtn.textContent = t('admin.add');
         addBtn.style.width = '55px';
         addBtn.style.display = '';
       }
@@ -964,14 +964,16 @@ function initEndpointForm() {
 
   function _renderEndpointTestResult(msg, res, d) {
     if (res.ok && d.status === 'empty') {
-      msg.textContent = 'Online — no models found';
+      msg.textContent = t('admin.online_no_models');
       msg.className = 'admin-success';
       return;
     }
     if (res.ok && d.online) {
       const models = d.models || [];
       const preview = models.slice(0, 3).map(m => esc(String(m).split('/').pop())).join(', ');
-      msg.innerHTML = `Online — found ${models.length} model${models.length !== 1 ? 's' : ''}${preview ? `: ${preview}${models.length > 3 ? ', …' : ''}` : ''}`;
+      msg.innerHTML = preview
+        ? tn('admin.online_found_models_preview', models.length, { preview: `${preview}${models.length > 3 ? ', …' : ''}` })
+        : tn('admin.online_found_models', models.length);
       msg.className = 'admin-success';
       return;
     }
@@ -998,12 +1000,12 @@ function initEndpointForm() {
       msg.textContent = ''; msg.className = '';
       const rawUrl = (urlInput.value || provider.value).trim();
       const apiKey = el('adm-epApiKey').value.trim();
-      if (!rawUrl) { msg.textContent = 'Select a provider or enter a base URL'; msg.className = 'admin-error'; return; }
-      if (provider.value && !apiKey) { msg.textContent = 'API key is required for cloud providers'; msg.className = 'admin-error'; return; }
+      if (!rawUrl) { msg.textContent = t('admin.select_provider_or_base_url'); msg.className = 'admin-error'; return; }
+      if (provider.value && !apiKey) { msg.textContent = t('admin.api_key_required_cloud'); msg.className = 'admin-error'; return; }
       const url = provider.value && rawUrl === provider.value ? rawUrl : _normalizeBaseUrl(rawUrl);
       apiTestController = new AbortController();
       apiTestBtn.disabled = true;
-      apiTestBtn.textContent = 'Testing...';
+      apiTestBtn.textContent = t('admin.testing');
       if (apiCancelTestBtn) apiCancelTestBtn.classList.remove('hidden');
       try {
         const fd = new FormData();
@@ -1021,16 +1023,18 @@ function initEndpointForm() {
         _renderEndpointTestResult(msg, res, d);
       } catch (e) {
         if (e && e.name === 'AbortError') {
-          msg.textContent = 'Test canceled';
+          msg.textContent = t('admin.test_canceled');
           msg.className = '';
         } else {
-          msg.textContent = 'Test failed: ' + (e && e.message ? e.message : 'request failed');
+          msg.textContent = t('admin.test_failed', {
+          error: e && e.message ? e.message : t('admin.request_failed'),
+        });
           msg.className = 'admin-error';
         }
       }
       apiTestController = null;
       apiTestBtn.disabled = false;
-      apiTestBtn.textContent = 'Test';
+      apiTestBtn.textContent = t('admin.test');
       if (apiCancelTestBtn) apiCancelTestBtn.classList.add('hidden');
     });
   }
@@ -1050,12 +1054,12 @@ function initEndpointForm() {
     msg.textContent = ''; msg.className = '';
     const rawUrl = (urlInput.value || provider.value).trim();
     const apiKey = el('adm-epApiKey').value.trim();
-    if (!rawUrl) { msg.textContent = 'Select a provider or enter a base URL'; msg.className = 'admin-error'; return; }
-    if (provider.value && !apiKey) { msg.textContent = 'API key is required for cloud providers'; msg.className = 'admin-error'; return; }
+    if (!rawUrl) { msg.textContent = t('admin.select_provider_or_base_url'); msg.className = 'admin-error'; return; }
+    if (provider.value && !apiKey) { msg.textContent = t('admin.api_key_required_cloud'); msg.className = 'admin-error'; return; }
     // Normalize URL (fix typos, add /v1, strip wrong paths)
     const url = provider.value && rawUrl === provider.value ? rawUrl : _normalizeBaseUrl(rawUrl);
     const btn = el('adm-epAddBtn');
-    btn.disabled = true; btn.textContent = 'Adding...';
+    btn.disabled = true; btn.textContent = t('admin.adding');
     try {
       const fd = new FormData();
       fd.append('base_url', url);
@@ -1084,18 +1088,18 @@ function initEndpointForm() {
         await _selectAddedModelInChat(d);
         const goLink = ' <a href="#" data-go-added-models style="margin-left:6px;text-decoration:underline;color:inherit;font-weight:600;">Added Models →</a>';
         if (!d.online) {
-          msg.innerHTML = 'Added (endpoint offline — will retry on next load)' + goLink;
+          msg.innerHTML = t('admin.added_offline') + goLink;
           msg.className = 'admin-error';
         } else if (d.status === 'empty') {
-          msg.innerHTML = 'Added — endpoint reachable, no models found' + goLink;
+          msg.innerHTML = t('admin.added_no_models') + goLink;
           msg.className = 'admin-success';
         } else {
-          msg.innerHTML = `Added — found ${count} model${count !== 1 ? 's' : ''}` + goLink;
+          msg.innerHTML = tn('admin.added_found_models', count) + goLink;
           msg.className = 'admin-success';
         }
       } else { msg.textContent = d.detail || 'Failed'; msg.className = 'admin-error'; }
-    } catch (e) { msg.textContent = 'Request failed'; msg.className = 'admin-error'; }
-    btn.disabled = false; btn.textContent = 'Add';
+    } catch (e) { msg.textContent = t('admin.request_failed'); msg.className = 'admin-error'; }
+    btn.disabled = false; btn.textContent = t('admin.add');
   });
 
   async function _startProviderDeviceAuth(providerKey, triggerEl = null) {
@@ -1114,7 +1118,7 @@ function initEndpointForm() {
       const retry = document.createElement('button');
       retry.type = 'button';
       retry.className = 'admin-btn-sm';
-      retry.textContent = 'Try again';
+      retry.textContent = t('admin.try_again');
       retry.addEventListener('click', () => { _startProviderDeviceAuth(providerKey, triggerEl); });
       status.appendChild(retry);
     };
@@ -1130,17 +1134,17 @@ function initEndpointForm() {
     status.className = 'adm-ep-inline-msg';
     if (triggerEl) {
       triggerEl.disabled = true;
-      triggerEl.textContent = 'Starting...';
+      triggerEl.textContent = t('admin.starting');
     }
     deviceAuthPolling = true;
     _setApiFormForProvider();
-    status.textContent = `Starting ${config.label} sign-in...`;
+    status.textContent = t('admin.starting_signin', { label: config.label });
 
     try {
       const result = await runProviderDeviceFlow(providerKey, {
         openWindow: () => {},
         onStart: ({ start, authUrl }) => {
-          if (triggerEl) triggerEl.textContent = 'Waiting...';
+          if (triggerEl) triggerEl.textContent = t('admin.waiting');
           status.className = '';
           const authLabel = providerKey === 'copilot' ? 'Authorize on GitHub' : 'Authorize with OpenAI';
           const waitLabel = providerKey === 'copilot' ? 'Waiting for GitHub authorization...' : 'Waiting for ChatGPT authorization...';
@@ -1179,7 +1183,7 @@ function initEndpointForm() {
               ta.remove();
             }
             copyBtn.textContent = ok ? 'Copied' : 'Failed';
-            setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
+            setTimeout(() => { copyBtn.textContent = t('admin.copy'); }, 1500);
           });
         },
       });
@@ -1187,7 +1191,7 @@ function initEndpointForm() {
         const endpoint = result.endpoint || {};
         const n = ((endpoint && endpoint.models) || []).length;
         status.className = 'admin-success';
-        status.textContent = 'Connected - ' + n + ' ' + config.label + ' model' + (n !== 1 ? 's' : '') + ' available.';
+        status.textContent = tn('admin.connected_models_available', n, { label: config.label });
         if (endpoint && endpoint.id) _recentlyAddedEpId = String(endpoint.id);
         await loadEndpoints();
         await _selectAddedModelInChat(endpoint || {});
@@ -1494,7 +1498,7 @@ function initEndpointForm() {
       const msg = _endpointMsg('local');
       msg.textContent = ''; msg.className = 'adm-ep-inline-msg';
       const raw = (el('adm-epLocalUrl').value || '').trim();
-      if (!raw) { msg.textContent = 'Enter a base URL to test'; msg.className = 'admin-error'; return; }
+      if (!raw) { msg.textContent = t('admin.enter_base_url_to_test'); msg.className = 'admin-error'; return; }
       const url = _normalizeBaseUrl(raw);
       const keyEl = el('adm-epLocalApiKey');
       const apiKey = keyEl ? keyEl.value.trim() : '';
@@ -1508,7 +1512,9 @@ function initEndpointForm() {
         const d = await res.json();
         _renderEndpointTestResult(msg, res, d);
       } catch (e) {
-        msg.textContent = 'Test failed: ' + (e && e.message ? e.message : 'request failed');
+        msg.textContent = t('admin.test_failed', {
+          error: e && e.message ? e.message : t('admin.request_failed'),
+        });
         msg.className = 'admin-error';
       }
       localTestBtn.disabled = false;
@@ -1521,7 +1527,7 @@ function initEndpointForm() {
       const msg = _endpointMsg('local');
       msg.textContent = ''; msg.className = 'adm-ep-inline-msg';
       const raw = (el('adm-epLocalUrl').value || '').trim();
-      if (!raw) { msg.textContent = 'Enter a base URL (e.g. http://localhost:8002/v1)'; msg.className = 'admin-error'; return; }
+      if (!raw) { msg.textContent = t('admin.enter_base_url_placeholder'); msg.className = 'admin-error'; return; }
       const url = _normalizeBaseUrl(raw);
       const keyEl = el('adm-epLocalApiKey');
       const apiKey = keyEl ? keyEl.value.trim() : '';
@@ -1549,12 +1555,12 @@ function initEndpointForm() {
           const baseText = d.status === 'empty'
             ? 'Added — Ollama is running, no models pulled yet'
             : d.online
-            ? `Added — found ${count} model${count !== 1 ? 's' : ''}`
+            ? tn('admin.added_found_models', count)
             : 'Added (offline — will retry on next load)';
           msg.innerHTML = `${baseText} <a href="#" data-go-added-models style="margin-left:6px;text-decoration:underline;color:inherit;font-weight:600;">Added Models →</a>`;
           msg.className = d.online ? 'admin-success' : 'admin-error';
         } else { msg.textContent = d.detail || 'Failed'; msg.className = 'admin-error'; }
-      } catch (e) { msg.textContent = 'Request failed'; msg.className = 'admin-error'; }
+      } catch (e) { msg.textContent = t('admin.request_failed'); msg.className = 'admin-error'; }
       localAddBtn.disabled = false;
       localAddBtn.innerHTML = addOriginalHtml;
     });
@@ -1592,18 +1598,18 @@ function initEndpointForm() {
         wrap.style.cssText = 'display:flex;align-items:center;padding:8px 0;';
         wrap.appendChild(wp.element);
         const txt = document.createElement('span');
-        txt.textContent = 'Scanning ports 8000-8020, 8080, 1234, 11434, and 11435 for model servers...';
+        txt.textContent = t('admin.scan_ports');
         txt.style.cssText = 'font-size:12px;opacity:0.7;';
         wrap.appendChild(txt);
         msg.appendChild(wrap);
         discoverBtn._wp = wp;
-      } catch(e) { msg.textContent = 'Scanning...'; }
+      } catch(e) { msg.textContent = t('admin.scanning'); }
       try {
         const res = await fetch('/api/discover');
         const data = await res.json();
         const items = data.items || [];
         if (!items.length) {
-          msg.textContent = 'No model servers found. Make sure vLLM, llama.cpp, SGLang, or Ollama is running. Docker users may need Ollama bound to a trusted reachable interface.';
+          msg.textContent = t('admin.no_model_servers');
           msg.className = 'admin-error';
         } else {
           // Auto-add each discovered endpoint. Server dedupes on base_url
@@ -1643,7 +1649,7 @@ function initEndpointForm() {
             (_PROVIDER_DISPLAY[i.provider] || i.url.replace(/^https?:\/\//, '').split('/')[0])
           );
           const parts = [
-            `Found ${items.length} server${items.length !== 1 ? 's' : ''} (${serverNames.join(', ')}) with ${totalModels} model${totalModels !== 1 ? 's' : ''}`,
+            tn('admin.found_servers_models', items.length, { names: serverNames.join(', '), models: totalModels }),
           ];
           if (added) parts.push(`added ${added} new`);
           if (skipped) parts.push(`${skipped} already added`);
@@ -1652,7 +1658,7 @@ function initEndpointForm() {
           loadEndpoints();
         }
       } catch (e) {
-        msg.textContent = 'Scan failed: ' + e.message;
+        msg.textContent = t('admin.scan_failed', { error: e.message });
         msg.className = 'admin-error';
       }
       if (discoverBtn._wp) { discoverBtn._wp.destroy(); discoverBtn._wp = null; }
@@ -1720,7 +1726,7 @@ const MCP_PRESETS = [
 9. Sign in with Google, copy the URL from the error page, paste it back` },
   { name: "Email (IMAP/SMTP)", command: "npx", args: ["-y", "@codefuturist/email-mcp", "stdio"],        env: { MCP_EMAIL_ADDRESS: "", MCP_EMAIL_PASSWORD: "", MCP_EMAIL_IMAP_HOST: "", MCP_EMAIL_SMTP_HOST: "" },
     providerDropdown: {
-      label: "Provider",
+      label: t('admin.provider'),
       targets: { MCP_EMAIL_IMAP_HOST: "imap", MCP_EMAIL_SMTP_HOST: "smtp" },
       options: [
         { name: "Migadu",        imap: "imap.migadu.com",     smtp: "smtp.migadu.com" },
@@ -1959,14 +1965,14 @@ async function loadMcpServers() {
     }).join('');
     list.querySelectorAll('[data-adm-mcp-reconnect]').forEach(btn => {
       btn.addEventListener('click', async () => {
-        const msg = el('adm-mcpMsg'); msg.textContent = 'Reconnecting...'; msg.className = '';
+        const msg = el('adm-mcpMsg'); msg.textContent = t('admin.reconnecting'); msg.className = '';
         try {
           const res = await fetch(`/api/mcp/servers/${btn.dataset.admMcpReconnect}/reconnect`, { method: 'POST', credentials: 'same-origin' });
           const data = await res.json();
           msg.textContent = data.connected ? `Reconnected (${data.tool_count} tools)` : `Failed: ${data.error || 'unknown'}`;
           msg.className = data.connected ? 'admin-success' : 'admin-error';
           loadMcpServers();
-        } catch (e) { msg.textContent = 'Failed: ' + e.message; msg.className = 'admin-error'; }
+        } catch (e) { msg.textContent = t('admin.failed_detail', { error: e.message }); msg.className = 'admin-error'; }
       });
     });
     list.querySelectorAll('[data-adm-mcp-toggle]').forEach(btn => {
@@ -2062,7 +2068,9 @@ async function _saveMcpToolState(serverId, panel) {
     const row = panel.closest('[data-adm-mcp-id]');
     if (row) {
       const badge = row.querySelector('.admin-badge');
-      if (badge) badge.textContent = `Connected (${total - disabled.length}/${total} tools enabled)`;
+      if (badge) badge.textContent = t('admin.connected_tools_enabled', {
+      enabled: total - disabled.length, total,
+    });
     }
   } catch (e) { /* silent */ }
 }
@@ -2154,7 +2162,7 @@ function initMcpForm() {
     if (help) {
       _activeHelp = help;
       const helpLink = document.createElement('a');
-      helpLink.textContent = 'How do I get these?';
+      helpLink.textContent = t('admin.how_do_i_get_these');
       helpLink.href = '#';
       helpLink.style.cssText = 'font-size:10.5px;opacity:0.5;margin-top:2px;display:inline-block;';
       helpLink.addEventListener('click', (e) => {
@@ -2226,10 +2234,10 @@ function initMcpForm() {
     const env = _collectEnv();
     const url = el('adm-mcpUrl').value.trim();
     const msg = el('adm-mcpMsg');
-    if (!name) { msg.textContent = 'Name is required'; msg.className = 'admin-error'; return; }
-    if (transport === 'stdio' && !command) { msg.textContent = 'Command is required for stdio'; msg.className = 'admin-error'; return; }
-    if (transport === 'sse' && !url) { msg.textContent = 'URL is required for SSE'; msg.className = 'admin-error'; return; }
-    try { JSON.parse(env); } catch { msg.textContent = 'Env must be valid JSON'; msg.className = 'admin-error'; return; }
+    if (!name) { msg.textContent = t('admin.name_required'); msg.className = 'admin-error'; return; }
+    if (transport === 'stdio' && !command) { msg.textContent = t('admin.command_required_stdio'); msg.className = 'admin-error'; return; }
+    if (transport === 'sse' && !url) { msg.textContent = t('admin.url_required_sse'); msg.className = 'admin-error'; return; }
+    try { JSON.parse(env); } catch { msg.textContent = t('admin.env_valid_json'); msg.className = 'admin-error'; return; }
     const fd = new FormData();
     fd.append('name', name); fd.append('transport', transport); fd.append('command', command); fd.append('args', args); fd.append('env', env); fd.append('url', url);
     // If preset has oauthFile config, send credentials for file generation
@@ -2246,20 +2254,20 @@ function initMcpForm() {
     if (_activeOauth) {
       fd.append('oauth_config', JSON.stringify(_activeOauth));
     }
-    msg.textContent = 'Adding...'; msg.className = '';
+    msg.textContent = t('admin.adding'); msg.className = '';
     try {
       const res = await fetch('/api/mcp/servers', { method: 'POST', body: fd, credentials: 'same-origin' });
       const data = await res.json();
       if (data.needs_oauth) {
-        msg.innerHTML = `Added ${esc(name)} — <a href="/api/mcp/oauth/authorize/${data.id}" target="_blank" style="color:var(--red);font-weight:600;">Authorize with Google</a> to connect`;
+        msg.innerHTML = `${esc(name)} — <a href="/api/mcp/oauth/authorize/${data.id}" target="_blank" style="color:var(--red);font-weight:600;">${esc(t('admin.authorize_with_google'))}</a> ${esc(t('admin.added_connect_prompt'))}`;
         msg.className = 'admin-success';
       } else if (data.connected) {
-        msg.textContent = `Added ${name} (${data.tool_count} tools discovered)`; msg.className = 'admin-success';
-      } else { msg.textContent = `Added but connection failed: ${data.error || 'unknown'}`; msg.className = 'admin-error'; }
+        msg.textContent = t('admin.added_tools_discovered', { name, count: data.tool_count }); msg.className = 'admin-success';
+      } else { msg.textContent = t('admin.added_conn_failed', { error: data.error || t('admin.unknown_error') }); msg.className = 'admin-error'; }
       el('adm-mcpName').value = ''; el('adm-mcpCommand').value = ''; el('adm-mcpArgs').value = ''; el('adm-mcpUrl').value = '';
       _clearEnvFields(); helpBox.style.display = 'none'; _activeHelp = null; _activeOauthFile = null; _activeOauth = null;
       loadMcpServers();
-    } catch (e) { msg.textContent = 'Failed: ' + e.message; msg.className = 'admin-error'; }
+    } catch (e) { msg.textContent = t('admin.failed_detail', { error: e.message }); msg.className = 'admin-error'; }
   });
 }
 
@@ -2517,7 +2525,7 @@ function initTokenForm() {
     const reveal = el('adm-tokenReveal');
     msg.textContent = ''; msg.className = ''; reveal.style.display = 'none';
     const name = el('adm-tokenName').value.trim();
-    if (!name) { msg.textContent = 'Token name is required'; msg.className = 'admin-error'; return; }
+    if (!name) { msg.textContent = t('admin.token_name_required'); msg.className = 'admin-error'; return; }
     const fd = new FormData(); fd.append('name', name);
     const scopes = (el('adm-tokenScopes')?.value || '').trim();
     if (scopes) fd.append('scopes', scopes);
@@ -2532,7 +2540,7 @@ function initTokenForm() {
         loadTokens();
       }
       else { msg.textContent = data.detail || 'Failed'; msg.className = 'admin-error'; }
-    } catch (e) { msg.textContent = 'Request failed'; msg.className = 'admin-error'; }
+    } catch (e) { msg.textContent = t('admin.request_failed'); msg.className = 'admin-error'; }
   });
   const TOKEN_COPY_ICON = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
   const TOKEN_CHECK_ICON = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
@@ -2584,12 +2592,12 @@ async function loadWebhooks() {
     }).join('');
     list.querySelectorAll('[data-adm-wh-test]').forEach(btn => {
       btn.addEventListener('click', async () => {
-        const msg = el('adm-whMsg'); msg.textContent = 'Sending test...'; msg.className = '';
+        const msg = el('adm-whMsg'); msg.textContent = t('admin.sending_test'); msg.className = '';
         try {
           const res = await fetch(`/api/webhooks/${btn.dataset.admWhTest}/test`, { method: 'POST', credentials: 'same-origin' });
           msg.textContent = res.ok ? 'Test sent!' : 'Test failed'; msg.className = res.ok ? 'admin-success' : 'admin-error';
           setTimeout(() => loadWebhooks(), 1000);
-        } catch (e) { msg.textContent = 'Failed: ' + e.message; msg.className = 'admin-error'; }
+        } catch (e) { msg.textContent = t('admin.failed_detail', { error: e.message }); msg.className = 'admin-error'; }
       });
     });
     list.querySelectorAll('[data-adm-wh-toggle]').forEach(btn => {
@@ -2612,16 +2620,16 @@ function initWebhookForm() {
     const url = el('adm-whUrl').value.trim();
     const secret = el('adm-whSecret').value.trim();
     const events = Array.from(modalEl.querySelectorAll('.adm-wh-event:checked')).map(e => e.value).join(',');
-    if (!name) { msg.textContent = 'Name is required'; msg.className = 'admin-error'; return; }
-    if (!url) { msg.textContent = 'URL is required'; msg.className = 'admin-error'; return; }
-    if (!events) { msg.textContent = 'Select at least one event'; msg.className = 'admin-error'; return; }
+    if (!name) { msg.textContent = t('admin.name_required'); msg.className = 'admin-error'; return; }
+    if (!url) { msg.textContent = t('admin.url_required'); msg.className = 'admin-error'; return; }
+    if (!events) { msg.textContent = t('admin.select_at_least_one_event'); msg.className = 'admin-error'; return; }
     const fd = new FormData();
     fd.append('name', name); fd.append('url', url); fd.append('secret', secret); fd.append('events', events);
     try {
       const res = await fetch('/api/webhooks', { method: 'POST', body: fd, credentials: 'same-origin' });
-      if (res.ok) { msg.textContent = 'Webhook added'; msg.className = 'admin-success'; el('adm-whName').value = ''; el('adm-whUrl').value = ''; el('adm-whSecret').value = ''; loadWebhooks(); }
+      if (res.ok) { msg.textContent = t('admin.webhook_added'); msg.className = 'admin-success'; el('adm-whName').value = ''; el('adm-whUrl').value = ''; el('adm-whSecret').value = ''; loadWebhooks(); }
       else { const d = await res.json(); msg.textContent = d.detail || 'Failed'; msg.className = 'admin-error'; }
-    } catch (e) { msg.textContent = 'Failed: ' + e.message; msg.className = 'admin-error'; }
+    } catch (e) { msg.textContent = t('admin.failed_detail', { error: e.message }); msg.className = 'admin-error'; }
   });
 }
 
@@ -2670,7 +2678,7 @@ function initCalDAV() {
     }).catch(() => {});
 
   saveBtn.addEventListener('click', async () => {
-    status.textContent = 'Saving...';
+    status.textContent = t('admin.saving');
     try {
       const res = await fetch(`${API_BASE}/api/calendar/config`, {
         method: 'POST', credentials: 'same-origin',
@@ -2678,14 +2686,14 @@ function initCalDAV() {
         body: JSON.stringify({ caldav_url: urlIn.value, caldav_username: userIn.value, caldav_password: passIn.value }),
       });
       const d = await res.json();
-      status.textContent = d.ok ? 'Saved' : 'Error';
+      status.textContent = d.ok ? 'Saved' : t('admin.error');
       status.style.color = d.ok ? 'var(--green)' : 'var(--red)';
-    } catch (e) { status.textContent = 'Error'; status.style.color = 'var(--red)'; }
+    } catch (e) { status.textContent = t('admin.error'); status.style.color = 'var(--red)'; }
     setTimeout(() => { status.textContent = ''; status.style.color = ''; }, 3000);
   });
 
   testBtn.addEventListener('click', async () => {
-    status.textContent = 'Testing...';
+    status.textContent = t('admin.testing');
     try {
       // Save first
       await fetch(`${API_BASE}/api/calendar/config`, {
@@ -2697,7 +2705,7 @@ function initCalDAV() {
       const d = await res.json();
       status.textContent = d.ok ? `Connected (${d.calendars} calendars)` : `Failed: ${d.error}`;
       status.style.color = d.ok ? 'var(--green)' : 'var(--red)';
-    } catch (e) { status.textContent = 'Error'; status.style.color = 'var(--red)'; }
+    } catch (e) { status.textContent = t('admin.error'); status.style.color = 'var(--red)'; }
     setTimeout(() => { status.textContent = ''; status.style.color = ''; }, 5000);
   });
 }
@@ -2802,10 +2810,10 @@ function initDangerZone() {
           const fails = results.filter(r => !r.ok).map(r => r.k);
           if (_wipeMsg) {
             if (!fails.length) {
-              _wipeMsg.textContent = `Deleted ${total} items across all ${okCount} categories.`;
+              _wipeMsg.textContent = t('admin.deleted_all_categories', { total, categories: okCount });
               _wipeMsg.className = 'admin-success';
             } else {
-              _wipeMsg.textContent = `Deleted ${total} items; failed: ${fails.join(', ')}.`;
+              _wipeMsg.textContent = t('admin.deleted_partial', { total, fails: fails.join(', ') });
               _wipeMsg.className = 'admin-error';
             }
           }
@@ -2813,13 +2821,13 @@ function initDangerZone() {
           const res = await fetch(`/api/admin/wipe/${kind}`, { method: 'DELETE', credentials: 'same-origin' });
           const data = await res.json().catch(() => ({}));
           if (res.ok) {
-            if (_wipeMsg) { _wipeMsg.textContent = `Deleted ${data.count ?? 0} ${label}.`; _wipeMsg.className = 'admin-success'; }
+            if (_wipeMsg) { _wipeMsg.textContent = t('admin.deleted_label', { count: data.count ?? 0, label }); _wipeMsg.className = 'admin-success'; }
           } else {
             if (_wipeMsg) { _wipeMsg.textContent = data.detail || 'Failed'; _wipeMsg.className = 'admin-error'; }
           }
         }
       } catch (e) {
-        if (_wipeMsg) { _wipeMsg.textContent = 'Request failed: ' + e.message; _wipeMsg.className = 'admin-error'; }
+        if (_wipeMsg) { _wipeMsg.textContent = t('admin.request_failed_detail', { error: e.message }); _wipeMsg.className = 'admin-error'; }
       }
       btn.disabled = false; btn.innerHTML = prevHtml;
     });
@@ -2932,7 +2940,7 @@ async function loadLogs(isAutoPoll = false) {
         const errDiv = document.createElement('div');
         errDiv.style.color = 'var(--red)';
         errDiv.style.fontWeight = '600';
-        errDiv.textContent = 'Failed to parse logs data';
+        errDiv.textContent = t('admin.logs_parse_failed');
         consoleContainer.appendChild(errDiv);
       }
       return;
@@ -2949,7 +2957,7 @@ async function loadLogs(isAutoPoll = false) {
       const errDiv = document.createElement('div');
       errDiv.style.color = 'var(--red)';
       errDiv.style.fontWeight = '600';
-      errDiv.textContent = `Error retrieving logs: ${err.message}`;
+      errDiv.textContent = t('admin.logs_retrieve_error', { error: err.message });
       consoleContainer.appendChild(errDiv);
     }
   } finally {

@@ -46,6 +46,13 @@
     "quick_add_error": "Could not add the event: {{detail}}",
     "quick_add_failed": "Could not add the event: {{error}}",
     "create_calendar_failed": "Could not create the calendar",
-    "delete_calendar_confirm": "Delete the calendar \"{{name}}\" and all its events?"
+    "delete_calendar_confirm": "Delete the calendar \"{{name}}\" and all its events?",
+    "parsing": "Parsing…",
+    "importing": "Importing…",
+    "syncing": "Syncing…",
+    "import_failed": "Import failed: {{reason}}",
+    "sync_failed": "Sync failed: {{error}}",
+    "action_hint": "Ctrl+Z",
+    "toast_moved": "Moved"
   }
 }

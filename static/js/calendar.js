@@ -1959,7 +1959,7 @@ function _wireAll(body) {
             _qaStatus.appendChild(_qaSpin.element);
           }, 250);
         } catch {
-          _qaSpinTimer = setTimeout(() => { if (_qaStatus) _qaStatus.textContent = 'parsing…'; }, 250);
+          _qaSpinTimer = setTimeout(() => { if (_qaStatus) _qaStatus.textContent = t('calendar.parsing'); }, 250);
         }
       }
       try {
@@ -2406,7 +2406,12 @@ function _wireAll(body) {
       _pushCalUndo({ label: 'move', run: () => _updateEvent(undoSnap.uid, { dtstart: undoSnap.dtstart, dtend: undoSnap.dtend || undefined }).then(_render) });
       await _updateEvent(ev.uid, { dtstart: _shiftDT(ev.dtstart, diff), dtend: ev.dtend ? _shiftDT(ev.dtend, diff) : undefined });
       _render();
-      uiModule.showToast?.('Moved', { duration: 4000, action: 'Undo', actionHint: 'Ctrl+Z', onAction: _popAndRunCalUndo });
+      uiModule.showToast?.(t('calendar.toast_moved'), {
+        duration: 4000,
+        action: t('calendar.undo'),
+        actionHint: t('calendar.action_hint'),
+        onAction: _popAndRunCalUndo,
+      });
     });
   });
 }
@@ -2626,7 +2631,7 @@ async function _showCalSettings() {
     const file = e.target.files[0];
     if (!file) return;
     const status = overlay.querySelector('#cal-import-status');
-    status.textContent = 'Importing...';
+    status.textContent = t('calendar.importing');
     try {
       const fd = new FormData();
       fd.append('file', file);
@@ -2644,11 +2649,11 @@ async function _showCalSettings() {
       } else {
         // FastAPI HTTPException → {detail}; some routes use {error}.
         const reason = (data && (data.detail || data.error)) || raw.slice(0, 200) || `HTTP ${res.status}`;
-        status.textContent = `Import failed: ${reason}`;
+        status.textContent = t('calendar.import_failed', { reason });
         console.error('Calendar import failed', res.status, data || raw);
       }
     } catch (err) {
-      status.textContent = `Import failed: ${err.message || err}`;
+      status.textContent = t('calendar.import_failed', { reason: err.message || err });
       console.error('Calendar import threw', err);
     }
     e.target.value = '';
@@ -2667,10 +2672,10 @@ async function _showCalSettings() {
     const btn = e.currentTarget;
     const status = overlay.querySelector('#cal-settings-sync-status');
     btn.disabled = true;
-    status.textContent = 'Syncing…';
+    status.textContent = t('calendar.syncing');
     const data = await _syncCaldav(true) || {};
     if (data.errors && data.errors.length) {
-      status.textContent = `Sync failed: ${data.errors[0]}`;
+      status.textContent = t('calendar.sync_failed', { error: data.errors[0] });
     } else {
       const parts = [];
       if (data.events) parts.push(`${data.events} events`);
