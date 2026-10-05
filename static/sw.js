@@ -7,14 +7,24 @@
 //   - Other static assets (images/fonts/libs): cache-first with bg refresh.
 //   - API / non-GET: never cached.
 // Bump CACHE_NAME whenever the precache list or SW logic changes.
-// v328: added the cookbook sub-modules (only cookbook.js was listed, so the
-// split modules were never precached) and dropped the stale pre-rebrand
-// content.js that browsers kept serving out of the old cache.
-const CACHE_NAME = 'ulises-v328';
+//
+// PRECACHE_DIGEST is a sha256 over the contents of every precached file.
+// tests/test_sw_precache_version.py recomputes it and fails if it drifts, so a
+// translated JS file cannot ship while the browser keeps serving the cached copy
+// out of the old cache — which is exactly what happened for the v328 round: 57
+// of 59 entries are .js, so a whole i18n batch looked untranslated with no error
+// anywhere while the locale JSONs (not precached) came through fresh.
+//
+// Regenerate both after touching any precached file:
+//   python3 tests/test_sw_precache_version.py --print
+//
+// v329: the i18n residual batches (settings, chat, chatRenderer, emailLibrary,
+// admin, calendar, cookbookServe, documentLibrary, cookbook-hwfit, tasks, the
+// compare catalog and the diagnosis catalog). Every one of those files is
+// precached, so none of it reached the browser.
+const CACHE_NAME = 'ulises-v329';
+const PRECACHE_DIGEST = 'b6c5a6927fc848d6';
 
-// Core shell precached on install so repeat opens are instant without any
-// network wait. Keep this list in sync with the <script type="module"> tags
-// and <link rel="stylesheet"> in index.html.
 const PRECACHE = [
   '/',
   '/static/style.css',
