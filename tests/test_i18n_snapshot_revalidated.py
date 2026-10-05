@@ -57,3 +57,28 @@ def test_every_key_reported_missing_by_the_console_exists():
             f = ROOT / "static" / "locales" / lang / f"{ns}.json"
             assert f.exists(), f"{lang}/{ns}.json missing"
             assert key in json.loads(f.read_text(encoding="utf-8"))[ns], f"{ns}.{key} missing in {lang}"
+
+
+def test_spa_root_navigation_is_network_first():
+    """The shell must not be served stale.
+
+    /  was stale-while-revalidate: the cached shell answered immediately and
+    refreshed in the background, so the app booted from a build of unknown age.
+    Neither an HTTP cache clear nor a hard reload fixed it — the service worker's
+    Cache Storage is a separate store and stays registered — which made deploys
+    invisible and left the console full of "missing translation" for keys that
+    were present on the server.
+    """
+    sw = SW.read_text(encoding="utf-8")
+    nav = sw[sw.index("if (e.request.mode === 'navigate'"):]
+    nav = nav[: nav.index("\n  }")]
+    assert "cache.match('/')" in nav, "the offline fallback was removed entirely"
+    # The cached response must only be reachable from the catch, never returned
+    # ahead of the network.
+    assert "return cached || network" not in nav, (
+        "navigation is still stale-while-revalidate: it returns the cached shell "
+        "before trying the network"
+    )
+    assert nav.index("fetch(e.request)") < nav.rindex("catch("), (
+        "the network fetch must come before the cache fallback"
+    )

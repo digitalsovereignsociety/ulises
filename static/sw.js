@@ -25,7 +25,7 @@
 // admin, calendar, cookbookServe, documentLibrary, cookbook-hwfit, tasks, the
 // compare catalog and the diagnosis catalog). Every one of those files is
 // precached, so none of it reached the browser.
-const CACHE_NAME = 'ulises-v334';
+const CACHE_NAME = 'ulises-v335';
 const PRECACHE_DIGEST = '50125dcbac36b110';
 
 const PRECACHE = [
@@ -121,23 +121,32 @@ self.addEventListener('fetch', (e) => {
   // Never touch API calls or non-GET.
   if (url.pathname.startsWith('/api/') || e.request.method !== 'GET') return;
 
-  // HTML navigation: stale-while-revalidate the app shell — but ONLY for the
-  // SPA root. Other navigations (e.g. a deep-linked /static/*.html page) must
-  // go to the network/static handlers below; otherwise every navigation was
-  // served the app index, replacing the page the user actually asked for.
-  if (e.request.mode === 'navigate' && url.pathname === '/') {
-    e.respondWith(
-      caches.open(CACHE_NAME).then(async cache => {
-        const cached = await cache.match('/');
-        const network = fetch(e.request).then(res => {
-          if (res && res.ok) cache.put('/', res.clone());
+    // HTML navigation: NETWORK-FIRST for the SPA root, cache only as the offline
+    // fallback. This was stale-while-revalidate, which returns the cached shell
+    // immediately and refreshes it in the background — so the app booted from a
+    // build of unknown age, and neither an HTTP cache clear nor a hard reload
+    // fixed it, because the SW Cache Storage is separate and stays registered.
+    //
+    // That made every deploy invisible: index.html and the precached JS were
+    // whatever happened to be cached at some earlier point. For an authenticated
+    // SPA a stale shell is worse than one network round-trip, so the shell goes
+    // to the network and the cache exists only for offline.
+    //
+    // Scope unchanged: ONLY the SPA root. Other navigations (a deep-linked
+    // /static/*.html page) fall through, otherwise every navigation gets the app
+    // index instead of the page that was asked for.
+    if (e.request.mode === 'navigate' && url.pathname === '/') {
+      e.respondWith(
+        fetch(e.request).then(res => {
+          if (res && res.ok) {
+            const copy = res.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put('/', copy));
+          }
           return res;
-        }).catch(() => cached);
-        return cached || network;
-      })
-    );
-    return;
-  }
+        }).catch(() => caches.open(CACHE_NAME).then(cache => cache.match('/')))
+      );
+      return;
+    }
 
   // JS/CSS: network-first — always try the network so code/style edits show up
   // on a normal reload; fall back to cache only when offline.
