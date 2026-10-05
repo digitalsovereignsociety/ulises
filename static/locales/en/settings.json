@@ -454,6 +454,14 @@
     "index_ntfy_topic_example": "reminders",
     "index_sort_last_used": "Last used",
     "index_wipe_memory_desc": "Clears `memory.json`, the Memory table, and the vector store. Skills not affected.",
-    "index_wipe_skills_desc": "Drops `data/skills/` (all SKILL.md files). Memory not affected."
+    "index_wipe_skills_desc": "Drops `data/skills/` (all SKILL.md files). Memory not affected.",
+    "index_font_drop_hint": "Drop <code>.woff2</code>, <code>.ttf</code>, or <code>.otf</code> files into <code>static/fonts/custom/</code> and reload — they'll appear in the Font dropdown above.",
+    "index_dr_model_hint": "Model used for Deep Research, more settings under <a data-go-settings-tab=\"search\" href=\"#\" style=\"color:var(--accent, var(--red));text-decoration:underline;font-weight:600;\">Search →</a>",
+    "index_email_draft_hint": "When on, agent <code>send_email</code> / <code>reply_to_email</code> tools stage a draft for your approval (in the chat) instead of SMTPing immediately. Stops models from inventing a signature and sending it to a real recipient before you can review.",
+    "index_dr_runtime_hint": "Deep Research runtime settings. Default Model is picked in <a data-go-settings-tab=\"ai\" href=\"#\" style=\"color:var(--accent, var(--red));text-decoration:underline;font-weight:600;\">AI Defaults →</a>",
+    "index_settings_cog_hint": "Cog next to user — re-open with <code>/settings</code>",
+    "index_extract_from_sent": "Extract from Sent (15 emails)",
+    "index_public_base_url_hint": "Used to build clickable links back to Ulises inside outgoing reminder / urgent-email emails (e.g. <code>https://chat.yourdomain.com</code>). Leave blank to omit links.",
+    "index_configure_intro": "Configure email account, ntfy server, etc. in"
   }
 }

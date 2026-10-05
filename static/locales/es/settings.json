@@ -454,6 +454,14 @@
     "index_ntfy_topic_example": "recordatorios",
     "index_sort_last_used": "Último uso",
     "index_wipe_memory_desc": "Borra `memory.json`, la tabla de Memoria y el almacén vectorial. Las skills no se ven afectadas",
-    "index_wipe_skills_desc": "Borra `data/skills/` (todos los archivos SKILL.md). La memoria no se ve afectada"
+    "index_wipe_skills_desc": "Borra `data/skills/` (todos los archivos SKILL.md). La memoria no se ve afectada",
+    "index_font_drop_hint": "Arrastra archivos <code>.woff2</code>, <code>.ttf</code> u <code>.otf</code> en <code>static/fonts/custom/</code> y recarga: aparecerán en el desplegable de fuentes de arriba.",
+    "index_dr_model_hint": "Modelo que usa Deep Research; más ajustes en <a data-go-settings-tab=\"search\" href=\"#\" style=\"color:var(--accent, var(--red));text-decoration:underline;font-weight:600;\">Búsqueda →</a>",
+    "index_email_draft_hint": "Al activarlo, las herramientas <code>send_email</code> / <code>reply_to_email</code> del agente dejan un borrador para que lo apruebes (en el chat) en vez de enviarlo por SMTP de inmediato. Evita que los modelos inventen una firma y la envíen a un destinatario real antes de que puedas revisarla.",
+    "index_dr_runtime_hint": "Ajustes de ejecución de Deep Research. El modelo predeterminado se elige en <a data-go-settings-tab=\"ai\" href=\"#\" style=\"color:var(--accent, var(--red));text-decoration:underline;font-weight:600;\">Predeterminados de IA →</a>",
+    "index_settings_cog_hint": "Engranaje junto al usuario: vuelve a abrirlo con <code>/settings</code>",
+    "index_extract_from_sent": "Extraer de Enviados (15 correos)",
+    "index_public_base_url_hint": "Sirve para crear enlaces clicables hacia Ulises dentro de los correos de recordatorio o de urgencia que envías (p. ej. <code>https://chat.yourdomain.com</code>). Déjalo vacío para no incluir enlaces.",
+    "index_configure_intro": "Configura la cuenta de correo, el servidor ntfy, etc. en"
   }
 }
