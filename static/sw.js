@@ -18,12 +18,15 @@
 // Regenerate both after touching any precached file:
 //   python3 tests/test_sw_precache_version.py --print
 //
+// v330: the cookbook tab and download-form strings, which the v329 digest
+// guard caught the moment cookbook.js changed — the first time it fired on a
+// real i18n batch rather than a synthetic edit.
 // v329: the i18n residual batches (settings, chat, chatRenderer, emailLibrary,
 // admin, calendar, cookbookServe, documentLibrary, cookbook-hwfit, tasks, the
 // compare catalog and the diagnosis catalog). Every one of those files is
 // precached, so none of it reached the browser.
-const CACHE_NAME = 'ulises-v329';
-const PRECACHE_DIGEST = 'b6c5a6927fc848d6';
+const CACHE_NAME = 'ulises-v330';
+const PRECACHE_DIGEST = 'b745852e5912fcbf';
 
 const PRECACHE = [
   '/',
