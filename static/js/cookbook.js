@@ -1573,7 +1573,7 @@ function _wireTabEvents(body) {
       if (dirsEl) {
         const dirs = (Array.isArray(srv.modelDirs) ? srv.modelDirs : [srv.modelDir || '~/.cache/huggingface/hub']).map(d => d.replaceAll('✕', '').replaceAll('✖', '').trim()).filter(Boolean);
         dirsEl.innerHTML = dirs.map(d => `<span class="cookbook-serve-dir-pill">${esc(d)}</span>`).join('') +
-          '<span class="cookbook-serve-dir-edit" title="Edit in Settings">${t("cookbook.edit_inline")}</span>';
+            `<span class="cookbook-serve-dir-edit" title="Edit in Settings">${t("cookbook.edit_inline")}</span>`;
         dirsEl.querySelector('.cookbook-serve-dir-edit')?.addEventListener('click', () => {
           const settingsTab = body.querySelector('.cookbook-tab[data-backend="Settings"]');
           if (settingsTab) settingsTab.click();
@@ -2303,6 +2303,14 @@ function _wireTabEvents(body) {
 // which welded the visible label to 200-830 characters of SVG and made it
 // impossible to route through t() without duplicating markup per locale.
 //
+// The visible text of these tabs, options and form labels used to be inline
+// in single-quoted `html += '...'` strings. Routing it through t() put
+// ${t(...)} inside a plain-quoted string, where it is valid JavaScript that
+// renders literally — the page showed `${t("cookbook.quant")}` in the option
+// while node --check, the i18n coverage gate and the locale files were all
+// green. The string is a template literal for that reason: these bodies are
+// full of double quotes, so a nested single-quoted t() would close them.
+//
 // Module scope on purpose: this was first declared inside _renderRecipes below
 // the tab markup that calls it, which is a temporal dead zone — _renderRecipes
 // runs top-down and reached the calls before the const was evaluated, throwing
@@ -2345,7 +2353,7 @@ function _renderRecipes() {
   html += `<h2 id="cookbook-dl-tab-fold" class="${_dlTabFolded ? 'is-folded' : ''}" style="margin:0;padding:0;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;flex:1;">${t("cookbook.section_direct_download")}<span id="cookbook-dl-tab-chevron" style="display:inline-block;transition:transform 0.15s;font-size:1.1em;margin-left:8px;opacity:0.85;">${_dlTabFolded ? '▸' : '▾'}</span></h2>`;
   html += '</div>';
   html += `<div id="cookbook-dl-tab-fold-body" class="${_dlTabFolded ? 'is-folded' : ''}">`;
-  html += '<p class="memory-desc doclib-desc" style="margin-top:6px;">${t("cookbook.download_from")} <a href="https://huggingface.co/models" target="_blank" rel="noopener" style="color:var(--accent,var(--red));text-decoration:none;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:1px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>HuggingFace</a> by pasting model link, or download directly in the Scan section below.</p>';
+  html += `<p class="memory-desc doclib-desc" style="margin-top:6px;">${t("cookbook.download_from")} <a href="https://huggingface.co/models" target="_blank" rel="noopener" style="color:var(--accent,var(--red));text-decoration:none;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:1px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>HuggingFace</a> by pasting model link, or download directly in the Scan section below.</p>`;
   html += '<div class="hwfit-container" id="hwfit-container">';
 
   // Section 1: Settings
@@ -2423,17 +2431,17 @@ function _renderRecipes() {
   html += '<p class="memory-desc doclib-desc" style="margin-top:6px;">Scans your hardware for what models you can run. Hardware is cached; hit the scan button to re-probe after changing GPUs.</p>';
   html += '<div class="hwfit-toolbar" style="margin-top:9px;">';
   html += '<select class="cookbook-field-input hwfit-usecase" id="hwfit-usecase" style="height:28px;">';
-  html += '<option value="general" selected>${t("cookbook.standard")}</option>';
+  html += `<option value="general" selected>${t("cookbook.standard")}</option>`;
   // Image tab removed — text→image gen is gone from this build (only inpaint
    // remains, which uses its own settings panel). Vision (multimodal) stays.
-  html += '<option value="multimodal">${t("cookbook.vision")}</option></select>';
+  html += `<option value="multimodal">${t("cookbook.vision")}</option></select>`;
   // Search moved next to the Type filter so the two primary picks
   // (what category + free text) sit together; the more advanced
   // levers (Engine / Quant / Context) live to the right.
   html += '<input type="text" class="cookbook-field-input hwfit-search" id="hwfit-search" placeholder="Search models..." style="flex:1;" />';
   html += '<span class="hwfit-engine-wrap">';
   html += '<select class="cookbook-field-input hwfit-engine" id="hwfit-engine" style="display:none;" title="Filter by serving engine">';
-  html += '<option value="">${t("cookbook.engine")}</option>';
+  html += `<option value="">${t("cookbook.engine")}</option>`;
   html += '<option value="llamacpp">llama.cpp</option>';
   html += '<option value="ollama">Ollama</option>';
   html += '<option value="vllm">vLLM</option>';
@@ -2443,7 +2451,7 @@ function _renderRecipes() {
 
 html += '<button type="button" class="cookbook-field-input hwfit-engine-btn" data-hwfit-engine-btn aria-haspopup="listbox" aria-expanded="false" title="Filter by serving engine">';
   html += '<span class="hwfit-engine-btn-icon" data-hwfit-engine-icon aria-hidden="true"></span>';
-  html += '<span class="hwfit-engine-btn-label" data-hwfit-engine-label>${t("cookbook.engine")}</span>';
+  html += `<span class="hwfit-engine-btn-label" data-hwfit-engine-label>${t("cookbook.engine")}</span>`;
   html += '<svg class="hwfit-engine-caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>';
   html += '</button>';
   html += '<div class="hwfit-engine-menu" data-hwfit-engine-menu role="listbox" hidden></div>';
@@ -2453,7 +2461,7 @@ html += '<button type="button" class="cookbook-field-input hwfit-engine-btn" dat
   // quant for every model instead of silently filtering to Q4.
   html += '<span class="hwfit-quant-wrap">';
   html += '<select class="cookbook-field-input hwfit-quant" id="hwfit-quant" style="height:28px;">';
-  html += '<option value="" selected>${t("cookbook.quant")}</option>';
+  html += `<option value="" selected>${t("cookbook.quant")}</option>`;
   html += '<option value="Q4_K_M">Q4</option><option value="Q8_0">Q8</option>';
   html += '<option value="Q6_K">Q6</option><option value="Q5_K_M">Q5</option>';
   html += '<option value="Q3_K_M">Q3</option><option value="Q2_K">Q2</option>';
@@ -2464,7 +2472,7 @@ html += '<button type="button" class="cookbook-field-input hwfit-engine-btn" dat
   // hwfit ranking uses _ctxValue() to factor that into VRAM math, so
   // dragging this re-sorts the list toward models that fit your chosen ctx.
   html += '<label class="hwfit-ctx-control" title="Context length for fit estimates. Lower it to find more models that could fit your hardware.">';
-  html += '<span>${t("cookbook.context")}</span><span class="hwfit-help-chip hwfit-help-chip-inline" title="Context length. Lower it to find more models that could fit your hardware; raise it when you need longer chats or documents.">?</span><input type="range" id="hwfit-context" min="0" max="5" step="1" value="3" />';
+  html += `<span>${t("cookbook.context")}</span><span class="hwfit-help-chip hwfit-help-chip-inline" title="Context length. Lower it to find more models that could fit your hardware; raise it when you need longer chats or documents.">?</span><input type="range" id="hwfit-context" min="0" max="5" step="1" value="3" />`;
   html += '<output id="hwfit-context-label">50k</output></label>';
   html += '</div>';
   html += '<div class="hwfit-toolbar" style="margin-top:7px;">';
@@ -2474,26 +2482,26 @@ html += '<button type="button" class="cookbook-field-input hwfit-engine-btn" dat
   html += '<div class="hwfit-gpu-toggles" id="hwfit-gpu-toggles"></div>';
   // (Rescan button removed — Edit handles manual hardware updates;
   // automatic re-probe runs on container restart.)
-  html += '<button type="button" class="hwfit-gpu-btn hwfit-hw-manual-btn" id="hwfit-hw-manual-btn" title="Set hardware manually" style="flex-shrink:0;position:relative;top:-3px;left:-1px;display:inline-flex;align-items:center;gap:3px;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>${t("cookbook.edit_upper")}</button>';
+  html += `<button type="button" class="hwfit-gpu-btn hwfit-hw-manual-btn" id="hwfit-hw-manual-btn" title="Set hardware manually" style="flex-shrink:0;position:relative;top:-3px;left:-1px;display:inline-flex;align-items:center;gap:3px;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>${t("cookbook.edit_upper")}</button>`;
   // Sort state — the clickable column headers read/write this (pewds' original
   // sort paradigm). Newest is reachable by clicking the Model column header.
   html += '<select class="cookbook-field-input hwfit-sort" id="hwfit-sort" style="display:none">';
-  html += '<option value="newest" selected>${t("cookbook.latest")}</option>';
-  html += '<option value="fit">${t("cookbook.fit")}</option><option value="score">${t("cookbook.score")}</option><option value="vram">VRAM</option>';
-  html += '<option value="speed">${t("cookbook.speed")}</option><option value="params">${t("cookbook.params")}</option>';
-  html += '<option value="context">${t("cookbook.context")}</option></select>';
+  html += `<option value="newest" selected>${t("cookbook.latest")}</option>`;
+  html += `<option value="fit">${t("cookbook.fit")}</option><option value="score">${t("cookbook.score")}</option><option value="vram">VRAM</option>`;
+  html += `<option value="speed">${t("cookbook.speed")}</option><option value="params">${t("cookbook.params")}</option>`;
+  html += `<option value="context">${t("cookbook.context")}</option></select>`;
   html += '</div>';
   html += '<div class="hwfit-manual-panel hidden" id="hwfit-manual-panel">';
-  html += '<span class="hwfit-manual-note" style="font-size:10px;opacity:0.6;width:100%;margin-bottom:2px;">${t("cookbook.simulator_note")}</span>';
+  html += `<span class="hwfit-manual-note" style="font-size:10px;opacity:0.6;width:100%;margin-bottom:2px;">${t("cookbook.simulator_note")}</span>`;
   html += '<select class="hwfit-manual-mode"><option value="gpu">GPU</option><option value="ram">RAM</option></select>';
   html += '<label>GPUs<input class="hwfit-manual-gpus" type="text" inputmode="numeric" placeholder="1"></label>';
-  html += '<label>${t("cookbook.vram_per_gpu")}<input class="hwfit-manual-vram" type="text" inputmode="decimal" placeholder="8 GB"></label>';
-  html += '<label>${t("cookbook.total_ram")}<input class="hwfit-manual-ram" type="text" inputmode="decimal" placeholder="32 GB"></label>';
+  html += `<label>${t("cookbook.vram_per_gpu")}<input class="hwfit-manual-vram" type="text" inputmode="decimal" placeholder="8 GB"></label>`;
+  html += `<label>${t("cookbook.total_ram")}<input class="hwfit-manual-ram" type="text" inputmode="decimal" placeholder="32 GB"></label>`;
   html += '<select class="hwfit-manual-backend"><option value="cuda">CUDA</option><option value="rocm">ROCm</option></select>';
-  html += '<button type="button" class="hwfit-hw-manual-save">${t("cookbook.apply")}</button>';
-  html += '<button type="button" class="hwfit-hw-manual-clear">${t("cookbook.clear")}</button>';
+  html += `<button type="button" class="hwfit-hw-manual-save">${t("cookbook.apply")}</button>`;
+  html += `<button type="button" class="hwfit-hw-manual-clear">${t("cookbook.clear")}</button>`;
   html += '</div>';
-  html += '<div id="hwfit-hw-row" style="display:none;align-items:center;gap:4px;margin-top:3px;padding-top:2px;"><span style="font-size:10px;padding:2px 8px;border-radius:10px;background:color-mix(in srgb, var(--fg) 8%, transparent);color:var(--fg);opacity:0.7;white-space:nowrap;flex-shrink:0;position:relative;top:-1px;">${t("cookbook.detected_hardware")}</span><div class="hwfit-hw" id="hwfit-hw" style="flex:1;"></div></div>';
+  html += `<div id="hwfit-hw-row" style="display:none;align-items:center;gap:4px;margin-top:3px;padding-top:2px;"><span style="font-size:10px;padding:2px 8px;border-radius:10px;background:color-mix(in srgb, var(--fg) 8%, transparent);color:var(--fg);opacity:0.7;white-space:nowrap;flex-shrink:0;position:relative;top:-1px;">${t("cookbook.detected_hardware")}</span><div class="hwfit-hw" id="hwfit-hw" style="flex:1;"></div></div>`;
   html += '<div class="hwfit-list" id="hwfit-list"></div>';
   // Footer: link to the public discussion where users can request additions
   // to the curated model list. Sits below the list so it reads as a callout
@@ -2518,26 +2526,26 @@ html += '<button type="button" class="cookbook-field-input hwfit-engine-btn" dat
   const _srvDirs = (Array.isArray(_selSrv.modelDirs) ? _selSrv.modelDirs : [_selSrv.modelDir || '~/.cache/huggingface/hub']).map(d => d.replaceAll('✕', '').replaceAll('✖', '').trim()).filter(Boolean);
   html += '<div class="cookbook-serve-dirs" style="margin-top:6px;">';
   html += _srvDirs.map(d => `<span class="cookbook-serve-dir-pill">${esc(d)}</span>`).join('');
-  html += '<span class="cookbook-serve-dir-edit" title="Edit in Settings">${t("cookbook.edit_inline")}</span>';
+  html += `<span class="cookbook-serve-dir-edit" title="Edit in Settings">${t("cookbook.edit_inline")}</span>`;
   html += '</div>';
   html += '<div style="display:flex;gap:4px;align-items:center;margin-top:4px;">';
   html += '<select class="memory-sort-select" id="hwfit-cache-server" style="height:24px;">' + _buildServerOpts(true) + '</select>';
   html += '<select class="memory-sort-select" id="serve-sort" style="height:24px;">';
-  html += '<option value="name">${t("cookbook.name")}</option><option value="size-desc">${t("cookbook.size_down")}</option><option value="size-asc">${t("cookbook.size_up")}</option><option value="recent">${t("cookbook.recent")}</option>';
+  html += `<option value="name">${t("cookbook.name")}</option><option value="size-desc">${t("cookbook.size_down")}</option><option value="size-asc">${t("cookbook.size_up")}</option><option value="recent">${t("cookbook.recent")}</option>`;
   html += '</select>';
   html += '</div>';
   html += '<div class="memory-toolbar" style="margin-top:8px;">';
   html += '<div class="memory-category-filters">';
   html += '<input type="text" class="memory-search-input" id="serve-search" placeholder="Search cached models\u2026" style="flex:1;min-width:120px;" />';
-  html += '<button class="memory-toolbar-btn" id="hwfit-cache-select">${t("cookbook.select")}</button>';
+  html += `<button class="memory-toolbar-btn" id="hwfit-cache-select">${t("cookbook.select")}</button>`;
   html += '</div>';
   html += '<div class="doclib-lang-chips" id="serve-tags"></div>';
   html += '</div>';
 
   html += '<div class="memory-bulk-bar hidden" id="serve-bulk-bar">';
-  html += '<label class="memory-bulk-check-all"><input type="checkbox" id="serve-select-all"> ${t("cookbook.all")}</label>';
-  html += '<span id="serve-bulk-count" style="font-size:10px;opacity:0.5;">${t("cookbook.zero_selected")}</span>';
-  html += '<button class="memory-toolbar-btn danger" id="serve-bulk-delete" style="position:relative;top:-3px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:3px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>${t("cookbook.delete")}</button>';
+  html += `<label class="memory-bulk-check-all"><input type="checkbox" id="serve-select-all"> ${t("cookbook.all")}</label>`;
+  html += `<span id="serve-bulk-count" style="font-size:10px;opacity:0.5;">${t("cookbook.zero_selected")}</span>`;
+  html += `<button class="memory-toolbar-btn danger" id="serve-bulk-delete" style="position:relative;top:-3px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:3px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>${t("cookbook.delete")}</button>`;
   html += '<button class="memory-toolbar-btn" id="serve-bulk-cancel" title="Cancel (Esc)" style="margin-left:4px;padding:3px 6px;position:relative;top:-7px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
   html += '</div>';
 
@@ -2548,15 +2556,15 @@ html += '<button type="button" class="cookbook-field-input hwfit-engine-btn" dat
   html += '<div class="cookbook-group hidden" data-backend-group="Dependencies">';
   html += '<div class="admin-card" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">';
   html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">';
-  html += '<h2 style="margin:0;padding:0;line-height:1;">${t("cookbook.dependencies_heading")}</h2>';
+  html += `<h2 style="margin:0;padding:0;line-height:1;">${t("cookbook.dependencies_heading")}</h2>`;
   // Rebuild llama.cpp button moved into the llama_cpp dep row (see _depRow);
   // having it in the title polluted the section header.
-  html += '<span style="font-size:10px;opacity:0.5;margin-left:auto;">${t("cookbook.server")}</span>';
+  html += `<span style="font-size:10px;opacity:0.5;margin-left:auto;">${t("cookbook.server")}</span>`;
   html += '<select class="cookbook-field-input" id="hwfit-deps-server" style="height:28px;min-width:70px;">';
   html += _buildServerOpts(false);
   html += '</select>';
   html += '</div>';
-  html += '<p class="memory-desc doclib-desc">${t("cookbook.deps_desc")}</p>';
+  html += `<p class="memory-desc doclib-desc">${t("cookbook.deps_desc")}</p>`;
   html += '<div class="doclib-grid" id="cookbook-deps-list"></div>';
   html += '</div></div>';
 
@@ -2569,9 +2577,9 @@ html += '<button type="button" class="cookbook-field-input hwfit-engine-btn" dat
   // ── HuggingFace Token block ─────────────────────────────────────────
   html += '<div class="admin-card" style="flex:0 0 auto;display:flex;flex-direction:column;">';
   html += '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:2px;">';
-  html += '<h2 style="margin:0;padding:0;line-height:1;">${t("cookbook.hf_token")}</h2>';
+  html += `<h2 style="margin:0;padding:0;line-height:1;">${t("cookbook.hf_token")}</h2>`;
   html += '</div>';
-  html += '<p class="memory-desc doclib-desc">${t("cookbook.hf_token_desc")}</p>';
+  html += `<p class="memory-desc doclib-desc">${t("cookbook.hf_token_desc")}</p>`;
   html += '<div class="memory-toolbar">';
   html += `<div style="display:flex;gap:4px;align-items:center;">`;
   // Bold green check shown when a token is stored (a placeholder can't style a
@@ -2590,10 +2598,10 @@ html += '<button type="button" class="cookbook-field-input hwfit-engine-btn" dat
   // ── Servers block ───────────────────────────────────────────────────
   html += '<div class="admin-card" style="flex:0 0 auto;display:flex;flex-direction:column;">';
   html += '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:2px;margin-top:-4px;">';
-  html += '<h2 style="margin:0;padding:0;line-height:1;">${t("cookbook.servers")}</h2>';
+  html += `<h2 style="margin:0;padding:0;line-height:1;">${t("cookbook.servers")}</h2>`;
   // Reuse the calendar +New pill: spinning plus, label fades in idea uses
    // the same `.cal-add-btn-text` rules, so styling stays consistent.
-  html += '<button class="cal-add-btn cal-add-btn-text" id="cookbook-server-add" title="Add server" style="margin-left:auto;"><span class="cal-add-plus">+</span><span class="cal-add-label">${t("cookbook.add")}</span></button>';
+  html += `<button class="cal-add-btn cal-add-btn-text" id="cookbook-server-add" title="Add server" style="margin-left:auto;"><span class="cal-add-plus">+</span><span class="cal-add-label">${t("cookbook.add")}</span></button>`;
   html += '</div>';
   html += '<p class="memory-desc doclib-desc">Configure SSH servers, install Ulises keys, choose model directories, and set the default server. Local is this machine.</p>';
   html += '<div class="memory-toolbar cookbook-servers-toolbar" style="margin-top:4px;">';
