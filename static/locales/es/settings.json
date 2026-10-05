@@ -445,6 +445,15 @@
     "yahoo_needs_app_password": "Yahoo necesita una contraseña de aplicación",
     "intg_contacts": "Contactos",
     "intg_email": "Correo",
-    "intg_vault": "Caja fuerte"
+    "intg_vault": "Caja fuerte",
+    "index_hamburger_menu": "Menú hamburguesa",
+    "index_delete_session": "Eliminar la sesión",
+    "index_chat_area": "Área de chat",
+    "index_nobody_mode": "Modo «nadie» activo: haz clic para desactivarlo",
+    "index_workspace_click_to_clear": "Espacio de trabajo: haz clic para vaciarlo",
+    "index_ntfy_topic_example": "recordatorios",
+    "index_sort_last_used": "Último uso",
+    "index_wipe_memory_desc": "Borra `memory.json`, la tabla de Memoria y el almacén vectorial. Las skills no se ven afectadas",
+    "index_wipe_skills_desc": "Borra `data/skills/` (todos los archivos SKILL.md). La memoria no se ve afectada"
   }
 }

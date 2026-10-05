@@ -445,6 +445,15 @@
     "yahoo_needs_app_password": "Yahoo needs an App Password",
     "intg_contacts": "Contacts",
     "intg_email": "Email",
-    "intg_vault": "Vault"
+    "intg_vault": "Vault",
+    "index_hamburger_menu": "Hamburger menu",
+    "index_delete_session": "Delete session",
+    "index_chat_area": "Chat area",
+    "index_nobody_mode": "Nobody mode active — click to deactivate",
+    "index_workspace_click_to_clear": "Workspace — click to clear",
+    "index_ntfy_topic_example": "reminders",
+    "index_sort_last_used": "Last used",
+    "index_wipe_memory_desc": "Clears `memory.json`, the Memory table, and the vector store. Skills not affected.",
+    "index_wipe_skills_desc": "Drops `data/skills/` (all SKILL.md files). Memory not affected."
   }
 }
