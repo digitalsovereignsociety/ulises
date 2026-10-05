@@ -153,7 +153,13 @@ def test_keys_used_in_html_are_translatable_placeholders():
 
 # t('key') / t("key") / tn('key', n) — skip template literals (dynamic keys)
 # and any call whose first argument is not a plain string literal.
-T_CALL_RE = re.compile(r"\b(?:t|tn)\(\s*'([A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)+)'")
+# Single OR double quotes. static/js/cookbook.js builds its DOM inside single-quoted
+# html += strings, so a t() injected there must use double quotes or it closes the
+# host string. With single quotes only, 42 calls were invisible to this regex and
+# therefore unchecked; they happened to all resolve, verified separately.
+T_CALL_RE = re.compile(
+    r'''\b(?:t|tn)\(\s*['"]([A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)+)['"]'''
+)
 # Modules live in static/js/ (recursively), but top-level static/*.js — app.js
 # above all — call t() too and were nearly missed by a static/js-only scan.
 JS_ROOTS = [os.path.join(ROOT, "static", "js")]

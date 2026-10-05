@@ -1069,7 +1069,12 @@ function initEndpointForm() {
       fd.append('model_refresh_timeout', '30');
       if (apiKey) fd.append('api_key', apiKey);
       if (provider.value && provider.selectedOptions && provider.selectedOptions[0]) {
-        fd.append('name', provider.selectedOptions[0].textContent.trim());
+          // data-name is the canonical English label. The option's visible text is
+          // localised, and this value is persisted as the endpoint's name, so reading
+          // the text stored "Suscripción ChatGPT" in a Spanish session — and a
+          // different name if the user switched language and re-added it.
+          const _opt = provider.selectedOptions[0];
+          fd.append('name', String(_opt.dataset.name || _opt.textContent).trim());
       }
       const epType = el('adm-epType');
       if (epType) fd.append('model_type', epType.value);
