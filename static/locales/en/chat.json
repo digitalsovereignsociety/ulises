@@ -136,6 +136,10 @@
     "regenerate_nothing": "Nothing to regenerate — the user message has no text and no attachments",
     "edit_not_found": "Cannot edit: message ID not found",
     "no_text_to_rewrite": "No text to rewrite",
-    "attachment_open_failed": "Could not open attachment"
+    "attachment_open_failed": "Could not open attachment",
+    "variant_regen": "Regenerated",
+    "variant_shorter": "Shorter",
+    "variant_simpler": "Simpler",
+    "variant_original": "Original"
   }
 }

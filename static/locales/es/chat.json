@@ -136,6 +136,10 @@
     "regenerate_nothing": "Nada que regenerar: el mensaje del usuario no tiene texto ni adjuntos",
     "edit_not_found": "No se puede editar: no se encontró el ID del mensaje",
     "no_text_to_rewrite": "No hay texto que reescribir",
-    "attachment_open_failed": "No se pudo abrir el adjunto"
+    "attachment_open_failed": "No se pudo abrir el adjunto",
+    "variant_regen": "Regenerado",
+    "variant_shorter": "Más corto",
+    "variant_simpler": "Más simple",
+    "variant_original": "Original"
   }
 }

@@ -4246,9 +4246,23 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
     }
   }
 
+  // `label` on a variant is an ENUM KEY, not display text: it indexes this icon
+  // map and is compared literally at the .variant-tag-scissors check below.
+  // Localising it would leave _VARIANT_ICONS[label] undefined and put the
+  // string "undefined" in the DOM, and the scissors icon would vanish silently.
+  // So the key stays English and the human-readable name is looked up from it.
   const _VARIANT_ICONS = { regen: '\u21BB', shorter: '\u2702', simpler: '?', original: '\u25CB' };
+  const _VARIANT_KIND_KEYS = {
+    regen: 'chat.variant_regen', shorter: 'chat.variant_shorter',
+    simpler: 'chat.variant_simpler', original: 'chat.variant_original',
+  };
   function _variantTagText(label) {
     return _VARIANT_ICONS[label] || _VARIANT_ICONS['original'];
+  }
+  // The glyph alone is meaningless to a screen reader, and to anyone who does
+  // not know the iconography. This is the string that can be translated.
+  function _variantTagName(label) {
+    return t(_VARIANT_KIND_KEYS[label] || _VARIANT_KIND_KEYS.original);
   }
 
   function _renderVariantNav(msgElement, variants, currentIdx) {
@@ -4274,6 +4288,8 @@ import { wireArrowUpRecall, getLastUserMessageFromChatHistory } from './composer
     const tagLabel = document.createElement('span');
     tagLabel.className = 'variant-tag' + (curVariant?.label === 'shorter' ? ' variant-tag-scissors' : '');
     tagLabel.textContent = _variantTagText(curVariant?.label);
+    tagLabel.title = _variantTagName(curVariant?.label);
+    tagLabel.setAttribute('aria-label', _variantTagName(curVariant?.label));
     nav.appendChild(tagLabel);
 
     // < button

@@ -1757,7 +1757,7 @@ function initAppearance() {
       if (window.UI_VIS_ADMIN_ONLY && window.UI_VIS_ADMIN_ONLY.has(key) && !chk.checked && !window._isAdmin) {
         chk.checked = true;
         if (uiModule && uiModule.showToast) {
-          uiModule.showToast('Only admins can hide Settings.');
+          uiModule.showToast(t('settings.only_admins_hide'));
         }
         return;
       }
@@ -1771,7 +1771,7 @@ function initAppearance() {
           ok = await (uiModule && uiModule.styledConfirm
             ? uiModule.styledConfirm(
                 'Hide the Settings cog?\n\nYou can re-open this panel any time by typing /settings in the chat input.',
-                { confirmText: 'Hide', cancelText: 'Cancel' }
+                { confirmText: t('settings.hide'), cancelText: t('settings.cancel') }
               )
             : Promise.resolve(window.confirm('Hide the Settings cog?\n\nYou can re-open this panel any time by typing /settings in the chat input.')));
         } catch (_) { ok = false; }
@@ -2126,7 +2126,7 @@ async function initShortcuts() {
       });
       // Update global keybinds so they take effect immediately
       window._ulisesKeybinds = keybinds;
-      if (uiModule && uiModule.showToast) uiModule.showToast('Shortcut saved');
+      if (uiModule && uiModule.showToast) uiModule.showToast(t('settings.shortcut_saved'));
     } catch (e) {
       console.error('Failed to save keybinds:', e);
     }
@@ -2137,7 +2137,7 @@ async function initShortcuts() {
       keybinds = { ...SHORTCUT_DEFAULTS };
       render();
       await saveKeybinds();
-      if (uiModule && uiModule.showToast) uiModule.showToast('Shortcuts reset to defaults');
+      if (uiModule && uiModule.showToast) uiModule.showToast(t('settings.shortcuts_reset'));
     });
   }
 
@@ -2170,7 +2170,7 @@ function initAccount() {
       if (!policy) return;
       _authPolicy = policy;
       const pwNew = el('settings-pw-new');
-      if (pwNew) pwNew.placeholder = `New password (min ${policy.password_min_length})`;
+      if (pwNew) pwNew.placeholder = t('settings.new_password_min', { n: policy.password_min_length });
     }).catch(() => {});
 
   // Change password
@@ -2780,7 +2780,7 @@ async function initReminderSettings() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             note_id: 'test-' + Date.now(),
-            title: 'Test Reminder',
+            title: t('settings.test_reminder'),
             body: 'This is a test reminder to verify your settings are working.',
             channel: channelSel.value,
             // Mirror the in-UI AI Synthesis toggle + persona so the test never
@@ -2966,7 +2966,7 @@ async function initEmailAccountsSettings() {
       outlook:           { label: 'Outlook / Office 365',       imap: { host: 'outlook.office365.com', port: 993, starttls: false }, smtp: { host: 'smtp.office365.com',    port: 587 } },
       fastmail:          { label: 'Fastmail',                   imap: { host: 'imap.fastmail.com',     port: 993, starttls: false }, smtp: { host: 'smtp.fastmail.com',     port: 465 } },
       yahoo:             { label: 'Yahoo',                      imap: { host: 'imap.mail.yahoo.com',   port: 993, starttls: false }, smtp: { host: 'smtp.mail.yahoo.com',   port: 465 } },
-      dovecot:           { label: 'Dovecot IMAP (no SMTP)',     imap: { host: '',                      port: 31143, starttls: false }, smtp: { host: '',                     port: 465 } },
+      dovecot:           { label: t('settings.dovecot_no_smtp'),     imap: { host: '',                      port: 31143, starttls: false }, smtp: { host: '',                     port: 465 } },
     };
     const _providerOptions = Object.entries(PROVIDERS)
       .map(([k, v]) => `<option value="${k}">${esc(v.label)}</option>`)
@@ -3024,7 +3024,7 @@ async function initEmailAccountsSettings() {
 
     const eafProviderNotes = {
       outlook: {
-        title: 'Outlook / Office 365 needs OAuth',
+        title: t('settings.outlook_needs_oauth'),
         body: 'Microsoft disables normal password login for IMAP/SMTP in most Outlook and Microsoft 365 accounts. Ulises does not support Microsoft OAuth/Graph mail yet, so this preset is only a placeholder for future support.',
       },
     };
@@ -3748,7 +3748,7 @@ async function initUnifiedIntegrations() {
       btn.addEventListener('click', async (e) => {
         e.stopPropagation();
         const intgName = btn.dataset.intgName || 'this integration';
-        if (!await window.styledConfirm(`Remove "${intgName}"?`, { confirmText: 'Remove', danger: true })) return;
+        if (!await window.styledConfirm(`Remove "${intgName}"?`, { confirmText: t('settings.remove'), danger: true })) return;
         const type = btn.dataset.intgType;
         const id = btn.dataset.intgId;
         try {
@@ -4196,7 +4196,7 @@ async function initUnifiedIntegrations() {
       if (btn) { btn.textContent = t('settings.exporting'); btn.disabled = true; }
       try {
         const res = await fetch(`/api/contacts/export?format=${encodeURIComponent(format)}`, { credentials: 'same-origin' });
-        if (!res.ok) throw new Error('Export failed');
+        if (!res.ok) throw new Error(t('settings.export_failed'));
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -4207,7 +4207,7 @@ async function initUnifiedIntegrations() {
         a.remove();
         setTimeout(() => URL.revokeObjectURL(url), 1000);
       } catch (_) {
-        uiModule.showError ? uiModule.showError('Export failed') : alert('Export failed');
+        uiModule.showError ? uiModule.showError(t('settings.export_failed')) : alert(t('settings.export_failed'));
       } finally {
         if (btn) { btn.textContent = orig; btn.disabled = false; }
       }
@@ -4415,7 +4415,7 @@ async function initUnifiedIntegrations() {
       outlook:  { label: 'Outlook / Office 365',    emailEx: 'you@outlook.com',   imap: { host: 'outlook.office365.com',    port: 993, starttls: false }, smtp: { host: 'smtp.office365.com', port: 587 } },
       fastmail: { label: 'Fastmail',                emailEx: 'you@fastmail.com',  imap: { host: 'imap.fastmail.com',        port: 993, starttls: false }, smtp: { host: 'smtp.fastmail.com',  port: 465 } },
       yahoo:    { label: 'Yahoo',                   emailEx: 'you@yahoo.com',     imap: { host: 'imap.mail.yahoo.com',      port: 993, starttls: false }, smtp: { host: 'smtp.mail.yahoo.com', port: 465 } },
-      dovecot:  { label: 'Dovecot IMAP (no SMTP)',  emailEx: 'you@example.com',   imap: { host: '',                         port: 31143, starttls: false }, smtp: { host: '',                   port: 465 } },
+      dovecot:  { label: t('settings.dovecot_no_smtp'),  emailEx: 'you@example.com',   imap: { host: '',                         port: 31143, starttls: false }, smtp: { host: '',                   port: 465 } },
     };
     const _providerOptions = Object.entries(PROVIDERS)
       .map(([k, v]) => `<option value="${k}">${esc(v.label)}</option>`).join('');
@@ -4505,22 +4505,22 @@ async function initUnifiedIntegrations() {
     // mobile / cross-device flows.
     const PROVIDER_NOTES = {
       gmail: {
-        title: 'Gmail needs an App Password',
+        title: t('settings.gmail_needs_app_password'),
         body: 'Your regular Google password won\'t work for IMAP. Generate a 16-character App Password (requires 2-Step Verification enabled) and paste it as the Password.',
         url: 'https://myaccount.google.com/apppasswords',
       },
       icloud: {
-        title: 'iCloud needs an App-Specific Password',
+        title: t('settings.icloud_needs_app_password'),
         body: 'Sign in to your Apple ID, go to Sign-In and Security → App-Specific Passwords, and generate one (requires 2FA on your Apple ID).',
         url: 'https://account.apple.com/account/manage',
       },
       yahoo: {
-        title: 'Yahoo needs an App Password',
+        title: t('settings.yahoo_needs_app_password'),
         body: 'Generate an App Password from Yahoo Account Security (requires 2-Step Verification enabled) and paste it as the Password.',
         url: 'https://login.yahoo.com/account/security/app-passwords',
       },
       outlook: {
-        title: 'Outlook / Office 365 needs OAuth',
+        title: t('settings.outlook_needs_oauth'),
         body: 'Microsoft disables normal password login for IMAP/SMTP in most Outlook and Microsoft 365 accounts. Ulises does not support Microsoft OAuth/Graph mail yet, so this preset is only a placeholder for future support.',
         url: 'https://learn.microsoft.com/exchange/clients-and-mobile-in-exchange-online/disable-basic-authentication-in-exchange-online',
         linkLabel: 'Read Microsoft note',
@@ -5011,7 +5011,7 @@ async function initUnifiedIntegrations() {
     });
 
     el('uf-vault-logout').addEventListener('click', async () => {
-      if (!await window.styledConfirm('Log out of Bitwarden CLI? You\'ll need to re-enter your master password to log back in.', { confirmText: 'Log out' })) return;
+      if (!await window.styledConfirm('Log out of Bitwarden CLI? You\'ll need to re-enter your master password to log back in.', { confirmText: t('settings.log_out') })) return;
       msg('Logging out...');
       try {
         await fetch('/api/vault/logout', { method: 'POST', credentials: 'same-origin' });
@@ -5083,7 +5083,7 @@ async function initUnifiedIntegrations() {
           if (++fails >= 5 && msg) msg.textContent = `Status check failing (${e.message || 'network error'}) — still retrying…`;
         }
       }
-      if (msg) msg.textContent = 'Authorization timed out. Reconnect from the server list to retry.';
+      if (msg) msg.textContent = t('settings.auth_timed_out');
     }
     if (editId && editId !== 'new') {
       // Show management view for existing server
@@ -5465,7 +5465,7 @@ async function initUnifiedIntegrations() {
       const tokenId = formEl.dataset.createdTokenId;
       if (!tokenId) return;
       const ok = window.styledConfirm
-        ? await window.styledConfirm(`Revoke this ${cfg.word} agent token? Integrations using it will lose access.`, { confirmText: 'Revoke', danger: true })
+        ? await window.styledConfirm(`Revoke this ${cfg.word} agent token? Integrations using it will lose access.`, { confirmText: t('settings.revoke'), danger: true })
         : confirm(`Revoke this ${cfg.word} agent token? Integrations using it will lose access.`);
       if (!ok) return;
       const msg = el('uf-codex-msg');

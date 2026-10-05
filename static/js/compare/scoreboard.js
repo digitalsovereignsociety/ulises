@@ -86,7 +86,7 @@ function _modeText(mode) {
 }
 
   const modes = ['chat', 'agent', 'search', 'research'];
-  const modeLabels = { chat: 'Chat', agent: 'Agent', search: 'Search', research: 'Research' };
+  const modeLabels = { chat: t('compare.tab_chat'), agent: t('compare.tab_agent'), search: t('compare.tab_search'), research: t('compare.tab_research') };
   const tabBar = document.createElement('div');
   tabBar.className = 'compare-mode-tabs';
   tabBar.style.marginBottom = '12px';

@@ -92,7 +92,7 @@ async function showModelSelector() {
     const headerMinBtn = document.createElement('button');
     headerMinBtn.type = 'button';
     headerMinBtn.className = 'modal-minimize-btn minimize-btn';
-    headerMinBtn.title = 'Minimize';
+    headerMinBtn.title = t('compare.minimize');
     headerMinBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="18" x2="19" y2="18"/></svg>';
     headerMinBtn.style.margin = '0';
 
@@ -117,7 +117,7 @@ async function showModelSelector() {
     const blindBtn = document.createElement('button');
     blindBtn.type = 'button';
     blindBtn.className = 'compare-blind-toggle active';
-    blindBtn.title = 'Blind Mode — hide model names until you vote';
+    blindBtn.title = t('compare.blind_mode');
     blindBtn.innerHTML = EYE_CLOSED + _toggleLabel('Blind');
     blindBtn.addEventListener('click', () => {
       state._blindMode = !state._blindMode;
@@ -143,7 +143,7 @@ async function showModelSelector() {
     const parallelBtn = document.createElement('button');
     parallelBtn.type = 'button';
     parallelBtn.className = 'compare-parallel-toggle active';
-    parallelBtn.title = 'Parallel — run all models at once vs one at a time';
+    parallelBtn.title = t('compare.parallel');
     parallelBtn.innerHTML = ICON_PARALLEL + _toggleLabel('Parallel');
     parallelBtn.addEventListener('click', () => {
       state._parallel = !state._parallel;
@@ -163,7 +163,7 @@ async function showModelSelector() {
     const diceBtn = document.createElement('button');
     diceBtn.type = 'button';
     diceBtn.className = 'compare-dice-toggle';
-    diceBtn.title = 'Shuffle — randomly pick models for each slot';
+    diceBtn.title = t('compare.shuffle');
     diceBtn.innerHTML = ICON_DICE + _toggleLabel('Shuffle');
     diceBtn.addEventListener('click', () => {
       if (!_modelsLoaded) return;
@@ -221,7 +221,7 @@ async function showModelSelector() {
     const saveBtn = document.createElement('button');
     saveBtn.type = 'button';
     saveBtn.className = 'compare-save-toggle';
-    saveBtn.title = 'Save — keep sessions after closing compare';
+    saveBtn.title = t('compare.save_sessions');
     saveBtn.innerHTML = SAVE_ICON + _toggleLabel('Save');
     saveBtn.addEventListener('click', () => {
       state._saveOnClose = !state._saveOnClose;
@@ -238,7 +238,7 @@ async function showModelSelector() {
     const resetBtn = document.createElement('button');
     resetBtn.type = 'button';
     resetBtn.className = 'compare-reset-toggle';
-    resetBtn.title = 'Reset — restore all defaults';
+    resetBtn.title = t('compare.reset_defaults');
     resetBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>' + _toggleLabel('Reset');
     resetBtn.addEventListener('click', () => {
       state._blindMode = true;
@@ -268,7 +268,7 @@ async function showModelSelector() {
 
     const desc = document.createElement('p');
     desc.style.cssText = 'color:color-mix(in srgb, var(--fg) 55%, transparent);font-size:0.85em;margin:0 0 12px;';
-    desc.textContent = 'Select models to compare side-by-side. Send the same prompt to all.';
+    desc.textContent = t('compare.intro');
     body.appendChild(desc);
 
     // Options row
@@ -321,10 +321,13 @@ async function showModelSelector() {
     // Research — magnifying glass with `+` (matches the sidebar Deep Research icon)
     const _ICON_RESEARCH = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>';
     const _modes = [
-      { id: 'chat', label: 'Chat', icon: CHAT_ICON },
-      { id: 'agent', label: 'Agent', icon: _ICON_AGENT },
-      { id: 'search', label: 'Search', icon: _ICON_SEARCH },
-      { id: 'research', label: 'Research', icon: _ICON_RESEARCH },
+      // `id` stays the stable mode id; the tab name is display text. Kept
+      // distinct from compare.mode_*, which is interpolated mid-sentence and is
+      // therefore lowercase in English.
+      { id: 'chat', label: t('compare.tab_chat'), icon: CHAT_ICON },
+      { id: 'agent', label: t('compare.tab_agent'), icon: _ICON_AGENT },
+      { id: 'search', label: t('compare.tab_search'), icon: _ICON_SEARCH },
+      { id: 'research', label: t('compare.tab_research'), icon: _ICON_RESEARCH },
     ];
     _modes.forEach(m => {
       const tab = document.createElement('button');
@@ -466,7 +469,7 @@ async function showModelSelector() {
         if (matches.length === 0) {
           const empty = document.createElement('div');
           empty.style.cssText = 'padding:8px 12px;color:color-mix(in srgb, var(--fg) 40%, transparent);font-size:0.82em;font-style:italic;';
-          empty.textContent = 'No matches';
+          empty.textContent = t('compare.no_matches');
           dropdown.appendChild(empty);
           return;
         }
@@ -722,7 +725,7 @@ async function showModelSelector() {
           const mask = document.createElement('div');
           mask.className = 'cmp-form-control';
           mask.style.cssText = 'flex:1;opacity:0.4;font-style:italic;';
-          mask.textContent = 'Hidden';
+          mask.textContent = t('compare.hidden');
           row.appendChild(mask);
         } else if (filtered.length >= 5) {
           const picker = _buildSearchablePicker(filtered, sel, idx, (chosen) => {
@@ -759,7 +762,7 @@ async function showModelSelector() {
         if (needsProviders && researchProviders.length > 0 && !_shuffled) {
           const provSelect = document.createElement('select');
           provSelect.className = 'cmp-form-control cmp-prov-select';
-          provSelect.title = 'Search provider';
+          provSelect.title = t('compare.search_provider');
           researchProviders.forEach((p, pi) => {
             const optEl = document.createElement('option');
             optEl.value = p.id;
@@ -936,7 +939,7 @@ async function showModelSelector() {
         row.dataset.idx = i;
         // In blind mode, hide name until failure — only show slot letter
         const name = m.name || m.model.split('/').pop();
-        const displayName = isBlind ? `Model ${_slotChar(i)}` : escapeHtml(name);
+        const displayName = isBlind ? t('compare.model_slot', { slot: _slotChar(i) }) : escapeHtml(name);
         row._realName = name;
         row.innerHTML = `<span class="compare-probe-spinner">▁▂▃</span><span class="compare-probe-name">${displayName}</span><span class="compare-probe-status"></span>`;
         const waveEl = row.querySelector('.compare-probe-spinner');
@@ -952,7 +955,7 @@ async function showModelSelector() {
       });
       probeCard.appendChild(probeList);
       const skipBtn = document.createElement('button');
-      skipBtn.textContent = 'Skip';
+      skipBtn.textContent = t('compare.skip');
       skipBtn.className = 'cmp-btn-secondary';
       skipBtn.style.cssText = 'padding:4px 14px;font-size:11px;opacity:0.5;transition:opacity 0.15s;margin-top:8px;';
       skipBtn.addEventListener('mouseenter', () => { skipBtn.style.opacity = '1'; });
@@ -1085,7 +1088,7 @@ async function showModelSelector() {
           });
           const swapBtn = document.createElement('button');
           swapBtn.className = 'compare-probe-action-btn';
-          swapBtn.textContent = 'Swap';
+          swapBtn.textContent = t('compare.swap');
           swapBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             _clearProbeWaves();
@@ -1142,7 +1145,7 @@ async function showModelSelector() {
                   let wIdx = 0;
                   row._waveInterval = setInterval(() => { wIdx = (wIdx + 1) % waveFrames.length; spinner.textContent = waveFrames[wIdx]; }, 100);
                 }
-                if (status) status.textContent = 'Swapping...';
+                if (status) status.textContent = t('compare.swapping');
               }
 
               // Try up to 3 replacements with 10s timeout each
@@ -1167,7 +1170,7 @@ async function showModelSelector() {
                   const spinner = row.querySelector('.compare-probe-spinner');
                   const status = row.querySelector('.compare-probe-status');
                   if (spinner) { spinner.textContent = '\u2717'; spinner.classList.add('fail'); spinner.style.color = ''; }
-                  if (status) { status.textContent = 'No replacement'; }
+                  if (status) { status.textContent = t('compare.no_replacement'); }
                 }
               }
             }
@@ -1188,7 +1191,7 @@ async function showModelSelector() {
 
           if (providers.length > 0) {
             const titleEl = probeOverlay.querySelector('.compare-probe-title');
-            titleEl.textContent = 'Checking search providers...';
+            titleEl.textContent = t('compare.checking_providers');
 
             // Add provider rows
             const providerRows = [];
@@ -1251,7 +1254,7 @@ async function showModelSelector() {
           // Don't hide the Skip button here — collapsing its space made the
           // card shrink and the title + rows jump ("quick cut"). On success the
           // whole overlay fades out a moment later, so just leave it in place.
-          probeOverlay.querySelector('.compare-probe-title').textContent = 'All ready!';
+          probeOverlay.querySelector('.compare-probe-title').textContent = t('compare.all_ready');
           setTimeout(() => {
             probeOverlay.style.transition = 'opacity 0.3s ease';
             probeOverlay.style.opacity = '0';
@@ -1277,7 +1280,7 @@ async function showModelSelector() {
           goBackBtn.style.cssText = 'padding:5px 12px;font-size:12px;display:inline-flex;align-items:center;';
           goBackBtn.addEventListener('click', () => { _clearProbeWaves(); probeOverlay.remove(); startBtn.disabled = false; startBtn.innerHTML = _CMP_START_LABEL; startBtn.style.opacity = '1'; });
           const startAnywayBtn = document.createElement('button');
-          startAnywayBtn.textContent = 'Start Anyway';
+          startAnywayBtn.textContent = t('compare.start_anyway');
           startAnywayBtn.className = 'cmp-btn-primary';
           startAnywayBtn.style.cssText = 'padding:5px 12px;font-size:12px;';
           startAnywayBtn.addEventListener('click', () => { _clearProbeWaves(); probeOverlay.remove(); cleanup(true); });

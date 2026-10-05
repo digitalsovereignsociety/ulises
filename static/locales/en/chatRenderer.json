@@ -1,0 +1,28 @@
+{
+  "chatRenderer": {
+    "ocr_view_edit": "View / edit OCR text",
+    "vision_label": "Vision: {{model}}",
+    "image_load_failed": "Failed to load full-resolution image.",
+    "ocr_edit_help": "Edit text and save, new chats will have the new context. Regenerate or continue from there.",
+    "loading": "Loading…",
+    "save_and_regenerate": "Save and regenerate the message",
+    "ocr_load_failed": "Could not load OCR text — type your correction and save.",
+    "copy_prompt": "Copy prompt",
+    "download_image": "Download image",
+    "edit_in_image_editor": "Edit in image editor",
+    "delete_image": "Delete image",
+    "copy_message": "Copy message",
+    "edit": "Edit",
+    "regenerate_from_here": "Regenerate from here",
+    "rewrite_shorter": "Rewrite shorter",
+    "explain_simpler": "Explain simpler",
+    "fork_conversation": "Fork conversation",
+    "delete_message": "Delete message",
+    "more_actions": "More actions",
+    "open_memory_manager": "Click to open memory manager",
+    "edit_message": "Edit message",
+    "resend_message": "Resend message",
+    "click_for_details": "Click for details",
+    "continue_label": "Continue"
+  }
+}

@@ -164,7 +164,7 @@ function buildAttachCards(attachments) {
           const ocrBtn = document.createElement('button');
           ocrBtn.type = 'button';
           ocrBtn.className = 'attach-ocr-btn';
-          ocrBtn.title = 'View / edit OCR text';
+          ocrBtn.title = t('chatRenderer.ocr_view_edit');
           ocrBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg><span class="attach-ocr-label">Caption</span>';
           ocrBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -177,7 +177,7 @@ function buildAttachCards(attachments) {
       if (att.vision_model) {
         const visionLabel = document.createElement('div');
         visionLabel.className = 'attach-vision-model';
-        visionLabel.textContent = 'Vision: ' + String(att.vision_model).split('/').pop();
+        visionLabel.textContent = t('chatRenderer.vision_label', { model: String(att.vision_model).split('/').pop() });
         imgWrap.appendChild(visionLabel);
       }
       if (att.name) {
@@ -252,7 +252,7 @@ function _openImageLightbox(att) {
   full.addEventListener('error', () => {
     const err = document.createElement('div');
     err.className = 'attach-lightbox-err';
-    err.textContent = 'Failed to load full-resolution image.';
+    err.textContent = t('chatRenderer.image_load_failed');
     overlay.appendChild(err);
   });
   full.src = `/api/upload/${att.id}`;
@@ -308,12 +308,12 @@ function _openVisionEditor(att, userMsgEl) {
   panel.appendChild(title);
   const desc = document.createElement('div');
   desc.className = 'vision-editor-desc';
-  desc.textContent = 'Edit text and save, new chats will have the new context. Regenerate or continue from there.';
+  desc.textContent = t('chatRenderer.ocr_edit_help');
   panel.appendChild(desc);
   const ta = document.createElement('textarea');
   ta.className = 'vision-editor-text';
   ta.rows = 10;
-  ta.placeholder = 'Loading…';
+  ta.placeholder = t('chatRenderer.loading');
   ta.disabled = true;
   panel.appendChild(ta);
   const actions = document.createElement('div');
@@ -355,7 +355,7 @@ function _openVisionEditor(att, userMsgEl) {
   const regenBtn = document.createElement('button');
   regenBtn.type = 'button';
   regenBtn.className = 'vision-editor-btn vision-editor-btn-primary';
-  regenBtn.title = 'Save and regenerate the message';
+  regenBtn.title = t('chatRenderer.save_and_regenerate');
   regenBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.74 9.74 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg><span class="vision-btn-label">Regenerate message</span>';
   regenBtn.disabled = true;
   regenBtn.addEventListener('click', async () => {
@@ -400,7 +400,7 @@ function _openVisionEditor(att, userMsgEl) {
     })
     .catch(() => {
       ta.value = '';
-      ta.placeholder = 'Could not load OCR text — type your correction and save.';
+      ta.placeholder = t('chatRenderer.ocr_load_failed');
       ta.disabled = false;
       saveBtn.disabled = false;
       regenBtn.disabled = !userMsgEl;
@@ -1251,7 +1251,7 @@ export function buildImageBubble(imageUrl, prompt, model, size, quality, imageId
   const copyBtn = document.createElement('button');
   copyBtn.className = 'footer-copy-btn';
   copyBtn.type = 'button';
-  copyBtn.title = 'Copy prompt';
+  copyBtn.title = t('chatRenderer.copy_prompt');
   copyBtn.innerHTML = COPY_ICON;
   copyBtn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -1264,7 +1264,7 @@ export function buildImageBubble(imageUrl, prompt, model, size, quality, imageId
   const dlBtn = document.createElement('button');
   dlBtn.className = 'footer-copy-btn';
   dlBtn.type = 'button';
-  dlBtn.title = 'Download image';
+  dlBtn.title = t('chatRenderer.download_image');
   dlBtn.textContent = '\u2913';
   dlBtn.addEventListener('click', async (e) => {
     e.stopPropagation();
@@ -1287,7 +1287,7 @@ export function buildImageBubble(imageUrl, prompt, model, size, quality, imageId
   const editBtn = document.createElement('button');
   editBtn.className = 'footer-copy-btn';
   editBtn.type = 'button';
-  editBtn.title = 'Edit in image editor';
+  editBtn.title = t('chatRenderer.edit_in_image_editor');
   editBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
   editBtn.addEventListener('click', async (e) => {
     e.stopPropagation();
@@ -1321,7 +1321,7 @@ export function buildImageBubble(imageUrl, prompt, model, size, quality, imageId
   const delBtn = document.createElement('button');
   delBtn.className = 'footer-copy-btn footer-delete-btn';
   delBtn.type = 'button';
-  delBtn.title = 'Delete image';
+  delBtn.title = t('chatRenderer.delete_image');
   delBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>';
   delBtn.addEventListener('click', async (e) => {
     e.stopPropagation();
@@ -1443,7 +1443,7 @@ export function createMsgFooter(msgElement) {
 
   // Define all available actions: { id, icon, title, className, handler }
   const allActions = [
-    { id: 'copy', icon: COPY_ICON, title: 'Copy message', cls: 'footer-copy-btn', html: true, handler(e) {
+    { id: 'copy', icon: COPY_ICON, title: t('chatRenderer.copy_message'), cls: 'footer-copy-btn', html: true, handler(e) {
       e.stopPropagation();
       const btn = e.currentTarget;
       uiModule.copyToClipboard(copyMessageText(msgElement));
@@ -1454,23 +1454,23 @@ export function createMsgFooter(msgElement) {
       e.stopPropagation();
       if (window.chatModule?.editAIMessage) window.chatModule.editAIMessage(msgElement);
     }},
-    { id: 'regen', icon: '\u21BB', title: 'Regenerate from here', cls: 'msg-action-btn', handler(e) {
+    { id: 'regen', icon: '\u21BB', title: t('chatRenderer.regenerate_from_here'), cls: 'msg-action-btn', handler(e) {
       e.stopPropagation();
       if (window.chatModule?.regenerateFrom) window.chatModule.regenerateFrom(msgElement);
     }},
-    { id: 'shorten', icon: '\u2702', title: 'Rewrite shorter', cls: 'msg-action-btn', handler(e) {
+    { id: 'shorten', icon: '\u2702', title: t('chatRenderer.rewrite_shorter'), cls: 'msg-action-btn', handler(e) {
       e.stopPropagation();
       if (window.chatModule?.rewriteWith) window.chatModule.rewriteWith(msgElement, 'Rewrite your last response to be shorter and more concise. Keep the key information but cut the fluff.');
     }},
-    { id: 'explain', icon: '?', title: 'Explain simpler', cls: 'msg-action-btn', handler(e) {
+    { id: 'explain', icon: '?', title: t('chatRenderer.explain_simpler'), cls: 'msg-action-btn', handler(e) {
       e.stopPropagation();
       if (window.chatModule?.rewriteWith) window.chatModule.rewriteWith(msgElement, 'Explain your last response in simpler terms. Use plain language and short sentences.');
     }},
-    { id: 'fork', icon: '\u2ADD', title: 'Fork conversation', cls: 'msg-action-btn', handler(e) {
+    { id: 'fork', icon: '\u2ADD', title: t('chatRenderer.fork_conversation'), cls: 'msg-action-btn', handler(e) {
       e.stopPropagation();
       if (window.chatModule?.forkFrom) window.chatModule.forkFrom(msgElement);
     }},
-    { id: 'delete', icon: '\u2715', title: 'Delete message', cls: 'msg-action-btn msg-delete-btn', handler(e) {
+    { id: 'delete', icon: '\u2715', title: t('chatRenderer.delete_message'), cls: 'msg-action-btn msg-delete-btn', handler(e) {
       e.stopPropagation();
       if (window.chatModule?.deleteMessage) window.chatModule.deleteMessage(msgElement);
     }},
@@ -1511,7 +1511,7 @@ export function createMsgFooter(msgElement) {
     const moreBtn = document.createElement('button');
     moreBtn.className = 'msg-action-btn msg-more-btn';
     moreBtn.type = 'button';
-    moreBtn.title = 'More actions';
+    moreBtn.title = t('chatRenderer.more_actions');
     moreBtn.textContent = '\u00B7\u00B7\u00B7';
     moreBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -1586,7 +1586,7 @@ export function createMsgFooter(msgElement) {
         const row = document.createElement('div');
         row.className = 'memory-used-row';
         row.style.cursor = 'pointer';
-        row.title = 'Click to open memory manager';
+        row.title = t('chatRenderer.open_memory_manager');
         const badge = document.createElement('span');
         badge.className = 'memory-used-badge ' + (m.type === 'pinned' ? 'pinned' : 'recalled');
         badge.textContent = m.type === 'pinned' ? '\u25CF' : '\u21BB';
@@ -1654,22 +1654,22 @@ export function createUserMsgFooter(msgElement) {
   actions.className = 'msg-actions';
 
   const allActions = [
-    { id: 'edit', icon: '\u270E', title: 'Edit message', cls: 'msg-action-btn', handler(e) {
+    { id: 'edit', icon: '\u270E', title: t('chatRenderer.edit_message'), cls: 'msg-action-btn', handler(e) {
       e.stopPropagation();
       if (window.chatModule?.editUserMessage) window.chatModule.editUserMessage(msgElement);
     }},
-    { id: 'delete', icon: '\u2715', title: 'Delete message', cls: 'msg-action-btn msg-delete-btn', handler(e) {
+    { id: 'delete', icon: '\u2715', title: t('chatRenderer.delete_message'), cls: 'msg-action-btn msg-delete-btn', handler(e) {
       e.stopPropagation();
       if (window.chatModule?.deleteMessage) window.chatModule.deleteMessage(msgElement);
     }},
-    { id: 'copy', icon: COPY_ICON, title: 'Copy message', cls: 'footer-copy-btn', html: true, handler(e) {
+    { id: 'copy', icon: COPY_ICON, title: t('chatRenderer.copy_message'), cls: 'footer-copy-btn', html: true, handler(e) {
       e.stopPropagation();
       const btn = e.currentTarget;
       uiModule.copyToClipboard(msgElement.querySelector('.body')?.textContent || '');
       btn.innerHTML = CHECK_ICON;
       setTimeout(() => { btn.innerHTML = COPY_ICON; }, 1500);
     }},
-    { id: 'resend', icon: '\u21BB', title: 'Resend message', cls: 'msg-action-btn', handler(e) {
+    { id: 'resend', icon: '\u21BB', title: t('chatRenderer.resend_message'), cls: 'msg-action-btn', handler(e) {
       e.stopPropagation();
       if (window.chatModule?.resendUserMessage) window.chatModule.resendUserMessage(msgElement);
     }},
@@ -1702,7 +1702,7 @@ export function createUserMsgFooter(msgElement) {
     const moreBtn = document.createElement('button');
     moreBtn.className = 'msg-action-btn msg-more-btn';
     moreBtn.type = 'button';
-    moreBtn.title = 'More actions';
+    moreBtn.title = t('chatRenderer.more_actions');
     moreBtn.textContent = '\u00B7\u00B7\u00B7';
     moreBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -1795,7 +1795,7 @@ export function displayMetrics(messageElement, metrics) {
   if (!metricsLabel) return;
   metricsContainer.textContent = metricsLabel;
   metricsContainer.style.cursor = 'pointer';
-  metricsContainer.title = 'Click for details';
+  metricsContainer.title = t('chatRenderer.click_for_details');
   const metricsDivider = document.createElement('span');
   metricsDivider.className = 'metrics-divider';
   metricsDivider.textContent = ' | ';
