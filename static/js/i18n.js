@@ -161,6 +161,30 @@ export function getCurrentLang() {
   return _lang
 }
 
+// For callers that run before init() resolves — a module-level IIFE, or a
+// setTimeout from page load. A t() call in that window sees an empty locale.
+//
+// Deliberately does NOT call init() itself. Two of its callers are IIFEs that
+// run while their module is being imported, and triggering init() from there
+// made _detectLanguage() touch navigator before the test DOM stub installed it,
+// which throws on node 24 where globalThis.navigator is read-only. app.js owns
+// calling init(); this only waits for it. The poll is bounded so a caller cannot
+// leak a timer if init() is never reached.
+const _READY_POLL_MS = 40
+const _READY_MAX_MS = 15000
+export function whenReady() {
+  if (_ready) return Promise.resolve(true)
+  return new Promise(resolve => {
+    const deadline = Date.now() + _READY_MAX_MS
+    const tick = () => {
+      if (_ready) return resolve(true)
+      if (Date.now() > deadline) return resolve(false)
+      setTimeout(tick, _READY_POLL_MS)
+    }
+    tick()
+  })
+}
+
 export function isReady() {
   return _ready
 }
