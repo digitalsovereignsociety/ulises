@@ -129,29 +129,29 @@ export const ERROR_PATTERNS = [
     pattern: /No available memory for the cache blocks|Available KV cache memory:.*-/i,
     get message() { return t('cookbook.diag_msg_kv_cache_oom') },
     fixes: [
-      { kind: 'retry', label: t('cookbook.diag_retry_gpu_mem', { v: '0.95' }), action: (panel) => _serveAutoRetryReplace(panel, '--gpu-memory-utilization', '0.95') },
-      { kind: 'retry', label: t('cookbook.diag_retry_context', { v: '2048' }), action: (panel) => _serveAutoRetryReplace(panel, '--max-model-len', '2048') },
-      { kind: 'retry', label: t('cookbook.diag_retry_more_gpus', { v: '8' }), action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '8') },
+      { kind: 'retry', get label() { return t('cookbook.diag_retry_gpu_mem', { v: '0.95' }) }, action: (panel) => _serveAutoRetryReplace(panel, '--gpu-memory-utilization', '0.95') },
+      { kind: 'retry', get label() { return t('cookbook.diag_retry_context', { v: '2048' }) }, action: (panel) => _serveAutoRetryReplace(panel, '--max-model-len', '2048') },
+      { kind: 'retry', get label() { return t('cookbook.diag_retry_more_gpus', { v: '8' }) }, action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '8') },
     ],
   },
   {
     pattern: /warming up sampler|max_num_seqs.*gpu_memory_utilization/i,
     get message() { return t('cookbook.diag_msg_warmup_oom') },
     fixes: [
-      { kind: 'retry', label: t('cookbook.diag_retry_gpu_mem', { v: '0.80' }), action: (panel) => _serveAutoRetryReplace(panel, '--gpu-memory-utilization', '0.80') },
-      { kind: 'retry', label: t('cookbook.diag_retry_flag_value', { flag: '--max-num-seqs', v: '64' }), action: (panel) => _serveAutoRetry(panel, '--max-num-seqs 64') },
-      { kind: 'retry', label: t('cookbook.diag_retry_flag_value', { flag: '--max-num-seqs', v: '32' }), action: (panel) => _serveAutoRetry(panel, '--max-num-seqs 32') },
+      { kind: 'retry', get label() { return t('cookbook.diag_retry_gpu_mem', { v: '0.80' }) }, action: (panel) => _serveAutoRetryReplace(panel, '--gpu-memory-utilization', '0.80') },
+      { kind: 'retry', get label() { return t('cookbook.diag_retry_flag_value', { flag: '--max-num-seqs', v: '64' }) }, action: (panel) => _serveAutoRetry(panel, '--max-num-seqs 64') },
+      { kind: 'retry', get label() { return t('cookbook.diag_retry_flag_value', { flag: '--max-num-seqs', v: '32' }) }, action: (panel) => _serveAutoRetry(panel, '--max-num-seqs 32') },
     ],
   },
   {
     pattern: /CUDA out of memory|torch\.cuda\.OutOfMemoryError|CUDA error: out of memory/i,
     get message() { return t('cookbook.diag_msg_gpu_oom') },
     fixes: [
-      { kind: 'retry', label: t('cookbook.diag_retry_flag_value', { flag: 'TP', v: '2' }), action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '2') },
-      { kind: 'retry', label: t('cookbook.diag_retry_flag_value', { flag: 'TP', v: '4' }), action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '4') },
-      { kind: 'retry', label: t('cookbook.diag_retry_gpu_mem', { v: '0.80' }), action: (panel) => _serveAutoRetryReplace(panel, '--gpu-memory-utilization', '0.80') },
-      { kind: 'retry', label: t('cookbook.diag_retry_context', { v: '4096' }), action: (panel) => _serveAutoRetryReplace(panel, '--max-model-len', '4096') },
-      { kind: 'retry', label: t('cookbook.diag_retry_flag', { flag: '--enforce-eager' }), action: (panel) => _serveAutoRetry(panel, '--enforce-eager') },
+      { kind: 'retry', get label() { return t('cookbook.diag_retry_flag_value', { flag: 'TP', v: '2' }) }, action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '2') },
+      { kind: 'retry', get label() { return t('cookbook.diag_retry_flag_value', { flag: 'TP', v: '4' }) }, action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '4') },
+      { kind: 'retry', get label() { return t('cookbook.diag_retry_gpu_mem', { v: '0.80' }) }, action: (panel) => _serveAutoRetryReplace(panel, '--gpu-memory-utilization', '0.80') },
+      { kind: 'retry', get label() { return t('cookbook.diag_retry_context', { v: '4096' }) }, action: (panel) => _serveAutoRetryReplace(panel, '--max-model-len', '4096') },
+      { kind: 'retry', get label() { return t('cookbook.diag_retry_flag', { flag: '--enforce-eager' }) }, action: (panel) => _serveAutoRetry(panel, '--enforce-eager') },
     ],
   },
   {
@@ -159,8 +159,8 @@ export const ERROR_PATTERNS = [
     get message() { return t('cookbook.diag_msg_fp8_moe_tp') },
     get suggestion() { return t('cookbook.diag_sug_lower_tp') },
     fixes: [
-      { kind: 'retry', label: t('cookbook.diag_retry_flag_value', { flag: 'TP', v: '4' }), action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '4') },
-      { kind: 'retry', label: t('cookbook.diag_retry_flag_value', { flag: 'TP', v: '2' }), action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '2') },
+      { kind: 'retry', get label() { return t('cookbook.diag_retry_flag_value', { flag: 'TP', v: '4' }) }, action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '4') },
+      { kind: 'retry', get label() { return t('cookbook.diag_retry_flag_value', { flag: 'TP', v: '2' }) }, action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '2') },
       { kind: 'edit', get label() { return t('cookbook.diag_edit_serve') }, action: (panel) => _openServeEditFromDiagnosis(panel) },
     ],
   },
@@ -180,9 +180,9 @@ export const ERROR_PATTERNS = [
     pattern: /not divisib|must be divisible|attention heads.*divisible/i,
     get message() { return t('cookbook.diag_msg_tp_dimensions') },
     fixes: [
-      { kind: 'retry', label: t('cookbook.diag_retry_flag_value', { flag: 'TP', v: '1' }), action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '1') },
-      { kind: 'retry', label: t('cookbook.diag_retry_flag_value', { flag: 'TP', v: '2' }), action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '2') },
-      { kind: 'retry', label: t('cookbook.diag_retry_flag_value', { flag: 'TP', v: '4' }), action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '4') },
+      { kind: 'retry', get label() { return t('cookbook.diag_retry_flag_value', { flag: 'TP', v: '1' }) }, action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '1') },
+      { kind: 'retry', get label() { return t('cookbook.diag_retry_flag_value', { flag: 'TP', v: '2' }) }, action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '2') },
+      { kind: 'retry', get label() { return t('cookbook.diag_retry_flag_value', { flag: 'TP', v: '4' }) }, action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '4') },
     ],
   },
   {
@@ -190,7 +190,7 @@ export const ERROR_PATTERNS = [
     get message() { return t('cookbook.diag_msg_swap_too_large') },
     fixes: [
       { kind: 'retry', get label() { return t('cookbook.diag_retry_without_swap') }, action: (panel) => _serveAutoRetryRemove(panel, '--swap-space') },
-      { kind: 'retry', label: t('cookbook.diag_retry_swap', { v: '1' }), action: (panel) => _serveAutoRetryReplace(panel, '--swap-space', '1') },
+      { kind: 'retry', get label() { return t('cookbook.diag_retry_swap', { v: '1' }) }, action: (panel) => _serveAutoRetryReplace(panel, '--swap-space', '1') },
     ],
   },
   {
@@ -198,7 +198,7 @@ export const ERROR_PATTERNS = [
     get message() { return t('cookbook.diag_msg_no_cpu_ram') },
     fixes: [
       { kind: 'retry', get label() { return t('cookbook.diag_retry_without_swap') }, action: (panel) => _serveAutoRetryRemove(panel, '--swap-space') },
-      { kind: 'default', label: t('cookbook.diag_lower_max_context', { v: '4096' }), action: (panel) => _setPanelField(panel, 'ctx', '4096') },
+      { kind: 'default', get label() { return t('cookbook.diag_lower_max_context', { v: '4096' }) }, action: (panel) => _setPanelField(panel, 'ctx', '4096') },
     ],
   },
   {
@@ -213,7 +213,7 @@ export const ERROR_PATTERNS = [
     get message() { return t('cookbook.diag_msg_port_in_use') },
     fixes: [
       { kind: 'kill', get label() { return t('cookbook.diag_kill_existing_vllm') }, action: (panel) => _runQuickCmd(panel, 'pkill -f vllm') },
-      { kind: 'switch', label: t('cookbook.diag_use_port', { v: '8001' }), action: (panel) => _setPanelField(panel, 'port', '8001') },
+      { kind: 'switch', get label() { return t('cookbook.diag_use_port', { v: '8001' }) }, action: (panel) => _setPanelField(panel, 'port', '8001') },
     ],
   },
   {
@@ -294,7 +294,7 @@ export const ERROR_PATTERNS = [
     pattern: /NCCL error|ncclSystemError|ncclInternalError/i,
     get message() { return t('cookbook.diag_msg_nccl_failed') },
     fixes: [
-      { kind: 'default', label: t('cookbook.diag_set_tp_single', { v: '1' }), action: (panel) => _setPanelField(panel, 'tp', '1') },
+      { kind: 'default', get label() { return t('cookbook.diag_set_tp_single', { v: '1' }) }, action: (panel) => _setPanelField(panel, 'tp', '1') },
       { kind: 'default', get label() { return t('cookbook.diag_enable_enforce_eager') }, action: (panel) => _setPanelCheckbox(panel, 'enforce_eager', true) },
     ],
   },
@@ -302,9 +302,9 @@ export const ERROR_PATTERNS = [
     pattern: /KV cache.*too (small|large)|max_model_len.*exceeds|maximum.*context/i,
     get message() { return t('cookbook.diag_msg_context_too_large') },
     fixes: [
-      { kind: 'default', label: t('cookbook.diag_lower_to', { v: '8192' }), action: (panel) => _setPanelField(panel, 'ctx', '8192') },
-      { kind: 'default', label: t('cookbook.diag_lower_to', { v: '4096' }), action: (panel) => _setPanelField(panel, 'ctx', '4096') },
-      { kind: 'default', label: t('cookbook.diag_lower_to', { v: '2048' }), action: (panel) => _setPanelField(panel, 'ctx', '2048') },
+      { kind: 'default', get label() { return t('cookbook.diag_lower_to', { v: '8192' }) }, action: (panel) => _setPanelField(panel, 'ctx', '8192') },
+      { kind: 'default', get label() { return t('cookbook.diag_lower_to', { v: '4096' }) }, action: (panel) => _setPanelField(panel, 'ctx', '4096') },
+      { kind: 'default', get label() { return t('cookbook.diag_lower_to', { v: '2048' }) }, action: (panel) => _setPanelField(panel, 'ctx', '2048') },
     ],
   },
   {
@@ -365,10 +365,10 @@ export const ERROR_PATTERNS = [
     pattern: /Engine core initialization failed/i,
     get message() { return t('cookbook.diag_msg_vllm_engine_failed') },
     fixes: [
-      { kind: 'retry', label: t('cookbook.diag_retry_flag', { flag: '--enforce-eager' }), action: (panel) => _serveAutoRetry(panel, '--enforce-eager'), autofix: true },
-      { kind: 'retry', label: t('cookbook.diag_retry_context', { v: '4096' }), action: (panel) => _serveAutoRetry(panel, '--max-model-len 4096'), autofix: true },
-      { kind: 'default', label: t('cookbook.diag_lower_context', { v: '4096' }), action: (panel) => _setPanelField(panel, 'ctx', '4096') },
-      { kind: 'default', label: t('cookbook.diag_lower_gpu_mem', { v: '0.80' }), action: (panel) => _setPanelField(panel, 'gpu_mem', '0.80') },
+      { kind: 'retry', get label() { return t('cookbook.diag_retry_flag', { flag: '--enforce-eager' }) }, action: (panel) => _serveAutoRetry(panel, '--enforce-eager'), autofix: true },
+      { kind: 'retry', get label() { return t('cookbook.diag_retry_context', { v: '4096' }) }, action: (panel) => _serveAutoRetry(panel, '--max-model-len 4096'), autofix: true },
+      { kind: 'default', get label() { return t('cookbook.diag_lower_context', { v: '4096' }) }, action: (panel) => _setPanelField(panel, 'ctx', '4096') },
+      { kind: 'default', get label() { return t('cookbook.diag_lower_gpu_mem', { v: '0.80' }) }, action: (panel) => _setPanelField(panel, 'gpu_mem', '0.80') },
     ],
   },
   {
@@ -382,14 +382,14 @@ export const ERROR_PATTERNS = [
     pattern: /enable-auto-tool-choice requires --tool-call-parser/i,
     get message() { return t('cookbook.diag_msg_auto_tool_choice') },
     fixes: [
-      { kind: 'retry', label: t('cookbook.diag_retry_flag_word', { flag: '--tool-call-parser', word: 'hermes' }), action: (panel) => _serveAutoRetry(panel, '--tool-call-parser hermes'), autofix: true },
+      { kind: 'retry', get label() { return t('cookbook.diag_retry_flag_word', { flag: '--tool-call-parser', word: 'hermes' }) }, action: (panel) => _serveAutoRetry(panel, '--tool-call-parser hermes'), autofix: true },
     ],
   },
   {
     pattern: /Please pass.*trust.remote.code=True|contains custom code which must be executed to correctly load/i,
     get message() { return t('cookbook.diag_msg_needs_trust_remote_code') },
     fixes: [
-      { kind: 'retry', label: t('cookbook.diag_retry_flag', { flag: '--trust-remote-code' }), action: (panel) => _serveAutoRetry(panel, '--trust-remote-code'), autofix: true },
+      { kind: 'retry', get label() { return t('cookbook.diag_retry_flag', { flag: '--trust-remote-code' }) }, action: (panel) => _serveAutoRetry(panel, '--trust-remote-code'), autofix: true },
     ],
   },
   {
@@ -540,7 +540,7 @@ export const ERROR_PATTERNS = [
     get message() { return t('cookbook.diag_msg_flashinfer_nvcc_old') },
     get suggestion() { return t('cookbook.diag_sug_flashinfer_sampler') },
     fixes: [
-      { kind: 'retry', label: t('cookbook.diag_retry_flag_value', { flag: 'VLLM_USE_FLASHINFER_SAMPLER', v: '0' }), action: (panel) => _serveAutoRetryReplace(panel, '', 'VLLM_USE_FLASHINFER_SAMPLER=0 ', { prepend: true }) },
+      { kind: 'retry', get label() { return t('cookbook.diag_retry_flag_value', { flag: 'VLLM_USE_FLASHINFER_SAMPLER', v: '0' }) }, action: (panel) => _serveAutoRetryReplace(panel, '', 'VLLM_USE_FLASHINFER_SAMPLER=0 ', { prepend: true }) },
       { kind: 'default', get label() { return t('cookbook.diag_uninstall_flashinfer_python') }, action: () => {
         // Hard fallback: vLLM 0.22 reaches into flashinfer for sampling kernels
         // even with VLLM_USE_FLASHINFER_SAMPLER=0 in some configs. Removing

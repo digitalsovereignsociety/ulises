@@ -17,7 +17,7 @@
 // is harder to hit precisely since most users drag broadly toward the
 // side rather than aiming at a 1px line. 60px feels generous without
 // false-positive triggers from casual repositioning.
-import { t } from './i18n.js';
+import { t, whenReady } from './i18n.js';
 const SNAP_PX = 60;
 const UNSNAP_PX = 80;
 const MIN_CHAT_WIDTH = 380;
@@ -817,7 +817,9 @@ export function makeEdgeDockController(modal, side = 'right', dockClass) {
     handle.style.pointerEvents = 'auto';
     handle.style.touchAction = 'none';
     handle.style.display = 'none';
-    handle.title = t('modalSnap.resize_docked');
+    // This IIFE runs at module load, before init() has resolved a locale, so a
+  // direct t() call here warned and froze the humanised fallback as the title.
+  whenReady().then(() => { handle.title = t('modalSnap.resize_docked'); });
     document.body.appendChild(handle);
   }
 
@@ -1004,7 +1006,7 @@ export function makeEdgeDockController(modal, side = 'right', dockClass) {
   stripe.style.pointerEvents = 'auto';
   stripe.style.touchAction = 'none';
   stripe.style.display = 'none';
-  stripe.title = t('modalSnap.resize_split');
+  whenReady().then(() => { stripe.title = t('modalSnap.resize_split'); });
 
   const _activeLeftDockContent = () => {
     const modal = document.querySelector(

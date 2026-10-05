@@ -33,8 +33,15 @@ CATALOGS = {
     "admin.js": ["MCP_PRESETS"],
 }
 
-# `name: t('…')` but NOT `get name() { return t('…') }`
-EAGER = re.compile(r"(?<![\w$.])([a-zA-Z_$][\w$]*)\s*:\s*t\((['\"])([\w.]+)\2\)")
+# Eager form is `name: t('key')` or `name: t('key', { v: '1' })`, but NOT
+# `get name() { return t(...) }`. The argument list is optional on purpose:
+# the interpolated labels were still eager after a first pass that only
+# matched the single-argument form, and kept warning.
+EAGER = re.compile(
+    r"(?<![\w$.])([a-zA-Z_$][\w$]*)\s*:\s*"
+    r"t\(([^)]*?)\)\s*(?=[,}])"
+)
+_KEY_IN_CALL = re.compile(r"^(['\"])([\w.]+)\1")
 
 
 def _block(src, name):
@@ -65,7 +72,8 @@ def test_module_level_catalogs_have_no_eager_t_calls():
             assert seg is not None, f"{filename}: catalog {name} not found"
             for m in EAGER.finditer(seg):
                 line = src[: src.index(seg) + m.start()].count("\n") + 1
-                offenders.append(f"{filename}:{line} {name}.{m.group(1)} = t('{m.group(3)}')")
+                key = _KEY_IN_CALL.match(m.group(2))
+                offenders.append(f"{filename}:{line} {name}.{m.group(1)} = t({m.group(2)})")
     assert not offenders, (
         "these run when the module is imported, before init() has loaded a "
         "locale, so they warn and freeze the humanised fallback:\n"
