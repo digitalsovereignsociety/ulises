@@ -132,6 +132,22 @@ export async function init() {
     delete window.__preloadedLocale
     delete window.__preloadedFallback
     delete window.__preloadedLang
+
+    // Revalidate. The snapshot is inlined into HTML that the service worker
+    // precaches ('/' is in PRECACHE) and serves cache-first with a background
+    // refresh, so a cached copy of index.html carries whatever keys it had when
+    // it was cached. Trusting it outright meant every i18n batch was one load
+    // behind, with the console full of "missing translation" for keys that were
+    // on the server — including ones added minutes earlier. Hydrate from the
+    // snapshot so there is no flash, then replace it with the live data.
+    try {
+      const fresh = await _loadLocale(_lang)
+      if (fresh && Object.keys(fresh).length) _locale = fresh
+      const freshFallback = await _loadLocale(FALLBACK_LANG)
+      if (freshFallback && Object.keys(freshFallback).length) _fallbackLocale = freshFallback
+    } catch (e) {
+      // Offline, or the API is down: the snapshot is all we have, so keep it.
+    }
   } else {
     _fallbackLocale = await _loadLocale(FALLBACK_LANG)
     _locale = _lang === FALLBACK_LANG ? _fallbackLocale : await _loadLocale(_lang)
