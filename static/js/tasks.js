@@ -1034,13 +1034,13 @@ function _showTaskDropdown(anchor, items) {
 // ---- Presets ----
 
 const _TASK_PRESETS = [
-  { label: t('tasks.prompt_on_schedule'),    desc: 'Run a prompt daily, weekly, etc.',             taskType: 'llm',      triggerType: 'schedule' },
-  { label: t('tasks.prompt_on_event'),       desc: 'Trigger every N sessions or messages',         taskType: 'llm',      triggerType: 'event' },
-  { label: t('tasks.research_on_schedule'),  desc: 'Run deep research on a topic',                 taskType: 'research', triggerType: 'schedule' },
-  { label: t('tasks.research_on_event'),     desc: 'Run deep research after app events',           taskType: 'research', triggerType: 'event' },
-  { label: t('tasks.action_on_schedule'),    desc: 'Run tidy/cleanup on a timer',                  taskType: 'action',   triggerType: 'schedule' },
-  { label: t('tasks.action_on_event'),       desc: 'Run tidy/cleanup every N sessions or messages', taskType: 'action', triggerType: 'event' },
-  { label: t('tasks.webhook_triggered'),     desc: 'Trigger via external HTTP call',               taskType: 'llm',      triggerType: 'webhook' },
+  { get label() { return t('tasks.prompt_on_schedule') },    desc: 'Run a prompt daily, weekly, etc.',             taskType: 'llm',      triggerType: 'schedule' },
+  { get label() { return t('tasks.prompt_on_event') },       desc: 'Trigger every N sessions or messages',         taskType: 'llm',      triggerType: 'event' },
+  { get label() { return t('tasks.research_on_schedule') },  desc: 'Run deep research on a topic',                 taskType: 'research', triggerType: 'schedule' },
+  { get label() { return t('tasks.research_on_event') },     desc: 'Run deep research after app events',           taskType: 'research', triggerType: 'event' },
+  { get label() { return t('tasks.action_on_schedule') },    desc: 'Run tidy/cleanup on a timer',                  taskType: 'action',   triggerType: 'schedule' },
+  { get label() { return t('tasks.action_on_event') },       desc: 'Run tidy/cleanup every N sessions or messages', taskType: 'action', triggerType: 'event' },
+  { get label() { return t('tasks.webhook_triggered') },     desc: 'Trigger via external HTTP call',               taskType: 'llm',      triggerType: 'webhook' },
 ];
 
 // Icon for each preset, keyed off task/trigger type (24x24 stroke SVG).

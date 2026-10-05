@@ -1153,15 +1153,15 @@ function _modeLabel(model) {
 }
 
 export const _hwfitColumns = [
-  { key: 'fit', label: t('cookbookHwfit.col_fit'),    cls: 'hwfit-fit' },
-  { key: 'newest', label: t('cookbookHwfit.col_model_latest'),  cls: 'hwfit-name' },
-  { key: 'params',label: t('cookbookHwfit.col_param'), cls: 'hwfit-c-params' },
-  { key: null,    label: t('cookbookHwfit.col_quant'),  cls: 'hwfit-c-quant' },
-  { key: 'vram',  label: t('cookbookHwfit.col_vram'),   cls: 'hwfit-c-vram' },
-  { key: 'context',label: t('cookbookHwfit.col_ctx'),   cls: 'hwfit-c-ctx' },
-  { key: 'speed', label: t('cookbookHwfit.col_speed'),  cls: 'hwfit-c-speed' },
-  { key: 'score', label: t('cookbookHwfit.col_score'),  cls: 'hwfit-c-score' },
-  { key: null,    label: t('cookbookHwfit.col_mode'),   cls: 'hwfit-c-mode' },
+  { key: 'fit', get label() { return t('cookbookHwfit.col_fit') },    cls: 'hwfit-fit' },
+  { key: 'newest', get label() { return t('cookbookHwfit.col_model_latest') },  cls: 'hwfit-name' },
+  { key: 'params',get label() { return t('cookbookHwfit.col_param') }, cls: 'hwfit-c-params' },
+  { key: null,    get label() { return t('cookbookHwfit.col_quant') },  cls: 'hwfit-c-quant' },
+  { key: 'vram',  get label() { return t('cookbookHwfit.col_vram') },   cls: 'hwfit-c-vram' },
+  { key: 'context',get label() { return t('cookbookHwfit.col_ctx') },   cls: 'hwfit-c-ctx' },
+  { key: 'speed', get label() { return t('cookbookHwfit.col_speed') },  cls: 'hwfit-c-speed' },
+  { key: 'score', get label() { return t('cookbookHwfit.col_score') },  cls: 'hwfit-c-score' },
+  { key: null,    get label() { return t('cookbookHwfit.col_mode') },   cls: 'hwfit-c-mode' },
 ];
 
 export function _hwfitRenderList(el, models) {

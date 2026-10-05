@@ -1799,19 +1799,19 @@ function _scoreSuggestion(s, needle) {
 // corresponding filter row with its icon; picking it pins a filter
 // pill that drives state._libFilter or the has-attachments toggle.
 const _LIB_FILTER_OPTIONS = [
-  { value: 'filter:has-attachments', label: t('emailLibrary.has_attachments'), keywords: ['attachment', 'attachments', 'has attachment', 'attach'] },
-  { value: 'filter:unread',          label: t('emailLibrary.unread'),          keywords: ['unread', 'new', 'unseen'] },
-  { value: 'filter:favorites',       label: t('emailLibrary.favorites'),       keywords: ['favorite', 'favorites', 'starred', 'star', 'flagged'] },
-  { value: 'filter:undone',          label: t('emailLibrary.undone'),          keywords: ['undone', 'pending', 'todo'] },
-  { value: 'filter:reminders',       label: t('emailLibrary.reminders'),       keywords: ['reminder', 'reminders'] },
-  { value: 'filter:unanswered',      label: t('emailLibrary.unanswered'),      keywords: ['unanswered', 'unreplied', 'no reply'] },
-  { value: 'filter:pending_30d',     label: t('emailLibrary.pending_30d'),   keywords: ['pending 30d', 'pending', 'recent pending'] },
+  { value: 'filter:has-attachments', get label() { return t('emailLibrary.has_attachments') }, keywords: ['attachment', 'attachments', 'has attachment', 'attach'] },
+  { value: 'filter:unread',          get label() { return t('emailLibrary.unread') },          keywords: ['unread', 'new', 'unseen'] },
+  { value: 'filter:favorites',       get label() { return t('emailLibrary.favorites') },       keywords: ['favorite', 'favorites', 'starred', 'star', 'flagged'] },
+  { value: 'filter:undone',          get label() { return t('emailLibrary.undone') },          keywords: ['undone', 'pending', 'todo'] },
+  { value: 'filter:reminders',       get label() { return t('emailLibrary.reminders') },       keywords: ['reminder', 'reminders'] },
+  { value: 'filter:unanswered',      get label() { return t('emailLibrary.unanswered') },      keywords: ['unanswered', 'unreplied', 'no reply'] },
+  { value: 'filter:pending_30d',     get label() { return t('emailLibrary.pending_30d') },   keywords: ['pending 30d', 'pending', 'recent pending'] },
   { value: 'filter:stale_30d',       label: 'Stale · >30d',    keywords: ['stale', 'old', 'stale 30d'] },
-  { value: 'filter:tag:urgent',      label: t('emailLibrary.urgent'),          keywords: ['urgent', 'critical'] },
-  { value: 'filter:tag:reply-soon',  label: t('emailLibrary.reply_soon'),      keywords: ['reply soon', 'reply', 'follow up'] },
-  { value: 'filter:tag:spam',        label: t('emailLibrary.spam'),            keywords: ['spam', 'junk'] },
-  { value: 'filter:tag:newsletter',  label: t('emailLibrary.newsletter'),      keywords: ['newsletter', 'newsletters', 'subscriptions'] },
-  { value: 'filter:tag:marketing',   label: t('emailLibrary.marketing'),       keywords: ['marketing', 'promo', 'promotional'] },
+  { value: 'filter:tag:urgent',      get label() { return t('emailLibrary.urgent') },          keywords: ['urgent', 'critical'] },
+  { value: 'filter:tag:reply-soon',  get label() { return t('emailLibrary.reply_soon') },      keywords: ['reply soon', 'reply', 'follow up'] },
+  { value: 'filter:tag:spam',        get label() { return t('emailLibrary.spam') },            keywords: ['spam', 'junk'] },
+  { value: 'filter:tag:newsletter',  get label() { return t('emailLibrary.newsletter') },      keywords: ['newsletter', 'newsletters', 'subscriptions'] },
+  { value: 'filter:tag:marketing',   get label() { return t('emailLibrary.marketing') },       keywords: ['marketing', 'promo', 'promotional'] },
 ];
 
 function _libFilterIconFor(value) {

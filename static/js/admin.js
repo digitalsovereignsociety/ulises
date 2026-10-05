@@ -1731,7 +1731,7 @@ const MCP_PRESETS = [
 9. Sign in with Google, copy the URL from the error page, paste it back` },
   { name: "Email (IMAP/SMTP)", command: "npx", args: ["-y", "@codefuturist/email-mcp", "stdio"],        env: { MCP_EMAIL_ADDRESS: "", MCP_EMAIL_PASSWORD: "", MCP_EMAIL_IMAP_HOST: "", MCP_EMAIL_SMTP_HOST: "" },
     providerDropdown: {
-      label: t('admin.provider'),
+      get label() { return t('admin.provider') },
       targets: { MCP_EMAIL_IMAP_HOST: "imap", MCP_EMAIL_SMTP_HOST: "smtp" },
       options: [
         { name: "Migadu",        imap: "imap.migadu.com",     smtp: "smtp.migadu.com" },
