@@ -156,6 +156,12 @@ guard the JS: `cookbook_modules_smoke`, `cookbook_diagnosis_core`,
 - Service worker bumped to `v328` with the cookbook sub-modules precached.
 - **i18n: 655 missing `t()` keys → 0.** Ten batches across every namespace,
    en+es in lockstep. The ratchet keeps it at zero.
+- **i18n: hardcoded JS literals cleared from 13 files.** settings, document,
+  gallery, login.html, cookbookServe, documentLibrary, admin, calendar, chat,
+  emailLibrary, chatRenderer, compare/*, and the cookbook diagnosis catalog.
+  Each batch was preceded by a judgement call about which strings are data
+  rather than display text — payload tags, enum keys, product names, benchmark
+  prompts. See Known Issues.
 - `{{var}}` → `{var}` in both locale files for Python `.format()` compat.
 - Added `cookbook.diagnosis.*` (21 keys) + `invalid_remote_host` to both locales.
 - Fixed validator namespace (`validation.*` → `validators.*`).
