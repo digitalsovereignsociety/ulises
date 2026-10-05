@@ -229,21 +229,21 @@ function _terminalServeDiagnosis(task, outputText) {
   if (_isPipTask) return null;
   if (_serveTaskLooksAwqOnLocalBackend(task, out)) {
     return {
-      message: 'AWQ/GPTQ/FP8 cannot be served through llama.cpp/Ollama unified-memory mode.',
-      suggestion: 'Suggested action: use vLLM/SGLang on a compatible CUDA/ROCm GPU server, or download a GGUF version for llama.cpp/Ollama/unified-memory serving.',
+      message: t('cookbook.diag_msg_awq_unified_memory'),
+      suggestion: t('cookbook.diag_sug_awq_accel_sug'),
       fixes: [
-        { label: 'Find GGUF download', action: () => _openDownloadForGgufTask(task) },
-        { label: 'Edit serve', action: (panel) => _openServeEditForTask(task) },
+        { kind: 'default', label: t('cookbook.diag_find_gguf_download'), action: () => _openDownloadForGgufTask(task) },
+        { id: 'edit_serve', kind: 'edit', label: t('cookbook.diag_edit_serve'), action: (panel) => _openServeEditForTask(task) },
       ],
     };
   }
   if (_serveTaskLooksAwqWithoutUsableAccelerator(task, out)) {
     return {
-      message: 'AWQ/GPTQ/FP8 needs a working vLLM/SGLang accelerator path; this server did not expose one.',
-      suggestion: 'Suggested action: choose a CUDA/ROCm server where vLLM/SGLang can see the GPU, or download a GGUF version and serve it with llama.cpp/Ollama.',
+      message: t('cookbook.diag_msg_awq_needs_accel'),
+      suggestion: t('cookbook.diag_sug_choose_cuda_server'),
       fixes: [
-        { label: 'Find GGUF download', action: () => _openDownloadForGgufTask(task) },
-        { label: 'Edit serve', action: (panel) => _openServeEditForTask(task) },
+        { kind: 'default', label: t('cookbook.diag_find_gguf_download'), action: () => _openDownloadForGgufTask(task) },
+        { id: 'edit_serve', kind: 'edit', label: t('cookbook.diag_edit_serve'), action: (panel) => _openServeEditForTask(task) },
       ],
     };
   }
@@ -254,7 +254,7 @@ function _terminalServeDiagnosis(task, outputText) {
     suggestion: /Native llama-server not found|building llama-server|llama\.cpp/i.test(out)
       ? 'Suggested action: copy the troubleshooting bundle, then edit serve settings. For the quickest local/CPU path, use Ollama or a prebuilt llama-server; source builds can take several minutes and fail if build dependencies are incomplete.'
       : 'Suggested action: copy the troubleshooting bundle, then edit serve settings or relaunch with a CPU/backend fallback.',
-    fixes: [{ label: 'Edit serve', action: (panel) => _openServeEditForTask(task) }],
+    fixes: [{ id: 'edit_serve', kind: 'edit', label: t('cookbook.diag_edit_serve'), action: (panel) => _openServeEditForTask(task) }],
   };
 }
 
@@ -2360,25 +2360,25 @@ if (!repo) { uiModule.showToast(t('cookbookRunning.noModelInfo')); return; }
         // Queued download: let the user jump the queue and start it immediately
         // (downloads otherwise run one-at-a-time per server).
         if (task.type === 'download' && task.status === 'queued') {
-          items.push({ group: 'run', label: 'Start now', action: 'start-now', custom: () => {
+          items.push({ group: 'run', kind: 'default', label: t('cookbook.diag_start_now'), action: 'start-now', custom: () => {
             _startQueuedDownload(task);
             _renderRunningTab();
           }});
         }
         if (task.status !== 'running' && task.status !== 'queued') {
-          items.push({ group: 'run', label: 'Reconnect tmux', action: 'reconnect' });
+          items.push({ group: 'run', kind: 'default', label: t('cookbook.diag_reconnect_tmux'), action: 'reconnect' });
         }
-        items.push({ group: 'run', label: 'Restart', action: 'retry' });
+        items.push({ group: 'run', kind: 'retry', label: t('cookbook.diag_restart'), action: 'retry' });
         // ── Edit section ────────────────────────────────────────────
         // Merged "Edit & relaunch" — opens the structured serve panel
         // pre-filled with this task's config. The old standalone "Edit
         // cmd & relaunch" raw-text dialog is now reachable from inside
         // that panel (Show command). Single entry-point per task.
         if (task.type === 'serve' && task.payload?.repo_id) {
-          items.push({ group: 'edit', label: 'Edit & relaunch', action: 'edit-panel', tooltip: 'Open the Serve config panel pre-filled with this task — pick a different backend, change GPUs, edit env vars or the raw cmd, then Launch.', custom: () => _openEdit() });
+          items.push({ group: 'edit', kind: 'retry', label: t('cookbook.diag_edit_relaunch'), action: 'edit-panel', tooltip: 'Open the Serve config panel pre-filled with this task — pick a different backend, change GPUs, edit env vars or the raw cmd, then Launch.', custom: () => _openEdit() });
         }
         if (task.type === 'serve' && task.payload?._cmd) {
-          items.push({ group: 'edit', label: 'Save serve', action: 'save', custom: () => {
+          items.push({ group: 'edit', kind: 'default', label: t('cookbook.diag_save_serve'), action: 'save', custom: () => {
             if (!_saveTaskAsPreset(task)) { uiModule.showToast(t('cookbookRunning.alreadySaved')); return; }
             uiModule.showToast(t('cookbookRunning.savedToPresets'));
             _renderRunningTab();
@@ -2389,7 +2389,7 @@ if (!repo) { uiModule.showToast(t('cookbookRunning.noModelInfo')); return; }
         // (e.g. probe timeout on a remote that's slow). Forces adding this
         // serve to the model-endpoints list regardless of prior flag state.
         if (task.type === 'serve' && task.payload?._cmd) {
-          items.push({ group: 'endpoint', label: 'Register endpoint', action: 'register-endpoint', custom: async () => {
+          items.push({ group: 'endpoint', kind: 'default', label: t('cookbook.diag_register_endpoint'), action: 'register-endpoint', custom: async () => {
             const host = _connectHostFromRemote(task.remoteHost);
             const portMatch = task.payload?._cmd?.match(/--port\s+(\d+)/);
             const port = portMatch ? portMatch[1] : '8000';
@@ -2441,25 +2441,25 @@ if (!repo) { uiModule.showToast(t('cookbookRunning.noModelInfo')); return; }
           const logCmd = host
             ? `ssh ${_sshPrefix(_getPort(task))}${host} "powershell -Command \\"Get-Content '${sd}\\${task.sessionId}.log' -Wait\\""`
             : `powershell -Command "Get-Content (Join-Path $env:TEMP 'ulises-tmux\\${task.sessionId}.log') -Wait"`;
-          items.push({ group: 'copy', label: 'Copy log cmd', action: 'copy-tmux', custom: () => {
+          items.push({ group: 'copy', kind: 'copy', label: t('cookbook.diag_copy_log_cmd'), action: 'copy-tmux', custom: () => {
             _copyText(logCmd);
           }});
         } else {
           // Just the tmux command itself — no ssh wrapper.
           const tmuxAttach = `tmux attach -t ${task.sessionId}`;
-          items.push({ group: 'copy', label: 'Copy tmux', action: 'copy-tmux', custom: () => {
+          items.push({ group: 'copy', kind: 'copy', label: t('cookbook.diag_copy_tmux'), action: 'copy-tmux', custom: () => {
             _copyText(tmuxAttach);
           }});
         }
         if (_shouldOfferCrashReport(task)) {
-          items.push({ group: 'copy', label: 'Copy crash report', action: 'copy-crash-report', custom: () => {
+          items.push({ group: 'copy', kind: 'copy', label: t('cookbook.diag_copy_crash_report'), action: 'copy-crash-report', custom: () => {
             const out = (el.querySelector('.cookbook-output-pre')?.textContent || task.output || '');
             _copyText(_buildCrashReport(task, out));
             uiModule.showToast(t('cookbookRunning.copiedCrashReport'));
           }});
         }
         // Copy the last 50 lines of the task's output/log.
-        items.push({ group: 'copy', label: 'Copy last 50 lines', action: 'copy-log', custom: () => {
+        items.push({ group: 'copy', kind: 'copy', label: t('cookbook.diag_copy_last_50_lines'), action: 'copy-log', custom: () => {
           const out = (el.querySelector('.cookbook-output-pre')?.textContent || task.output || '');
           const last = out.split('\n').slice(-50).join('\n');
           if (!last.trim()) {
@@ -2485,7 +2485,7 @@ if (!repo) { uiModule.showToast(t('cookbookRunning.noModelInfo')); return; }
           danger: true,
         });
         // Cancel = mobile-only dismiss item. Same pattern as the email kebab.
-        items.push({ group: 'danger', label: 'Cancel', action: 'cancel', mobileOnly: true, custom: () => {} });
+        items.push({ group: 'danger', kind: 'default', label: t('cookbook.diag_cancel'), action: 'cancel', mobileOnly: true, custom: () => {} });
 
         const _MENU_ICONS = {
           'start-now': '<polygon points="6 4 20 12 6 20 6 4"/>',
@@ -2872,8 +2872,8 @@ async function _reconnectTask(el, task) {
               const _ranOk = /Successfully installed|Requirement already (?:satisfied|up-to-date)/i.test(lastOutput);
               if (!_ranOk) {
                 _showDiagnosis(el, {
-                  message: 'Pip install did not finish with a success marker. Check the output for the underlying error.',
-                  suggestion: 'Suggested action: copy the troubleshooting bundle. Common causes: missing build deps, network blip, mismatched torch ABI.',
+                  message: t('cookbook.diag_msg_pip_no_marker'),
+                  suggestion: t('cookbook.diag_sug_copy_bundle'),
                   fixes: [],
                 }, lastOutput);
               }
@@ -2889,7 +2889,7 @@ async function _reconnectTask(el, task) {
                   : /Native llama-server not found|building llama-server|llama\.cpp/i.test(lastOutput)
                   ? 'Suggested action: copy the troubleshooting bundle, then edit serve settings. For the quickest local/CPU path, use Ollama or a prebuilt llama-server; source builds can take several minutes and fail if build dependencies are incomplete.'
                   : 'Suggested action: copy the troubleshooting bundle, then edit serve settings or relaunch with a CPU/backend fallback.',
-                fixes: [{ label: 'Edit serve', action: (panel) => _openServeEditForTask(task) }],
+                fixes: [{ id: 'edit_serve', kind: 'edit', label: t('cookbook.diag_edit_serve'), action: (panel) => _openServeEditForTask(task) }],
               };
               _showDiagnosis(el, diag, lastOutput);
             } else if (task.type === 'download') {
@@ -2904,7 +2904,7 @@ async function _reconnectTask(el, task) {
               // capture-pane lets the existing _reconnectTask flow pick up
               // the real state (running, finished, or truly dead).
               const _reconnectFix = {
-                label: 'Reconnect tmux',
+                kind: 'default', label: t('cookbook.diag_reconnect_tmux'),
                 action: () => {
                   _updateTask(task.sessionId, { status: 'running' });
                   el.dataset.status = 'running';
@@ -2932,16 +2932,16 @@ async function _reconnectTask(el, task) {
                   : 'Suggested action: hit Reconnect to re-attach to the tmux session. If that fails, retry — HuggingFace resumes incomplete files when possible.',
                 fixes: isDisk
                   ? [
-                      { label: 'Retry download', action: () => _retryTask(el, task) },
-                      { label: 'Copy last 50 lines', action: () => {
+                      { kind: 'retry', label: t('cookbook.diag_retry_download'), action: () => _retryTask(el, task) },
+                      { kind: 'copy', label: t('cookbook.diag_copy_last_50_lines'), action: () => {
                         const last = String(lastOutput || '').split('\n').slice(-50).join('\n');
                         _copyText(last || 'No download log available.');
                       } },
                     ]
                   : [
                       _reconnectFix,
-                      { label: 'Retry download', action: () => _retryTask(el, task) },
-                      { label: 'Copy last 50 lines', action: () => {
+                      { kind: 'retry', label: t('cookbook.diag_retry_download'), action: () => _retryTask(el, task) },
+                      { kind: 'copy', label: t('cookbook.diag_copy_last_50_lines'), action: () => {
                         const last = String(lastOutput || '').split('\n').slice(-50).join('\n');
                         _copyText(last || 'No download log available.');
                       } },

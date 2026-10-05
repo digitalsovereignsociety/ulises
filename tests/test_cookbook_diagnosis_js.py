@@ -51,6 +51,17 @@ def test_sglang_native_dependency_diagnosis_is_exposed_to_browser():
 
     assert r"Python\.h" in source
     assert r"libnuma\.so\.1" in source
-    assert "SGLang native dependencies" in source
     assert "libnuma-dev python3.12-dev build-essential" in source
     assert "sglang-kernel" in source
+
+    # The user-facing message moved to the locale; assert the key is wired AND
+    # that it resolves in both languages. Checking the English literal proved
+    # only that a string existed in the file, not that a user would see it.
+    assert "cookbook.diag_msg_sglang_deps_missing" in source
+    import json as _json
+    for lang in ("en", "es"):
+        locale = _json.loads(
+            (DIAGNOSIS_CORE_JS.parents[1] / "locales" / lang / "cookbook.json")
+            .read_text(encoding="utf-8")
+        )["cookbook"]["diag_msg_sglang_deps_missing"]
+        assert "SGLang" in locale, f"{lang} lost the SGLang reference: {locale!r}"

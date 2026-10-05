@@ -23,6 +23,7 @@ import {
   _persistEnvState,
 } from './cookbook-shared.js';
 import spinnerModule from './spinner.js';
+import { t } from './i18n.js';
 
 // Injected by initDiagnosisCore() from cookbook.js. Deliberately module-local
 // rather than imported: importing them is what created the cycles. Each starts
@@ -62,29 +63,34 @@ function _diagEsc(s) {
 // Pick an icon for a diagnosis-action button based on the label. The icon
 // renders on the LEFT of the button text. Keeps the strokes consistent
 // across the set so they read as one family.
-function _diagFixIcon(label) {
-  const l = String(label || '').toLowerCase();
+// Takes the fix's `kind` enum, NOT its label. This used to lowercase the label
+// and match English verbs, so localising a label silently changed the button's
+// icon — and "Edit & relaunch" was classified as a retry, because the relaunch
+// check runs before the edit check. The branch order below keeps that quirk on
+// purpose: every kind was derived from this exact logic, so each button keeps
+// the icon it has today.
+function _diagFixIcon(kind) {
   const _svg = (path) => `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="cookbook-diag-btn-ico" aria-hidden="true">${path}</svg>`;
-  if (l.startsWith('retry') || l.includes('relaunch') || l.includes('restart')) {
+  if (kind === 'retry') {
     // Circular-arrow refresh
     return _svg('<polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>');
   }
-  if (l.startsWith('copy')) {
+  if (kind === 'copy') {
     return _svg('<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>');
   }
-  if (l.startsWith('edit')) {
+  if (kind === 'edit') {
     return _svg('<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/>');
   }
-  if (l.startsWith('open') || l.includes('dependencies')) {
+  if (kind === 'open') {
     return _svg('<path d="M14 3h7v7"/><path d="M21 3l-9 9"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/>');
   }
-  if (l.startsWith('install') || l.includes('upgrade')) {
+  if (kind === 'install') {
     return _svg('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>');
   }
-  if (l.startsWith('kill') || l.startsWith('stop')) {
+  if (kind === 'kill') {
     return _svg('<rect x="6" y="6" width="12" height="12" rx="1"/>');
   }
-  if (l.startsWith('switch') || l.includes('use ')) {
+  if (kind === 'switch') {
     return _svg('<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>');
   }
   // Default: lightbulb (generic "suggestion")
@@ -121,100 +127,100 @@ function _inferBaseRepo(text) {
 export const ERROR_PATTERNS = [
   {
     pattern: /No available memory for the cache blocks|Available KV cache memory:.*-/i,
-    message: 'No GPU memory left for KV cache after loading model.',
+    message: t('cookbook.diag_msg_kv_cache_oom'),
     fixes: [
-      { label: 'Retry with GPU mem 0.95', action: (panel) => _serveAutoRetryReplace(panel, '--gpu-memory-utilization', '0.95') },
-      { label: 'Retry with context 2048', action: (panel) => _serveAutoRetryReplace(panel, '--max-model-len', '2048') },
-      { label: 'Retry with more GPUs (TP=8)', action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '8') },
+      { kind: 'retry', label: t('cookbook.diag_retry_gpu_mem', { v: '0.95' }), action: (panel) => _serveAutoRetryReplace(panel, '--gpu-memory-utilization', '0.95') },
+      { kind: 'retry', label: t('cookbook.diag_retry_context', { v: '2048' }), action: (panel) => _serveAutoRetryReplace(panel, '--max-model-len', '2048') },
+      { kind: 'retry', label: t('cookbook.diag_retry_more_gpus', { v: '8' }), action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '8') },
     ],
   },
   {
     pattern: /warming up sampler|max_num_seqs.*gpu_memory_utilization/i,
-    message: 'OOM during warmup. Lower GPU memory or max sequences.',
+    message: t('cookbook.diag_msg_warmup_oom'),
     fixes: [
-      { label: 'Retry with GPU mem 0.80', action: (panel) => _serveAutoRetryReplace(panel, '--gpu-memory-utilization', '0.80') },
-      { label: 'Retry with --max-num-seqs 64', action: (panel) => _serveAutoRetry(panel, '--max-num-seqs 64') },
-      { label: 'Retry with --max-num-seqs 32', action: (panel) => _serveAutoRetry(panel, '--max-num-seqs 32') },
+      { kind: 'retry', label: t('cookbook.diag_retry_gpu_mem', { v: '0.80' }), action: (panel) => _serveAutoRetryReplace(panel, '--gpu-memory-utilization', '0.80') },
+      { kind: 'retry', label: t('cookbook.diag_retry_flag_value', { flag: '--max-num-seqs', v: '64' }), action: (panel) => _serveAutoRetry(panel, '--max-num-seqs 64') },
+      { kind: 'retry', label: t('cookbook.diag_retry_flag_value', { flag: '--max-num-seqs', v: '32' }), action: (panel) => _serveAutoRetry(panel, '--max-num-seqs 32') },
     ],
   },
   {
     pattern: /CUDA out of memory|torch\.cuda\.OutOfMemoryError|CUDA error: out of memory/i,
-    message: 'GPU ran out of memory. Try more GPUs (higher TP) or lower context.',
+    message: t('cookbook.diag_msg_gpu_oom'),
     fixes: [
-      { label: 'Retry with TP=2', action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '2') },
-      { label: 'Retry with TP=4', action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '4') },
-      { label: 'Retry with GPU mem 0.80', action: (panel) => _serveAutoRetryReplace(panel, '--gpu-memory-utilization', '0.80') },
-      { label: 'Retry with context 4096', action: (panel) => _serveAutoRetryReplace(panel, '--max-model-len', '4096') },
-      { label: 'Retry with --enforce-eager', action: (panel) => _serveAutoRetry(panel, '--enforce-eager') },
+      { kind: 'retry', label: t('cookbook.diag_retry_flag_value', { flag: 'TP', v: '2' }), action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '2') },
+      { kind: 'retry', label: t('cookbook.diag_retry_flag_value', { flag: 'TP', v: '4' }), action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '4') },
+      { kind: 'retry', label: t('cookbook.diag_retry_gpu_mem', { v: '0.80' }), action: (panel) => _serveAutoRetryReplace(panel, '--gpu-memory-utilization', '0.80') },
+      { kind: 'retry', label: t('cookbook.diag_retry_context', { v: '4096' }), action: (panel) => _serveAutoRetryReplace(panel, '--max-model-len', '4096') },
+      { kind: 'retry', label: t('cookbook.diag_retry_flag', { flag: '--enforce-eager' }), action: (panel) => _serveAutoRetry(panel, '--enforce-eager') },
     ],
   },
   {
     pattern: /not divisible by weight quantization|quantization block/i,
-    message: 'FP8 MoE quantization is incompatible with this tensor-parallel split.',
-    suggestion: 'Suggested action: retry with a lower tensor-parallel size, such as TP=4 or TP=2. If it still fails, use a non-FP8/GGUF version of the model.',
+    message: t('cookbook.diag_msg_fp8_moe_tp'),
+    suggestion: t('cookbook.diag_sug_lower_tp'),
     fixes: [
-      { label: 'Retry with TP=4', action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '4') },
-      { label: 'Retry with TP=2', action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '2') },
-      { label: 'Edit serve', action: (panel) => _openServeEditFromDiagnosis(panel) },
+      { kind: 'retry', label: t('cookbook.diag_retry_flag_value', { flag: 'TP', v: '4' }), action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '4') },
+      { kind: 'retry', label: t('cookbook.diag_retry_flag_value', { flag: 'TP', v: '2' }), action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '2') },
+      { kind: 'edit', label: t('cookbook.diag_edit_serve'), action: (panel) => _openServeEditFromDiagnosis(panel) },
     ],
   },
   {
     pattern: /There is no module or parameter named ['"]lm_head\.input_scale['"]|lm_head\.input_scale|weight_scale_2/i,
-    message: 'vLLM cannot load this ModelOpt LM-head quantized checkpoint with the current runtime.',
-    suggestion: 'Suggested action: upgrade vLLM through the environment that provides this CLI (package manager, venv, Docker image, or source checkout), or choose a compatible checkpoint.',
+    message: t('cookbook.diag_msg_modelopt_lmhead'),
+    suggestion: t('cookbook.diag_sug_upgrade_env'),
     fixes: [
-      { label: 'Open Dependencies', action: () => _openCookbookDependencies('vllm') },
+      { kind: 'open', label: t('cookbook.diag_open_dependencies'), action: () => _openCookbookDependencies('vllm') },
       {
-        label: 'Copy upgrade hint',
+        kind: 'copy', label: t('cookbook.diag_copy_upgrade_hint'),
         action: () => _copyText('Upgrade the vLLM environment that provides the selected vllm CLI, or use a compatible checkpoint. Do not assume Ulises owns PATH/system/source/Docker installs.'),
       },
     ],
   },
   {
     pattern: /not divisib|must be divisible|attention heads.*divisible/i,
-    message: 'Tensor parallel size incompatible with model dimensions.',
+    message: t('cookbook.diag_msg_tp_dimensions'),
     fixes: [
-      { label: 'Retry with TP=1', action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '1') },
-      { label: 'Retry with TP=2', action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '2') },
-      { label: 'Retry with TP=4', action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '4') },
+      { kind: 'retry', label: t('cookbook.diag_retry_flag_value', { flag: 'TP', v: '1' }), action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '1') },
+      { kind: 'retry', label: t('cookbook.diag_retry_flag_value', { flag: 'TP', v: '2' }), action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '2') },
+      { kind: 'retry', label: t('cookbook.diag_retry_flag_value', { flag: 'TP', v: '4' }), action: (panel) => _serveAutoRetryReplace(panel, '--tensor-parallel-size', '4') },
     ],
   },
   {
     pattern: /Too large swap space|swap space.*total CPU memory/i,
-    message: 'Swap space too large for available CPU memory.',
+    message: t('cookbook.diag_msg_swap_too_large'),
     fixes: [
-      { label: 'Retry without swap', action: (panel) => _serveAutoRetryRemove(panel, '--swap-space') },
-      { label: 'Retry with swap 1', action: (panel) => _serveAutoRetryReplace(panel, '--swap-space', '1') },
+      { kind: 'retry', label: t('cookbook.diag_retry_without_swap'), action: (panel) => _serveAutoRetryRemove(panel, '--swap-space') },
+      { kind: 'retry', label: t('cookbook.diag_retry_swap', { v: '1' }), action: (panel) => _serveAutoRetryReplace(panel, '--swap-space', '1') },
     ],
   },
   {
     pattern: /swap space|not enough.*memory.*cpu|Cannot allocate memory/i,
-    message: 'Not enough CPU RAM or swap space.',
+    message: t('cookbook.diag_msg_no_cpu_ram'),
     fixes: [
-      { label: 'Retry without swap', action: (panel) => _serveAutoRetryRemove(panel, '--swap-space') },
-      { label: 'Lower max context to 4096', action: (panel) => _setPanelField(panel, 'ctx', '4096') },
+      { kind: 'retry', label: t('cookbook.diag_retry_without_swap'), action: (panel) => _serveAutoRetryRemove(panel, '--swap-space') },
+      { kind: 'default', label: t('cookbook.diag_lower_max_context', { v: '4096' }), action: (panel) => _setPanelField(panel, 'ctx', '4096') },
     ],
   },
   {
     pattern: /unrecognized arguments:\s*--swap-space/i,
-    message: '--swap-space was removed in newer vLLM versions. Remove it from the command.',
+    message: t('cookbook.diag_msg_swap_removed'),
     fixes: [
-      { label: 'Retry without swap', action: (panel) => _serveAutoRetryRemove(panel, '--swap-space') },
+      { kind: 'retry', label: t('cookbook.diag_retry_without_swap'), action: (panel) => _serveAutoRetryRemove(panel, '--swap-space') },
     ],
   },
   {
     pattern: /Address already in use|bind.*address.*in use/i,
-    message: 'Port is already in use. Another server may be running.',
+    message: t('cookbook.diag_msg_port_in_use'),
     fixes: [
-      { label: 'Kill existing vLLM', action: (panel) => _runQuickCmd(panel, 'pkill -f vllm') },
-      { label: 'Use port 8001', action: (panel) => _setPanelField(panel, 'port', '8001') },
+      { kind: 'kill', label: t('cookbook.diag_kill_existing_vllm'), action: (panel) => _runQuickCmd(panel, 'pkill -f vllm') },
+      { kind: 'switch', label: t('cookbook.diag_use_port', { v: '8001' }), action: (panel) => _setPanelField(panel, 'port', '8001') },
     ],
   },
   {
     pattern: /No CUDA GPUs are available|no GPU.*found|CUDA_VISIBLE_DEVICES.*invalid/i,
-    message: 'No GPUs visible. Check your GPU selection or driver.',
+    message: t('cookbook.diag_msg_no_gpus_visible'),
     fixes: [
-      { label: 'Clear GPU selection (use all)', action: (panel) => {
+      { kind: 'switch', label: t('cookbook.diag_clear_gpu_selection_use_all'), action: (panel) => {
         _setPanelField(panel, 'gpus', '');
         _envState.gpus = '';
         _persistEnvState();
@@ -223,17 +229,17 @@ export const ERROR_PATTERNS = [
   },
   {
     pattern: /403 Forbidden|401 Unauthorized|Access to model.*is restricted|gated repo|not in the authorized list|awaiting a review/i,
-    message: 'Gated model. Your HF token IS being sent — but its account must be granted access first: open the model page, accept the license, and wait for approval (Meta models can take a while).',
+    message: t('cookbook.diag_msg_gated_model'),
     // Extract repo name from error text to build HF link
     _repoPattern: /Access to model\s+(\S+)\s+is restricted|gated repo.*?huggingface\.co\/([^\s/]+\/[^\s/]+)/i,
     fixes: [
-      { label: 'Request access on HF', action: (panel, _text) => {
+      { kind: 'default', label: t('cookbook.diag_request_access_on_hf'), action: (panel, _text) => {
         const m = _text && (_text.match(/Access to model\s+(\S+)\s+is restricted/i) || _text.match(/huggingface\.co\/([^\s/]+\/[^\s/]+)/i));
         const repo = m && (m[1] || m[2]);
         if (repo) window.open('https://huggingface.co/' + repo, '_blank');
         else window.open('https://huggingface.co/settings/gated-repos', '_blank');
       }},
-      { label: 'Check HF Token', action: (panel) => {
+      { kind: 'default', label: t('cookbook.diag_check_hf_token'), action: (panel) => {
         const el = panel.querySelector('[data-field="hf_token"]');
         if (el) { el.focus(); el.style.borderColor = 'var(--red)'; }
       }},
@@ -241,9 +247,9 @@ export const ERROR_PATTERNS = [
   },
   {
     pattern: /Weights for this component appear to be missing|load the component before passing/i,
-    message: 'Single-file checkpoint needs a base model for missing components (text encoder, VAE). The base model may be gated — accept the license and set your HF token.',
+    message: t('cookbook.diag_msg_single_file_base'),
     fixes: [
-      { label: 'Request access to base model', action: (panel, _text) => {
+      { kind: 'default', label: t('cookbook.diag_request_access_to_base_model'), action: (panel, _text) => {
         // Extract gated repo from error, or infer from model name
         const gated = _text && _text.match(/Access to model\s+(\S+)\s+is restricted/i);
         const base = _text && _text.match(/config=([^\s,)]+)/i);
@@ -252,7 +258,7 @@ export const ERROR_PATTERNS = [
         if (repo) window.open('https://huggingface.co/' + repo, '_blank');
         else if (model && model[1]) window.open('https://huggingface.co/' + model[1].replace(/[.]$/, ''), '_blank');
       }},
-      { label: 'Check HF Token', action: (panel) => {
+      { kind: 'default', label: t('cookbook.diag_check_hf_token'), action: (panel) => {
         const el = panel.querySelector('[data-field="hf_token"]');
         if (el) { el.focus(); el.style.borderColor = 'var(--red)'; }
       }},
@@ -260,15 +266,15 @@ export const ERROR_PATTERNS = [
   },
   {
     pattern: /Entry Not Found.*model_index\.json|Could not load model.*Check diffusers/i,
-    message: 'Single-file model — needs base config from a gated repo. Accept the license and set your HF token.',
+    message: t('cookbook.diag_msg_single_file_config'),
     fixes: [
-      { label: 'Request access to base model', action: (panel, _text) => {
+      { kind: 'default', label: t('cookbook.diag_request_access_to_base_model'), action: (panel, _text) => {
         const gated = _text && _text.match(/Access to model\s+(\S+)\s+is restricted/i);
         const repo = (gated && gated[1]) || _inferBaseRepo(_text);
         if (repo) window.open('https://huggingface.co/' + repo, '_blank');
         else window.open('https://huggingface.co/settings/gated-repos', '_blank');
       }},
-      { label: 'Check HF Token', action: (panel) => {
+      { kind: 'default', label: t('cookbook.diag_check_hf_token'), action: (panel) => {
         const el = panel.querySelector('[data-field="hf_token"]');
         if (el) { el.focus(); el.style.borderColor = 'var(--red)'; }
       }},
@@ -276,9 +282,9 @@ export const ERROR_PATTERNS = [
   },
   {
     pattern: /does not appear to have a file named|not a valid model|No such file or directory.*model/i,
-    message: 'Model path or ID not found.',
+    message: t('cookbook.diag_msg_model_not_found'),
     fixes: [
-      { label: 'Check model name', action: (panel) => {
+      { kind: 'default', label: t('cookbook.diag_check_model_name'), action: (panel) => {
         const header = panel.querySelector('.hwfit-panel-model');
         if (header) header.style.color = 'var(--red)';
       }},
@@ -286,27 +292,27 @@ export const ERROR_PATTERNS = [
   },
   {
     pattern: /NCCL error|ncclSystemError|ncclInternalError/i,
-    message: 'Multi-GPU communication (NCCL) failed.',
+    message: t('cookbook.diag_msg_nccl_failed'),
     fixes: [
-      { label: 'Set TP to 1 (single GPU)', action: (panel) => _setPanelField(panel, 'tp', '1') },
-      { label: 'Enable enforce eager', action: (panel) => _setPanelCheckbox(panel, 'enforce_eager', true) },
+      { kind: 'default', label: t('cookbook.diag_set_tp_single', { v: '1' }), action: (panel) => _setPanelField(panel, 'tp', '1') },
+      { kind: 'default', label: t('cookbook.diag_enable_enforce_eager'), action: (panel) => _setPanelCheckbox(panel, 'enforce_eager', true) },
     ],
   },
   {
     pattern: /KV cache.*too (small|large)|max_model_len.*exceeds|maximum.*context/i,
-    message: 'Context length too large for available GPU memory.',
+    message: t('cookbook.diag_msg_context_too_large'),
     fixes: [
-      { label: 'Lower to 8192', action: (panel) => _setPanelField(panel, 'ctx', '8192') },
-      { label: 'Lower to 4096', action: (panel) => _setPanelField(panel, 'ctx', '4096') },
-      { label: 'Lower to 2048', action: (panel) => _setPanelField(panel, 'ctx', '2048') },
+      { kind: 'default', label: t('cookbook.diag_lower_to', { v: '8192' }), action: (panel) => _setPanelField(panel, 'ctx', '8192') },
+      { kind: 'default', label: t('cookbook.diag_lower_to', { v: '4096' }), action: (panel) => _setPanelField(panel, 'ctx', '4096') },
+      { kind: 'default', label: t('cookbook.diag_lower_to', { v: '2048' }), action: (panel) => _setPanelField(panel, 'ctx', '2048') },
     ],
   },
   {
     pattern: /vllm.*command not found|No module named vllm/i,
-    message: 'vLLM is not installed or not in PATH.',
+    message: t('cookbook.diag_msg_vllm_missing'),
     fixes: [
-      { label: 'Open Dependencies', action: () => _openCookbookDependencies('vllm') },
-      { label: 'Check environment is set', action: (panel) => {
+      { kind: 'open', label: t('cookbook.diag_open_dependencies'), action: () => _openCookbookDependencies('vllm') },
+      { kind: 'default', label: t('cookbook.diag_check_environment_is_set'), action: (panel) => {
         const el = panel.querySelector('[data-field="env_type"]');
         if (el) { el.focus(); el.style.borderColor = 'var(--red)'; }
       }},
@@ -314,84 +320,84 @@ export const ERROR_PATTERNS = [
   },
   {
     pattern: /sgl_kernel[\s\S]*(Python\.h|libnuma\.so\.1|common_ops)|(Python\.h|libnuma\.so\.1|common_ops)[\s\S]*sgl_kernel|Please ensure sgl_kernel is properly installed/i,
-    message: 'SGLang native dependencies are missing on this server.',
+    message: t('cookbook.diag_msg_sglang_deps_missing'),
     fixes: [
-      { label: 'Copy OS package command', action: () => _copyText('sudo apt-get install -y libnuma-dev python3.12-dev build-essential') },
-      { label: 'Copy kernel upgrade', action: () => _copyText('python3 -m pip install --upgrade sglang-kernel') },
-      { label: 'Open Dependencies', action: () => _openCookbookDependencies('sglang') },
+      { kind: 'copy', label: t('cookbook.diag_copy_os_package_command'), action: () => _copyText('sudo apt-get install -y libnuma-dev python3.12-dev build-essential') },
+      { kind: 'copy', label: t('cookbook.diag_copy_kernel_upgrade'), action: () => _copyText('python3 -m pip install --upgrade sglang-kernel') },
+      { kind: 'open', label: t('cookbook.diag_open_dependencies'), action: () => _openCookbookDependencies('sglang') },
     ],
   },
   {
     pattern: /sglang.*command not found|No module named sglang|SGLang is not installed/i,
-    message: 'SGLang is not installed or not in PATH.',
+    message: t('cookbook.diag_msg_sglang_missing'),
     fixes: [
-      { label: 'Open Dependencies', action: () => _openCookbookDependencies('sglang') },
-      { label: 'Copy install command', action: () => _copyText('python3 -m pip install "sglang[all]"') },
+      { kind: 'open', label: t('cookbook.diag_open_dependencies'), action: () => _openCookbookDependencies('sglang') },
+      { kind: 'copy', label: t('cookbook.diag_copy_install_command'), action: () => _copyText('python3 -m pip install "sglang[all]"') },
     ],
   },
   {
     pattern: /No accelerator \(CUDA, XPU, HPU, NPU, MUSA, MPS\) is available|Triton is not supported on current platform/i,
-    message: 'SGLang needs a visible GPU/accelerator on this server.',
-    suggestion: 'Suggested action: switch this serve config to llama.cpp for CPU/local serving, or choose a GPU server.',
+    message: t('cookbook.diag_msg_sglang_no_gpu'),
+    suggestion: t('cookbook.diag_sug_switch_llamacpp'),
     fixes: [
-      { label: 'Switch to llama.cpp', action: (panel) => _openCpuServeEdit(panel) },
-      { label: 'Choose GPU server', action: (panel) => _openServeEditFromDiagnosis(panel) },
+      { kind: 'switch', label: t('cookbook.diag_switch_to_llama_cpp'), action: (panel) => _openCpuServeEdit(panel) },
+      { kind: 'default', label: t('cookbook.diag_choose_gpu_server'), action: (panel) => _openServeEditFromDiagnosis(panel) },
     ],
   },
   {
     pattern: /flashinfer.*version.*does not match|flashinfer-cubin version/i,
-    message: 'FlashInfer version mismatch.',
+    message: t('cookbook.diag_msg_flashinfer_mismatch'),
     fixes: [
-      { label: 'Auto-fix: bypass version check', action: (panel) => _serveAutoFix(panel, 'FLASHINFER_DISABLE_VERSION_CHECK=1'), autofix: true },
-      { label: 'Fix properly: pip install matching version', action: () => {} },
+      { kind: 'default', label: t('cookbook.diag_auto_fix_bypass_version_check'), action: (panel) => _serveAutoFix(panel, 'FLASHINFER_DISABLE_VERSION_CHECK=1'), autofix: true },
+      { kind: 'default', label: t('cookbook.diag_fix_properly_pip_install_matching_version'), action: () => {} },
     ],
   },
   {
     pattern: /torch\.cuda\.is_available\(\).*False|No CUDA runtime/i,
-    message: 'vLLM needs a visible CUDA/ROCm GPU.',
-    suggestion: 'Suggested action: switch this serve config to llama.cpp for CPU/local serving, or choose a GPU server.',
+    message: t('cookbook.diag_msg_vllm_no_cuda'),
+    suggestion: t('cookbook.diag_sug_switch_llamacpp'),
     fixes: [
-      { label: 'Switch to llama.cpp', action: (panel) => _openCpuServeEdit(panel) },
-      { label: 'Choose GPU server', action: (panel) => _openServeEditFromDiagnosis(panel) },
+      { kind: 'switch', label: t('cookbook.diag_switch_to_llama_cpp'), action: (panel) => _openCpuServeEdit(panel) },
+      { kind: 'default', label: t('cookbook.diag_choose_gpu_server'), action: (panel) => _openServeEditFromDiagnosis(panel) },
     ],
   },
   {
     pattern: /Engine core initialization failed/i,
-    message: 'vLLM engine failed to start. Check the error above.',
+    message: t('cookbook.diag_msg_vllm_engine_failed'),
     fixes: [
-      { label: 'Retry with --enforce-eager', action: (panel) => _serveAutoRetry(panel, '--enforce-eager'), autofix: true },
-      { label: 'Retry with context 4096', action: (panel) => _serveAutoRetry(panel, '--max-model-len 4096'), autofix: true },
-      { label: 'Lower context to 4096', action: (panel) => _setPanelField(panel, 'ctx', '4096') },
-      { label: 'Lower GPU mem to 0.80', action: (panel) => _setPanelField(panel, 'gpu_mem', '0.80') },
+      { kind: 'retry', label: t('cookbook.diag_retry_flag', { flag: '--enforce-eager' }), action: (panel) => _serveAutoRetry(panel, '--enforce-eager'), autofix: true },
+      { kind: 'retry', label: t('cookbook.diag_retry_context', { v: '4096' }), action: (panel) => _serveAutoRetry(panel, '--max-model-len 4096'), autofix: true },
+      { kind: 'default', label: t('cookbook.diag_lower_context', { v: '4096' }), action: (panel) => _setPanelField(panel, 'ctx', '4096') },
+      { kind: 'default', label: t('cookbook.diag_lower_gpu_mem', { v: '0.80' }), action: (panel) => _setPanelField(panel, 'gpu_mem', '0.80') },
     ],
   },
   {
     pattern: /weight_loader.*unexpected keyword|Unexpected key.*state_dict/i,
-    message: 'Model format incompatible with this vLLM version.',
+    message: t('cookbook.diag_msg_model_format'),
     fixes: [
-      { label: 'Try trust remote code', action: (panel) => _setPanelCheckbox(panel, 'trust_remote', true) },
+      { kind: 'default', label: t('cookbook.diag_try_trust_remote_code'), action: (panel) => _setPanelCheckbox(panel, 'trust_remote', true) },
     ],
   },
   {
     pattern: /enable-auto-tool-choice requires --tool-call-parser/i,
-    message: 'Auto tool choice needs a tool call parser.',
+    message: t('cookbook.diag_msg_auto_tool_choice'),
     fixes: [
-      { label: 'Retry with --tool-call-parser hermes', action: (panel) => _serveAutoRetry(panel, '--tool-call-parser hermes'), autofix: true },
+      { kind: 'retry', label: t('cookbook.diag_retry_flag_word', { flag: '--tool-call-parser', word: 'hermes' }), action: (panel) => _serveAutoRetry(panel, '--tool-call-parser hermes'), autofix: true },
     ],
   },
   {
     pattern: /Please pass.*trust.remote.code=True|contains custom code which must be executed to correctly load/i,
-    message: 'Model requires custom code. Enable --trust-remote-code.',
+    message: t('cookbook.diag_msg_needs_trust_remote_code'),
     fixes: [
-      { label: 'Retry with --trust-remote-code', action: (panel) => _serveAutoRetry(panel, '--trust-remote-code'), autofix: true },
+      { kind: 'retry', label: t('cookbook.diag_retry_flag', { flag: '--trust-remote-code' }), action: (panel) => _serveAutoRetry(panel, '--trust-remote-code'), autofix: true },
     ],
   },
   {
     pattern: /does not recognize this architecture|model type.*but Transformers does not/i,
-    message: 'Model architecture too new for installed vLLM/transformers.',
+    message: t('cookbook.diag_msg_arch_too_new'),
     fixes: [
-      { label: 'Try --trust-remote-code', action: (panel) => _serveAutoRetry(panel, '--trust-remote-code'), autofix: true },
-      { label: 'Update vLLM on server', action: () => {
+      { kind: 'default', label: t('cookbook.diag_try_trust_remote_code_flag'), action: (panel) => _serveAutoRetry(panel, '--trust-remote-code'), autofix: true },
+      { kind: 'default', label: t('cookbook.diag_update_vllm_on_server'), action: () => {
         // Use the venv's python3 by absolute path when configured (SSH non-
         // interactive sessions often pick user-site Python over the venv).
         const _vp = (_envState.env === 'venv' && _envState.envPath)
@@ -402,21 +408,21 @@ export const ERROR_PATTERNS = [
   },
   {
     pattern: /Either a revision or a version must be specified|transformers\.integrations\.hub_kernels|kernels\/layer/i,
-    message: 'Transformers/kernels package mismatch.',
+    message: t('cookbook.diag_msg_kernels_mismatch'),
     fixes: [
-      { label: 'Repair kernel package', action: () => {
+      { kind: 'default', label: t('cookbook.diag_repair_kernel_package'), action: () => {
         const _vp = (_envState.env === 'venv' && _envState.envPath)
           ? `${_envState.envPath.replace(/\/+$/, '')}/bin/python3` : 'python3';
         _launchServeTask('repair-kernels', 'pip-update', `${_vp} -m pip install --user --break-system-packages "kernels<0.15"`);
       }},
-      { label: 'Open Dependencies', action: () => _openCookbookDependencies('sglang') },
+      { kind: 'open', label: t('cookbook.diag_open_dependencies'), action: () => _openCookbookDependencies('sglang') },
     ],
   },
   {
     pattern: /ollama.*command not found/i,
-    message: 'Ollama is not installed on this server. Run: curl -fsSL https://ollama.com/install.sh | sh',
+    message: t('cookbook.diag_msg_ollama_missing'),
     fixes: [
-      { label: 'Copy install command', action: () => _copyText('curl -fsSL https://ollama.com/install.sh | sh') },
+      { kind: 'copy', label: t('cookbook.diag_copy_install_command'), action: () => _copyText('curl -fsSL https://ollama.com/install.sh | sh') },
     ],
   },
   // System build deps must be checked BEFORE the llama-server catch-all:
@@ -428,70 +434,70 @@ export const ERROR_PATTERNS = [
   // missing OS-package toolchain that pip can't ship.
   {
     pattern: /cmake: command not found|cmake.*not found.*Could not/i,
-    message: 'cmake is required to compile llama.cpp from source, but it is not installed on this server.',
-    suggestion: 'Suggested action: install cmake via the OS package manager — apt: cmake build-essential / pacman: cmake base-devel / dnf: cmake gcc-c++ make / brew: cmake. Cookbook can do this automatically on the next launch if your user has passwordless sudo for apt/pacman/dnf.',
+    message: t('cookbook.diag_msg_cmake_required'),
+    suggestion: t('cookbook.diag_sug_install_cmake'),
     fixes: [
-      { label: 'Open Dependencies', action: () => _openCookbookDependencies('llama_cpp') },
-      { label: 'Copy apt install', action: () => _copyText('sudo apt install -y cmake build-essential git') },
-      { label: 'Copy pacman install', action: () => _copyText('sudo pacman -Sy --needed cmake base-devel git') },
-      { label: 'Copy dnf install', action: () => _copyText('sudo dnf install -y cmake gcc gcc-c++ make git') },
+      { kind: 'open', label: t('cookbook.diag_open_dependencies'), action: () => _openCookbookDependencies('llama_cpp') },
+      { kind: 'copy', label: t('cookbook.diag_copy_apt_install'), action: () => _copyText('sudo apt install -y cmake build-essential git') },
+      { kind: 'copy', label: t('cookbook.diag_copy_pacman_install'), action: () => _copyText('sudo pacman -Sy --needed cmake base-devel git') },
+      { kind: 'copy', label: t('cookbook.diag_copy_dnf_install'), action: () => _copyText('sudo dnf install -y cmake gcc gcc-c++ make git') },
     ],
   },
   {
     pattern: /^(make|g\+\+|gcc): command not found|Could not find C\+\+ compiler/i,
-    message: 'A C/C++ compiler (build-essential / base-devel) is required to compile llama.cpp.',
+    message: t('cookbook.diag_msg_cc_compiler_required'),
     fixes: [
-      { label: 'Open Dependencies', action: () => _openCookbookDependencies('llama_cpp') },
-      { label: 'Copy apt install', action: () => _copyText('sudo apt install -y build-essential') },
+      { kind: 'open', label: t('cookbook.diag_open_dependencies'), action: () => _openCookbookDependencies('llama_cpp') },
+      { kind: 'copy', label: t('cookbook.diag_copy_apt_install'), action: () => _copyText('sudo apt install -y build-essential') },
     ],
   },
   {
     pattern: /^git: command not found/i,
-    message: 'git is required to clone the llama.cpp source tree.',
+    message: t('cookbook.diag_msg_git_required'),
     fixes: [
-      { label: 'Open Dependencies', action: () => _openCookbookDependencies('llama_cpp') },
-      { label: 'Copy apt install', action: () => _copyText('sudo apt install -y git') },
+      { kind: 'open', label: t('cookbook.diag_open_dependencies'), action: () => _openCookbookDependencies('llama_cpp') },
+      { kind: 'copy', label: t('cookbook.diag_copy_apt_install'), action: () => _copyText('sudo apt install -y git') },
     ],
   },
   {
     pattern: /llama-server.*command not found|llama\.cpp.*not found|No module named.*llama_cpp|No module named 'starlette_context'/i,
-    message: 'llama-cpp-python server is not installed. Run: pip install "llama-cpp-python[server]"',
+    message: t('cookbook.diag_msg_llama_cpp_server_missing'),
     fixes: [
-      { label: 'Open Dependencies', action: () => _openCookbookDependencies('llama_cpp') },
-      { label: 'Copy install command', action: () => _copyText('pip install "llama-cpp-python[server]"') },
+      { kind: 'open', label: t('cookbook.diag_open_dependencies'), action: () => _openCookbookDependencies('llama_cpp') },
+      { kind: 'copy', label: t('cookbook.diag_copy_install_command'), action: () => _copyText('pip install "llama-cpp-python[server]"') },
     ],
   },
   {
     pattern: /Windows Error 0xc000001d|Illegal instruction|0xc000001d/i,
-    message: 'AVX2 Instruction Set Mismatch: the precompiled llama-cpp-python wheel requires CPU features (AVX2/FMA) that your processor or virtual machine lacks.',
-    suggestion: 'Suggested action: switch this serve config to Ollama (highly recommended, has dynamic CPU fallbacks), or choose a remote Linux GPU server.',
+    message: t('cookbook.diag_msg_avx2_mismatch'),
+    suggestion: t('cookbook.diag_sug_switch_ollama'),
     fixes: [
-      { label: 'Switch to Ollama', action: (panel) => _openServeEditFromDiagnosis(panel, { backend: 'ollama' }) },
-      { label: 'Choose remote server', action: (panel) => _openServeEditFromDiagnosis(panel) },
+      { kind: 'switch', label: t('cookbook.diag_switch_to_ollama'), action: (panel) => _openServeEditFromDiagnosis(panel, { backend: 'ollama' }) },
+      { kind: 'default', label: t('cookbook.diag_choose_remote_server'), action: (panel) => _openServeEditFromDiagnosis(panel) },
     ],
   },
   {
     pattern: /CUDA Toolkit not found|Unable to find cudart library|missing:\s*CUDA_CUDART/i,
-    message: 'llama.cpp found nvcc, but the CUDA runtime library is missing.',
-    suggestion: 'Suggested action: relaunch with the updated runner so llama.cpp builds CPU-only, or install a complete CUDA toolkit/runtime on this server for GPU llama.cpp.',
+    message: t('cookbook.diag_msg_cuda_runtime_missing'),
+    suggestion: t('cookbook.diag_sug_relaunch_runner'),
     fixes: [
-      { label: 'Edit serve', action: (panel) => _openServeEditFromDiagnosis(panel) },
-      { label: 'Open Dependencies', action: () => _openCookbookDependencies('llama_cpp') },
+      { kind: 'edit', label: t('cookbook.diag_edit_serve'), action: (panel) => _openServeEditFromDiagnosis(panel) },
+      { kind: 'open', label: t('cookbook.diag_open_dependencies'), action: () => _openCookbookDependencies('llama_cpp') },
     ],
   },
   {
     pattern: /No module named ['"]?torch|No module named ['"]?diffusers|diffusers.*command not found/i,
-    message: 'Diffusion serving needs PyTorch and diffusers. Install diffusers from Cookbook → Dependencies.',
+    message: t('cookbook.diag_msg_diffusion_deps'),
     fixes: [
-      { label: 'Open Dependencies', action: () => _openCookbookDependencies('diffusers') },
-      { label: 'Copy install command', action: () => _copyText('python3 -m pip install "diffusers[torch]"') },
+      { kind: 'open', label: t('cookbook.diag_open_dependencies'), action: () => _openCookbookDependencies('diffusers') },
+      { kind: 'copy', label: t('cookbook.diag_copy_install_command'), action: () => _copyText('python3 -m pip install "diffusers[torch]"') },
     ],
   },
   {
     pattern: /Triton kernels.*Failed to import|cannot import name '\w+' from 'triton_kernels/i,
-    message: 'Triton kernels version mismatch. Non-fatal warning — model will still run, just without optimized MoE kernels.',
+    message: t('cookbook.diag_msg_triton_mismatch'),
     fixes: [
-      { label: 'Update triton on server', action: () => {
+      { kind: 'default', label: t('cookbook.diag_update_triton_on_server'), action: () => {
         const _vp = (_envState.env === 'venv' && _envState.envPath)
           ? `${_envState.envPath.replace(/\/+$/, '')}/bin/python3` : 'python3';
         _launchServeTask('update-triton', 'pip-update', `${_vp} -m pip install -U triton triton-kernels`);
@@ -500,23 +506,23 @@ export const ERROR_PATTERNS = [
   },
   {
     pattern: /No space left on device|Disk quota exceeded|ENOSPC/i,
-    message: 'Disk full on the server. Free up space before retrying.',
+    message: t('cookbook.diag_msg_disk_full'),
     fixes: [
-      { label: 'Check HF cache size', action: (panel) => _runQuickCmd(panel, 'du -sh ~/.cache/huggingface 2>/dev/null') },
+      { kind: 'default', label: t('cookbook.diag_check_hf_cache_size'), action: (panel) => _runQuickCmd(panel, 'du -sh ~/.cache/huggingface 2>/dev/null') },
     ],
   },
   {
     pattern: /Connection refused|Could not connect|Connection reset by peer/i,
-    message: 'Network connection failed. Server may be unreachable or HuggingFace is down.',
+    message: t('cookbook.diag_msg_network_failed'),
     fixes: [
-      { label: 'Test HF connectivity', action: (panel) => _runQuickCmd(panel, 'curl -sI https://huggingface.co 2>&1 | head -3') },
+      { kind: 'default', label: t('cookbook.diag_test_hf_connectivity'), action: (panel) => _runQuickCmd(panel, 'curl -sI https://huggingface.co 2>&1 | head -3') },
     ],
   },
   {
     pattern: /attention_sink|sliding.window.*not supported|sliding_window.*incompatible/i,
-    message: 'Model uses attention features unsupported in this vLLM version.',
+    message: t('cookbook.diag_msg_attention_unsupported'),
     fixes: [
-      { label: 'Update vLLM on server', action: () => {
+      { kind: 'default', label: t('cookbook.diag_update_vllm_on_server'), action: () => {
         const _vp = (_envState.env === 'venv' && _envState.envPath)
           ? `${_envState.envPath.replace(/\/+$/, '')}/bin/python3` : 'python3';
         _launchServeTask('update-vllm', 'pip-update', `${_vp} -m pip install -U vllm`);
@@ -531,11 +537,11 @@ export const ERROR_PATTERNS = [
     // non-flashinfer attention backend, or set CUDACXX to a newer nvcc
     // (vLLM installs nvidia-cuda-nvcc into the venv — point at that).
     pattern: /nvcc fatal\s+:\s+Unsupported gpu architecture 'compute_\d+'/i,
-    message: 'FlashInfer is JIT-compiling sampling kernels with an nvcc too old for this GPU (no sm_89 / sm_90 support — pre-CUDA 11.8). Changing the attention backend does not help — flashinfer JITs the SAMPLER too. The clean fix is to set VLLM_USE_FLASHINFER_SAMPLER=0 so vLLM uses its native sampler instead.',
-    suggestion: 'Suggested action: relaunch with VLLM_USE_FLASHINFER_SAMPLER=0 prepended. (Confirmed on the QuantTrio/Qwen3.5 model card as the canonical workaround.)',
+    message: t('cookbook.diag_msg_flashinfer_nvcc_old'),
+    suggestion: t('cookbook.diag_sug_flashinfer_sampler'),
     fixes: [
-      { label: 'Retry with VLLM_USE_FLASHINFER_SAMPLER=0', action: (panel) => _serveAutoRetryReplace(panel, '', 'VLLM_USE_FLASHINFER_SAMPLER=0 ', { prepend: true }) },
-      { label: 'Uninstall flashinfer-python', action: () => {
+      { kind: 'retry', label: t('cookbook.diag_retry_flag_value', { flag: 'VLLM_USE_FLASHINFER_SAMPLER', v: '0' }), action: (panel) => _serveAutoRetryReplace(panel, '', 'VLLM_USE_FLASHINFER_SAMPLER=0 ', { prepend: true }) },
+      { kind: 'default', label: t('cookbook.diag_uninstall_flashinfer_python'), action: () => {
         // Hard fallback: vLLM 0.22 reaches into flashinfer for sampling kernels
         // even with VLLM_USE_FLASHINFER_SAMPLER=0 in some configs. Removing
         // the package forces it onto the native sampler.
@@ -543,7 +549,7 @@ export const ERROR_PATTERNS = [
           ? `${_envState.envPath.replace(/\/+$/, '')}/bin/python3` : 'python3';
         _launchServeTask('uninstall-flashinfer', 'pip-update', `${_vp} -m pip uninstall flashinfer-python -y`);
       }},
-      { label: 'Edit serve', action: (panel) => _openServeEditFromDiagnosis(panel) },
+      { kind: 'edit', label: t('cookbook.diag_edit_serve'), action: (panel) => _openServeEditFromDiagnosis(panel) },
     ],
   },
   {
@@ -553,16 +559,16 @@ export const ERROR_PATTERNS = [
     // any server code runs. Fix is to reinstall vllm (which pulls a matching
     // torch) or upgrade torch directly.
     pattern: /ImportError: cannot import name '[^']+' from 'torch(\.\w+)+'/i,
-    message: 'vLLM was built against a newer torch than what is installed. Reinstall vLLM so pip pulls a compatible torch (or upgrade torch directly).',
+    message: t('cookbook.diag_msg_torch_abi'),
     fixes: [
-      { label: 'Reinstall vLLM (pulls matching torch)', action: () => {
+      { kind: 'default', label: t('cookbook.diag_reinstall_vllm_pulls_matching_torch'), action: () => {
         // Absolute path to the venv's python3 — bare `python3` lands in the
         // wrong site-packages over SSH when ~/.local/bin precedes the venv.
         const _vp = (_envState.env === 'venv' && _envState.envPath)
           ? `${_envState.envPath.replace(/\/+$/, '')}/bin/python3` : 'python3';
         _launchServeTask('reinstall-vllm', 'pip-reinstall', `${_vp} -m pip install --force-reinstall vllm`);
       }},
-      { label: 'Upgrade torch only', action: () => {
+      { kind: 'install', label: t('cookbook.diag_upgrade_torch_only'), action: () => {
         const _vp = (_envState.env === 'venv' && _envState.envPath)
           ? `${_envState.envPath.replace(/\/+$/, '')}/bin/python3` : 'python3';
         _launchServeTask('upgrade-torch', 'pip-update', `${_vp} -m pip install -U torch`);
@@ -581,8 +587,8 @@ export const ERROR_PATTERNS = [
       if (/Application startup complete|"(?:GET|POST)\s+\/v1\/[^"]+ HTTP\/[\d.]+"\s*2\d\d|Uvicorn running on|server is listening on https?:\/\//i.test(TAIL)) return false;
       return /Failed to build\b|subprocess-exited-with-error|Could not build wheels|metadata-generation-failed/i.test(TAIL);
     },
-    message: 'A dependency failed to build during install — usually an older package whose build breaks on this Python version, not a server problem. The install did not finish.',
-    suggestion: 'Suggested action: check the captured output for the package that failed to build; it may need a newer release or a patch to install on this Python version.',
+    message: t('cookbook.diag_msg_dep_build_failed'),
+    suggestion: t('cookbook.diag_sug_check_build_output'),
     fixes: [],
   },
   {
@@ -596,9 +602,9 @@ export const ERROR_PATTERNS = [
       if (/Application startup complete|"GET \/v1\/[^"]+ HTTP\/[\d.]+" 2\d\d|Uvicorn running on/i.test(TAIL)) return false;
       return /vllm/i.test(TAIL);
     },
-    message: 'A vLLM process hit a Python traceback and may be wedged.',
+    message: t('cookbook.diag_msg_vllm_wedged'),
     fixes: [
-      { label: 'Kill vLLM processes', action: (panel) => _runQuickCmd(panel, 'pkill -f vllm') },
+      { kind: 'kill', label: t('cookbook.diag_kill_vllm_processes'), action: (panel) => _runQuickCmd(panel, 'pkill -f vllm') },
     ],
   },
   {
@@ -610,8 +616,8 @@ export const ERROR_PATTERNS = [
       if (/Application startup complete|"GET \/v1\/[^"]+ HTTP\/[\d.]+" 2\d\d|Uvicorn running on/i.test(TAIL)) return false;
       return true;
     },
-    message: 'Python traceback detected — check the captured output below for the underlying error.',
-    suggestion: 'Suggested action: read the captured output for the failing step; copy the troubleshooting bundle if you need help.',
+    message: t('cookbook.diag_msg_traceback_detected'),
+    suggestion: t('cookbook.diag_sug_read_failed_step'),
     fixes: [],
   },
 ];
@@ -664,12 +670,14 @@ export function _showDiagnosis(panel, diagnosis, sourceText) {
   const taskEl = panel?.closest?.('.cookbook-task');
   const task = taskEl ? _loadTasks().find(t => t.sessionId === taskEl.dataset.taskId) : null;
   const fixes = [...(diagnosis.fixes || [])];
-  if (task?.type === 'serve' && task.payload?._cmd && !fixes.some(f => f.label === 'Edit serve')) {
-    fixes.push({ label: 'Edit serve', action: (p) => _openServeEditFromDiagnosis(p) });
+  // Deduped on a stable id, not on the label: comparing display text made this
+  // silently append a duplicate the moment the label was localised.
+  if (task?.type === 'serve' && task.payload?._cmd && !fixes.some(f => f.id === 'edit_serve')) {
+    fixes.push({ id: 'edit_serve', kind: 'edit', label: t('cookbook.diag_edit_serve'), action: (p) => _openServeEditFromDiagnosis(p) });
   }
   const suggestionText = diagnosis.suggestion || (fixes.length
     ? `Suggested action: ${fixes[0].label}.`
-    : 'Suggested action: copy the error and adjust the serve settings.');
+    : t('cookbook.diag_sug_default_copy_error'));
 
   panel._diagCollapsed = false;
 
@@ -772,7 +780,7 @@ export function _showDiagnosis(panel, diagnosis, sourceText) {
       const btn = document.createElement('button');
       btn.className = 'cookbook-btn cookbook-diag-btn';
       btn.type = 'button';
-      btn.innerHTML = _diagFixIcon(fix.label) + '<span class="cookbook-diag-btn-label">' + _diagEsc(fix.label) + '</span>';
+      btn.innerHTML = _diagFixIcon(fix.kind) + '<span class="cookbook-diag-btn-label">' + _diagEsc(fix.label) + '</span>';
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         runFix(fix, btn);
