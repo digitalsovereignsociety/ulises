@@ -596,10 +596,10 @@ export async function _hwfitFetch(fresh = false) {
       loadingDiv.style.cssText = 'flex-direction:column;gap:6px;text-align:center;';
       loadingDiv.appendChild(wp.element);
       const loadingTitle = document.createElement('div');
-      loadingTitle.textContent = 'No cached scan yet';
+      loadingTitle.textContent = t('cookbookHwfit.no_cached_scan');
       loadingTitle.style.cssText = 'font-size:12px;opacity:0.7;';
       const loadingLbl = document.createElement('div');
-      loadingLbl.textContent = 'Scanning hardware…';
+      loadingLbl.textContent = t('cookbookHwfit.scanning_hw');
       loadingLbl.style.cssText = 'font-size:11px;opacity:0.55;max-width:420px;line-height:1.4;';
       loadingDiv.appendChild(loadingTitle);
       loadingDiv.appendChild(loadingLbl);
@@ -626,10 +626,10 @@ export async function _hwfitFetch(fresh = false) {
     // Text label like the other cookbook tabs: "Loading…", then if the scan runs
     // long (remote SSH hardware probe), switch to "Scanning hardware…".
     const loadingLbl = document.createElement('div');
-    loadingLbl.textContent = 'Loading…';
+    loadingLbl.textContent = t('cookbookHwfit.loading');
     loadingLbl.style.cssText = 'text-align:center;opacity:0.5;font-size:11px;';
     loadingDiv.appendChild(loadingLbl);
-    setTimeout(() => { if (loadingLbl.isConnected) loadingLbl.textContent = 'Scanning hardware…'; }, 2000);
+    setTimeout(() => { if (loadingLbl.isConnected) loadingLbl.textContent = t('cookbookHwfit.scanning_hw'); }, 2000);
     list.innerHTML = '';
     list.appendChild(loadingDiv);
     _hwfitCache = null;   // no instant paint — clear until the fetch returns
@@ -887,7 +887,7 @@ function _renderHwVisibilityWarning(sys) {
     const panel = document.getElementById('hwfit-manual-panel');
     if (panel) panel.classList.remove('hidden');
     const manualBtn = document.getElementById('hwfit-hw-manual-btn');
-    if (manualBtn) manualBtn.textContent = 'CANCEL';
+    if (manualBtn) manualBtn.textContent = t('cookbookHwfit.cancel_upper');
     document.getElementById('hwfit-hw-manual-btn')?.scrollIntoView?.({
       behavior: 'smooth',
       block: 'center',
@@ -1053,7 +1053,7 @@ export function _hwfitRenderHw(el, sys) {
         btn.closest('.hwfit-hw-chip-row')?.remove();
         document.getElementById('hwfit-manual-panel')?.classList.add('hidden');
         const manualBtn = document.getElementById('hwfit-hw-manual-btn');
-        if (manualBtn) manualBtn.textContent = 'EDIT';
+        if (manualBtn) manualBtn.textContent = t('cookbookHwfit.edit_upper');
         _resetGpuToggleState();
         _hwfitCache = null;
         _hwfitFetch(true);
@@ -1075,7 +1075,7 @@ function _wireManualHardwareControls(el) {
   const panel = document.getElementById('hwfit-manual-panel');
   if (!btn || !panel) return;
   const syncManualButton = () => {
-    btn.textContent = panel.classList.contains('hidden') ? 'EDIT' : 'CANCEL';
+    btn.textContent = panel.classList.contains('hidden') ? 'EDIT' : t('cookbookHwfit.cancel_upper');
   };
   const clearManual = () => {
     _saveManualHwState(null);
@@ -1153,15 +1153,15 @@ function _modeLabel(model) {
 }
 
 export const _hwfitColumns = [
-  { key: 'fit', label: 'Fit',    cls: 'hwfit-fit' },
-  { key: 'newest', label: 'Model (latest)',  cls: 'hwfit-name' },
-  { key: 'params',label: 'Param', cls: 'hwfit-c-params' },
-  { key: null,    label: 'Quant',  cls: 'hwfit-c-quant' },
-  { key: 'vram',  label: 'VRAM',   cls: 'hwfit-c-vram' },
-  { key: 'context',label: 'Ctx',   cls: 'hwfit-c-ctx' },
-  { key: 'speed', label: 'Speed',  cls: 'hwfit-c-speed' },
-  { key: 'score', label: 'Score',  cls: 'hwfit-c-score' },
-  { key: null,    label: 'Mode',   cls: 'hwfit-c-mode' },
+  { key: 'fit', label: t('cookbookHwfit.col_fit'),    cls: 'hwfit-fit' },
+  { key: 'newest', label: t('cookbookHwfit.col_model_latest'),  cls: 'hwfit-name' },
+  { key: 'params',label: t('cookbookHwfit.col_param'), cls: 'hwfit-c-params' },
+  { key: null,    label: t('cookbookHwfit.col_quant'),  cls: 'hwfit-c-quant' },
+  { key: 'vram',  label: t('cookbookHwfit.col_vram'),   cls: 'hwfit-c-vram' },
+  { key: 'context',label: t('cookbookHwfit.col_ctx'),   cls: 'hwfit-c-ctx' },
+  { key: 'speed', label: t('cookbookHwfit.col_speed'),  cls: 'hwfit-c-speed' },
+  { key: 'score', label: t('cookbookHwfit.col_score'),  cls: 'hwfit-c-score' },
+  { key: null,    label: t('cookbookHwfit.col_mode'),   cls: 'hwfit-c-mode' },
 ];
 
 export function _hwfitRenderList(el, models) {
@@ -1216,9 +1216,9 @@ export function _hwfitRenderList(el, models) {
     // The Model column's "(newest)" / "(oldest)" suffix flips with the sort
     // direction so the user can see at a glance which way they're sorted.
     if (col.key === 'newest' && col.key === currentSort) {
-      label = isReversed ? 'Model (oldest)' : 'Model (latest)';
+      label = isReversed ? 'Model (oldest)' : t('cookbookHwfit.col_model_latest');
     } else if (col.key === 'newest') {
-      label = 'Model (latest)';
+      label = t('cookbookHwfit.col_model_latest');
     }
     html += `<span class="hwfit-col ${col.cls}${sortable}${active}"${dataAttr}>${label}${arrow}</span>`;
   }
@@ -1559,7 +1559,7 @@ export function _expandModelRow(row, modelData) {
           );
           if (!_ok) return;
           quickRunBtn.disabled = true;
-          quickRunBtn.textContent = 'Stopping…';
+          quickRunBtn.textContent = t('cookbookHwfit.stopping');
           for (const t of _clashing) {
             try {
               const _taskEl = document.querySelector(`.cookbook-task[data-task-id="${t.sessionId}"]`);
@@ -1660,7 +1660,7 @@ export function _expandModelRow(row, modelData) {
       }
 
       quickRunBtn.disabled = true;
-      quickRunBtn.textContent = 'Starting...';
+      quickRunBtn.textContent = t('cookbookHwfit.starting');
 
       // Smart defaults based on hardware and model
       const system = _hwfitCache?.system || {};
@@ -1749,7 +1749,7 @@ export function _expandModelRow(row, modelData) {
       );
       if (!_ok) {
         quickRunBtn.disabled = false;
-        quickRunBtn.textContent = 'Run';
+        quickRunBtn.textContent = t('cookbookHwfit.run');
         return;
       }
 
@@ -1786,7 +1786,7 @@ export function _expandModelRow(row, modelData) {
         uiModule.showError(t('cookbook.launchError', { message: e.message }));
       }
       quickRunBtn.disabled = false;
-      quickRunBtn.textContent = 'Run';
+      quickRunBtn.textContent = t('cookbookHwfit.run');
     });
   }
 
@@ -2067,12 +2067,12 @@ export function _hwfitInit() {
     if (!dot) return;
     if (!host) {
       dot.className = 'cookbook-srv-status';
-      dot.title = 'Enter user@host to test';
+      dot.title = t('cookbookHwfit.ssh_enter_host');
       setMsg('');
       return;
     }
     dot.className = 'cookbook-srv-status testing';
-    dot.title = 'Testing SSH…';
+    dot.title = t('cookbookHwfit.ssh_testing');
     setMsg('Testing SSH...');
     const pf = port && port !== '22' ? `-p ${port} ` : '';
     const cmd = `ssh -o BatchMode=yes -o ConnectTimeout=5 -o StrictHostKeyChecking=accept-new ${pf}${host} "echo ok"`;
@@ -2088,17 +2088,17 @@ export function _hwfitInit() {
       const out = (data.stdout || '').trim();
       if (data.exit_code === 0 && out.startsWith('ok')) {
         dot.className = 'cookbook-srv-status ok';
-        dot.title = `Reachable · ${ms} ms · use Dependencies to check tmux/HF setup`;
+        dot.title = t('cookbookHwfit.ssh_reachable', { ms });
         setMsg(`Connected · ${ms} ms`, 'var(--green,#50fa7b)');
       } else {
         dot.className = 'cookbook-srv-status fail';
         const err = (data.stderr || data.stdout || `exit ${data.exit_code}`).toString().trim().slice(0, 240);
-        dot.title = `SSH failed: ${err}`;
+        dot.title = t('cookbookHwfit.ssh_failed', { error: err });
         setMsg(`Failed · ${err}`, 'var(--red,#6663F1)');
       }
     } catch (e) {
       dot.className = 'cookbook-srv-status fail';
-      dot.title = `Test failed: ${e.message || e}`;
+      dot.title = t('cookbookHwfit.test_failed', { error: e.message || e });
       setMsg(`Failed · ${e.message || e}`, 'var(--red,#6663F1)');
     }
   }
@@ -2157,11 +2157,11 @@ export function _hwfitInit() {
       if (!publicKey && !generate) publicKey = await _fetchCookbookSshKey(true);
       cmdBox.value = _serverKeyCommand(host, port, publicKey);
       if (copyBtn) copyBtn.disabled = false;
-      if (genBtn) genBtn.textContent = 'Key ready';
+      if (genBtn) genBtn.textContent = t('cookbookHwfit.key_ready');
     } catch (e) {
       cmdBox.value = e.message || String(e);
       if (copyBtn) copyBtn.disabled = true;
-      if (genBtn) genBtn.textContent = 'Generate key';
+      if (genBtn) genBtn.textContent = t('cookbookHwfit.generate_key');
     } finally {
       if (genBtn) genBtn.disabled = false;
     }
@@ -2181,7 +2181,7 @@ export function _hwfitInit() {
     if (!entry.querySelector('.cookbook-srv-status')) {
       const dot = document.createElement('span');
       dot.className = 'cookbook-srv-status';
-      dot.title = 'Click to test SSH';
+      dot.title = t('cookbookHwfit.ssh_click_to_test');
       dot.addEventListener('click', (e) => { e.stopPropagation(); _testServerConnection(entry); });
       if (titleEl) titleEl.insertBefore(dot, titleEl.firstChild);
       else if (row) row.insertBefore(dot, row.firstChild);
@@ -2190,7 +2190,7 @@ export function _hwfitInit() {
       const _hostEl = entry.querySelector('.cookbook-srv-host');
       if (_hostEl && (_hostEl.readOnly || _hostEl.disabled)) {
         dot.className = 'cookbook-srv-status ok';
-        dot.title = 'Local (this machine)';
+        dot.title = t('cookbookHwfit.local_machine');
       }
     }
     const checkBtn = entry.querySelector('.cookbook-server-check-btn');
@@ -2354,7 +2354,7 @@ export function _hwfitInit() {
         if (!host) return;
         setupBtn.disabled = true;
         const origText = setupBtn.textContent;
-        setupBtn.textContent = 'Installing...';
+        setupBtn.textContent = t('cookbookHwfit.installing');
         try {
           const res = await fetch('/api/cookbook/setup', {
             method: 'POST', credentials: 'same-origin',
@@ -2399,12 +2399,12 @@ export function _hwfitInit() {
               }
             }
           } else {
-            setupBtn.textContent = 'Failed';
+            setupBtn.textContent = t('cookbookHwfit.failed');
             setupBtn.style.color = 'var(--red)';
             uiModule.showError(t('cookbook.setupFailed', { error: data.error || data.output || t('cookbook.setupFailedGeneric') }));
           }
         } catch (e) {
-          setupBtn.textContent = 'Error';
+          setupBtn.textContent = t('cookbookHwfit.error');
           setupBtn.style.color = 'var(--red)';
           uiModule.showError(t('cookbook.setupError', { message: e.message }));
         }
@@ -2456,12 +2456,12 @@ export function _hwfitInit() {
         d.classList.remove('active');
         d.innerHTML = _MODELDIR_CHECK_OFF;          // uncheck the others
         d.closest('.cookbook-modeldir-tag')?.classList.remove('cookbook-modeldir-target');
-        d.title = 'Send downloads here';
+        d.title = t('cookbookHwfit.send_downloads_here');
       });
       dlEl.classList.add('active');
       dlEl.innerHTML = _MODELDIR_CHECK_ON;           // check the chosen one
       tag.classList.add('cookbook-modeldir-target');
-      dlEl.title = 'Downloads go here';
+      dlEl.title = t('cookbookHwfit.downloads_go_here');
       _syncServers();
       uiModule.showToast(dlEl.dataset.dlDir ? t('cookbook.downloadsToDir', { dir: dlEl.dataset.dlDir }) : t('cookbook.downloadsToDefault'));
     });
