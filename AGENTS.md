@@ -50,7 +50,7 @@ docker run --rm --entrypoint /bin/bash -v "$PWD":/app -w /app ulises-ulises:late
 
 ## i18n
 See [MULTILANG.md](MULTILANG.md) for the multilanguage system. Current state:
-73 namespaces, 1571 keys, `en` and `es` in lockstep (enforced by
+74 namespaces, 1898 keys, `en` and `es` in lockstep (enforced by
 `tests/test_locale_files.py`).
 
 `tests/test_i18n_html_coverage.py` is the gate that matters:
@@ -73,30 +73,45 @@ i18n debt.
 Get CI green across all test suites and Docker build for the Ulises project.
 
 ### Status
-`pytest -q` → **4463 passed, 4 skipped, 0 failed** (was 61 failures at the
-start of this work). `python -m compileall` and `node --check` over all 156 JS
-files are clean. All relative import specifiers resolve; 783 named imports
-resolve to real exports.
+`pytest -q` → **4469 passed, 4 skipped, 0 failed** (was 61 failures at the
+start of this work). `python -m compileall` and `node --check` over all 157 JS
+files are clean. All relative import specifiers resolve. Four node-level suites
+guard the JS: `cookbook_modules_smoke`, `cookbook_diagnosis_core`,
+`token_scope_labels`, `enum_keys_not_localised`, `compare_prompts`,
+`cookbook_diag_fix_shape`, `i18n_fallback`.
 
 ### Known Issues
 - **Untranslated strings (i18n debt)** — no test covers strings used WITHOUT a
-  key, so nothing in CI catches them. A broad sweep of `static/js` for literals
+  key, so nothing in CI catches them. A sweep of `static/js` for literals
   assigned to `textContent` / `innerHTML` / `placeholder` / `title`, to dialog
-  and toast helpers, and to `label:` / `title:` fields counts **672 distinct
-  values across 840 occurrences in 50 files**. That figure includes false
-  positives — SVG markup and class names match the same shapes — so treat it as
-  a ceiling, not a tally. Largest real offenders: `cookbook-diagnosis-core.js`,
-  `emailLibrary.js`, `chat.js`, `settings.js`, `cookbookRunning.js`, `tasks.js`.
+  and toast helpers, to `setAttribute`, and to `label:` / `title:` / `sub:` /
+  `suggestion:` fields counts **378 distinct values in 45 files**. Treat it as a
+  ceiling, not a tally. Largest offenders: `cookbook-hwfit.js` 31,
+  `tasks.js` 26, `settings.js` 24, `skills.js` 23, `sessions.js` 21,
+  `gallery.js` 18, `modalManager.js` 15. 33 further files hold ≤5 each.
 
-  Two traps in this work, both of which cost real time:
+  Three traps in this work, each of which cost real time:
   - A literal with an embedded English fragment inside a template expression
-    (a ternary branch, a concatenated fragment) does not match a naive
-    literal scan. Six strings that begin with a lowercase letter were missed
-    until a second pass.
-  - Display text parsed back out of a display string is not localisable.
-    `admin.js` and `settings.js` both derived a token-scope name by stripping
-    an English suffix off a label; translating the label would have silently
-    shown the whole label. `tests/token_scope_labels.test.mjs` guards it.
+    (a ternary branch, a concatenated fragment) does not match a naive literal
+    scan. Six strings beginning with a lowercase letter were missed until a
+    second pass.
+  - Display text parsed back out of a display string is not localisable. This
+    repo has **six** instances of one string doing two or three jobs at once —
+    token-scope names in `admin.js` and `settings.js` (English suffix stripped
+    off a label), the compare eval catalog's `sub`/`label`, message-variant
+    `label` in `chat.js`, and the diagnosis `label` in
+    `cookbook-diagnosis-core.js`, which was simultaneously visible text, the
+    argument to an icon classifier, and the left side of an `===` dedupe. All
+    are pinned by the node suites listed under Status.
+  - The scan has a known blind spot: it keys on field *names*, so an object
+    literal using an identifier as the key is missed — `modeLabels = { chat:
+    'Chat' }` in `compare/scoreboard.js` slipped through until it was found by
+    hand, thirty lines below the correct version of the same mapping. There may
+    be more.
+
+  `static/index.html` is still unmeasured. Two earlier attempts at counting it
+  were wrong because the regexes read inline `<script>` bodies as markup. It
+  needs a real parse; `static/login.html` is done.
 
 - **No browser-level test.** Everything above is static analysis or headless
   node. Three real runtime bugs (`esc`, `_cookbookOpeningSpinners`,
@@ -113,9 +128,16 @@ resolve to real exports.
   `setup.py` now accepts both, but a pre-rename `.env` silently configured
   nothing before that. Only the admin vars have a fallback.
 - **Two signing identities.** The 1142 pre-existing commits are signed with SSH
-  key `B5690EEEBB952194`; commits since `9cbc6af` use GPG `E791C5B7A60B5A80`.
-  There is no `allowedSignersFile`, so the older ones verify as `E` (unchecked)
-  rather than `G`. Tag `pre-gpg-sign-20261004` points at the pre-rewrite HEAD.
+  key `B5690EEEBB952194`; commits since `9cbc6af` use GPG `E791C5B7A60B5A80`
+  (chosen deliberately). There is no `allowedSignersFile`, so the older ones
+  verify as `E` (unchecked) rather than `G`. Tag `pre-gpg-sign-20261004` points
+  at the pre-rewrite HEAD and is no longer needed. Note `tag.gpgSign = true` in
+  the global config, which makes a plain `git tag` open an editor.
+- **41 of 80 diagnosis fixes render the generic `default` icon.** The icon
+  classifier recognised 12 English verbs; the other verbs (Check, Lower, Try,
+  Update…) fell through to the lightbulb. This was left as-is on purpose when
+  `kind` became an explicit enum, so no button changes appearance. Adding icons
+  is now trivial and is a design decision, not a refactor.
 
 ### Completed
 - 12 commits fixing runtime bugs, each with a regression test: `/login` 500
