@@ -40,11 +40,12 @@
       "document": "Document",
       "gallery": "Gallery",
       "library": "Library",
-      "new_doc": "",
+      "new_doc": "New document",
       "notes": "Notes",
       "tasks": "Tasks",
       "theme": "Theme",
-      "title": "Tools"
+      "title": "Tools",
+      "documents": "Documents"
     },
     "user": {
       "label": "User",

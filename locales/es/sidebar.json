@@ -40,11 +40,12 @@
       "document": "Documento",
       "gallery": "Galería",
       "library": "Biblioteca",
-      "new_doc": "",
+      "new_doc": "Nuevo documento",
       "notes": "Notas",
       "tasks": "Tareas",
       "theme": "Tema",
-      "title": "Herramientas"
+      "title": "Herramientas",
+      "documents": "Documentos"
     },
     "user": {
       "label": "Usuario",

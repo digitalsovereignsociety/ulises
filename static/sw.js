@@ -25,7 +25,7 @@
 // admin, calendar, cookbookServe, documentLibrary, cookbook-hwfit, tasks, the
 // compare catalog and the diagnosis catalog). Every one of those files is
 // precached, so none of it reached the browser.
-const CACHE_NAME = 'ulises-v338';
+const CACHE_NAME = 'ulises-v339';
 const PRECACHE_DIGEST = '5f22d6b1fe189c0a';
 
 const PRECACHE = [
