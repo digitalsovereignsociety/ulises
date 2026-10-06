@@ -1,19 +1,15 @@
 {
   "voice": {
-    "stt_unavailable": "El servicio STT no está disponible o está configurado en modo navegador",
-    "empty_audio": "Archivo de audio vacío",
-    "transcription_failed": "Transcripción fallida",
-    "tts_cache_cleared": "Caché limpiada",
-    "requiresHttps": "La entrada por voz necesita HTTPS o localhost",
-    "notSupported": "Este navegador no admite entrada por voz",
-    "transcribing": "Transcribiendo…",
-    "noSpeechDetected": "No se detectó voz",
-    "no_speech": "No se transcribió nada",
-    "transcriptionFailed": "Falló la transcripción: {{message}}",
-    "access_denied": "Se denegó el acceso al micrófono",
-    "no_microphone": "No se encontró ningún micrófono",
-    "microphone_error": "Error del micrófono: {{message}}",
-    "recording": "Grabando…",
-    "transcribed": "Transcrito"
+    "access_denied": "Access denied",
+    "microphone_error": "Microphone error {{message}}",
+    "noSpeechDetected": "Nospeechdetected",
+    "no_microphone": "No microphone",
+    "no_speech": "No speech",
+    "notSupported": "Notsupported",
+    "recording": "Recording",
+    "requiresHttps": "Requireshttps",
+    "transcribed": "Transcribed",
+    "transcribing": "Transcribing",
+    "transcriptionFailed": "Transcriptionfailed {{message}}"
   }
 }

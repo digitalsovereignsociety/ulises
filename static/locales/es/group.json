@@ -1,10 +1,10 @@
 {
   "group": {
-    "max8": "Puedes seleccionar como máximo 8 modelos",
-    "max8_models": "Puedes seleccionar como máximo 8 modelos",
-    "need_at_least_2": "Selecciona al menos 2 modelos",
-    "ready": "Grupo listo ({{count}} modelos)",
-    "delete": "Eliminar",
-    "delete_preset": "¿Eliminar el grupo «{{name}}»?"
+    "delete": "Delete",
+    "delete_preset": "Delete preset {{name}}",
+    "max8": "Max8",
+    "max8_models": "Max8 models",
+    "need_at_least_2": "Need at least 2",
+    "ready": "Ready {{count}}"
   }
 }

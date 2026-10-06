@@ -1,5 +1,8 @@
 {
   "tts": {
-    "cache_cleared": "Cache cleared"
+    "cache_cleared": "Cache cleared",
+    "loading": "Loading",
+    "read_aloud": "Read aloud",
+    "stop": "Stop"
   }
 }

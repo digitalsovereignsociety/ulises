@@ -1,0 +1,33 @@
+{
+  "galleryEditor": {
+    "close_edit_tab_first": "Close edit tab first",
+    "copied_to_new_layer": "Copied to new layer",
+    "draft_not_found": "Draft not found",
+    "editor_build_failed": "Editor build failed {msg}",
+    "editor_container_missing": "Editor container missing",
+    "filled": "Filled",
+    "filter_applied": "Filter applied {label}",
+    "invalid_size": "Invalid size",
+    "layer_pixels_selected": "Layer pixels selected",
+    "load_draft_failed": "Load draft failed",
+    "load_failed": "Load failed {msg}",
+    "load_image_failed": "Load image failed",
+    "not_project_file": "Not project file",
+    "nothing_to_save": "Nothing to save",
+    "open_cookbook_img2img": "Open cookbook img2img",
+    "open_cookbook_to_install": "Open cookbook to install {pkg}",
+    "project_loaded": "Project loaded",
+    "project_saved": "Project saved",
+    "resumed_draft": "Resumed draft",
+    "resumed_previous_edit": "Resumed previous edit",
+    "save_failed": "Save failed {msg}",
+    "saved_copy_to_gallery": "Saved copy to gallery {seconds} {size}",
+    "saved_over_original": "Saved over original {seconds} {size}",
+    "select_unlocked_layer": "Select unlocked layer",
+    "selection_added_to_mask": "Selection added to mask",
+    "selection_copied_to_new_layer": "Selection copied to new layer",
+    "selection_deleted": "Selection deleted",
+    "selection_inverted": "Selection inverted",
+    "selection_inverted_wand": "Selection inverted wand"
+  }
+}

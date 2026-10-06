@@ -1,0 +1,6 @@
+{
+  "slashAutocomplete": {
+    "aria_label": "Aria label",
+    "no_match": "No match {query}"
+  }
+}

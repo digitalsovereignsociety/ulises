@@ -1,0 +1,10 @@
+{
+  "group": {
+    "delete": "Delete",
+    "delete_preset": "Delete preset {name}",
+    "max8": "Max8",
+    "max8_models": "Max8 models",
+    "need_at_least_2": "Need at least 2",
+    "ready": "Ready {count}"
+  }
+}

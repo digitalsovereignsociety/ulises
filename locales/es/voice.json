@@ -1,0 +1,15 @@
+{
+  "voice": {
+    "access_denied": "Access denied",
+    "microphone_error": "Microphone error {message}",
+    "noSpeechDetected": "Nospeechdetected",
+    "no_microphone": "No microphone",
+    "no_speech": "No speech",
+    "notSupported": "Notsupported",
+    "recording": "Recording",
+    "requiresHttps": "Requireshttps",
+    "transcribed": "Transcribed",
+    "transcribing": "Transcribing",
+    "transcriptionFailed": "Transcriptionfailed {message}"
+  }
+}

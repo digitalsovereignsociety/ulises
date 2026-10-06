@@ -1,10 +1,10 @@
 {
   "presets": {
-    "delete": "Eliminar",
-    "deleteConfirm": "¿Eliminar «{{name}}»?",
-    "loadFailed": "No se pudieron cargar los preajustes",
-    "personaSaved": "Persona guardada",
-    "promptSaved": "Prompt guardado",
-    "saveFailed": "No se pudo guardar"
+    "delete": "Delete",
+    "deleteConfirm": "Deleteconfirm {{name}}",
+    "loadFailed": "Loadfailed",
+    "personaSaved": "Personasaved",
+    "promptSaved": "Promptsaved",
+    "saveFailed": "Savefailed"
   }
 }

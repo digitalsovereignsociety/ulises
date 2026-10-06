@@ -1,8 +1,8 @@
 {
   "keyboard": {
-    "favorited": "Añadido a favoritos",
-    "unfavorited": "Quitado de favoritos",
-    "unstar_before_delete": "Quítalo de favoritos antes de eliminarlo",
-    "delete_session_confirm": "¿Eliminar esta sesión?"
+    "delete_session_confirm": "Delete session confirm",
+    "favorited": "Favorited",
+    "unfavorited": "Unfavorited",
+    "unstar_before_delete": "Unstar before delete"
   }
 }

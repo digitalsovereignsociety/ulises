@@ -1,10 +1,10 @@
 {
   "modelPicker": {
-    "favorited": "Añadido a favoritos",
-    "unfavorited": "Quitado de favoritos",
-    "using": "Usando {{model}}",
-    "setFailed": "No se pudo actualizar el modelo",
-    "setError": "No se pudo actualizar el modelo: {{error}}",
-    "refreshFailed": "No se pudieron actualizar los modelos"
+    "favorited": "Favorited",
+    "refreshFailed": "Refreshfailed",
+    "setError": "Seterror {{error}}",
+    "setFailed": "Setfailed",
+    "unfavorited": "Unfavorited",
+    "using": "Using {{model}}"
   }
 }

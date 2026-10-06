@@ -1,0 +1,6 @@
+{
+  "wipe": {
+    "failed": "Error al borrar {{kind}}: {{error}}",
+    "unknown_kind": "Tipo de borrado desconocido: {{kind}}"
+  }
+}

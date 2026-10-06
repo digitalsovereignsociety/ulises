@@ -1,0 +1,8 @@
+{
+  "cookbookSchedule": {
+    "couldNotFindPanel": "Couldnotfindpanel",
+    "createdTask": "Created task for {fullName}",
+    "saveFailed": "Savefailed {error}",
+    "save_btn": "Save btn"
+  }
+}

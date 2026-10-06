@@ -1,7 +1,8 @@
 {
   "tts": {
-    "loading": "Cargando…",
-    "stop": "Detener",
-    "read_aloud": "Leer en voz alta"
+    "cache_cleared": "Caché limpiada",
+    "loading": "Loading",
+    "read_aloud": "Read aloud",
+    "stop": "Stop"
   }
 }

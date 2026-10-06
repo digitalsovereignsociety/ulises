@@ -1,8 +1,8 @@
 {
   "workspace": {
-    "cleared": "Espacio de trabajo vaciado",
-    "open_folder_failed": "No se pudo abrir esa carpeta",
-    "browse_failed": "No se pudo explorar esa carpeta",
-    "set": "Espacio de trabajo: {{name}}"
+    "browse_failed": "Browse failed",
+    "cleared": "Cleared",
+    "open_folder_failed": "Open folder failed",
+    "set": "Set {{name}}"
   }
 }

@@ -1,8 +1,8 @@
 {
   "cookbookSchedule": {
-    "couldNotFindPanel": "Could not find where to insert the schedule",
-    "saveFailed": "Could not save the schedule: {{error}}",
-    "createdTask": "Created the task \"{{fullName}}\"",
-    "save_btn": "Save schedule"
+    "couldNotFindPanel": "Couldnotfindpanel",
+    "createdTask": "Created task for {{fullName}}",
+    "saveFailed": "Savefailed {{error}}",
+    "save_btn": "Save btn"
   }
 }

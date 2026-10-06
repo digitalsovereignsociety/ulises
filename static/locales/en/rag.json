@@ -1,19 +1,20 @@
 {
   "rag": {
     "collection_not_initialized": "Collection not initialized",
-    "empty_document_list": "Empty document list",
-    "no_valid_documents": "No valid documents",
-    "no_embedding_accepted": "No embedding lane accepted the batch",
-    "no_docs_found": "No docs found",
-    "removed_chunks": "Removed {{count}} chunks",
-    "loading": "Loading…",
-    "drop_files_hint": "Drop files here",
-    "failed_load_files": "Could not load the files",
-    "remove_from_rag": "Remove from the index",
-    "remove_confirm": "Remove \"{{name}}\" from the index?",
-    "delete_failed": "Could not delete: {{msg}}",
-    "uploading": "Uploading…",
+    "delete_failed": "Delete failed {{msg}}",
     "drop_files_here": "Drop files here",
-    "upload_failed": "Upload failed: {{msg}}"
+    "drop_files_hint": "Drop files hint",
+    "empty_document_list": "Empty document list",
+    "failed_load_files": "Failed load files",
+    "loading": "Loading",
+    "no_docs_found": "No docs found",
+    "no_embedding_accepted": "No embedding lane accepted the batch",
+    "no_owner_rename_needed": "No owner rename needed",
+    "no_valid_documents": "No valid documents",
+    "remove_confirm": "Remove confirm {{name}}",
+    "remove_from_rag": "Remove from rag",
+    "removed_chunks": "Removed {{count}} chunks",
+    "upload_failed": "Upload failed {{msg}}",
+    "uploading": "Uploading"
   }
 }

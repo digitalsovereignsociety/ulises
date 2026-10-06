@@ -1,0 +1,10 @@
+{
+  "modelPicker": {
+    "favorited": "Favorited",
+    "refreshFailed": "Refreshfailed",
+    "setError": "Seterror {error}",
+    "setFailed": "Setfailed",
+    "unfavorited": "Unfavorited",
+    "using": "Using {model}"
+  }
+}

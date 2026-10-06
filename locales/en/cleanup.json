@@ -1,6 +1,6 @@
 {
   "cleanup": {
-    "preview_failed": "Cleanup preview generation failed",
-    "operation_failed": "Cleanup operation failed"
+    "operation_failed": "Cleanup operation failed",
+    "preview_failed": "Cleanup preview generation failed"
   }
 }

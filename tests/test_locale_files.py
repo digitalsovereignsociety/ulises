@@ -41,7 +41,15 @@ def _leaf_keys(obj: dict, prefix: str = "") -> set:
 
 def _interpolation_vars(value: str) -> set:
     import re
-    return set(re.findall(r"\{\{(\w+)\}\}", value))
+    # Match {{var}} (frontend) or {var} (backend .format())
+    matches = re.findall(r"\{\{(\w+)\}\}|\{(\w+)\}", value)
+    result = set()
+    for m in matches:
+        if m[0]:
+            result.add(m[0])
+        elif m[1]:
+            result.add(m[1])
+    return result
 
 
 # --- JSON validity ---

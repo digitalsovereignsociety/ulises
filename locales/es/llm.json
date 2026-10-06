@@ -20,7 +20,7 @@
     "outage": "{provider} está caído (HTTP {status}).",
     "post_failed": "Error POST a {url}: {error}",
     "post_failed_after_retries": "POST {url} falló tras {retries} intentos: {error}",
-    "primary_model_failed": "El modelo principal '{model}' falló",
+    "primary_model_failed": "El modelo principal falló",
     "rate_limited_upstream": "{provider} limitó la velocidad (429).",
     "read_timeout": "Tiempo de espera de lectura agotado",
     "unexpected_schema": "Esquema inesperado de {url}: {data}",

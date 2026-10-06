@@ -1,6 +1,6 @@
 {
   "modalSnap": {
-    "resize_docked": "Arrastra para redimensionar la ventana acoplada",
-    "resize_split": "Arrastra para redimensionar correo y borrador"
+    "resize_docked": "Resize docked",
+    "resize_split": "Resize split"
   }
 }

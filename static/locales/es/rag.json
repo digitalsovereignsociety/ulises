@@ -1,19 +1,20 @@
 {
   "rag": {
     "collection_not_initialized": "Colección no inicializada",
+    "delete_failed": "Delete failed {{msg}}",
+    "drop_files_here": "Drop files here",
+    "drop_files_hint": "Drop files hint",
     "empty_document_list": "Lista de documentos vacía",
-    "no_valid_documents": "No hay documentos válidos",
-    "no_embedding_accepted": "Ningún carril de embedding aceptó el lote",
+    "failed_load_files": "Failed load files",
+    "loading": "Loading",
     "no_docs_found": "No se encontraron documentos",
+    "no_embedding_accepted": "Ningún carril de embedding aceptó el lote",
+    "no_owner_rename_needed": "No es necesario renombrar el propietario",
+    "no_valid_documents": "No hay documentos válidos",
+    "remove_confirm": "Remove confirm {{name}}",
+    "remove_from_rag": "Remove from rag",
     "removed_chunks": "{{count}} fragmentos eliminados",
-    "loading": "Cargando…",
-    "drop_files_hint": "Suelta archivos aquí",
-    "failed_load_files": "No se pudieron cargar los archivos",
-    "remove_from_rag": "Quitar del índice",
-    "remove_confirm": "¿Quitar «{{name}}» del índice?",
-    "delete_failed": "No se pudo eliminar: {{msg}}",
-    "uploading": "Subiendo…",
-    "drop_files_here": "Suelta archivos aquí",
-    "upload_failed": "Falló la subida: {{msg}}"
+    "upload_failed": "Upload failed {{msg}}",
+    "uploading": "Uploading"
   }
 }

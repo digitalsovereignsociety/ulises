@@ -1,11 +1,17 @@
 {
   "assistant": {
-    "not_authenticated": "Not authenticated",
     "cannot_seed": "Cannot seed assistant for {owner}",
+    "checkin_failed": "Checkin failed",
+    "checkin_running": "Checkin running",
+    "could_not_open": "Could not open",
     "could_not_resolve": "Assistant session could not be resolved",
+    "not_assistant_task": "Not an assistant task",
+    "not_authenticated": "Not authenticated",
     "not_available": "Assistant not available",
     "not_found": "Assistant not found",
-    "task_not_found": "Task not found",
-    "not_assistant_task": "Not an assistant task"
+    "save_failed": "Save failed",
+    "session_unavailable": "Session unavailable",
+    "settings_saved": "Settings saved",
+    "task_not_found": "Task not found"
   }
 }

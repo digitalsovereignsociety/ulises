@@ -1,14 +1,17 @@
 {
   "assistant": {
-    "unavailable": "Assistant session unavailable",
-    "could_not_open": "Could not open assistant",
-    "checkin_running": "Check-in running...",
-    "checkin_failed": "Could not run check-in",
-    "saved": "Assistant settings saved",
-    "save_failed": "Save failed",
-    "not_found": "Assistant not found",
+    "cannot_seed": "Cannot seed assistant for {{owner}}",
+    "checkin_failed": "Checkin failed",
+    "checkin_running": "Checkin running",
+    "could_not_open": "Could not open",
+    "could_not_resolve": "Assistant session could not be resolved",
+    "not_assistant_task": "Not an assistant task",
+    "not_authenticated": "Not authenticated",
     "not_available": "Assistant not available",
-    "session_unavailable": "No chat session is available",
-    "settings_saved": "Assistant settings saved"
+    "not_found": "Assistant not found",
+    "save_failed": "Save failed",
+    "session_unavailable": "Session unavailable",
+    "settings_saved": "Settings saved",
+    "task_not_found": "Task not found"
   }
 }

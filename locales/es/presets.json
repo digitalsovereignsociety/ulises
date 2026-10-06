@@ -1,0 +1,10 @@
+{
+  "presets": {
+    "delete": "Delete",
+    "deleteConfirm": "Deleteconfirm {name}",
+    "loadFailed": "Loadfailed",
+    "personaSaved": "Personasaved",
+    "promptSaved": "Promptsaved",
+    "saveFailed": "Savefailed"
+  }
+}

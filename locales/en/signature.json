@@ -1,0 +1,13 @@
+{
+  "signature": {
+    "choose_title": "Choose title",
+    "default_name": "Default name",
+    "delete_confirm": "Delete confirm",
+    "draw_new": "Draw new",
+    "draw_title": "Draw title",
+    "name_placeholder": "Name placeholder",
+    "no_saved": "No saved",
+    "save_failed": "Save failed {msg}",
+    "smoothness": "Smoothness"
+  }
+}

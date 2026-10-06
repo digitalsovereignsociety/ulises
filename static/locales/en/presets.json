@@ -1,10 +1,10 @@
 {
   "presets": {
     "delete": "Delete",
-    "deleteConfirm": "Delete \"{{name}}\"?",
-    "loadFailed": "Could not load the presets",
-    "personaSaved": "Persona saved",
-    "promptSaved": "Prompt saved",
-    "saveFailed": "Could not save"
+    "deleteConfirm": "Deleteconfirm {{name}}",
+    "loadFailed": "Loadfailed",
+    "personaSaved": "Personasaved",
+    "promptSaved": "Promptsaved",
+    "saveFailed": "Savefailed"
   }
 }

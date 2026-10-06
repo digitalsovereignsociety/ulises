@@ -1,7 +1,8 @@
 {
   "search": {
+    "": "Search",
+    "no_results": "No results",
     "query_required": "Query is required",
-    "unknown_provider": "Unknown provider",
-    "no_results": "No results found"
+    "unknown_provider": "Unknown provider"
   }
 }

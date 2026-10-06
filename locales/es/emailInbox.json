@@ -1,0 +1,12 @@
+{
+  "emailInbox": {
+    "aiReplyFailed": "Aireplyfailed {msg}",
+    "couldNotStartNewEmail": "Couldnotstartnewemail",
+    "draftingAiReply": "Draftingaireply",
+    "failedToCreateNewEmail": "Failedtocreatenewemail {status}",
+    "failedToCreateReminder": "Failedtocreatereminder",
+    "failedToCreateReplyDraft": "Failedtocreatereplydraft {status}",
+    "reminderSet": "Reminder set: {fmt}",
+    "replyFailed": "Reply failed: {msg}"
+  }
+}

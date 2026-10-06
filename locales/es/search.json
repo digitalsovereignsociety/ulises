@@ -1,5 +1,7 @@
 {
   "search": {
+    "": "Search",
+    "no_results": "No results",
     "query_required": "La consulta es obligatoria",
     "unknown_provider": "Proveedor desconocido"
   }

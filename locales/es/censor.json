@@ -1,0 +1,6 @@
+{
+  "censor": {
+    "reveal": "Reveal {label}",
+    "reveal_credential": "Reveal credential"
+  }
+}

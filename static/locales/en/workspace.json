@@ -1,8 +1,8 @@
 {
   "workspace": {
-    "cleared": "Workspace cleared",
-    "open_folder_failed": "Could not open that folder",
-    "browse_failed": "Could not browse that folder",
-    "set": "Workspace set to {{name}}"
+    "browse_failed": "Browse failed",
+    "cleared": "Cleared",
+    "open_folder_failed": "Open folder failed",
+    "set": "Set {{name}}"
   }
 }

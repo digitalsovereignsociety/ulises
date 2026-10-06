@@ -1,12 +1,12 @@
 {
   "emailInbox": {
-    "draftingAiReply": "Drafting an AI reply…",
-    "aiReplyFailed": "Could not draft the reply: {{msg}}",
-    "failedToCreateReplyDraft": "Could not create the reply draft (HTTP {{status}})",
-    "replyFailed": "Could not send the reply: {{msg}}",
-    "reminderSet": "Reminder set for {{fmt}}",
-    "failedToCreateReminder": "Could not create the reminder",
-    "couldNotStartNewEmail": "Could not start a new email",
-    "failedToCreateNewEmail": "Could not create the email (HTTP {{status}})"
+    "aiReplyFailed": "Aireplyfailed {{msg}}",
+    "couldNotStartNewEmail": "Couldnotstartnewemail",
+    "draftingAiReply": "Draftingaireply",
+    "failedToCreateNewEmail": "Failedtocreatenewemail {{status}}",
+    "failedToCreateReminder": "Failedtocreatereminder",
+    "failedToCreateReplyDraft": "Failedtocreatereplydraft {{status}}",
+    "reminderSet": "Reminder set: {{fmt}}",
+    "replyFailed": "Reply failed: {{msg}}"
   }
 }

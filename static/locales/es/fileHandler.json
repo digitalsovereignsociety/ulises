@@ -1,6 +1,6 @@
 {
   "fileHandler": {
-    "uploadFailed": "Falló la subida ({{status}}): {{detail}}",
-    "maxFiles": "Puedes adjuntar como máximo {{max}} archivos"
+    "maxFiles": "Maxfiles {{max}}",
+    "uploadFailed": "Upload failed: {{detail}} ({{status}})"
   }
 }

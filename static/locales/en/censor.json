@@ -1,14 +1,6 @@
 {
   "censor": {
-    "reveal": "Click to reveal {{label}}",
-    "reveal_credential": "Click to reveal credential",
-    "label_email": "email",
-    "label_api_key": "API key",
-    "label_token": "token",
-    "label_credential": "credential",
-    "label_private_key": "private key",
-    "label_hash": "hash",
-    "label_jwt": "JWT",
-    "label_internal_ip": "internal IP"
+    "reveal": "Reveal {{label}}",
+    "reveal_credential": "Reveal credential"
   }
 }

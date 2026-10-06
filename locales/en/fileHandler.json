@@ -1,0 +1,6 @@
+{
+  "fileHandler": {
+    "maxFiles": "Maxfiles {max}",
+    "uploadFailed": "Upload failed: {detail} ({status})"
+  }
+}

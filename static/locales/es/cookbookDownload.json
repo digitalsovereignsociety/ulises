@@ -1,12 +1,12 @@
 {
   "cookbookDownload": {
-    "downloading": "Descargando {{taskName}}…",
-    "downloadFailed": "La descarga falló{{error}}",
-    "downloadFailedHttp": "La descarga falló (HTTP {{status}})",
-    "alreadyDownloading": "{{shortName}} ya se está descargando ({{status}})",
-    "queuedDownload": "{{shortName}} se puso en cola detrás de la descarga actual",
-    "revivedDownload": "{{shortName}} se marcó como finalizado tras un reinicio — la descarga se reanudó",
-    "missingGgufSource": "No hay ningún archivo GGUF seleccionado para {{name}}",
-    "presetSaved": "Preajuste guardado"
+    "alreadyDownloading": "Already downloading: {{shortName}} ({{status}})",
+    "downloadFailed": "Downloadfailed {{error}}",
+    "downloadFailedHttp": "Downloadfailedhttp {{status}}",
+    "downloading": "Downloading: {{taskName}}",
+    "missingGgufSource": "Missingggufsource {{name}}",
+    "presetSaved": "Presetsaved",
+    "queuedDownload": "Queued download: {{shortName}}",
+    "revivedDownload": "Revived download: {{shortName}}"
   }
 }

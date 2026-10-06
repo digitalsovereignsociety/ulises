@@ -1,0 +1,17 @@
+{
+  "markdown": {
+    "add_endpoint_failed": "Add endpoint failed {msg}",
+    "add_endpoint_title": "Add endpoint title",
+    "add_to_picker": "Add to picker",
+    "added": "Added",
+    "adding": "Adding",
+    "already_added": "Already added",
+    "already_in_picker": "Already in picker {name}",
+    "endpoint_added": "Endpoint added {name}",
+    "hide": "Hide",
+    "model_endpoint": "Model endpoint",
+    "task_completed": "Task completed",
+    "view": "View",
+    "view_thinking_process": "View thinking process"
+  }
+}
