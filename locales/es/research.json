@@ -38,6 +38,20 @@
     "standard": "Standard",
     "starting": "Starting",
     "untitled": "Untitled",
-    "update_failed": "Error al actualizar la investigación: {error}"
+    "update_failed": "Error al actualizar la investigación: {error}",
+    "panel_description": "Investigación web multi-paso con un agente LLM en el bucle",
+    "past_runs_hint": "ejecuciones anteriores en Biblioteca, Investigación",
+    "rounds_label": "Rondas",
+    "rounds_help": "Cuántas rondas de buscar → leer → reflexionar ejecuta el agente. Más rondas = cobertura más profunda, espera más larga, más tokens.",
+    "format_label": "Formato",
+    "format_help": "Auto permite al LLM elegir la forma de salida. Anula cuando quieras específicamente una tabla Comparar, Cómo hacer, Producto o Verificación de hechos.",
+    "search_engine_label": "Motor de búsqueda",
+    "endpoint_label": "Endpoint",
+    "model_label": "Modelo",
+    "queue_btn": "Encolar",
+    "start_btn": "Iniciar",
+    "photos_label": "Fotos",
+    "albums_label": "Álbumes",
+    "edit_btn": "Editar"
   }
 }

@@ -6,7 +6,7 @@ import themeModule from '../theme.js';
 import createResearchSynapse from '../researchSynapse.js';
 import spinnerModule from '../spinner.js';
 import { sortModelIds } from '../modelSort.js';
-import { t } from '../i18n.js';
+import { t, reapply } from '../i18n.js';
 
 // Rotating research textarea placeholders — pick one at random each
 // time the panel is rendered so the example keeps feeling fresh.
@@ -273,6 +273,7 @@ export function openPanel(focusJobId) {
 
   overlay.appendChild(pane);
   document.body.appendChild(overlay);
+  reapply(pane);
 
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) closePanel();
@@ -367,11 +368,11 @@ function _buildPanelHTML() {
     <div class="modal-body research-pane-body" data-no-swipe-dismiss>
       <div class="research-new-job">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
-          <h2 style="margin:0;padding:0;line-height:1;display:inline-flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent, var(--red))" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h4v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg>Research <span id="research-stats" class="memory-count" style="font-size:0.6em;opacity:0.6;font-weight:normal"></span></h2>
+          <h2 style="margin:0;padding:0;line-height:1;display:inline-flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent, var(--red))" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h4v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg><span data-i18n="sidebar.tools.deep_research">Research</span> <span id="research-stats" class="memory-count" style="font-size:0.6em;opacity:0.6;font-weight:normal"></span></h2>
         </div>
         <p class="memory-desc doclib-desc" style="margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-          <span>Multi-step web research with an LLM-in-the-loop agent</span>
-          <span id="research-no-past-hint" style="display:none;font:inherit;opacity:1;position:static;">— past runs in <button type="button" class="research-library-link" style="background:none;border:none;padding:0;font:inherit;color:var(--accent, var(--red));cursor:pointer;text-decoration:underline;">Library, Research</button></span>
+          <span data-i18n="research.panel_description">Multi-step web research with an LLM-in-the-loop agent</span>
+          <span id="research-no-past-hint" style="display:none;font:inherit;opacity:1;position:static;"><span data-i18n="research.past_runs_hint">— past runs in</span> <button type="button" class="research-library-link" style="background:none;border:none;padding:0;font:inherit;color:var(--accent, var(--red));cursor:pointer;text-decoration:underline;">Library, Research</button></span>
         </p>
         <textarea id="research-query" class="research-query" placeholder="${_pickResearchHint()}" rows="4"></textarea>
         <button id="research-settings-toggle" class="research-settings-toggle${chevronCls}">
@@ -379,11 +380,11 @@ function _buildPanelHTML() {
         </button>
         <div id="research-settings-body" class="research-settings-row"${settingsHidden}>
           <label class="research-setting">
-            <span class="research-setting-label">Rounds <span class="hwfit-help-chip hwfit-help-chip-inline" title="How many search → read → reflect rounds the agent runs. More rounds = deeper coverage, longer wait, more tokens.">?</span></span>
+            <span class="research-setting-label" data-i18n="research.rounds_label">Rounds <span class="hwfit-help-chip hwfit-help-chip-inline" title="How many search → read → reflect rounds the agent runs. More rounds = deeper coverage, longer wait, more tokens.">?</span></span>
             <select id="research-rounds">${roundOpts}</select>
           </label>
           <label class="research-setting">
-            <span class="research-setting-label">Format <span class="hwfit-help-chip hwfit-help-chip-inline" title="Auto lets the LLM pick the output shape. Override when you specifically want a Compare table, How-to, Product, or Fact-check.">?</span></span>
+            <span class="research-setting-label" data-i18n="research.format_label">Format <span class="hwfit-help-chip hwfit-help-chip-inline" title="Auto lets the LLM pick the output shape. Override when you specifically want a Compare table, How-to, Product, or Fact-check.">?</span></span>
             <select id="research-category">
               <option value="" selected>Auto</option>
               <option value="product">Product</option>
@@ -393,21 +394,21 @@ function _buildPanelHTML() {
             </select>
           </label>
           <label class="research-setting">
-            <span class="research-setting-label">Search engine</span>
+            <span class="research-setting-label" data-i18n="research.search_engine_label">Search engine</span>
             <select id="research-search-provider">${providerOpts}</select>
           </label>
           <label class="research-setting">
-            <span class="research-setting-label">Endpoint</span>
+            <span class="research-setting-label" data-i18n="research.endpoint_label">Endpoint</span>
             <select id="research-endpoint"><option value="">Default</option></select>
           </label>
           <label class="research-setting">
-            <span class="research-setting-label">Model</span>
+            <span class="research-setting-label" data-i18n="research.model_label">Model</span>
             <select id="research-model"><option value="">Default</option></select>
           </label>
         </div>
         <div class="research-controls-row">
-          <button id="research-add-btn" class="research-add-btn"><span class="research-add-plus">+</span> Queue</button>
-          <button id="research-start-btn" class="research-start-btn">${_playIcon} Start</button>
+          <button id="research-add-btn" class="research-add-btn"><span class="research-add-plus">+</span> <span data-i18n="research.queue_btn">Queue</span></button>
+          <button id="research-start-btn" class="research-start-btn">${_playIcon} <span data-i18n="research.start_btn">Start</span></button>
         </div>
       </div>
       <div id="research-jobs-list" class="research-jobs-list" data-no-swipe-dismiss></div>

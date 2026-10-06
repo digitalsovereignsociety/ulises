@@ -38,6 +38,20 @@
     "standard": "Standard",
     "starting": "Starting",
     "untitled": "Untitled",
-    "update_failed": "Failed to update research: {error}"
+    "update_failed": "Failed to update research: {error}",
+    "panel_description": "Multi-step web research with an LLM-in-the-loop agent",
+    "past_runs_hint": "past runs in Library, Research",
+    "rounds_label": "Rounds",
+    "rounds_help": "How many search → read → reflect rounds the agent runs. More rounds = deeper coverage, longer wait, more tokens.",
+    "format_label": "Format",
+    "format_help": "Auto lets the LLM pick the output shape. Override when you specifically want a Compare table, How-to, Product, or Fact-check.",
+    "search_engine_label": "Search engine",
+    "endpoint_label": "Endpoint",
+    "model_label": "Model",
+    "queue_btn": "Queue",
+    "start_btn": "Start",
+    "photos_label": "Photos",
+    "albums_label": "Albums",
+    "edit_btn": "Edit"
   }
 }
