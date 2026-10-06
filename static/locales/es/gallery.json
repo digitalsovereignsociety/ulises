@@ -8,8 +8,8 @@
     "album_deleted": "Álbum eliminado",
     "album_options": "Opciones del álbum",
     "album_renamed": "Álbum renombrado",
-    "bulk_all": "Todas",
-    "bulk_selected": "{{count}} seleccionadas",
+    "bulk_all": "Todos",
+    "bulk_selected": "{count} seleccionados",
     "cancel": "Cancelar",
     "cancelling": "Cancelando",
     "clear_ai_tags_failed": "Error al borrar etiquetas de IA {{msg}}",
@@ -77,6 +77,14 @@
     "upload_label": "Subir",
     "upload_photos": "Subir fotos o videos",
     "zipping_photos": "Zipping photos {{count}}",
-    "tagging_failed_suffix": "[gallery.tagging_failed_suffix]"
+    "tagging_failed_suffix": "[gallery.tagging_failed_suffix]",
+    "settings_tab": "Ajustes",
+    "search_placeholder": "Buscar fotos, etiquetas...",
+    "to_tag": "para etiquetar",
+    "all_sources": "Todas las fuentes",
+    "random": "Aleatorio",
+    "recent": "Reciente",
+    "oldest": "Más antiguo",
+    "all": "Todos"
   }
 }

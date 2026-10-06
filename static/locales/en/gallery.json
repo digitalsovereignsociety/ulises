@@ -9,7 +9,7 @@
     "album_options": "Album options",
     "album_renamed": "Album renamed",
     "bulk_all": "All",
-    "bulk_selected": "{{count}} selected",
+    "bulk_selected": "{count} selected",
     "cancel": "Cancel",
     "cancelling": "Cancelling",
     "clear_ai_tags_failed": "Clear ai tags failed {{msg}}",
@@ -77,6 +77,14 @@
     "upload_label": "Upload",
     "upload_photos": "Upload photos or videos",
     "zipping_photos": "Zipping photos {{count}}",
-    "tagging_failed_suffix": "[gallery.tagging_failed_suffix]"
+    "tagging_failed_suffix": "[gallery.tagging_failed_suffix]",
+    "settings_tab": "Settings",
+    "search_placeholder": "Search photos, tags...",
+    "to_tag": "to tag",
+    "all_sources": "All sources",
+    "random": "Random",
+    "recent": "Recent",
+    "oldest": "Oldest",
+    "all": "All"
   }
 }

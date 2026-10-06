@@ -76,6 +76,14 @@
     "update_album_failed": "Update album failed",
     "upload_label": "Upload",
     "upload_photos": "Upload photos or videos",
-    "zipping_photos": "Zipping photos {count}"
+    "zipping_photos": "Zipping photos {count}",
+    "settings_tab": "Settings",
+    "search_placeholder": "Search photos, tags...",
+    "to_tag": "to tag",
+    "all_sources": "All sources",
+    "random": "Random",
+    "recent": "Recent",
+    "oldest": "Oldest",
+    "all": "All"
   }
 }

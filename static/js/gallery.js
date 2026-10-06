@@ -1947,7 +1947,7 @@ export function openGallery() {
         </button>
         <button class="gallery-tab" data-tab="settings">
           <span class="gallery-tab-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
-          <span class="gallery-tab-label">Settings</span>
+          <span class="gallery-tab-label" data-i18n="gallery.settings_tab">Settings</span>
         </button>
       </div>
       <div class="modal-body">
@@ -1962,24 +1962,24 @@ export function openGallery() {
         <div class="gallery-album-chips gallery-people-chips" id="gallery-people-chips" style="display:none"></div>
         <div class="gallery-toolbar">
           <div class="gallery-search-wrap">
-            <input type="text" class="gallery-search" id="gallery-search" placeholder="Search photos, tags..." />
-            <span class="gallery-search-enter-hint" aria-hidden="true"><svg class="gallery-enter-key" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg>to tag</span>
+            <input type="text" class="gallery-search" id="gallery-search" data-i18n-placeholder="gallery.search_placeholder" />
+            <span class="gallery-search-enter-hint" aria-hidden="true"><svg class="gallery-enter-key" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg><span data-i18n="gallery.to_tag">to tag</span></span>
           </div>
           <span class="gallery-toolbar-break" aria-hidden="true"></span>
           <select class="gallery-model-filter" id="gallery-model-filter">
-            <option value="">All sources</option>
+            <option value="" data-i18n="gallery.all_sources">All sources</option>
           </select>
           <select class="gallery-sort" id="gallery-sort">
-            <option value="shuffle"${_sort === 'shuffle' ? ' selected' : ''}>Random</option>
-            <option value="recent"${_sort === 'recent' ? ' selected' : ''}>Recent</option>
-            <option value="oldest"${_sort === 'oldest' ? ' selected' : ''}>Oldest</option>
+            <option value="shuffle"${_sort === 'shuffle' ? ' selected' : ''} data-i18n="gallery.random">Random</option>
+            <option value="recent"${_sort === 'recent' ? ' selected' : ''} data-i18n="gallery.recent">Recent</option>
+            <option value="oldest"${_sort === 'oldest' ? ' selected' : ''} data-i18n="gallery.oldest">Oldest</option>
           </select>
-          <button class="gallery-select-btn gallery-toolbar-action" id="gallery-select-btn" title="Select for bulk actions"><span style="position:relative;top:1px;">Select</span></button>
+          <button class="gallery-select-btn gallery-toolbar-action" id="gallery-select-btn" title="Select for bulk actions"><span style="position:relative;top:1px;" data-i18n="gallery.select">Select</span></button>
         </div>
         <div class="gallery-album-chips" id="gallery-filter-chips" style="margin-top:0;"></div>
         <div class="memory-bulk-bar hidden" id="gallery-bulk-bar" style="margin-bottom:4px;">
-          <label class="memory-bulk-check-all" style="position:relative;top:-1px;"><input type="checkbox" id="gallery-bulk-select-all"> All</label>
-          <span id="gallery-bulk-count" style="position:relative;top:-1px;">0 selected</span>
+          <label class="memory-bulk-check-all" style="position:relative;top:-1px;"><input type="checkbox" id="gallery-bulk-select-all" data-i18n="gallery.bulk_all"> <span data-i18n="gallery.all">All</span></label>
+          <span id="gallery-bulk-count" style="position:relative;top:-1px;" data-i18n="gallery.bulk_selected">0 selected</span>
           <button class="memory-toolbar-btn" id="gallery-bulk-actions" style="position:relative;top:-3px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:3px;"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Actions <span style="opacity:0.55;font-size:9px;">▼</span></button>
           <button class="memory-toolbar-btn" id="gallery-bulk-cancel" title="Cancel (Esc)" style="margin-left:4px;padding:3px 6px;position:relative;top:-3px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
