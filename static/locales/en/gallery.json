@@ -85,6 +85,9 @@
     "random": "Random",
     "recent": "Recent",
     "oldest": "Oldest",
-    "all": "All"
+    "all": "All",
+    "photos_tab": "Photos",
+    "albums_tab": "Albums",
+    "edit_tab": "Edit"
   }
 }

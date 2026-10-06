@@ -44,7 +44,7 @@
     "no_albums_match": "Ningún álbum coincide con \"{q}\"",
     "no_images_in_drop": "No hay imágenes en el elemento soltado",
     "no_images_or_videos": "No hay imágenes ni videos",
-    "no_photos_yet": "Sin fotos todavía. Clic en Subir o arrastra archivos.",
+    "no_photos_yet": "No hay fotos aún. Haz clic en Subir o arrastra y suelta para comenzar.",
     "no_untagged_photos": "No untagged photos {scope}",
     "open_editor_failed": "Open editor failed {msg}",
     "options": "Opciones",
@@ -84,6 +84,9 @@
     "random": "Aleatorio",
     "recent": "Reciente",
     "oldest": "Más antiguo",
-    "all": "Todos"
+    "all": "Todos",
+    "photos_tab": "Fotos",
+    "albums_tab": "Álbumes",
+    "edit_tab": "Editar"
   }
 }
