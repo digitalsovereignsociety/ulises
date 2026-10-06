@@ -2016,6 +2016,7 @@ export function openGallery() {
     </div>
   `;
   document.body.appendChild(modal);
+  reapply(modal);
   Modals.register('gallery-modal', {
     railBtnId: 'rail-gallery',
     sidebarBtnId: 'tool-gallery-btn',
