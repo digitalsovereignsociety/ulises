@@ -848,7 +848,7 @@ function _headerHTML() {
     <div class="cal-toolbar-nav">
       <button class="cal-nav" id="cal-prev">&larr;</button>
       <button class="cal-nav cal-today-btn" id="cal-today" data-i18n="calendar.today">Today</button>
-      <span class="cal-title">${_view === 'agenda' ? '<span data-i18n="calendar.upcoming">Upcoming</span>' : MONTHS[_currentDate.getMonth()] + ' ' + _currentDate.getFullYear()}${weekSuffix}</span>
+      <span class="cal-title">${_view === 'agenda' ? '<span data-i18n="calendar.upcoming">Upcoming</span>' : t('calendar.month_' + _currentDate.getMonth()) + ' ' + _currentDate.getFullYear()}${weekSuffix}</span>
       <button class="cal-nav" id="cal-next">&rarr;</button>
     </div>
     <div class="cal-toolbar-right">
@@ -871,7 +871,7 @@ function _headerHTML() {
       placeholder=" "
       autocomplete="off"
     />
-    <span class="cal-quickadd-hint" id="cal-quickadd-hint" aria-hidden="true"><span class="qa-hint-accent">Quick add</span> — <span class="qa-hint-example" id="qa-hint-example">return home to Ithaca 1pm tmrw</span> <svg class="qa-hint-enter" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg></span>
+    <span class="cal-quickadd-hint" id="cal-quickadd-hint" aria-hidden="true"><span class="qa-hint-accent" data-i18n="calendar.quick_add">Quick add</span> — <span class="qa-hint-example" id="qa-hint-example">return home to Ithaca 1pm tmrw</span> <svg class="qa-hint-enter" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg></span>
     <span class="cal-quickadd-status" id="cal-quickadd-status"></span>
   </div>`;
 }
@@ -955,7 +955,8 @@ async function _renderMonth() {
   _slideDir = 0;
   let h = _headerHTML() + _filtersRowHTML() + `<div class="cal-grid${slideClass}">`;
   h += '<div class="cal-week-headers">';
-  for (const wd of (_weekStartSun ? WEEKDAYS_SUN : WEEKDAYS)) h += `<div class="cal-weekday">${wd}</div>`;
+  const _wd = _weekStartSun ? WEEKDAYS_SUN : WEEKDAYS;
+  for (let i = 0; i < _wd.length; i++) h += `<div class="cal-weekday" data-i18n="calendar.day_${i}">${_wd[i]}</div>`;
   h += '</div>';
 
   const first = new Date(y, m, 1);
@@ -1233,7 +1234,7 @@ async function _renderWeek() {
 
     const isSun = d.getDay() === 0;
     colsHtml += `<div class="cal-wk-col${isToday ? ' cal-wk-today' : ''}${isSun && !_weekStartSun ? ' cal-wk-sun' : ''}" data-date="${ds}">`;
-    colsHtml += `<div class="cal-wk-col-head"><span class="cal-wk-dn">${(_weekStartSun ? WEEKDAYS_SUN : WEEKDAYS)[idx]}</span><span class="cal-wk-dt">${d.getDate()}</span></div>`;
+     colsHtml += `<div class="cal-wk-col-head"><span class="cal-wk-dn" data-i18n="calendar.day_${_weekStartSun ? (idx + 1) % 7 : idx}">${(_weekStartSun ? WEEKDAYS_SUN : WEEKDAYS)[idx]}</span><span class="cal-wk-dt">${d.getDate()}</span></div>`;
     // All-day strip
     colsHtml += `<div class="cal-wk-allday">`;
     for (const ev of allDayEvents) {
@@ -1753,9 +1754,9 @@ async function _renderYear() {
 
   let h = _headerHTML() + _filtersRowHTML() + '<div class="cal-year">';
   for (let m = 0; m < 12; m++) {
-    h += `<div class="cal-year-month" data-month="${m}"><div class="cal-year-month-title">${MON_SHORT[m]}</div>`;
+    h += `<div class="cal-year-month" data-month="${m}"><div class="cal-year-month-title" data-i18n="calendar.mon_short_${m}">${MON_SHORT[m]}</div>`;
     h += '<div class="cal-year-grid">';
-    for (const wd of (_weekStartSun ? ['S','M','T','W','T','F','S'] : ['M','T','W','T','F','S','S'])) h += `<div class="cal-year-wd">${wd}</div>`;
+    for (let i = 0; i < 7; i++) h += `<div class="cal-year-wd" data-i18n="calendar.day_${_weekStartSun ? (i + 1) % 7 : i}">${_weekStartSun ? ['S','M','T','W','T','F','S'][i] : ['M','T','W','T','F','S','S'][i]}</div>`;
     const first = new Date(y, m, 1);
     const dow = _weekStartSun ? first.getDay() : (first.getDay() + 6) % 7;
     const daysInMonth = new Date(y, m + 1, 0).getDate();
@@ -1810,7 +1811,7 @@ function _dayDetailHTML(dateStr) {
   // Magnifying-glass icon inside the search field via a wrapper + padding-left.
   const searchInput = `<div class="cal-search-wrap">
     <svg class="cal-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
-    <input type="search" class="cal-search-input cal-day-search" id="cal-search" placeholder="Search all events…" value="${_e(_searchQuery)}" />
+    <input type="search" class="cal-search-input cal-day-search" id="cal-search" data-i18n-placeholder="calendar.search_placeholder" placeholder="Search all events…" value="${_e(_searchQuery)}" />
   </div>`;
   let h = `<div class="cal-splitter" role="separator" aria-orientation="horizontal" tabindex="0" title="Drag to resize"><div class="cal-splitter-grip"></div></div>
     <div class="cal-day-detail">
