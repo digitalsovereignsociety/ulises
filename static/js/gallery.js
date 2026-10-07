@@ -4,7 +4,7 @@
 
 import uiModule from './ui.js';
 import { openEditor, closeEditor, isEditorOpen } from './galleryEditor.js';
-import { reapply } from './i18n.js';
+import { reapply, whenReady as i18nReady } from './i18n.js';
 import spinnerModule from './spinner.js';
 import { makeWindowDraggable } from './windowDrag.js';
 import { API_BASE } from './apiBase.js';
@@ -365,12 +365,13 @@ function _renderTags(tags) {
 function _renderModels(models) {
   const sel = document.getElementById('gallery-model-filter');
   if (!sel) return;
-  let html = '<option value="">All sources</option>';
+  let html = '<option value="" data-i18n="gallery.all_sources">All sources</option>';
   models.forEach(m => {
     const selected = _activeModel === m ? ' selected' : '';
     html += `<option value="${_esc(m)}"${selected}>${_esc(m)}</option>`;
   });
   sel.innerHTML = html;
+  i18n.reapply(sel);
 }
 
 function _renderAlbums() {
@@ -467,6 +468,7 @@ function _ensureAlbumsToolbar(container) {
     </div>
     <div id="gallery-albums-grid-wrap"></div>
   `;
+  i18n.reapply(container);
 
   // Wire search — debounced re-render, same pattern as Photos.
   const searchInput = container.querySelector('#gallery-albums-search');
@@ -1092,28 +1094,28 @@ function _renderEditorLanding() {
   container.innerHTML = `
     <div class="gallery-editor-landing">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.6"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
-      <h3>Image Editor <span class="ge-alpha-tag">Alpha</span></h3>
-      <p>Start a blank canvas, or open a photo from your gallery to edit it.</p>
+      <h3><span data-i18n="gallery.editor_title">Image Editor</span> <span class="ge-alpha-tag" data-i18n="gallery.editor_alpha">Alpha</span></h3>
+      <p data-i18n="gallery.editor_start_blank">Start a blank canvas, or open a photo from your gallery to edit it.</p>
       <div class="gallery-editor-landing-actions">
-        <button class="gallery-select-btn" id="gallery-editor-new">New canvas...</button>
-        <button class="gallery-select-btn" id="gallery-editor-pick">Browse photos</button>
+        <button class="gallery-select-btn" id="gallery-editor-new" data-i18n="gallery.editor_new_canvas">New canvas...</button>
+        <button class="gallery-select-btn" id="gallery-editor-pick" data-i18n="gallery.editor_browse_photos">Browse photos</button>
       </div>
       <label class="gallery-editor-template-label">
-        Or pick a template
+        <span data-i18n="gallery.editor_pick_template">Or pick a template</span>
         <select class="gallery-editor-template-select" id="gallery-editor-template">
-          <option value="">Select a size…</option>
+          <option value="" data-i18n="gallery.editor_select_size">Select a size…</option>
           ${optionsHtml}
         </select>
       </label>
       <div class="gallery-editor-drafts" id="gallery-editor-drafts" hidden>
         <div class="gallery-editor-drafts-header">
-          <h4 class="gallery-editor-drafts-title">Saved projects</h4>
-          <input type="search" class="gallery-editor-drafts-search" id="gallery-editor-drafts-search" placeholder="Search projects…" autocomplete="off" />
-          <button class="gallery-select-btn" id="gallery-editor-drafts-select" title="Toggle multi-select">Select</button>
+           <h4 class="gallery-editor-drafts-title" data-i18n="gallery.editor_saved_projects">Saved projects</h4>
+           <input type="search" class="gallery-editor-drafts-search" id="gallery-editor-drafts-search" data-i18n-placeholder="gallery.editor_search_projects" autocomplete="off" />
+           <button class="gallery-select-btn" id="gallery-editor-drafts-select" title="Toggle multi-select" data-i18n="gallery.editor_select">Select</button>
         </div>
         <div class="gallery-bulk-bar hidden" id="gallery-editor-drafts-bulk">
-          <label class="memory-bulk-check-all"><input type="checkbox" id="gallery-editor-drafts-select-all"> All</label>
-          <span class="gallery-bulk-count" id="gallery-editor-drafts-bulk-count">0 selected</span>
+          <label class="memory-bulk-check-all"><input type="checkbox" id="gallery-editor-drafts-select-all"> <span data-i18n="gallery.all">All</span></label>
+          <span class="gallery-bulk-count" id="gallery-editor-drafts-bulk-count" data-i18n="gallery.bulk_selected">0 selected</span>
           <button class="gallery-bulk-delete" id="gallery-editor-drafts-bulk-delete"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:3px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>Delete selected</button>
           <button class="memory-toolbar-btn" id="gallery-editor-drafts-bulk-cancel" title="Cancel (Esc)" style="margin-left:4px;padding:3px 6px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
@@ -1193,6 +1195,7 @@ function _renderGrid() {
     grid.innerHTML = uploadTile + `<div class="gallery-empty" data-i18n="gallery.no_photos_yet">${t('gallery.no_photos_yet')}</div>`;
     _wireUploadTile();
     if (loadMore) loadMore.style.display = 'none';
+    i18n.reapply(grid);
     return;
   }
 
@@ -1893,15 +1896,16 @@ function _makeGalleryDraggable(content) {
 // Re-export the manager for the rail click handler
 import * as Modals from './modalManager.js';
 
-export function openGallery() {
-  // If already minimized — restore in place, preserve all state
+export async function openGallery() {
   if (Modals.isRegistered('gallery-modal') && Modals.isMinimized('gallery-modal')) {
     Modals.restore('gallery-modal');
+    const modal = document.getElementById('gallery-modal');
+    if (modal) reapply(modal);
     return;
   }
   if (_open) return;
   _open = true;
-  _galleryCascaded = false;   // replay the domino-in cascade on each open
+  _galleryCascaded = false;
   let _freshChatUpload = false;
   try {
     const ts = Number(localStorage.getItem('gallery-fresh-chat-upload') || '0');
@@ -1909,26 +1913,19 @@ export function openGallery() {
     if (_freshChatUpload) localStorage.removeItem('gallery-fresh-chat-upload');
   } catch (_) {}
   if (_freshChatUpload) _sort = 'recent';
-  // State is preserved across close/reopen — filters, album, sort, items,
-  // albums, people — so reopening the gallery feels instant. Use the search
-  // input or "All" chip to clear the active filter.
-  // Exception: when sort is shuffle, regenerate the seed every open so the
-  // user gets a fresh order each visit (the whole point of shuffle). Also
-  // CLEAR the cached items so the user doesn't see the stale random order
-  // flash up and then swap to the new order when the fetch resolves —
-  // skeletons during the brief refetch read as intentional, the swap doesn't.
   if (_sort === 'shuffle') {
     _shuffleSeed = Math.floor(Math.random() * 2 ** 31);
     _items = [];
   }
 
+  await i18nReady();
   const modal = document.createElement('div');
   modal.className = 'modal';
   modal.id = 'gallery-modal';
   modal.innerHTML = `
     <div class="modal-content gallery-modal-content">
       <div class="modal-header">
-        <h4><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>Gallery <span id="gallery-stats" class="memory-count" style="font-size:0.6em;opacity:0.6;font-weight:normal;margin-left:8px"></span></h4>
+         <h4><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span data-i18n="gallery.gallery_title">Gallery</span> <span id="gallery-stats" class="memory-count" style="font-size:0.6em;opacity:0.6;font-weight:normal;margin-left:8px"></span></h4>
         <button class="modal-close" id="gallery-close">&times;</button>
       </div>
       <div class="gallery-tabs">
@@ -2366,8 +2363,8 @@ export function openGallery() {
       if (clearAiTagsBtn.disabled) return;
       if (moreMenu) { moreMenu.hidden = true; moreMenu.style.display = 'none'; }
       if (!await uiModule.styledConfirm(
-        'Remove all AI-generated tags from every photo? Your own tags are kept.',
-        { confirmText: 'Clear AI Tags', danger: true }
+        t('gallery.clear_ai_tags_confirm'),
+        { confirmText: t('gallery.clear_ai_tags_button'), danger: true }
       )) return;
       clearAiTagsBtn.disabled = true;
       try {

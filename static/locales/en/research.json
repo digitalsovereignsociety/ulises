@@ -52,6 +52,17 @@
     "start_btn": "Start",
     "photos_label": "Photos",
     "albums_label": "Albums",
-    "edit_btn": "Edit"
+    "edit_btn": "Edit",
+    "title": "Deep Research",
+    "query_hint_1": "e.g. Trace Ulises's ten-year journey home from Troy — every island, monster, and detour, and why each one cost him",
+    "query_hint_2": "e.g. Compare Rust and Go for building a high-throughput web API in 2026",
+    "query_hint_3": "e.g. Fact-check whether honey actually never spoils",
+    "query_hint_4": "e.g. How to roast a duck so the skin stays crispy",
+    "query_hint_5": "e.g. The collapse of Bronze Age civilizations — leading theories and the evidence behind each",
+    "query_hint_6": "e.g. Best M.2 NVMe SSDs under $200 for a home AI workstation",
+    "query_hint_7": "e.g. Why do cats knead with their paws? Cover the leading behavioural explanations",
+    "query_hint_8": "e.g. Side effects and benefits of long-term creatine supplementation",
+    "query_hint_9": "e.g. How does end-to-end encryption work in Signal, step by step",
+    "query_hint_10": "e.g. The history of the printing press in East Asia, 700 CE → 1600 CE"
   }
 }

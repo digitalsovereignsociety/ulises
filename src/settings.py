@@ -184,7 +184,7 @@ DEFAULT_SETTINGS = {
         "NOT urgent."
     ),
     # Keyboard shortcuts (action: key combination)
-    "app_language": "en",
+    "app_language": "",
     "keybinds": {
         "search": "ctrl+k",
         "toggle_sidebar": "ctrl+b",

@@ -94,6 +94,19 @@
     "ai_tagging_desc": "Etiqueta fotos automáticamente por contenido con tu {vision_model}. Tus propias etiquetas se conservan.",
     "vision_model": "modelo de visión",
     "clear_ai_tags": "Limpiar etiquetas IA",
-    "start_ai_tag": "Iniciar etiquetado IA"
+    "start_ai_tag": "Iniciar etiquetado IA",
+    "clear_ai_tags_confirm": "¿Borrar todas las etiquetas IA? Las tuyas se mantienen.",
+    "editor_title": "Editor de imágenes",
+    "editor_alpha": "Alpha",
+    "editor_start_blank": "Empieza con un lienzo en blanco, o abre una foto de tu galería para editarla.",
+    "editor_new_canvas": "Nuevo lienzo…",
+    "editor_browse_photos": "Explorar fotos",
+    "editor_pick_template": "O elige una plantilla",
+    "editor_select_size": "Elige un tamaño…",
+    "editor_saved_projects": "Proyectos guardados",
+    "editor_search_projects": "Buscar proyectos…",
+    "editor_select": "Seleccionar",
+    "gallery_title": "Galería",
+    "clear_ai_tags_button": "Limpiar etiquetas IA"
   }
 }

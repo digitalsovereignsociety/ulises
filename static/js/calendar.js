@@ -618,6 +618,7 @@ function _getModal() {
   document.body.appendChild(_modal);
   _modal.querySelector('#cal-close').addEventListener('click', closeCalendar);
   _modal.addEventListener('click', (e) => { if (e.target === _modal) closeCalendar(); });
+  reapply(_modal);
   // Make draggable — replaced ~50 lines of inline drag/dock plumbing with
   // a single call to the shared helper. Calendar doesn't support fullscreen
   // snap so no fsClass / enter/exit callbacks here.
@@ -825,6 +826,7 @@ function _renderEmpty() {
       if (tab) tab.click();
     }
   });
+  reapply(body);
 }
 
 // ── Header + Filters (shared) ──
@@ -1100,6 +1102,7 @@ async function _renderMonth() {
   }
   _wireAll(body);
   _updateBadge();
+  reapply(body);
 }
 
 // ── Week View ──
@@ -1562,6 +1565,7 @@ async function _renderWeek() {
   }, { passive: false });
 
   _updateBadge();
+  reapply(body);
 }
 
 function _showEventFormForRange(ds, startHHMM, endHHMM) {
@@ -1678,6 +1682,7 @@ async function _renderAgenda() {
     _showEventForm(null);
   });
   _updateBadge();
+  reapply(body);
 }
 
 // ── Search View ──
@@ -1732,6 +1737,7 @@ async function _renderSearch() {
     searchInput.focus();
     searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
   }
+  reapply(body);
 }
 
 // ── Year View ──
@@ -1792,6 +1798,7 @@ async function _renderYear() {
     });
   });
   _updateBadge();
+  reapply(body);
 }
 
 // ── Shared HTML builders ──
@@ -2527,6 +2534,7 @@ async function _showCalSettings() {
     </div>
   `;
   document.body.appendChild(overlay);
+  reapply(overlay);
 
   const cleanup = () => overlay.remove();
   overlay.querySelector('#cal-settings-close').addEventListener('click', cleanup);

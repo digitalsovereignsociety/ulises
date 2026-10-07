@@ -69,6 +69,9 @@
     "undo_failed": "Undo failed",
     "unpin": "Unpin",
     "update_color_failed": "Update color failed",
-    "view_archive": "View archive"
+    "view_archive": "View archive",
+    "all": "All",
+    "filter_reminders_label": "Filter reminders",
+    "exit_archive": "Exit archive"
   }
 }

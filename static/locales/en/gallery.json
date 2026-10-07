@@ -94,6 +94,19 @@
     "ai_tagging_desc": "Auto-tag photos by content with your {vision_model}. Your own tags are kept.",
     "vision_model": "vision model",
     "clear_ai_tags": "Clear AI tags",
-    "start_ai_tag": "Start AI tag"
+    "start_ai_tag": "Start AI tag",
+    "gallery_title": "Gallery",
+    "clear_ai_tags_confirm": "Remove all AI-generated tags from every photo? Your own tags are kept.",
+    "clear_ai_tags_button": "Clear AI Tags",
+    "editor_title": "Image Editor",
+    "editor_alpha": "Alpha",
+    "editor_start_blank": "Start a blank canvas, or open a photo from your gallery to edit it.",
+    "editor_new_canvas": "New canvas...",
+    "editor_browse_photos": "Browse photos",
+    "editor_pick_template": "Or pick a template",
+    "editor_select_size": "Select a size…",
+    "editor_select": "Select",
+    "editor_saved_projects": "Saved projects",
+    "editor_search_projects": "Search projects…"
   }
 }

@@ -378,6 +378,7 @@
     "url_required": "Url required",
     "using_chat_defaults": "Using chat defaults",
     "webhook_in_integrations": "Webhook in integrations",
-    "yahoo_needs_app_password": "Yahoo needs app password"
+    "yahoo_needs_app_password": "Yahoo needs app password",
+    "open_settings": "Open settings"
   }
 }

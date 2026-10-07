@@ -18,7 +18,7 @@
     "gguf_needs_llamacpp": "Gguf needs llamacpp",
     "gpuProbeError": "Gpuprobeerror {{reason}}",
     "gpuProbeFailed": "Gpuprobefailed {{error}} {{hint}}",
-    "gpu_title": "Gpu title {{free}} {{index}} {{name}} {{total}} {{util}}",
+    "gpu_title": "GPU {{free}}/{{total}} {{name}}",
     "killPidFailed": "Failed to kill PID {{pid}}: {{reason}}",
     "launchCommandCopied": "Launchcommandcopied",
     "launch_anyway": "Launch anyway",

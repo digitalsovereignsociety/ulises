@@ -11,21 +11,22 @@ import { t, reapply } from '../i18n.js';
 // Rotating research textarea placeholders — pick one at random each
 // time the panel is rendered so the example keeps feeling fresh.
 const _RESEARCH_HINTS = [
-  "e.g. Trace Ulises's ten-year journey home from Troy — every island, monster, and detour, and why each one cost him",
-  "e.g. Compare Rust and Go for building a high-throughput web API in 2026",
-  "e.g. Fact-check whether honey actually never spoils",
-  "e.g. How to roast a duck so the skin stays crispy",
-  "e.g. The collapse of Bronze Age civilizations — leading theories and the evidence behind each",
-  "e.g. Best M.2 NVMe SSDs under $200 for a home AI workstation",
-  "e.g. Why do cats knead with their paws? Cover the leading behavioural explanations",
-  "e.g. Side effects and benefits of long-term creatine supplementation",
-  "e.g. How does end-to-end encryption work in Signal, step by step",
-  "e.g. The history of the printing press in East Asia, 700 CE → 1600 CE",
+  "research.query_hint_1",
+  "research.query_hint_2",
+  "research.query_hint_3",
+  "research.query_hint_4",
+  "research.query_hint_5",
+  "research.query_hint_6",
+  "research.query_hint_7",
+  "research.query_hint_8",
+  "research.query_hint_9",
+  "research.query_hint_10",
 ];
 function _pickResearchHint() {
   const i = Math.floor(Math.random() * _RESEARCH_HINTS.length);
+  const hint = t(_RESEARCH_HINTS[i]);
   // Escape double-quotes so we can safely splice into a placeholder="…" attribute.
-  return _RESEARCH_HINTS[i].replace(/"/g, '&quot;');
+  return hint.replace(/"/g, '&quot;');
 }
 
 // jobId -> { synapse, status } — survives across _renderJobs() rebuilds so
@@ -359,7 +360,7 @@ function _buildPanelHTML() {
 
   return `
     <div class="modal-header research-pane-header">
-      <h4><span style="position:relative;top:-1px;left:6px;display:inline-flex;vertical-align:middle;">${_searchIcon}</span><span style="margin-left:6px;">Deep Research</span></h4>
+      <h4><span style="position:relative;top:-1px;left:6px;display:inline-flex;vertical-align:middle;">${_searchIcon}</span><span style="margin-left:6px;" data-i18n="research.title">Deep Research</span></h4>
       <div class="research-pane-header-actions">
         <button id="research-panel-minimize" class="modal-minimize-btn" type="button" title="Minimize"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="18" x2="19" y2="18"/></svg></button>
         <button id="research-panel-close" class="close-btn" title="Close">&#x2716;</button>

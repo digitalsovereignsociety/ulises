@@ -1,6 +1,6 @@
 {
   "settings": {
-    "active_count": "{count} active{extra} ({label})",
+    "active_count": "{{count}} active{{extra}} ({{label}})",
     "add_integration": "Add integration",
     "add_models": {
       "api_desc": "Connect a cloud provider (OpenAI, Anthropic, DeepSeek, OpenRouter, etc.).",
@@ -177,13 +177,13 @@
     "enter_the_code": "Enter the code",
     "enter_your_password": "Enter your password",
     "error_saving": "Error saving",
-    "error_with": "Error with {error}",
+    "error_with": "Error with {{error}}",
     "export_failed": "Export failed",
     "exporting": "Exporting",
     "failed": "Failed",
     "failed_to_extract": "Failed to extract",
     "failed_to_load_vault_status": "Failed to load vault status",
-    "failed_with": "Failed with {error}",
+    "failed_with": "Failed with {{error}}",
     "fill_all_fields": "Fill all fields",
     "gmail_needs_app_password": "Gmail needs app password",
     "hide": "Hide",
@@ -230,7 +230,7 @@
     },
     "need_at_least_name_or_email": "Need at least name or email",
     "need_name_or_email": "Need name or email",
-    "new_password_min": "New password min {n}",
+    "new_password_min": "New password min {{n}}",
     "no_key": "No key",
     "ntfy_needs_integration": "Ntfy needs integration",
     "ntfy_url_help": "Ntfy url help",
@@ -250,7 +250,7 @@
     "press_a_key": "Press a key",
     "press_keys": "Press keys",
     "preview": "Preview",
-    "preview_failed": "Preview failed {error}",
+    "preview_failed": "Preview failed {{error}}",
     "reconnecting": "Reconnecting",
     "reminders": {
       "ai_synthesis": "ai synthesis",
@@ -372,12 +372,13 @@
         "tasks_desc": "Every scheduled task and its run history (Tasks tool)."
       }
     },
-    "test_error_with": "Test error with {error}",
+    "test_error_with": "Test error with {{error}}",
     "test_reminder": "Test reminder",
     "testing": "Testing",
     "url_required": "Url required",
     "using_chat_defaults": "Using chat defaults",
     "webhook_in_integrations": "Webhook in integrations",
-    "yahoo_needs_app_password": "Yahoo needs app password"
+    "yahoo_needs_app_password": "Yahoo needs app password",
+    "open_settings": "Open settings"
   }
 }
