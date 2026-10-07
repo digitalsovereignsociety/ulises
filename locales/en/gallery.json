@@ -87,6 +87,12 @@
     "all": "All",
     "photos_tab": "Photos",
     "albums_tab": "Albums",
-    "edit_tab": "Edit"
+    "edit_tab": "Edit",
+    "load_more": "Load more",
+    "ai_tagging_title": "AI Tagging",
+    "ai_tagging_desc": "Auto-tag photos by content with your {vision_model}. Your own tags are kept.",
+    "vision_model": "vision model",
+    "clear_ai_tags": "Clear AI tags",
+    "start_ai_tag": "Start AI tag"
   }
 }
