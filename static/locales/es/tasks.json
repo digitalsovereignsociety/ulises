@@ -81,6 +81,12 @@
     "triggered_parallel": "Triggered parallel",
     "update_failed": "Update failed",
     "updated": "Updated",
-    "webhook_triggered": "Webhook triggered"
+    "webhook_triggered": "Webhook triggered",
+    "activity_tab": "Actividad",
+    "add_tab": "Agregar",
+    "no_tasks_yet": "No hay tareas aún. Creá una para empezar.",
+    "no_matching_tasks": "No hay tareas coincidentes.",
+    "webhook_generated_on_save": "El URL del webhook se generará cuando se guarde la tarea.",
+    "no_activity_yet": "No hay actividad aún. Las tareas programadas se registrarán aquí una vez que se ejecuten."
   }
 }
