@@ -40,7 +40,10 @@
       "select_title": "select title",
       "sort_aria": "",
       "tidy": "tidy",
-      "tidy_title": "tidy title"
+      "tidy_button": "Tidy",
+      "tidy_title": "tidy title",
+      "tidying_memories": "Tidying memories",
+      "import_in_add_tab": "Import in Add tab"
     },
     "close_aria": "✖",
     "deleted": "Deleted",
@@ -49,6 +52,7 @@
     "enabled": "Enabled",
     "exported_format": "Exported format {{count}}",
     "no_memories_to_export": "No memories to export",
+    "no_memories_yet": "No memories yet",
     "pinned": "Pinned",
     "saved": "Saved",
     "saved_format": "Saved format {{count}}",

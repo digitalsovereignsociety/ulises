@@ -15,7 +15,7 @@ const _acct = () => window.__ulisesActiveEmailAccount
   ? `&account_id=${encodeURIComponent(window.__ulisesActiveEmailAccount)}`
   : '';
 
-const _emailSetupHint = () => '<div style="margin-top:6px;opacity:0.72;font-size:11px;">Setup: <span style="color:var(--accent,var(--red));">Settings &rsaquo; Integrations</span></div>';
+const _emailSetupHint = () => '<div style="margin-top:6px;opacity:0.72;font-size:11px;"><span style="color:var(--accent,var(--red));">' + t('email.setup_hint_inbox') + '</span></div>';
 
 // SVG icons matching sessions.js dropdown style
 const _replyIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>';
@@ -430,7 +430,7 @@ function _renderList() {
   if (_emails.length === 0) {
     const empty = document.createElement('div');
     empty.className = 'email-loading';
-    empty.textContent = _senderFilter ? `No emails from ${_senderFilterLabel || _senderFilter}` : 'No emails';
+    empty.textContent = _senderFilter ? t('email.no_emails_from', { filter: _senderFilterLabel || _senderFilter }) : t('email.no_emails');
     list.appendChild(empty);
     return;
   }

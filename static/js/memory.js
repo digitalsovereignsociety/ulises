@@ -527,7 +527,7 @@ export async function tidyMemories() {
     const data = await res.json();
     if ((data.removed || 0) === 0) {
       if (tidySpinner) tidySpinner.destroy();
-      if (tidyBtn) { tidyBtn.disabled = false; tidyBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-1px;margin-right:2px;color:var(--accent, var(--red));"><path d="M12 0L14.59 8.41L23 12L14.59 15.59L12 24L9.41 15.59L1 12L9.41 8.41Z"/></svg> Tidy'; }
+      if (tidyBtn) { tidyBtn.disabled = false; tidyBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-1px;margin-right:2px;color:var(--accent, var(--red));"><path d="M12 0L14.59 8.41L23 12L14.59 15.59L12 24L9.41 15.59L1 12L9.41 8.41Z"/></svg> ' + t('memory.browse.tidy_button'); }
       showToast(t('memory.already_clean'));
       return;
     }
@@ -549,7 +549,7 @@ export async function tidyMemories() {
       }
     }
 
-    if (tidySpinner) tidySpinner.updateMessage('Tidying memories');
+    if (tidySpinner) tidySpinner.updateMessage(t('memory.browse.tidying_memories'));
 
     // Animate the diff on the currently rendered list
     await animateTidyDiff(removed, edited);
@@ -570,7 +570,7 @@ export async function tidyMemories() {
       tidyBtn.disabled = false;
       tidyBtn.style.border = '';
       tidyBtn.style.background = '';
-      tidyBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-1px;margin-right:2px;color:var(--accent, var(--red));"><path d="M12 0L14.59 8.41L23 12L14.59 15.59L12 24L9.41 15.59L1 12L9.41 8.41Z"/></svg> Tidy';
+      tidyBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-1px;margin-right:2px;color:var(--accent, var(--red));"><path d="M12 0L14.59 8.41L23 12L14.59 15.59L12 24L9.41 15.59L1 12L9.41 8.41Z"/></svg> ' + t('memory.browse.tidy_button');
     }
   }
 }
@@ -695,9 +695,9 @@ export function renderMemoryList() {
       memoryList.innerHTML = `<div class="memory-empty">No matches.</div>`;
     } else {
       memoryList.innerHTML = `<div class="memory-empty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">
-        <span>No memories yet${_smiley}</span>
+        <span>${t('memory.no_memories_yet')}${_smiley}</span>
         <span style="opacity:0.7;font-size:11px;display:block;">
-          <a href="#" data-mem-goto-add style="color:var(--accent,var(--red));text-decoration:underline;">Import in Add tab</a>
+          <a href="#" data-mem-goto-add style="color:var(--accent,var(--red));text-decoration:underline;">${t('memory.browse.import_in_add_tab')}</a>
         </span>
       </div>`;
       memoryList.querySelector('[data-mem-goto-add]')?.addEventListener('click', (e) => {

@@ -33,14 +33,17 @@
     "browse": {
       "bulk_cancel": "bulk cancel",
       "category_all": "all",
-      "description": "Long-term facts the AI remembers across chats — recall, edit, or curate.",
+      "description": "Datos a largo plazo que la IA recuerda entre chats — recuperar, editar o curar.",
       "include_toggle": "include toggle",
       "search_aria": "search aria",
       "search_placeholder": "",
       "select_title": "select title",
       "sort_aria": "",
       "tidy": "tidy",
-      "tidy_title": "tidy title"
+      "tidy_button": "Ordenar",
+      "tidy_title": "tidy title",
+      "tidying_memories": "Ordenando recuerdos",
+      "import_in_add_tab": "Importar en la pestaña Agregar"
     },
     "close_aria": "✖",
     "deleted": "Deleted",
@@ -49,6 +52,7 @@
     "enabled": "Enabled",
     "exported_format": "Exported format {count}",
     "no_memories_to_export": "No memories to export",
+    "no_memories_yet": "No hay recuerdos aún",
     "pinned": "Pinned",
     "saved": "Saved",
     "saved_format": "Saved format {count}",

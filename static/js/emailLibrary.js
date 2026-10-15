@@ -648,7 +648,7 @@ function _openSettingsTab(tab) {
 
 function _emailSetupHintHtml() {
   return '<div style="margin-top:6px;opacity:0.72;font-size:11px;">' +
-    'Setup: <a href="#" data-open-settings="integrations" style="color:var(--accent,var(--red));text-decoration:underline;">Settings &rsaquo; Integrations</a>' +
+    t('email.setup_hint_library') +
     '</div>';
 }
 
@@ -928,7 +928,7 @@ export function openEmailLibrary(opts = {}) {
               <div class="email-lib-chip-bar memory-search-input" id="email-lib-chip-bar" style="width:100%;padding-right:96px;padding-left:26px;display:flex;align-items:center;flex-wrap:wrap;gap:4px;cursor:text;min-height:30px;position:relative;">
                 <svg class="email-lib-chip-bar-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--accent, var(--red));"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
                 <span id="email-lib-pills" style="display:contents"></span>
-                <input type="text" id="email-lib-search" placeholder="Search by name or text" autocomplete="off" style="flex:1;min-width:80px;border:0;outline:none;background:transparent;color:inherit;font:inherit;padding:0;position:relative;top:-1px;" />
+                <input type="text" id="email-lib-search" placeholder="${t('email.search_placeholder')}" autocomplete="off" style="flex:1;min-width:80px;border:0;outline:none;background:transparent;color:inherit;font:inherit;padding:0;position:relative;top:-1px;" />
               </div>
               <div id="email-lib-suggest" style="display:none;position:absolute;top:calc(100% + 2px);left:0;right:0;z-index:60;background:var(--panel,var(--bg));border:1px solid var(--border);border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,0.25);max-height:240px;overflow-y:auto;"></div>
               <button class="memory-toolbar-btn email-undone-toggle email-undone-toggle-inline" id="email-undone-btn" title="Show only emails not marked as done (undone)">
@@ -2805,9 +2805,9 @@ function _renderGrid() {
     if (_isTrulyEmpty) {
       grid.innerHTML =
         '<div class="email-loading" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;">' +
-          '<span>No emails' + _smileyIco + '</span>' +
+          '<span>' + t('email.no_emails') + _smileyIco + '</span>' +
           '<span style="opacity:0.7;font-size:11px;">' +
-            'Set up at: <a href="#" data-open-settings="integrations" style="color:var(--accent,var(--red));text-decoration:underline;">Settings &rsaquo; Integrations</a>' +
+            t('email.setup_hint_library') +
           '</span>' +
         '</div>';
       const _link = grid.querySelector('[data-open-settings]');
@@ -2818,7 +2818,7 @@ function _renderGrid() {
     } else {
       grid.innerHTML =
         '<div class="email-loading" style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;">' +
-          '<span>No emails' + _smileyIco + '</span>' +
+          '<span>' + t('email.no_emails') + _smileyIco + '</span>' +
         '</div>';
     }
     return;
@@ -4232,8 +4232,8 @@ async function _toggleFromSenderPanel(reader, data, btn) {
     if (panel._attachmentsOnly) view = view.filter(e => e.has_attachments);
     if (!view.length) {
       const why = panel._attachmentsOnly
-        ? 'No emails with attachments in this view.'
-        : (panel._tags.length > 1 ? 'No emails involve all those people.' : 'No matches.');
+        ? t('email.no_emails_attachments')
+        : (panel._tags.length > 1 ? t('email.no_emails_involve_all') : t('email.no_matches'));
       listEl.innerHTML = `<div class="from-sender-empty">${why}</div>`;
     } else {
       _renderFromSenderRows(view, listEl, reader, { showFolder: !!panel._lastShowFolder });
