@@ -129,7 +129,7 @@
     "open_chat_tooltip": "Abrir este resultado en un chat para lectura amplia y consultas de seguimiento",
     "open_report_tooltip": "Abrir el informe visual de investigación",
     "copy_log_tooltip": "Copiar esta entrada de log",
-    "clear_cache_tooltip": "Limpiar caché para esta tarea",
+    "clear_cache_tooltip": "Limpiar caché de {{label}} para esta tarea",
     "run_again_tooltip": "Ejecutar esta tarea nuevamente",
     "start_now_tooltip": "Iniciar ahora en paralelo, sin esperar la cola",
     "start_now_label": "Iniciar ahora",
