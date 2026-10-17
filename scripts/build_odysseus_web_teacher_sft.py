@@ -197,7 +197,7 @@ def call_deepseek(endpoint: dict[str, str], prompt: dict[str, Any], max_tokens: 
 def teacher_prompt(family: dict[str, Any], count: int, batch: int) -> dict[str, Any]:
     name = family["name"]
     return {
-        "task": "Generate Odysseus web-search tool-use SFT specs.",
+        "task": "Generate Ulises web-search tool-use SFT specs.",
         "current_date_context": "2026-08-21. Use Asia/Tokyo examples when a relative date matters.",
         "family": name,
         "count": count,

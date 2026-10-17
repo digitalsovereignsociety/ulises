@@ -1,7 +1,7 @@
 # Browser End-to-End Tests
 
 The photo editor release gate launches an isolated, authentication-disabled
-Odysseus server on port `7013` with a temporary SQLite database.
+Ulises server on port `7013` with a temporary SQLite database.
 
 ```bash
 npm install

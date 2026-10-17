@@ -5,8 +5,8 @@ let package = Package(
     name: "odysseus-mlx-image-bridge",
     platforms: [.macOS(.v26)],
     products: [
-        .executable(name: "odysseus-mlx-inpaint", targets: ["OdysseusMLXInpaint"]),
-        .executable(name: "odysseus-mlx-colorize", targets: ["OdysseusMLXColorize"]),
+        .executable(name: "odysseus-mlx-inpaint", targets: ["UlisesMLXInpaint"]),
+        .executable(name: "odysseus-mlx-colorize", targets: ["UlisesMLXColorize"]),
     ],
     dependencies: [
         .package(url: "https://github.com/xocialize/mlx-lama-swift", branch: "main"),
@@ -14,14 +14,14 @@ let package = Package(
     ],
     targets: [
         .executableTarget(
-            name: "OdysseusMLXInpaint",
+            name: "UlisesMLXInpaint",
             dependencies: [
                 .product(name: "LaMa", package: "mlx-lama-swift"),
                 .product(name: "MIGAN", package: "mlx-lama-swift"),
             ]
         ),
         .executableTarget(
-            name: "OdysseusMLXColorize",
+            name: "UlisesMLXColorize",
             dependencies: [
                 .product(name: "DDColor", package: "mlx-ddcolor-swift"),
             ]

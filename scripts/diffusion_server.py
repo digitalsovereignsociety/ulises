@@ -57,7 +57,7 @@ async def lifespan(application):
 app = FastAPI(title="Diffusion Server", lifespan=lifespan)
 
 # Conservative defaults — server is designed for server-to-server use from
-# the Odysseus backend. Wildcard CORS + the 127.0.0.1 default bind used to
+# the Ulises backend. Wildcard CORS + the 127.0.0.1 default bind used to
 # leave the server reachable via DNS-rebinding from any browser tab on the
 # same host. The CLI flags below extend these allowlists for operators who
 # need browser access; the safe defaults handle the common case.

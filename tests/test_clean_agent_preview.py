@@ -2597,7 +2597,7 @@ def test_ui_panel_renderer_does_not_claim_unconfirmed_draft_state():
 
 def test_cookbook_renderer_does_not_invent_live_health_from_configuration():
     rendered = cookbook_servers_terminal_response(
-        "2 configured server(s):\n- Ajax → local\n- Odysseus → host",
+        "2 configured server(s):\n- Ajax → local\n- Ulises → host",
         user_text="names and status",
     )
     assert "Live online/offline health is not included" in rendered
@@ -2848,7 +2848,7 @@ def test_cookbook_server_followups_reuse_typed_prior_list_with_limits_and_status
         }]},
         {'role': 'tool', 'tool_call_id': 'call-1', 'content': (
             '4 configured server(s) (default: Ajax):\n'
-            '- kierkegaard → local\n- Odysseus → remote\n'
+            '- kierkegaard → local\n- Ulises → remote\n'
             '- Ajax → remote\n- epictetus → remote'
         )},
     ]
@@ -4526,7 +4526,7 @@ async def test_stream_emits_incremental_text_and_persistable_history(monkeypatch
     raw = [chunk async for chunk in stream_preview(endpoint_url='http://test', model='test', messages=[{'role': 'user', 'content': 'hi'}], headers={}, turn_contract=contract, session_id='test', owner='test', disabled_tools=set(), tool_policy=ToolPolicy())]
     events = [json.loads(s[6:]) for s in raw if '[DONE]' not in s]
     assert [e['delta'] for e in events if 'delta' in e] == ['Hello', ' there']
-    assert requests[0]['messages'][0]['content'].startswith('You are Odysseus.')
+    assert requests[0]['messages'][0]['content'].startswith('You are Ulises.')
     metrics = next(e['data'] for e in events if e.get('type') == 'metrics')
     assert metrics['clean_v3_turn'] == [{'role': 'assistant', 'content': 'Hello there'}]
     assert raw[-1] == 'data: [DONE]\n\n'

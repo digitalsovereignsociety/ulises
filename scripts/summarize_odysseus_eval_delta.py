@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Summarize Odysseus tool-use eval artifacts and optional per-case deltas."""
+"""Summarize Ulises tool-use eval artifacts and optional per-case deltas."""
 
 from __future__ import annotations
 

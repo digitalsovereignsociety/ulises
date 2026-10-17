@@ -486,7 +486,7 @@ def resolve_root(args):
     root = find_repo_root(Path.cwd())
     if root is None:
         fail(
-            "not inside an Odysseus checkout "
+            "not inside an Ulises checkout "
             f"(looked for {', '.join(ROOT_MARKERS)} from {Path.cwd()} upwards)",
             code=2,
         )
@@ -719,7 +719,7 @@ def cmd_up(args):
     report = wait_ready(ports["app"], process, args.timeout, app_log, account)
 
     sys.stdout.write(
-        f"\nOdysseus is up — this worktree only.\n\n"
+        f"\nUlises is up — this worktree only.\n\n"
         f"  URL        http://127.0.0.1:{ports['app']}\n"
         f"  Login      {account['username']} / {account['password']}\n"
         f"  Worktree   {root} ({state['branch']} @ {state['commit']})\n"

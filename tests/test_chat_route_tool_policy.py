@@ -49,7 +49,7 @@ def test_personal_data_search_is_not_mistaken_for_web_search():
         "Find the prior chat where we fixed the parser."
     )
     assert _is_personal_data_search_without_web_target(
-        "Search my previous chats for the Odysseus TUI parser fix."
+        "Search my previous chats for the Ulises TUI parser fix."
     )
     assert _is_personal_data_search_without_web_target(
         "Do I have any events today?"

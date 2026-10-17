@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Direct document-tool argument-shape gate for compact Qwen tool routers.
 
-This intentionally does not execute Odysseus tools.  It calls the served
+This intentionally does not execute Ulises tools.  It calls the served
 OpenAI-compatible model directly with the same compact system prompt used by
 the real route, then scores the first native tool call shape.
 
-Use this before another train: if this gate does not move, the full Odysseus
+Use this before another train: if this gate does not move, the full Ulises
 CRUD harness will not move either.
 """
 

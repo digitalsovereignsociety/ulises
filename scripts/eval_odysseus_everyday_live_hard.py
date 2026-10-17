@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Everyday-use Odysseus live-hard eval against the real agent loop.
+"""Everyday-use Ulises live-hard eval against the real agent loop.
 
 Records actual tool calls, final answers, and backing DB mutations. This is not
 an offline scorer: it calls stream_agent_loop with the selected endpoint/model.
@@ -185,7 +185,7 @@ def _ensure_calendar(db: Any, owner: str) -> CalendarCal:
     cal = db.query(CalendarCal).filter(CalendarCal.owner == owner).first()
     if cal:
         return cal
-    cal = CalendarCal(id=f"ody-live-hard-cal-{uuid.uuid4().hex[:8]}", owner=owner, name="Odysseus Live Hard", source="local")
+    cal = CalendarCal(id=f"ody-live-hard-cal-{uuid.uuid4().hex[:8]}", owner=owner, name="Ulises Live Hard", source="local")
     db.add(cal)
     db.commit()
     db.refresh(cal)
@@ -509,7 +509,7 @@ def score_case(case: dict[str, Any], result: dict[str, Any]) -> tuple[bool, list
 
 def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines = [
-        "# Odysseus Everyday Live-Hard Eval Results",
+        "# Ulises Everyday Live-Hard Eval Results",
         "",
         f"- Generated: `{payload['generated_at']}`",
         f"- Model: `{payload['model']}`",

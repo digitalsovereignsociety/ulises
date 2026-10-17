@@ -163,7 +163,7 @@ This spec owns the cross-integration framing and agent/token/webhook surfaces. D
 - Codex/Claude plugin zips must not expose secrets beyond source instructions and helper files.
 - Webhook list responses expose `has_secret`, not the secret value.
 - Webhook secrets are encrypted when an API key manager is available; plaintext fallback is legacy/degraded behavior.
-- Outgoing webhook signatures use `X-Odysseus-Signature`.
+- Outgoing webhook signatures use `X-Ulises-Signature`.
 - Generic integration API keys are encrypted at rest and masked in API responses.
 - Generic integration base URLs are admin-configured and not the same public-only policy as webhook URLs.
 - `api_call` output and remote integration responses are untrusted model context.

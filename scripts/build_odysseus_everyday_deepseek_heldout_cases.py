@@ -238,7 +238,7 @@ def main() -> int:
     args = parser.parse_args()
 
     prompt = {
-        "task": "Generate held-out everyday Odysseus tool-use eval prompts.",
+        "task": "Generate held-out everyday Ulises tool-use eval prompts.",
         "date_context": "Current date is 2026-08-21 Asia/Tokyo; tomorrow is 2026-08-22.",
         "requirements": [
             "Return JSON object only.",

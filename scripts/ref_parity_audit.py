@@ -16,7 +16,7 @@ target but whose test file was never brought over.
 
 It is read-only. It runs `git log`, `git show`, `git diff`, `git grep`,
 `git ls-tree` and `git merge-base`, writes nothing to the repository, touches no
-remote, and does not import the Odysseus application package.
+remote, and does not import the Ulises application package.
 
 Usage:
 

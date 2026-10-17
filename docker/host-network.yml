@@ -1,4 +1,4 @@
-# High-trust host network access. Enable only when the Odysseus agent needs
+# High-trust host network access. Enable only when the Ulises agent needs
 # host-native LAN/VPN/mDNS behavior that Docker bridge networking cannot
 # provide. Linux only; Docker Desktop does not provide equivalent host
 # networking semantics.

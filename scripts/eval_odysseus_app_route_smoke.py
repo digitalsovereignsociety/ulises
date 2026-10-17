@@ -53,7 +53,7 @@ def _ensure_calendar(db: Any, owner: str) -> CalendarCal:
     cal = db.query(CalendarCal).filter(CalendarCal.owner == owner).first()
     if cal:
         return cal
-    cal = CalendarCal(id=f"ody-app-gate-cal-{uuid.uuid4().hex[:8]}", owner=owner, name="Odysseus App Gate", source="local")
+    cal = CalendarCal(id=f"ody-app-gate-cal-{uuid.uuid4().hex[:8]}", owner=owner, name="Ulises App Gate", source="local")
     db.add(cal)
     db.commit()
     db.refresh(cal)

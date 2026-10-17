@@ -4,7 +4,7 @@ Branch: `feature/runtime-containment`. The final production/delivery commit
 contains namespace-init verification, this record and validation evidence;
 its exact HEAD is in the delivery message. All commits are local. No push,
 PR, merge into lab, branch switch,
-reset, rebase, merge abort, cleanup, or other Odysseus worktree mutation occurred.
+reset, rebase, merge abort, cleanup, or other Ulises worktree mutation occurred.
 
 ## Reconciliation
 

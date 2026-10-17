@@ -65,7 +65,7 @@ def test_memory_list_summary_persists_clickable_memory_anchors():
                 "Found 2 memory entries:",
                 "",
                 "- [preference] `abc12345` — Use short replies.",
-                "- [project] `def67890` — Working on Odysseus SFT traces.",
+                "- [project] `def67890` — Working on Ulises SFT traces.",
             ]
         )
     )

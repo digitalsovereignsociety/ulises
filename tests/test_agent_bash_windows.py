@@ -35,7 +35,7 @@ async def test_windows_bash_uses_git_bash_with_structural_cwd(monkeypatch):
     result = await subprocess_tools._create_bash_subprocess(
         "pwd; cat package.json",
         cwd=workspace,
-        env={"HOME": r"C:\Odysseus\data"},
+        env={"HOME": r"C:\Ulises\data"},
     )
 
     assert result is process
@@ -68,7 +68,7 @@ async def test_windows_bash_captures_output_instead_of_inheriting_server_handles
 @pytest.mark.asyncio
 async def test_windows_bash_applies_the_subprocess_env(monkeypatch):
     captured = {}
-    env = {"PATH": r"C:\Odysseus\venv\Scripts", "HOME": r"C:\Odysseus\data"}
+    env = {"PATH": r"C:\Ulises\venv\Scripts", "HOME": r"C:\Ulises\data"}
 
     monkeypatch.setattr(subprocess_tools, "IS_WINDOWS", True)
     monkeypatch.setattr(
@@ -89,7 +89,7 @@ async def test_windows_bash_applies_the_subprocess_env(monkeypatch):
 @pytest.mark.asyncio
 async def test_windows_bash_tool_passes_ctx_env_through_to_the_child(monkeypatch, tmp_path):
     captured = capture_owned_spawn(monkeypatch, tmp_path)
-    env = {"PATH": r"C:\Odysseus\venv\Scripts", "VIRTUAL_ENV": r"C:\Odysseus\venv"}
+    env = {"PATH": r"C:\Ulises\venv\Scripts", "VIRTUAL_ENV": r"C:\Ulises\venv"}
 
     monkeypatch.setattr(subprocess_tools, "IS_WINDOWS", True)
     monkeypatch.setattr(

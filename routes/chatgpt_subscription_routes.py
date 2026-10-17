@@ -1,6 +1,6 @@
 """ChatGPT Subscription device-flow setup, multi-account and usage routes.
 
-One Odysseus owner may connect several independent ChatGPT subscriptions. Each
+One Ulises owner may connect several independent ChatGPT subscriptions. Each
 connection is its own ``ProviderAuthSession`` + ``ModelEndpoint`` pair; the
 endpoint id decides which account a request is billed to. Labels are cosmetic
 only — stable ids drive lookup, reconnect, deletion and usage reads.
@@ -189,7 +189,7 @@ def _provision_endpoint(
         ep.api_key = None
         ep.provider_auth_id = auth.id
         ep.is_enabled = True
-        # ChatGPT provides inference only. Odysseus is the only agent: no
+        # ChatGPT provides inference only. Ulises is the only agent: no
         # provider-native tool schemas are ever sent on this route.
         ep.supports_tools = False
         ep.model_type = "llm"

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audit the remaining Odysseus tools with isolated, resumable sessions.
+"""Audit the remaining Ulises tools with isolated, resumable sessions.
 
 This uses the same curation contract as ``odysseus_domain_audit.py`` but
 creates one session per tool. Prompts prefer read-only behavior, but mutating
@@ -111,7 +111,7 @@ def _tool_prompts(tool: str, marker: str) -> list[str]:
             "Ask me to choose whether to keep, archive, or delete a suspicious email; do not take action",
         ],
         "update_plan": [
-            "Make a short plan for testing Odysseus SFT rows and write it to the plan panel",
+            "Make a short plan for testing Ulises SFT rows and write it to the plan panel",
             "Update the plan panel with inspect marked done and patch still pending",
         ],
         "trigger_research": ["Start a small research job about the history of SearXNG", "Research the difference between PDF and HTML extraction"],

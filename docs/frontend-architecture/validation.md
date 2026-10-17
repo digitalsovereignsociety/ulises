@@ -214,7 +214,7 @@ uncommitted; commit, push and PR creation require separate authorization.
 
 Repository: `odysseus-dev/odysseus`. Branch:
 `refactor/frontend-architecture-foundation`. Worktree:
-`/home/alteixeira20/Projects/Odysseus/worktrees/architecture/frontend-foundation`.
+`/home/alteixeira20/Projects/Ulises/worktrees/architecture/frontend-foundation`.
 Initial worktree was clean. HEAD and local official `upstream/dev` are
 `8feb50e89468235cd3e0986da80edbd3acaf2c40`. The live official GitHub `dev` SHA
 matched at both initial and final verification. This is PR #6495's merge commit.
@@ -340,7 +340,7 @@ node scripts/check_frontend.mjs
 /home/alteixeira20/.venvs/odysseus-pr-6495/bin/python scripts/verify_frontend_runtime.py
 
 docker run --rm --network none \
-  --mount type=bind,src=/home/alteixeira20/Projects/Odysseus/worktrees/architecture/frontend-foundation,dst=/candidate,readonly \
+  --mount type=bind,src=/home/alteixeira20/Projects/Ulises/worktrees/architecture/frontend-foundation,dst=/candidate,readonly \
   --workdir /candidate --entrypoint python \
   odysseus-maintainer-preview-odysseus:latest scripts/verify_frontend_runtime.py
 ```
@@ -356,7 +356,7 @@ Syntax commands executed:
 bash -c 'shopt -s globstar nullglob; for f in static/app.js static/js/**/*.js frontend/src/**/*.js scripts/check_frontend.mjs tests/frontendArchitecture.test.mjs; do node --check "$f" || exit; done'
 /home/alteixeira20/.venvs/odysseus-pr-6495/bin/python -m compileall -q app.py core routes src services scripts tests
 git diff --check
-git diff --exit-code -- static app.py Dockerfile .dockerignore Odysseus.spec build-macos-app.sh build-windows-portable.ps1 launcher.py core routes src services
+git diff --exit-code -- static app.py Dockerfile .dockerignore Ulises.spec build-macos-app.sh build-windows-portable.ps1 launcher.py core routes src services
 git check-attr text eol -- frontend/src/shared/actionMenuOrder.js static/js/actionMenuOrder.js
 sha256sum frontend/src/shared/actionMenuOrder.js static/js/actionMenuOrder.js
 ```

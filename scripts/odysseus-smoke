@@ -148,12 +148,12 @@ def cmd_run(args):
     dev = load_dev()
     root = dev.find_repo_root(Path.cwd())
     if root is None:
-        fail(f"not inside an Odysseus checkout (looked upwards from {Path.cwd()})", code=2)
+        fail(f"not inside an Ulises checkout (looked upwards from {Path.cwd()})", code=2)
 
     if args.areas:
         sys.path.insert(0, str(root))
         from tests.smoke import areas
-        sys.stdout.write(areas.render_table({}, header="Odysseus release smoke - coverage") + "\n")
+        sys.stdout.write(areas.render_table({}, header="Ulises release smoke - coverage") + "\n")
         return 0
 
     ports = dev.derive_ports(root)

@@ -1,4 +1,4 @@
-# Historical Odysseus QA Queue
+# Historical Ulises QA Queue
 
 - Source sessions: 1294
 - Source user turns / teacher seeds: 3258

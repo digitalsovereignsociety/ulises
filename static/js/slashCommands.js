@@ -1270,7 +1270,7 @@ async function _cmdWorkspace(args, ctx) {
     // folder, sensitive dir, filesystem root).
     workspaceModule.vetAndSetWorkspace(path).then(({ ok, path: resolvedPath }) => {
       if (ok) slashReply(`Workspace set: <code>${uiModule.esc(resolvedPath)}</code>`);
-      else slashReply(`Not a usable workspace folder on the Odysseus backend: <code>${uiModule.esc(path)}</code>. If Odysseus is running in Docker, use the container path, usually <code>/app</code>, or use <code>/workspace pick</code>.`);
+      else slashReply(`Not a usable workspace folder on the Ulises backend: <code>${uiModule.esc(path)}</code>. If Ulises is running in Docker, use the container path, usually <code>/app</code>, or use <code>/workspace pick</code>.`);
     });
     return true;
   };

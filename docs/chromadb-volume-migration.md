@@ -111,7 +111,7 @@ zero data loss.
 
 To ensure transactional and referential consistency across SQLite and HNSW segment files:
 
-1. Stop application writers (Odysseus) to prevent any in-flight requests:
+1. Stop application writers (Ulises) to prevent any in-flight requests:
    ```bash
    docker compose stop odysseus
    ```
@@ -316,7 +316,7 @@ Once the seeded volume is proven healthy:
    '
    ```
 3. **Application Verification:**
-   Log in to Odysseus, navigate to **Settings -> Memory**, and confirm that memory items,
+   Log in to Ulises, navigate to **Settings -> Memory**, and confirm that memory items,
    tool embeddings, and RAG document queries operate normally.
 
 ---
@@ -399,10 +399,10 @@ docker rmi "${BACKUP_IMAGE}"
 If an installation has already destroyed its pre-#6166 container writable layer (e.g. prior to following
 this guide), the vector embeddings cannot be restored from disk. In this scenario:
 
-* **RAG Documents:** Re-upload files under **Settings -> Memory -> RAG**. Odysseus automatically re-chunks
+* **RAG Documents:** Re-upload files under **Settings -> Memory -> RAG**. Ulises automatically re-chunks
   and re-indexes documents upon upload.
 * **Semantic Memories:** Text memory records reside authoritatively in `data/app.db` (SQLite). Vector representations
-  are re-indexed automatically when Odysseus connects to a healthy ChromaDB instance.
-* **Tool Index:** Rebuilt automatically by Odysseus upon first query.
+  are re-indexed automatically when Ulises connects to a healthy ChromaDB instance.
+* **Tool Index:** Rebuilt automatically by Ulises upon first query.
 
 Re-indexing is a disaster recovery fallback, not a substitute for preserving existing database state.

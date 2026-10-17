@@ -29,7 +29,7 @@ function documentFunction(name, text = source) {
       await baseline.goto(process.env.ODYSSEUS_TEST_STATIC_ORIGIN + '/static/js/documentStats.js');
       const originalFunctions = Object.fromEntries([
         '_unfoldEmailHeaderLines', '_parseEmailHeader', '_looksLikeWrappedEmailContent', '_decodeBase64EmailWrapper',
-        '_sanitizeOutgoingEmailBody', '_emailHtmlToPlainText', '_aiReply', '_loadOdysseusAttachItems',
+        '_sanitizeOutgoingEmailBody', '_emailHtmlToPlainText', '_aiReply', '_loadUlisesAttachItems',
         '_odysseusAttachLabel', '_escHtml',
       ].map(name => [name, documentFunction(name, original)]));
       const vulnerable = await baseline.evaluate(async functions => {
@@ -82,14 +82,14 @@ function documentFunction(name, text = source) {
         const _escHtml = eval('(' + functions._escHtml + ')');
         const _odysseusAttachLabel = eval('(' + functions._odysseusAttachLabel + ')');
         const spinnerModule = { createLoadingRow: () => document.createElement('div') };
-        const _syncOdysseusAttachSelection = () => {};
+        const _syncUlisesAttachSelection = () => {};
         const fetch = async () => ({ ok: true, json: async () => ({ items: [{ id: 'quote', filename: 'quote.png',
           url: 'data:,bad" onerror="window.executed++' }] }) });
         const menu = document.createElement('div');
         menu.innerHTML = '<div class="email-odysseus-attach-list"></div>';
         document.body.appendChild(menu);
         window.executed = 0;
-        await eval('(' + functions._loadOdysseusAttachItems + ')')(menu, 'gallery');
+        await eval('(' + functions._loadUlisesAttachItems + ')')(menu, 'gallery');
         await new Promise(resolve => setTimeout(resolve, 100));
         return { polluted, executions, gallery: window.executed, injected: !!menu.querySelector('[onerror]'),
           overflowUnchanged, overflowRuns: Object.keys(overflowRuns).length, overflowCostStore };
@@ -198,7 +198,7 @@ function documentFunction(name, text = source) {
 
     const names = ['_unfoldEmailHeaderLines', '_parseEmailHeader', '_looksLikeWrappedEmailContent', '_decodeBase64EmailWrapper',
       '_sanitizeOutgoingEmailBody', '_emailHtmlToPlainText', '_aiReply',
-      '_loadOdysseusAttachItems', '_odysseusAttachLabel', '_escHtml',
+      '_loadUlisesAttachItems', '_odysseusAttachLabel', '_escHtml',
       '_normalizeRichLinkUrl', '_smartRichPasteUrl', '_insertSmartRichPasteLink', '_cleanRichTextPasteHtml', 'exportAsPdf'];
     const functions = Object.fromEntries(names.map(name => [name, documentFunction(name)]));
     const email = await page.evaluate(async functions => {
@@ -273,8 +273,8 @@ function documentFunction(name, text = source) {
       const _escHtml = eval('(' + functions._escHtml + ')');
       const _odysseusAttachLabel = eval('(' + functions._odysseusAttachLabel + ')');
       const spinnerModule = { createLoadingRow: () => document.createElement('div') };
-      const _syncOdysseusAttachSelection = () => {};
-      const load = eval('(' + functions._loadOdysseusAttachItems + ')');
+      const _syncUlisesAttachSelection = () => {};
+      const load = eval('(' + functions._loadUlisesAttachItems + ')');
       const urls = ['/static/missing.png" onerror="window.executed++" data-injected="yes',
         '/static/missing.png"><svg onload="window.executed++"></svg>', '/static/missing.png',
         'javascript:window.executed++', 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" onload="parent.executed++"/>'];

@@ -317,7 +317,7 @@ def teacher_variants(anchor: dict[str, Any], count: int, endpoint: dict[str, str
     if endpoint is None:
         return fallback[:count]
     prompt = {
-        "task": "Generate varied SFT phrasings for an Odysseus web tool-use model.",
+        "task": "Generate varied SFT phrasings for an Ulises web tool-use model.",
         "count": count,
         "topic": anchor["topic"],
         "source_failure": "Current model often searched correctly but returned empty text, clipped snippets, stale query terms, or failed to synthesize the actual answer.",

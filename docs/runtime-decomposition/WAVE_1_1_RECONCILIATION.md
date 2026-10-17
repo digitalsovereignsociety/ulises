@@ -76,7 +76,7 @@ teacher handoff, and existing server-owned security provenance.
 
 | Class | Uses and boundary |
 | --- | --- |
-| 1. Live/detached stream-run identity | `agent_runs._Run.run_id`, `get_run_id`, and the chat response's `X-Odysseus-Run-Id` identify the detached stream. The browser's `_streamRunIds` is populated from the response header. |
+| 1. Live/detached stream-run identity | `agent_runs._Run.run_id`, `get_run_id`, and the chat response's `X-Ulises-Run-Id` identify the detached stream. The browser's `_streamRunIds` is populated from the response header. |
 | 2. Stop/resume/replay identity | `expected_run_id` in `stop` and `request_finish`, route request headers, `_postExactStop`, the finish-editor request, `streamRunId`, and `resumeRunId` refer to that same detached stream. `subscribe` binds the exact `_Run` object returned by start/resume. |
 | 3. Stream metrics/cost identity | `_metricsCostRecordId` uses the header-derived stream ID plus `primary`/`teacher`; `metrics._costRecordId` and the cost renderer's local `runId` refer to this accounting key. Neither uses terminal metadata's journal `run_id`. |
 | 4. Logical nested invocation identity | `ActionJournal.run_id` is generated per completion-gated invocation. `action_id` is derived from it. The completion gate's terminal metadata `run_id` identifies this logical invocation. Existing `ToolRunSecurityContext.run_id` and `origin_run_id` values identify separate server-owned invocation/skill provenance operations; they are neither stream IDs nor journal lineage. |
@@ -110,7 +110,7 @@ add provider calls or turn missing evidence into extra provider rounds.
 Lab's server-owned authority remains narrower than inventory or availability.
 Transcription, OCR, tasks, browser fallback, request-specific capability
 selection, compact contracts, and provider-compatible tool choice retain the
-canonical implementation. Model ID `Ajax` selects the Odysseus compact profile;
+canonical implementation. Model ID `Ajax` selects the Ulises compact profile;
 its selected schema boundary survives compatible `auto` tool choice, explicit
 no-tools remains explicit, and transport remains OpenAI-compatible. No
 benchmark-runner code was independently edited or executed.

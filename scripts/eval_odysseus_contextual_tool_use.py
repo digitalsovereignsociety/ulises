@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Multi-turn Odysseus tool-use eval for contextual follow-up behavior."""
+"""Multi-turn Ulises tool-use eval for contextual follow-up behavior."""
 
 from __future__ import annotations
 
@@ -511,7 +511,7 @@ def malformed_text_surface(response_text: str) -> bool:
     return any(
         re.search(pattern, response_text or "")
         for pattern in (
-            r"\bIamOdysseus\b",
+            r"\bIamUlises\b",
             r"\bSwedenisin\b",
             r"\bVATstands\b",
             r"\bpublic\s+domain\s+ar\b(?!t)",

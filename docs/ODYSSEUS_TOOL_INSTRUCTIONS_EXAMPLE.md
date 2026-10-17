@@ -1,6 +1,6 @@
-# Odysseus tool instructions — compact model-facing example
+# Ulises tool instructions — compact model-facing example
 
-This is a readable example of the information Odysseus gives an AI model in Agent mode. It is not a dump of internal policy, credentials, user data, or benchmark prompts. The live harness builds the prompt dynamically, so a turn normally receives only the relevant family and a compact JSON schema for each offered tool—not this entire document.
+This is a readable example of the information Ulises gives an AI model in Agent mode. It is not a dump of internal policy, credentials, user data, or benchmark prompts. The live harness builds the prompt dynamically, so a turn normally receives only the relevant family and a compact JSON schema for each offered tool—not this entire document.
 
 ## Shared instructions
 
@@ -199,7 +199,7 @@ Do not use shell/Python for web lookup. Report stdout, stderr, and failures hone
 
 Full family inventory: `list_cookbook_servers`, `list_cached_models`, `list_served_models`, `serve_model`, `serve_preset`, `stop_served_model`, `tail_serve_output`, `download_model`, `list_downloads`, `cancel_download`, `adopt_served_model`, `list_serve_presets`, `list_models`, `manage_endpoints`, `manage_mcp`, `manage_settings`, `manage_tokens`, `manage_webhooks`, `api_call`, `app_api`, `create_session`, `list_sessions`, `manage_session`, `send_to_session`, `chat_with_model`, `ask_teacher`.
 
-Use read tools before mutations and reuse exact server/model/endpoint identifiers. Distinguish configured servers from currently served models and cached model files. Do not infer online status from a configured-server list unless the returned data actually includes health status. `app_api` is a restricted bridge for supported Odysseus UI endpoints, not a replacement for named tools or shell access.
+Use read tools before mutations and reuse exact server/model/endpoint identifiers. Distinguish configured servers from currently served models and cached model files. Do not infer online status from a configured-server list unless the returned data actually includes health status. `app_api` is a restricted bridge for supported Ulises UI endpoints, not a replacement for named tools or shell access.
 
 ## What is actually sent on one turn?
 

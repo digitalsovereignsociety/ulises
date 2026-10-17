@@ -4,7 +4,7 @@ Date: 2026-08-29
 
 ## Current verdict
 
-Odysseus is now a credible layered everyday editor, not an editor mockup. The
+Ulises is now a credible layered everyday editor, not an editor mockup. The
 first nine roadmap phases are implemented: professional transform geometry,
 shared direct-manipulation sessions, retained placed content, unified
 selections and masks, a reusable brush/retouch engine, and retained text and
@@ -98,7 +98,7 @@ panels.
 Harden orientation, transparency, metadata, and color behavior for PNG, JPEG,
 and WebP first. Add copy/paste and drag/drop through placed layers. Treat
 layered formats as explicit compatibility projects: unsupported PSD/TIFF/HEIC
-features must be reported, never silently discarded. Odysseus project files
+features must be reported, never silently discarded. Ulises project files
 remain the lossless source of truth.
 
 ## Phase 14: Performance and recovery
@@ -156,4 +156,4 @@ tests. No supported operation may silently flatten or discard retained state.
 
 Do not expand into full PSD fidelity, CMYK production, RAW development, 3D, or
 complete Photoshop parity before this critical path passes. Those are separate
-product decisions, not prerequisites for a strong Odysseus editor.
+product decisions, not prerequisites for a strong Ulises editor.

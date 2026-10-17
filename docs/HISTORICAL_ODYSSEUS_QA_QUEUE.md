@@ -1,4 +1,4 @@
-# Historical Odysseus QA Queue
+# Historical Ulises QA Queue
 
 - Source sessions: 626
 - Unique conversation flows: 54
@@ -28,6 +28,6 @@
 ## Workflow
 
 1. Replay `replay_first` cases on the current 7011 Agent runtime.
-2. Judge with the complete Odysseus tool catalog.
+2. Judge with the complete Ulises tool catalog.
 3. Move reproducible failures to `harness`, `model_sft`, or `backend`.
 4. Fix recurring behavior classes and replay every member of that class.

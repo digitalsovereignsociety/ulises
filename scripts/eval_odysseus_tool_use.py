@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Evaluate native tool use through the real Odysseus HTTP chat route.
+"""Evaluate native tool use through the real Ulises HTTP chat route.
 
 This deliberately does not call the model endpoint directly. Every case gets
-an isolated Odysseus session and is scored from the route's SSE events.
+an isolated Ulises session and is scored from the route's SSE events.
 """
 
 from __future__ import annotations
@@ -99,13 +99,13 @@ TUI_LOCAL_CASES = [
     ),
     ("tui_local_ambiguous_test_now", "test now", "host_shell"),
     ("tui_app_notes_boundary", "What's my notes?", "manage_notes"),
-    ("tui_app_model_picker_boundary", "What models are running on Odysseus?", "list_models"),
+    ("tui_app_model_picker_boundary", "What models are running on Ulises?", "list_models"),
 ]
 
 EMAIL_SAFETY_CASES = [
     (
         "email_send_new_approval",
-        "Send an email to fake@example.invalid with subject 'Odysseus eval' and body 'temporary fixture'.",
+        "Send an email to fake@example.invalid with subject 'Ulises eval' and body 'temporary fixture'.",
         "send_email",
     ),
     (
@@ -180,7 +180,7 @@ def _email_fixture(enabled: bool):
                 "from": "Rickard Jonason <rickard.fixture@example.invalid>",
                 "subject": "Regarding relocation from Japan [fixture]",
                 "date": "2026-08-19T09:05:47+00:00",
-                "body": "Fixture email for Odysseus latest-email action routing.",
+                "body": "Fixture email for Ulises latest-email action routing.",
             },
             {
                 "owner": "pewds",
@@ -310,7 +310,7 @@ def _seed_db_fixtures() -> None:
                 document_id=doc_id,
                 version_number=1,
                 content=DOCUMENT_SEARCH_CONTENT,
-                summary="Odysseus eval fixture",
+                summary="Ulises eval fixture",
                 source="eval",
             )
         )
@@ -345,7 +345,7 @@ def _seed_db_fixtures() -> None:
                 calendar_id=calendar_id,
                 summary=CALENDAR_SEARCH_TITLE,
                 description=CALENDAR_SEARCH_DESCRIPTION,
-                location="Odysseus eval fixture",
+                location="Ulises eval fixture",
                 dtstart=datetime(2026, 8, 22, 10, 0, 0),
                 dtend=datetime(2026, 8, 22, 10, 30, 0),
                 all_day=False,
@@ -448,7 +448,7 @@ def _command_contract_ok(case_name: str, events: list[dict]) -> bool:
         "email_list": ("mcp__email__list_emails", {"folder": "INBOX", "max_results": 1, "unread_only": False}),
         "email_send_new_approval": (
             "mcp__email__send_email",
-            {"to": "fake@example.invalid", "subject": "Odysseus eval", "body": "temporary fixture"},
+            {"to": "fake@example.invalid", "subject": "Ulises eval", "body": "temporary fixture"},
         ),
     }
     expected_tool, expected_args = contracts.get(case_name, (None, None))
@@ -621,7 +621,7 @@ def _cookie(path: Path, username: str = "pewds") -> str:
     for token, row in sessions.items():
         if row.get("username") == username and row.get("expiry", 0) > now:
             return token
-    raise RuntimeError(f"No valid {username} Odysseus session cookie found")
+    raise RuntimeError(f"No valid {username} Ulises session cookie found")
 
 
 def _sse_events(response: httpx.Response):
@@ -826,7 +826,7 @@ def _malformed_text_surface(rendered_response: str) -> bool:
     return any(
         re.search(pattern, rendered_response or "")
         for pattern in (
-            r"\bIamOdysseus\b",
+            r"\bIamUlises\b",
             r"\bSwedenisin\b",
             r"\bVATstands\b",
             r"\bpublic\s+domain\s+ar\b(?!t)",
@@ -1367,7 +1367,7 @@ def main():
     parser.add_argument(
         "--include-safe-extended",
         action="store_true",
-        help="Include read-only/list/search coverage for lower-frequency Odysseus tools.",
+        help="Include read-only/list/search coverage for lower-frequency Ulises tools.",
     )
     parser.add_argument(
         "--no-email-fixture",

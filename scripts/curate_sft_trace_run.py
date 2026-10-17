@@ -142,7 +142,7 @@ def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Curate accepted Odysseus SFT traces for one eval report.")
+    parser = argparse.ArgumentParser(description="Curate accepted Ulises SFT traces for one eval report.")
     parser.add_argument("--report", type=Path, required=True, help="Eval actual_results.json path.")
     parser.add_argument("--trace", type=Path, required=True, help="Owner SFT trace JSONL path.")
     parser.add_argument("--out", type=Path, required=True, help="Curated JSONL output path.")

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/branding/odysseus-wordmark.png" alt="Odysseus" width="238">
+  <img src="assets/branding/ulises-wordmark.png" alt="Ulises" width="238">
 </p>
 
 <p align="center">
@@ -14,11 +14,11 @@
 </p>
 
 <p align="center">
-  <a href="https://repology.org/project/odysseus-ai/versions"><img src="https://repology.org/badge/vertical-allrepos/odysseus-ai.svg" alt="Packaging status"></a>
+  <a href="https://repology.org/project/ulises-ai/versions"><img src="https://repology.org/badge/vertical-allrepos/ulises-ai.svg" alt="Packaging status"></a>
 </p>
 
 <p align="center">
-  <img src="assets/branding/odysseus-browser.jpg" alt="Odysseus interface">
+  <img src="assets/branding/ulises-browser.jpg" alt="Ulises interface">
 </p>
 
 ---
@@ -29,12 +29,12 @@
 
 ```bash
 git clone https://github.com/odysseus-dev/odysseus.git
-cd odysseus
+cd ulises
 cp .env.example .env
 docker compose up -d --build
 ```
 
-Open `http://localhost:7011` when the containers are healthy. The first admin password is printed in `docker compose logs odysseus`.
+Open `http://localhost:7011` when the containers are healthy. The first admin password is printed in `docker compose logs ulises`.
 
 The compose files pull the official multi-arch image `ghcr.io/odysseus-dev/odysseus` (published by CI on every push to `main` and `dev`) and only build locally if the pull fails — so this also works on hosts without a build toolchain, e.g. as a [Portainer](https://www.portainer.io/) stack.
 
@@ -67,7 +67,7 @@ Help is welcome. The best entry points are fresh-install testing, provider setup
 
 ## Security
 
-Odysseus is a self-hosted workspace with powerful local tools. Keep auth enabled, keep private data out of Git, and do not expose raw model/service ports publicly.
+Ulises is a self-hosted workspace with powerful local tools. Keep auth enabled, keep private data out of Git, and do not expose raw model/service ports publicly.
 
 - Keep `AUTH_ENABLED=true` for any network-accessible deployment.
 - Keep `LOCALHOST_BYPASS=false` outside local development.
@@ -95,7 +95,7 @@ Deployment details are in the [setup guide](website/setup.md#security-notes).
       />
       <img
         src="https://star-history.dera.page/svg?repos=odysseus-dev/odysseus&type=date&legend=top-left"
-        alt="Odysseus GitHub star history"
+        alt="Ulises GitHub star history"
         width="100%"
       />
     </picture>

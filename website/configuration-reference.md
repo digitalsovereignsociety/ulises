@@ -6,7 +6,7 @@ layout: default
 
 <!-- This page is generated from the source tree by `scripts/generate_env_reference.py`. Do not edit it by hand: run the script instead. `tests/test_env_reference.py` fails when the committed page and the source disagree, or when a variable is read without an entry in the script's notes table. -->
 
-Odysseus reads its runtime configuration from the Settings UI. The
+Ulises reads its runtime configuration from the Settings UI. The
 environment variables below are the deployment-level escape hatches underneath
 that: they are read directly from the process environment, mostly at import or
 startup, and most installs never need any of them.
@@ -178,7 +178,7 @@ The source tree reads **117** `ODYSSEUS_*` variables: 81 an operator may want to
 | Variable | Default | Read in | What it does |
 |---|---|---|---|
 | `ODYSSEUS_API_TOKEN` | `''` | `integrations/claude/skills/odysseus/scripts/odysseus_api.py` (+1 more) | API token those scripts authenticate with. Both this and the URL are required; the scripts name whichever is missing. |
-| `ODYSSEUS_URL` | `''` | `integrations/claude/skills/odysseus/scripts/odysseus_api.py` (+1 more) | Base URL of the Odysseus instance the bundled integration scripts call. |
+| `ODYSSEUS_URL` | `''` | `integrations/claude/skills/odysseus/scripts/odysseus_api.py` (+1 more) | Base URL of the Ulises instance the bundled integration scripts call. |
 
 ## Internal and development-only variables
 
@@ -188,9 +188,9 @@ Listed for completeness. Setting one of these on a real install is either a no-o
 
 | Variable | Default | Read in | What it does |
 |---|---|---|---|
-| `ODYSSEUS_COPILOT_EDITOR_VERSION` | `'Odysseus/1.0'` | `src/copilot.py` | Editor-version header presented to the Copilot API. Kept stable on purpose. |
+| `ODYSSEUS_COPILOT_EDITOR_VERSION` | `'Ulises/1.0'` | `src/copilot.py` | Editor-version header presented to the Copilot API. Kept stable on purpose. |
 | `ODYSSEUS_COPILOT_INTEGRATION_ID` | `'vscode-chat'` | `src/copilot.py` | Integration id presented to the Copilot API. Kept stable on purpose. |
-| `ODYSSEUS_COPILOT_USER_AGENT` | `'Odysseus/1.0'` | `src/copilot.py` | Editor-like User-Agent presented to the Copilot API. Kept stable on purpose. |
+| `ODYSSEUS_COPILOT_USER_AGENT` | `'Ulises/1.0'` | `src/copilot.py` | Editor-like User-Agent presented to the Copilot API. Kept stable on purpose. |
 | `ODYSSEUS_DEBUG_LLM_SHAPE` | `''` | `src/llm_core.py` | Truthy logs the shape of streamed provider chunks. Debugging aid for provider response parsing. |
 
 ### Agent loop and tool execution

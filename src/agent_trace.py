@@ -1,4 +1,4 @@
-"""Canonical append-only traces and codecs for Odysseus agent adapters."""
+"""Canonical append-only traces and codecs for Ulises agent adapters."""
 
 from __future__ import annotations
 

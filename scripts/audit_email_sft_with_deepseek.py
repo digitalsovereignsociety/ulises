@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audit recent Odysseus email SFT conversations with a DeepSeek judge."""
+"""Audit recent Ulises email SFT conversations with a DeepSeek judge."""
 
 from __future__ import annotations
 
@@ -183,7 +183,7 @@ def session_ids_from_results(path: Path) -> list[str]:
 
 
 def judge_prompt(batch: list[dict[str, Any]]) -> list[dict[str, str]]:
-    system = """You are auditing Odysseus email-agent conversations for SFT training quality.
+    system = """You are auditing Ulises email-agent conversations for SFT training quality.
 Return strict JSON only: {"results":[...]}.
 For every session, decide and copy back `session_id` and `session_name` from `session`.
 - verdict: keep, repair, or delete.

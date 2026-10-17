@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run isolated, curation-aware Odysseus audits across non-email domains.
+"""Run isolated, curation-aware Ulises audits across non-email domains.
 
 The runner deliberately keeps setup, execution, scoring, review, and deletion
 separate. A failed session is serialized before deletion so a bad trace can be

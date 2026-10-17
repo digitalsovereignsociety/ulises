@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run related multi-turn Odysseus tool flows for SFT curation.
+"""Run related multi-turn Ulises tool flows for SFT curation.
 
 Unlike the broad domain audit, this runner keeps one realistic task thread per
 session.  Each flow has 3-4 related turns so the kept SFT rows teach follow-up

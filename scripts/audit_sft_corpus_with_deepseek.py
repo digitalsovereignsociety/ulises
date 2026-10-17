@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audit an Odysseus SFT JSONL corpus and use DeepSeek for semantic review."""
+"""Audit an Ulises SFT JSONL corpus and use DeepSeek for semantic review."""
 
 from __future__ import annotations
 

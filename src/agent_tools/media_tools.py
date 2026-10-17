@@ -1,4 +1,4 @@
-"""Native local-media inspection tools for the Odysseus agent loop."""
+"""Native local-media inspection tools for the Ulises agent loop."""
 
 from __future__ import annotations
 
@@ -2122,7 +2122,7 @@ class InspectMediaTool:
 
 
 class TranscribeMediaTool:
-    """Transcribe local audio/video with Odysseus's local Whisper backend."""
+    """Transcribe local audio/video with Ulises's local Whisper backend."""
 
     async def execute(self, content: str, _ctx: dict) -> dict:
         try:

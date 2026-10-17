@@ -41,7 +41,7 @@ def main():
                 'model': 'Ajax', 'temperature': 0, 'max_tokens': 768,
                 'chat_template_kwargs': {'enable_thinking': False}, 'tools': tools,
                 'messages': [
-                    {'role': 'system', 'content': 'You are an assistant using Odysseus tools. '
+                    {'role': 'system', 'content': 'You are an assistant using Ulises tools. '
                      'Current local date/time: 2026-09-30 09:00, UTC+02:00. '
                      'Current UTC date/time: 2026-09-30 07:00. No document is open. '
                      'Use tools to fulfill requests, and ask in plain text when required information is missing.'},

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate non-duplicate Odysseus flow variants from behavioral seed flows."""
+"""Generate non-duplicate Ulises flow variants from behavioral seed flows."""
 
 from __future__ import annotations
 

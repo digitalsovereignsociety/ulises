@@ -1258,7 +1258,7 @@ import { invalidateSettings } from './appConfig.js';
     fetch(`/api/chat/stop/${encodeURIComponent(sessionId)}`, {
       method: 'POST',
       credentials: 'same-origin',
-      headers: { 'X-Odysseus-Run-Id': runId },
+      headers: { 'X-Ulises-Run-Id': runId },
     }).catch(() => {});
   }
 
@@ -3040,7 +3040,7 @@ import { invalidateSettings } from './appConfig.js';
         enableResearchBtn();
         return;
       }
-      const streamRunId = res.headers.get('X-Odysseus-Run-Id') || '';
+      const streamRunId = res.headers.get('X-Ulises-Run-Id') || '';
       if (streamRunId) _rememberStreamRunId(streamSessionId, streamRunId, streamGeneration);
 
       // Mark the chat log busy while streaming so screen readers wait for the
@@ -3090,7 +3090,7 @@ import { invalidateSettings } from './appConfig.js';
           try {
             const response = await fetch(`${API_BASE}/api/chat/finish/${encodeURIComponent(streamSessionId)}`, {
               method: 'POST', credentials: 'same-origin',
-              headers: { 'X-Odysseus-Run-Id': runId },
+              headers: { 'X-Ulises-Run-Id': runId },
             });
             const result = await response.json();
             if (!response.ok || !result.accepted) throw new Error('The run has already finished or changed');
@@ -6484,7 +6484,7 @@ import { invalidateSettings } from './appConfig.js';
       return false;
     }
     if (!res.ok || !res.body) return false;
-    const resumeRunId = res.headers.get('X-Odysseus-Run-Id') || '';
+    const resumeRunId = res.headers.get('X-Ulises-Run-Id') || '';
     if (resumeRunId) _streamRunIds.set(sessionId, resumeRunId);
 
     const box = document.getElementById('chat-history');

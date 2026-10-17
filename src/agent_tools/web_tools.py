@@ -819,7 +819,7 @@ class WebFetchTool:
 class PdfExtractTool:
     """Extract focused, source-attributed passages from a PDF URL or workspace file.
 
-    This deliberately builds on Odysseus' native web reader instead of adding
+    This deliberately builds on Ulises' native web reader instead of adding
     a benchmark transport.  The separate semantic affordance keeps models from
     downloading PDFs with ad-hoc Python and then guessing when extraction fails.
     Local task PDFs use the same positioned reader, but are resolved through the

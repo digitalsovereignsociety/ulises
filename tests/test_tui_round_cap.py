@@ -522,7 +522,7 @@ def test_filename_edit_in_explicit_workspace_is_coding_request():
 
 
 def test_coding_project_request_gets_a_bounded_workspace_probe():
-    command = _tui_local_fallback_shell_command("I want to work on the Odysseus tui")
+    command = _tui_local_fallback_shell_command("I want to work on the Ulises tui")
     assert command is not None
     assert 'workspace=$PWD' in command
     assert "git rev-parse --show-toplevel" in command
@@ -534,7 +534,7 @@ def test_coding_project_request_gets_a_bounded_workspace_probe():
 def test_invalid_backend_workspace_tools_collapse_to_one_host_action():
     blocks, recovered = _tui_recover_invalid_local_tools(
         [ToolBlock("get_workspace", ""), ToolBlock("ls", '{"path":"/app/data"}')],
-        "I want to work on the Odysseus tui",
+        "I want to work on the Ulises tui",
     )
     assert recovered is True
     assert [block.tool_type for block in blocks] == ["host_shell"]
@@ -830,7 +830,7 @@ def test_local_project_turn_is_not_short_circuited_by_web_disabled_guard():
     assert not _web_search_unavailable_for_turn(
         {"web", "files"},
         {"web_search", "web_fetch"},
-        "Find the local Odysseus TUI project; do not search the web.",
+        "Find the local Ulises TUI project; do not search the web.",
         _host_bridge_context(),
         None,
     )
@@ -914,7 +914,7 @@ def test_code_file_named_notes_stays_on_host_workspace():
 
 def test_active_workspace_does_not_hijack_model_picker_or_cookbook_requests():
     for prompt in (
-        "What models are running on Odysseus?",
+        "What models are running on Ulises?",
         "Switch to the Qwen model.",
     ):
         assert _looks_like_explicit_tui_app_or_external_request(prompt)

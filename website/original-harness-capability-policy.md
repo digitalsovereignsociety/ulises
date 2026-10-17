@@ -1,6 +1,6 @@
 # Original Harness Capability Policy
 
-Odysseus Original is the canonical product and the only agent orchestrator.
+Ulises Original is the canonical product and the only agent orchestrator.
 Specialized runners are evidence sources, not merge targets.
 
 ## Architecture

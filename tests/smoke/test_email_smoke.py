@@ -25,7 +25,7 @@ UNREAD_STATE_PATH = "/api/email/unread-state"
 # routes/email_routes.py's `_fixture_email_file`.
 FIXTURE_FILENAME = "fixture_email_messages.json"
 
-SUBJECT = "Odysseus smoke inbox message"
+SUBJECT = "Ulises smoke inbox message"
 BODY = "Body of the smoke fixture message."
 SENDER = "Smoke Sender <smoke@example.invalid>"
 

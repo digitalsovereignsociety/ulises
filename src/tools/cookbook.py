@@ -600,7 +600,7 @@ async def _cookbook_hf_model_info(repo_id: str) -> Dict[str, Any]:
     """Fetch lightweight official Hugging Face metadata for launch planning.
 
     Uses the public HF API directly so this works even when huggingface_hub is
-    not installed in Odysseus. Failures return a structured warning rather than
+    not installed in Ulises. Failures return a structured warning rather than
     blocking launch; cached/private/offline models can still be served.
     """
     import httpx
@@ -1012,7 +1012,7 @@ async def do_list_served_models(content: str, owner: Optional[str] = None) -> Di
                 # Prefer a window around a Python traceback if one exists,
                 # falling back to the last 30 lines. The previous 6-line
                 # tail showed only the post-crash bash prompt / neofetch
-                # banner ("Locale: C / Ubuntu_Odysseus ❯") — useless for
+                # banner ("Locale: C / Ubuntu_Ulises ❯") — useless for
                 # diagnosis. The traceback we want is usually 50-200 lines
                 # earlier in the buffer.
                 _tail_lines = tail.splitlines()

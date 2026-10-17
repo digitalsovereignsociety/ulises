@@ -115,7 +115,7 @@ Approval replay injects the sealed first tool result before the resumed model ro
 
 ## Internal Loopback
 
-`do_app_api()` is implemented in `src.tools.system` and re-exported by `src.tool_implementations`. It owns generic app API loopback, OpenAPI discovery, method/path blocklists, and fixed local target behavior. `_internal_headers()` adds the process-secret internal-tool token and optional `X-Odysseus-Owner`; `core.middleware.require_admin()` and auth middleware own the corresponding bypass and owner-stamping rules. Route-specific owner handling must still be audited.
+`do_app_api()` is implemented in `src.tools.system` and re-exported by `src.tool_implementations`. It owns generic app API loopback, OpenAPI discovery, method/path blocklists, and fixed local target behavior. `_internal_headers()` adds the process-secret internal-tool token and optional `X-Ulises-Owner`; `core.middleware.require_admin()` and auth middleware own the corresponding bypass and owner-stamping rules. Route-specific owner handling must still be audited.
 
 ## MCP
 

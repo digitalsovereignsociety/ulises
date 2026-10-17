@@ -120,7 +120,7 @@ def needs_teacher_edit(result: dict[str, Any]) -> bool:
 
 def teacher_edit(endpoint: dict[str, str], result: dict[str, Any]) -> dict[str, Any]:
     prompt = {
-        "task": "Edit this failed/weak Odysseus web tool trace into one minimal correct SFT trace.",
+        "task": "Edit this failed/weak Ulises web tool trace into one minimal correct SFT trace.",
         "current_date": "2026-08-21",
         "user": result.get("user"),
         "prior_turns": result.get("prior_turns") or [],

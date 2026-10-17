@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Focused real-route eval for implicit Odysseus memory questions.
+"""Focused real-route eval for implicit Ulises memory questions.
 
-This uses the same Odysseus HTTP chat route as the broader harness evals, then
+This uses the same Ulises HTTP chat route as the broader harness evals, then
 adds memory-specific scoring so the next SFT slice can target the actual gap:
 natural "what do you remember/know about me" questions that should route to
 manage_memory before answering.

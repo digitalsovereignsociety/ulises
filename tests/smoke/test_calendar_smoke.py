@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 CALENDARS_PATH = "/api/calendar/calendars"
 EVENTS_PATH = "/api/calendar/events"
 
-SUMMARY = "Odysseus smoke event"
+SUMMARY = "Ulises smoke event"
 # Far enough out that a real local calendar's own entries cannot collide
 # with the assertion, and fixed relative to now so the window is never
 # empty for date reasons.

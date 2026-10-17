@@ -4008,7 +4008,7 @@ import { attachColorPicker } from './colorPicker.js?v=20260910eyedropper1';
 
   function _isRichInlineCodeMarker(element) {
     return element?.tagName === 'SPAN'
-      && String(element.style?.fontFamily || '').includes('OdysseusInlineCode');
+      && String(element.style?.fontFamily || '').includes('UlisesInlineCode');
   }
 
   function _normalizeRichInlineCode(root) {
@@ -4042,13 +4042,13 @@ import { attachColorPicker } from './colorPicker.js?v=20260910eyedropper1';
     if (!rich.contains(range.commonAncestorContainer)) return false;
     if (range.collapsed) {
       document.execCommand('styleWithCSS', false, true);
-      document.execCommand('fontName', false, 'OdysseusInlineCode, ui-monospace, monospace');
+      document.execCommand('fontName', false, 'UlisesInlineCode, ui-monospace, monospace');
       document.execCommand('backColor', false, 'rgba(127, 127, 127, 0.12)');
       _richInlineCodeTypingArmed = true;
       return true;
     }
     const code = document.createElement('span');
-    code.style.fontFamily = 'OdysseusInlineCode, ui-monospace, monospace';
+    code.style.fontFamily = 'UlisesInlineCode, ui-monospace, monospace';
     code.style.backgroundColor = 'rgba(127, 127, 127, 0.12)';
     const selectedText = range.toString();
     code.textContent = selectedText;
@@ -5204,7 +5204,7 @@ import { attachColorPicker } from './colorPicker.js?v=20260910eyedropper1';
 
   let _odysseusAttachMenu = null;
 
-  function _closeOdysseusAttachMenu() {
+  function _closeUlisesAttachMenu() {
     if (_odysseusAttachMenu) {
       _odysseusAttachMenu.remove();
       _odysseusAttachMenu = null;
@@ -5214,15 +5214,15 @@ import { attachColorPicker } from './colorPicker.js?v=20260910eyedropper1';
   }
 
   function _attachMenuOutsideClick(e) {
-    if (_odysseusAttachMenu && !_odysseusAttachMenu.contains(e.target)) _closeOdysseusAttachMenu();
+    if (_odysseusAttachMenu && !_odysseusAttachMenu.contains(e.target)) _closeUlisesAttachMenu();
   }
 
   function _attachMenuEscape(e) {
     if (e.key !== 'Escape') return;
-    _closeOdysseusAttachMenu();
+    _closeUlisesAttachMenu();
   }
 
-  function _positionOdysseusAttachMenu(anchor, menu) {
+  function _positionUlisesAttachMenu(anchor, menu) {
     const r = anchor?.getBoundingClientRect?.();
     if (!r) return;
     menu.style.left = `${Math.max(8, Math.min(r.left, window.innerWidth - 310))}px`;
@@ -5242,7 +5242,7 @@ import { attachColorPicker } from './colorPicker.js?v=20260910eyedropper1';
     return item.title || 'Untitled document';
   }
 
-  async function _stageOdysseusAttachment(kind, id) {
+  async function _stageUlisesAttachment(kind, id) {
     const doc = docs.get(activeDocId);
     if (!doc || doc.language !== 'email') return null;
     if (!doc._composeAtts) doc._composeAtts = [];
@@ -5263,7 +5263,7 @@ import { attachColorPicker } from './colorPicker.js?v=20260910eyedropper1';
     return data;
   }
 
-  async function _stageOdysseusZip(items) {
+  async function _stageUlisesZip(items) {
     const doc = docs.get(activeDocId);
     if (!doc || doc.language !== 'email') return null;
     if (!doc._composeAtts) doc._composeAtts = [];
@@ -5284,31 +5284,31 @@ import { attachColorPicker } from './colorPicker.js?v=20260910eyedropper1';
     return data;
   }
 
-  function _afterOdysseusAttachmentsAdded(count, label) {
+  function _afterUlisesAttachmentsAdded(count, label) {
     _renderComposeAttachments();
     clearTimeout(_autoSaveDebounce);
     _autoSaveDebounce = setTimeout(() => { saveDocument({ silent: true }); }, 800);
     if (uiModule) uiModule.showToast(count > 1 ? `Attached ${count} items` : `Attached ${label || 'item'}`);
   }
 
-  async function _attachOdysseusItem(kind, id, label, opts = {}) {
+  async function _attachUlisesItem(kind, id, label, opts = {}) {
     try {
-      const data = await _stageOdysseusAttachment(kind, id);
+      const data = await _stageUlisesAttachment(kind, id);
       if (!data) return;
-      _afterOdysseusAttachmentsAdded(1, label || data.filename);
-      if (!opts.keepOpen) _closeOdysseusAttachMenu();
+      _afterUlisesAttachmentsAdded(1, label || data.filename);
+      if (!opts.keepOpen) _closeUlisesAttachMenu();
     } catch (err) {
-      console.error('Failed to attach Odysseus item:', err);
-      if (uiModule) uiModule.showError('Failed to attach from Odysseus');
+      console.error('Failed to attach Ulises item:', err);
+      if (uiModule) uiModule.showError('Failed to attach from Ulises');
     }
   }
 
-  function _selectedOdysseusAttachRows(menu) {
+  function _selectedUlisesAttachRows(menu) {
     return Array.from(menu?.querySelectorAll?.('.email-odysseus-attach-row.is-selected') || []);
   }
 
-  function _syncOdysseusAttachSelection(menu) {
-    const selected = _selectedOdysseusAttachRows(menu);
+  function _syncUlisesAttachSelection(menu) {
+    const selected = _selectedUlisesAttachRows(menu);
     const bar = menu?.querySelector?.('.email-odysseus-attach-actions');
     const count = menu?.querySelector?.('.email-odysseus-attach-count');
     const attachBtn = menu?.querySelector?.('.email-odysseus-attach-selected');
@@ -5317,8 +5317,8 @@ import { attachColorPicker } from './colorPicker.js?v=20260910eyedropper1';
     if (attachBtn) attachBtn.disabled = selected.length === 0;
   }
 
-  async function _attachSelectedOdysseusItems(menu) {
-    const rows = _selectedOdysseusAttachRows(menu);
+  async function _attachSelectedUlisesItems(menu) {
+    const rows = _selectedUlisesAttachRows(menu);
     if (!rows.length) return;
     const btn = menu.querySelector('.email-odysseus-attach-selected');
     if (btn) {
@@ -5336,19 +5336,19 @@ import { attachColorPicker } from './colorPicker.js?v=20260910eyedropper1';
           : window.confirm(`Attach ${items.length} files as one zip?`);
       }
       if (zip) {
-        await _stageOdysseusZip(items);
+        await _stageUlisesZip(items);
         added = 1;
       } else {
         for (const item of items) {
-          await _stageOdysseusAttachment(item.kind, item.id);
+          await _stageUlisesAttachment(item.kind, item.id);
           added += 1;
         }
       }
-      _afterOdysseusAttachmentsAdded(added, zip ? 'odysseus-attachments.zip' : undefined);
-      _closeOdysseusAttachMenu();
+      _afterUlisesAttachmentsAdded(added, zip ? 'odysseus-attachments.zip' : undefined);
+      _closeUlisesAttachMenu();
     } catch (err) {
-      console.error('Failed to attach selected Odysseus items:', err);
-      if (uiModule) uiModule.showError(added ? `Attached ${added}, then failed` : 'Failed to attach from Odysseus');
+      console.error('Failed to attach selected Ulises items:', err);
+      if (uiModule) uiModule.showError(added ? `Attached ${added}, then failed` : 'Failed to attach from Ulises');
       _renderComposeAttachments();
     } finally {
       if (btn) {
@@ -5358,7 +5358,7 @@ import { attachColorPicker } from './colorPicker.js?v=20260910eyedropper1';
     }
   }
 
-  async function _loadOdysseusAttachItems(menu, kind) {
+  async function _loadUlisesAttachItems(menu, kind) {
     const list = menu.querySelector('.email-odysseus-attach-list');
     if (!list) return;
     menu.dataset.odyAttachKind = kind;
@@ -5381,7 +5381,7 @@ import { attachColorPicker } from './colorPicker.js?v=20260910eyedropper1';
         : (Array.isArray(data?.documents) ? data.documents : Array.isArray(data?.items) ? data.items : []);
       if (!items.length) {
         list.innerHTML = `<div class="email-odysseus-attach-empty">${q ? 'No matches' : `No ${kind === 'gallery' ? 'images' : 'documents'}`}</div>`;
-        _syncOdysseusAttachSelection(menu);
+        _syncUlisesAttachSelection(menu);
         return;
       }
       list.innerHTML = '';
@@ -5420,14 +5420,14 @@ import { attachColorPicker } from './colorPicker.js?v=20260910eyedropper1';
         row.addEventListener('click', (ev) => {
           ev.preventDefault();
           row.classList.toggle('is-selected');
-          _syncOdysseusAttachSelection(menu);
+          _syncUlisesAttachSelection(menu);
         });
-        row.addEventListener('dblclick', () => _attachOdysseusItem(kind, item.id, label, { keepOpen: false }));
+        row.addEventListener('dblclick', () => _attachUlisesItem(kind, item.id, label, { keepOpen: false }));
         list.appendChild(row);
       }
-      _syncOdysseusAttachSelection(menu);
+      _syncUlisesAttachSelection(menu);
     } catch (err) {
-      console.error('Failed to load Odysseus attach items:', err);
+      console.error('Failed to load Ulises attach items:', err);
       list.innerHTML = '<div class="email-odysseus-attach-empty">Could not load</div>';
     }
   }
@@ -5587,7 +5587,7 @@ import { attachColorPicker } from './colorPicker.js?v=20260910eyedropper1';
       document.getElementById('doc-md-image-input')?.click();
       return;
     }
-    _closeOdysseusAttachMenu();
+    _closeUlisesAttachMenu();
     const menu = document.createElement('div');
     menu.className = 'email-odysseus-attach-menu';
     menu.innerHTML = `
@@ -5620,27 +5620,27 @@ import { attachColorPicker } from './colorPicker.js?v=20260910eyedropper1';
     `;
     document.body.appendChild(menu);
     _odysseusAttachMenu = menu;
-    _positionOdysseusAttachMenu(anchor, menu);
+    _positionUlisesAttachMenu(anchor, menu);
     menu.querySelector('.email-odysseus-attach-local')?.addEventListener('click', () => {
-      _closeOdysseusAttachMenu();
+      _closeUlisesAttachMenu();
       document.getElementById('doc-email-file-input')?.click();
     });
     menu.querySelectorAll('[data-ody-attach-kind]').forEach(btn => {
-      btn.addEventListener('click', () => _loadOdysseusAttachItems(menu, btn.dataset.odyAttachKind));
+      btn.addEventListener('click', () => _loadUlisesAttachItems(menu, btn.dataset.odyAttachKind));
     });
     let attachSearchTimer = null;
     menu.querySelector('.email-odysseus-attach-search')?.addEventListener('input', () => {
       clearTimeout(attachSearchTimer);
       attachSearchTimer = setTimeout(() => {
-        _loadOdysseusAttachItems(menu, menu.dataset.odyAttachKind || 'document');
+        _loadUlisesAttachItems(menu, menu.dataset.odyAttachKind || 'document');
       }, 220);
     });
-    menu.querySelector('.email-odysseus-attach-selected')?.addEventListener('click', () => _attachSelectedOdysseusItems(menu));
+    menu.querySelector('.email-odysseus-attach-selected')?.addEventListener('click', () => _attachSelectedUlisesItems(menu));
     setTimeout(() => {
       document.addEventListener('click', _attachMenuOutsideClick, true);
       document.addEventListener('keydown', _attachMenuEscape, true);
     }, 0);
-    _loadOdysseusAttachItems(menu, 'document');
+    _loadUlisesAttachItems(menu, 'document');
   }
 
   function _isMarkdownImageFile(file) {

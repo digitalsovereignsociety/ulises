@@ -1,4 +1,4 @@
-"""Bounded local OCR primitives shared by Odysseus media tools."""
+"""Bounded local OCR primitives shared by Ulises media tools."""
 
 from __future__ import annotations
 

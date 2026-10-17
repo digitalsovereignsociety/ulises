@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run live-style Odysseus hard examples against the current agent route.
+"""Run live-style Ulises hard examples against the current agent route.
 
 This is eval-first by design: it calls the same stream_agent_loop path used by
 the app, records actual tool calls and mutations, and writes JSON/Markdown
@@ -370,7 +370,7 @@ async def _run_case(case: dict[str, Any], args: argparse.Namespace) -> dict[str,
 def _write_markdown(path: Path, payload: dict[str, Any]) -> None:
     rows = payload["results"]
     lines = [
-        "# Odysseus Live Hard-Example Eval Results",
+        "# Ulises Live Hard-Example Eval Results",
         "",
         f"- Generated: `{payload['generated_at']}`",
         f"- Model: `{payload['model']}`",

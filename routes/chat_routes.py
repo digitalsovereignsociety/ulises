@@ -989,7 +989,7 @@ def _client_runtime_context_system_message(
         and not has_contract_facts
     ):
         return None
-    lines = ["## Odysseus TUI runtime contract"]
+    lines = ["## Ulises TUI runtime contract"]
     if session_cwd:
         lines.append(f"- session_cwd: {session_cwd}")
     if turn_controls:
@@ -3375,7 +3375,7 @@ def setup_chat_routes(
         # requested_capabilities already inherits a typed, recently executed
         # family for referential follow-ups. Do not additionally union stale
         # families into an explicit new request: that inflated regular-model
-        # schemas and made family switches less reliable. The exact Odysseus
+        # schemas and made family switches less reliable. The exact Ulises
         # model receives the trained compact form of this same contract below.
         _warm_turn_capabilities = frozenset()
         if _use_turn_contract and _turn_capabilities and "search_browser" not in _turn_capabilities:
@@ -5073,7 +5073,7 @@ def setup_chat_routes(
             agent_runs.subscribe(session, _detached_run),
             media_type="text/event-stream",
             headers={
-                "X-Odysseus-Run-Id": _detached_run.run_id,
+                "X-Ulises-Run-Id": _detached_run.run_id,
                 "Cache-Control": "no-cache, no-transform",
                 "X-Accel-Buffering": "no",
             },
@@ -5093,7 +5093,7 @@ def setup_chat_routes(
             agent_runs.subscribe(session_id, _active_run),
             media_type="text/event-stream",
             headers={
-                "X-Odysseus-Run-Id": _active_run.run_id,
+                "X-Ulises-Run-Id": _active_run.run_id,
                 "Cache-Control": "no-cache, no-transform",
                 "X-Accel-Buffering": "no",
             },
@@ -5106,7 +5106,7 @@ def setup_chat_routes(
     @router.post("/api/chat/stop/{session_id}")
     async def chat_stop(request: Request, session_id: str) -> Dict[str, Any]:
         _verify_session_owner(request, session_id)
-        _expected_run_id = request.headers.get("X-Odysseus-Run-Id")
+        _expected_run_id = request.headers.get("X-Ulises-Run-Id")
         stopped = agent_runs.stop(session_id, _expected_run_id)
         return {"stopped": stopped}
 
@@ -5114,7 +5114,7 @@ def setup_chat_routes(
     async def chat_finish(request: Request, session_id: str) -> Dict[str, Any]:
         """Finish an editor run without discarding completed tools or review cards."""
         _verify_session_owner(request, session_id)
-        expected_run_id = request.headers.get("X-Odysseus-Run-Id")
+        expected_run_id = request.headers.get("X-Ulises-Run-Id")
         accepted = agent_runs.request_finish(session_id, expected_run_id)
         return {"accepted": accepted}
 

@@ -1,4 +1,4 @@
-# High-trust host workspace access. Enable only when the Odysseus agent should
+# High-trust host workspace access. Enable only when the Ulises agent should
 # work on a host directory outside the container's normal /app/data sandbox.
 #   COMPOSE_FILE=docker-compose.yml:docker/host-workspace.yml
 #   ODYSSEUS_HOST_WORKSPACE_DIR=/absolute/host/path

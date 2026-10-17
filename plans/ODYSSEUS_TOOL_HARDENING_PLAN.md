@@ -1,4 +1,4 @@
-# Odysseus Tool Runtime Hardening Plan
+# Ulises Tool Runtime Hardening Plan
 
 ## Objective
 
@@ -87,7 +87,7 @@ Current evidence is a baseline, not a ship claim:
 
 ## Non-negotiable architecture rules
 
-1. Runtime selection follows exact model identity. The trained Odysseus model
+1. Runtime selection follows exact model identity. The trained Ulises model
    uses the clean compact runtime across endpoint aliases; all other models use
    legacy RAG. Add a regression test for both sides.
 2. Resolve permissions, toggles, and available backends once per turn. Produce
@@ -209,10 +209,10 @@ not merely whether `web_search` was called.
 
 ### G. Regular-model legacy RAG and tool coverage
 
-- Inventory every enabled non-Odysseus endpoint/model visible in 7011, including
+- Inventory every enabled non-Ulises endpoint/model visible in 7011, including
   its provider, schema mode, native-tool support, context limit, and configured
   permissions. Do not assume every provider supports the same wire format.
-- Assert that no non-Odysseus model enters the clean-v3 runtime. These models
+- Assert that no non-Ulises model enters the clean-v3 runtime. These models
   retain the regular RAG/tool loop and are repaired only in that owning path.
 - For each model, test every tool family the effective user policy offers:
   direct request, misspelling, ambiguous follow-up, family switch, backend
@@ -287,12 +287,12 @@ layer before continuing.
 
 ### Phase 4B — Regular-model repair and verification
 
-- Snapshot the enabled non-Odysseus model inventory.
+- Snapshot the enabled non-Ulises model inventory.
 - Run the legacy-RAG compatibility matrix in bounded parallel groups, respecting
   endpoint rate limits and shared backend write serialization.
 - Fix shared harness/provider defects first, then rerun all affected models.
 - Publish separate per-model scores and limitations; do not blend them into the
-  Odysseus fine-tune score.
+  Ulises fine-tune score.
 
 ### Phase 5 — Ship gate
 
@@ -306,7 +306,7 @@ Ship only when:
 - routing/execution and safety invariants are 100%;
 - all reversible writes are API-verified and cleaned up;
 - search quality and production email are reported separately and honestly;
-- non-Odysseus models demonstrably retain legacy RAG;
+- non-Ulises models demonstrably retain legacy RAG;
 - every enabled regular model has a complete tested-tool compatibility record,
   and every tool advertised as supported passes its functional checks;
 - no hidden prompt leakage, duplicate rendering, or false success remains;

@@ -777,7 +777,7 @@ VARIABLE_NOTES: dict[str, tuple[str, str, str]] = {
     # -- Integrations (Claude, Codex) ---------------------------------------
     "ODYSSEUS_URL": (
         "Integrations (Claude, Codex)", USER,
-        "Base URL of the Odysseus instance the bundled integration scripts call.",
+        "Base URL of the Ulises instance the bundled integration scripts call.",
     ),
     "ODYSSEUS_API_TOKEN": (
         "Integrations (Claude, Codex)", USER,
@@ -925,7 +925,7 @@ GENERATED_WARNING = (
     "notes table."
 )
 
-INTRO = """Odysseus reads its runtime configuration from the Settings UI. The
+INTRO = """Ulises reads its runtime configuration from the Settings UI. The
 environment variables below are the deployment-level escape hatches underneath
 that: they are read directly from the process environment, mostly at import or
 startup, and most installs never need any of them.

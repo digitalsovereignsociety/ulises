@@ -227,9 +227,9 @@ try {
     check(!safeError('Timeout\n cookie: odysseus_session=secret').includes('secret'), 'Error redaction');
     check(!noVisibleLeak('View thinking process\n\nThe user wants a list of emails'), 'Fixture reasoning preamble detection');
     check(noVisibleLeak('Here are your three notes.'), 'Normal fixture answer must not trigger leakage');
-    check(boundedSubsetFromHistory('List those again, at most three.', 'Servers: kierkegaard, Odysseus, Ajax.', 'Servers: kierkegaard (local), Odysseus, Ajax, kierk.'), 'Grounded bounded subset detection');
+    check(boundedSubsetFromHistory('List those again, at most three.', 'Servers: kierkegaard, Ulises, Ajax.', 'Servers: kierkegaard (local), Ulises, Ajax, kierk.'), 'Grounded bounded subset detection');
     check(boundedSubsetFromHistory('List those again, at most three.', '- Search seed prompts [Pinned]', '- [opaque-id] **Search seed prompts** [PINNED]'), 'Grounded structured tool-output detection');
-    check(!boundedSubsetFromHistory('List those again, at most two.', 'Servers: kierkegaard, Odysseus, Ajax.', 'Servers: kierkegaard, Odysseus, Ajax.'), 'Bounded subset limit enforcement');
+    check(!boundedSubsetFromHistory('List those again, at most two.', 'Servers: kierkegaard, Ulises, Ajax.', 'Servers: kierkegaard, Ulises, Ajax.'), 'Bounded subset limit enforcement');
     report.self_tests = 11; report.status = 'self-test-passed';
   } else if (opt('matrix-only', 'false') === 'true') {
     report.status = 'matrix-only';
@@ -607,7 +607,7 @@ try {
           && activeTurn?.session_id === caseSession && activeTurn.http?.headers?.['x-odysseus-run-id']) {
           const runId = activeTurn.http.headers['x-odysseus-run-id'];
           const stopped = await context.request.post(`${base}/api/chat/stop/${encodeURIComponent(caseSession)}`, {
-            headers: { 'X-Odysseus-Run-Id': runId }, timeout: 5000 });
+            headers: { 'X-Ulises-Run-Id': runId }, timeout: 5000 });
           const cleanup = { session_id: caseSession, run_id: runId, http: stopped.status(), result: await stopped.json() };
           for (let attempt = 0; attempt < 5; attempt++) {
             const verification = await context.request.get(`${base}/api/chat/stream_status/${encodeURIComponent(caseSession)}`, { timeout: 3000 });

@@ -1,4 +1,4 @@
-# Odysseus frontend architecture handbook
+# Ulises frontend architecture handbook
 
 Status: F1 merged in PR #6701. The complete Notes reference is implemented as an
 unpublished review diff on `refactor/notes-reference-decomposition`. Read its

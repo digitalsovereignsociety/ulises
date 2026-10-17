@@ -373,7 +373,7 @@ def main() -> int:
         "train_rows": len(train),
         "val_rows": len(val),
         "family_counts": family_counts,
-        "goal": "train Qwen to continue correctly after Odysseus app-route web_search tool output plus system nudge",
+        "goal": "train Qwen to continue correctly after Ulises app-route web_search tool output plus system nudge",
         "forbidden_final_regex": FORBIDDEN_FINAL_RE.pattern,
         "files": {
             "train": str(args.out_dir / "train.jsonl"),

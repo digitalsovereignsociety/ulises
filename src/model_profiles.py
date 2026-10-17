@@ -1,4 +1,4 @@
-"""Stable runtime profiles for models with Odysseus-specific contracts."""
+"""Stable runtime profiles for models with Ulises-specific contracts."""
 
 from pathlib import PurePosixPath
 import re
@@ -22,7 +22,7 @@ def model_id_leaf(value: object) -> str:
 
 
 def is_odysseus_tool_profile_model(value: object) -> bool:
-    """Return whether a model name opts into the Odysseus tool runtime."""
+    """Return whether a model name opts into the Ulises tool runtime."""
 
     return bool(_ODYSSEUS_TOOL_PROFILE_TOKEN.search(model_id_leaf(value)))
 
@@ -36,7 +36,7 @@ def tool_schema_profile(value: object) -> str:
 
 
 def is_odysseus_merged_tools_model(value: object) -> bool:
-    """Compatibility alias for the Odysseus tool runtime profile."""
+    """Compatibility alias for the Ulises tool runtime profile."""
 
     return is_odysseus_tool_profile_model(value)
 

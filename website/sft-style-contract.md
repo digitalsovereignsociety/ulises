@@ -1,4 +1,4 @@
-# Odysseus SFT Style Contract
+# Ulises SFT Style Contract
 
 This contract applies after behavioral correctness. A trace that violates it is repaired or excluded before training.
 

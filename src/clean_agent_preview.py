@@ -567,7 +567,7 @@ def masked_shell_pipeline_failure(result):
 
 
 _LOSSLESS_OFFERED_TOOL_ALIASES = {
-    # Common model spelling for Odysseus's reviewable, unsent draft action.
+    # Common model spelling for Ulises's reviewable, unsent draft action.
     # This deliberately does not alias any send operation.
     'create_draft': 'mcp__email__draft_email',
     'email_create_draft': 'mcp__email__draft_email',
@@ -1400,7 +1400,7 @@ def incomplete_broad_web_answer(content, user_text, *, recovery_attempts=0):
 
 
 def progressive_thinking_for_turn(model, offered_schemas, thinking_mode=None):
-    """Use Qwen reasoning only when this turn has no Odysseus tool surface."""
+    """Use Qwen reasoning only when this turn has no Ulises tool surface."""
 
     if str(thinking_mode or '').lower() == 'off':
         return False
@@ -5095,7 +5095,7 @@ def bounded_visual_result_blocks(result, *, max_images=3):
 
 
 def provider_request_messages(messages):
-    """Remove Odysseus-only message fields before calling OpenAI-compatible APIs."""
+    """Remove Ulises-only message fields before calling OpenAI-compatible APIs."""
     cleaned = []
     for message in messages:
         item = dict(message)
@@ -5335,7 +5335,7 @@ async def stream_preview(*, endpoint_url, model, messages, headers, turn_contrac
         'This is a tool preview connected to the authenticated user’s real data. '
     )
     system = (
-        f'You are Odysseus. Current UTC date and time: {datetime.now(timezone.utc).isoformat()}. '
+        f'You are Ulises. Current UTC date and time: {datetime.now(timezone.utc).isoformat()}. '
         + runtime_scope_clause
         + 'Use available tools when needed, including for personal records and current information. '
         'Preserve conversation context on follow-ups and choose arguments yourself. '
@@ -5681,7 +5681,7 @@ async def stream_preview(*, endpoint_url, model, messages, headers, turn_contrac
                                       'destination': 'active_editor' if active_editor_target else intent.destination,
                                       'needs_clarification': intent.needs_clarification})
                         + '\nFor draft/revise, use the interpreted destination: mailbox means '
-                        'create an UNSENT Odysseus email editor document using draft_email or '
+                        'create an UNSENT Ulises email editor document using draft_email or '
                         'draft_email_reply; chat means composed text in chat. When an active '
                         'editor is bound, update it instead of creating another draft. Resolve '
                         'named recipients to contact email addresses before creating a compose '

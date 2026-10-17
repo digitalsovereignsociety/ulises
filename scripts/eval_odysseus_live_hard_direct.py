@@ -228,7 +228,7 @@ def main() -> int:
     parser.add_argument("--model", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--timeout", type=float, default=90)
-    parser.add_argument("--all-tools", action="store_true", help="Expose the full unified Odysseus tool schema to every case.")
+    parser.add_argument("--all-tools", action="store_true", help="Expose the full unified Ulises tool schema to every case.")
     args = parser.parse_args()
 
     system = (

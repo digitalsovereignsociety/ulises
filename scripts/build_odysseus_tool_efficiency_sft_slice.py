@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build a small targeted Odysseus tool-router SFT slice.
+"""Build a small targeted Ulises tool-router SFT slice.
 
 This slice targets current measured gaps rather than broad tool coverage:
 
@@ -123,7 +123,7 @@ def memory_rows() -> list[dict[str, Any]]:
         "memory cleanup should be checked after CRUD evals",
         "adapter comparisons should record both correctness and efficiency",
         "I prefer benchmark summaries to include artifact paths",
-        "I want Odysseus tool tests to report input tokens",
+        "I want Ulises tool tests to report input tokens",
         "I prefer LAN testing before blaming model latency",
         "I like public domain art links from official sources",
         "I want temporary eval memories deleted after tests",
@@ -172,7 +172,7 @@ def memory_crud_rows() -> list[dict[str, Any]]:
             "preference",
         ),
         (
-            "My current benchmark focus is Odysseus tool-call efficiency",
+            "My current benchmark focus is Ulises tool-call efficiency",
             "My current benchmark focus is memory add one-call efficiency",
             "fact",
         ),
@@ -351,7 +351,7 @@ def web_followup_rows() -> list[dict[str, Any]]:
 def no_tool_rows() -> list[dict[str, Any]]:
     pairs = [
         ("hi", "Hi! How can I help?"),
-        ("who are you?", "I am Odysseus, your assistant."),
+        ("who are you?", "I am Ulises, your assistant."),
         ("what does VAT stand for?", "VAT stands for value-added tax."),
         ("where is Sweden on a map?", "Sweden is in Northern Europe, on the Scandinavian Peninsula between Norway and Finland."),
         ("thanks", "You're welcome."),

@@ -1,4 +1,4 @@
-"""Shared fixture email wiring for local Odysseus self-evals."""
+"""Shared fixture email wiring for local Ulises self-evals."""
 
 from __future__ import annotations
 

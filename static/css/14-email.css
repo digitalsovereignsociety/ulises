@@ -2796,7 +2796,7 @@ body:not(.doc-find-active) .doc-code-syntax:not(.diff-mode) .doc-editor-textarea
   font-weight: 600;
 }
 .doc-email-richbody.richtext-mode code,
-.doc-email-richbody.richtext-mode span[style*="OdysseusInlineCode"] {
+.doc-email-richbody.richtext-mode span[style*="UlisesInlineCode"] {
   padding: 0.12em 0.35em;
   border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
   border-radius: 3px;

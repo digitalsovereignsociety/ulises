@@ -20,7 +20,7 @@ def test_ajax_c375_uses_same_stable_compact_tool_runtime():
 
 
 def test_any_odysseus_or_ajax_token_uses_clean_tool_runtime():
-    assert _clean_v3_route_for_model("Odysseus")
+    assert _clean_v3_route_for_model("Ulises")
     assert _clean_v3_route_for_model("lab/my-odysseus-experiment")
     assert _clean_v3_route_for_model("lab/AJAX-trial-99")
 
@@ -31,7 +31,7 @@ def test_partial_name_matches_do_not_capture_regular_models():
 
 
 def test_explicit_schema_setting_overrides_model_name_default():
-    assert not _clean_v3_route_for_model("Odysseus-trial55", "full")
+    assert not _clean_v3_route_for_model("Ulises-trial55", "full")
     assert not _clean_v3_route_for_model("Ajax_c375", "none")
     assert _clean_v3_route_for_model("gpt-5.5", "compact")
     assert _clean_v3_route_for_model("gpt-5.5", "odysseus_compact")

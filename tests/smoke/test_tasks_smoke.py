@@ -9,7 +9,7 @@ from __future__ import annotations
 
 TASKS_PATH = "/api/tasks"
 
-NAME = "Odysseus smoke task"
+NAME = "Ulises smoke task"
 SCHEDULED_TIME = "03:00"
 
 

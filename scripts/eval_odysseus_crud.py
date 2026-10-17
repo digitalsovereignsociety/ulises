@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exercise disposable CRUD workflows through the real Odysseus chat route.
+"""Exercise disposable CRUD workflows through the real Ulises chat route.
 
 The model must choose and execute the tools.  This runner never mutates the
 database directly: each fixture is uniquely tagged, and cleanup is requested
@@ -25,7 +25,7 @@ def cookie(path: Path) -> str:
     for token, row in sessions.items():
         if row.get("username") == "pewds" and row.get("expiry", 0) > now:
             return token
-    raise RuntimeError("No valid pewds Odysseus session cookie found")
+    raise RuntimeError("No valid pewds Ulises session cookie found")
 
 
 def events(response: httpx.Response):

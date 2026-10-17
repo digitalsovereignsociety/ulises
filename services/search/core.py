@@ -501,7 +501,7 @@ def _scholarly_user_agent() -> str:
     """Identify this build to the scholarly APIs using the real app version."""
     from src.constants import APP_VERSION
 
-    return f"Odysseus/{APP_VERSION} scholarly-title-resolver"
+    return f"Ulises/{APP_VERSION} scholarly-title-resolver"
 
 
 _scholarly_deadline: ContextVar[Optional[float]] = ContextVar(

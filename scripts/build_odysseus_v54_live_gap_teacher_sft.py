@@ -188,7 +188,7 @@ def call_deepseek(endpoint: dict[str, str], prompt: dict[str, Any], max_tokens: 
 
 def teacher_prompt(family: dict[str, Any], count: int, batch: int) -> dict[str, Any]:
     return {
-        "task": "Generate Odysseus SFT specs for live tool-use gaps.",
+        "task": "Generate Ulises SFT specs for live tool-use gaps.",
         "current_state": {
             "model": "qwen35-9b-tool-router-v53-web-repair",
             "live_gap_eval": "DeepSeek-heldout v3 rescored 38/41",

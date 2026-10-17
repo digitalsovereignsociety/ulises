@@ -46,7 +46,7 @@ def test_extract_local_document_reads_real_pdf_text(tmp_path):
     })
     stream = DecodedStreamObject()
     stream.set_data(
-        b"BT /F1 12 Tf 72 720 Td (Odysseus PDF extraction smoke 2026) Tj ET"
+        b"BT /F1 12 Tf 72 720 Td (Ulises PDF extraction smoke 2026) Tj ET"
     )
     page[NameObject("/Contents")] = writer._add_object(stream)
     with path.open("wb") as handle:
@@ -55,4 +55,4 @@ def test_extract_local_document_reads_real_pdf_text(tmp_path):
     result = extract_local_document(str(path))
 
     assert "[PDF content]" in result
-    assert "Odysseus PDF extraction smoke 2026" in result
+    assert "Ulises PDF extraction smoke 2026" in result

@@ -1,4 +1,4 @@
-"""Qwen3.6/Qwen3.8 Odysseus-native model-family regressions."""
+"""Qwen3.6/Qwen3.8 Ulises-native model-family regressions."""
 
 import pytest
 

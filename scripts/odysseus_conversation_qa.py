@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate, replay, and judge realistic Odysseus Agent conversations.
+"""Generate, replay, and judge realistic Ulises Agent conversations.
 
 This runner is intentionally conversation-level.  It uses an external teacher
 to vary human wording around stable capability seeds, replays each flow through
@@ -222,7 +222,7 @@ FAMILY_SEEDS: dict[str, dict[str, Any]] = {
 
 
 def compact_tool_catalog() -> dict[str, Any]:
-    """Describe the complete native Odysseus tool surface for the teacher.
+    """Describe the complete native Ulises tool surface for the teacher.
 
     The catalog is intentionally compact enough to include on every generation
     and judging call.  It explains all tools, while the target model still sees
@@ -1200,7 +1200,7 @@ def append_ledger(path: Path, stamp: str, results: list[dict[str, Any]]) -> None
     path.parent.mkdir(parents=True, exist_ok=True)
     if not path.exists():
         path.write_text(
-            "# Odysseus Harness QA\n\n"
+            "# Ulises Harness QA\n\n"
             "Conversation-level findings from the real 7011 Agent route. Raw traces live in `tmp/`; "
             "this ledger keeps only reproducible failures and run summaries.\n",
             encoding="utf-8",
@@ -1318,7 +1318,7 @@ def parse_args() -> argparse.Namespace:
         "--routing-experiment",
         choices=("baseline", "recent", "all", "recent_model_choice"),
         default=DEFAULT_ROUTING_EXPERIMENT,
-        help="Exact 7011 routing runtime to audit (default: model-specific Odysseus runtime)",
+        help="Exact 7011 routing runtime to audit (default: model-specific Ulises runtime)",
     )
     parser.add_argument("--judge-endpoint-id", default=DEFAULT_JUDGE_ENDPOINT)
     parser.add_argument("--judge-model", default=DEFAULT_JUDGE_MODEL)

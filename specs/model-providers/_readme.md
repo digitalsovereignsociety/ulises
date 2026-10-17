@@ -7,7 +7,7 @@ Last updated: dev@86b886c | 2026-10-14
 This directory maps serving-provider observations and current model-catalog
 normalization into the canonical layer defined by
 [model-capability-canonical.md](../model-capability-canonical.md). It records
-current Odysseus implementation evidence, merged fixes, reproducible user
+current Ulises implementation evidence, merged fixes, reproducible user
 observations, and provider documentation without treating any single source as
 global model truth.
 
@@ -93,7 +93,7 @@ Each provider file records:
 - observed request, tool, text, reasoning, and control paths owned by runtime
   adapters rather than the catalog reader;
 - what remains per-model/unknown;
-- Odysseus evidence and regressions;
+- Ulises evidence and regressions;
 - fallback/safety behavior and current gaps.
 
 Marketing capability lists and curated picker lists may guide research but do

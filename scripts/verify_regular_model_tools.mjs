@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Compact real-UI tool-family matrix for enabled non-Odysseus models. */
+/** Compact real-UI tool-family matrix for enabled non-Ulises models. */
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -85,7 +85,7 @@ const models = inventory();
 const report = {
   run, base, owner, status: 'running', workers,
   profile,
-  scope: 'Pinned enabled non-Odysseus models; local endpoints use visible cached models when no pins exist.',
+  scope: 'Pinned enabled non-Ulises models; local endpoints use visible cached models when no pins exist.',
   privacy: 'No prompts, tool outputs, private rows, API keys, or cookies are retained. Only bounded final text and tool/status metadata.',
   scenarios: scenarios.map(([family]) => family), inventory: models, models: [],
 };
@@ -220,7 +220,7 @@ async function runModel(model, token) {
           if (session && activeRunId) {
             try {
               const stopped = await context.request.post(`${base}/api/chat/stop/${encodeURIComponent(session)}`, {
-                headers: { 'X-Odysseus-Run-Id': activeRunId }, timeout: 5000,
+                headers: { 'X-Ulises-Run-Id': activeRunId }, timeout: 5000,
               });
               turn.stop = { http: stopped.status(), ok: stopped.ok() };
             } catch (stopError) { turn.stop = { ok: false, error: String(stopError).split('\n')[0].slice(0, 200) }; }

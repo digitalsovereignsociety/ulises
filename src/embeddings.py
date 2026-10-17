@@ -178,7 +178,7 @@ class FastEmbedClient:
             except Exception as _e:
                 logger.debug("embedding cache symlink-heal skipped: %s", _e)
         kwargs = {"model_name": self.model, "cache_dir": cache_dir}
-        # Isolated evaluation and worker fleets can run many Odysseus
+        # Isolated evaluation and worker fleets can run many Ulises
         # processes on one host.  FastEmbed otherwise lets ONNX Runtime size
         # a thread pool from the whole machine for every process, which can
         # create hundreds of threads per worker and starve inference.  Keep

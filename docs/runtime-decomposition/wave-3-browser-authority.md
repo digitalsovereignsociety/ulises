@@ -144,7 +144,7 @@ mechanics remain unchanged and external.
 
 Client invocations are bounded at 20 seconds, below the source-verified 30-second
 read/resend floor, with held-handle kill/wait on timeout/cancellation and no
-Odysseus retries. Immediate producer EOF/reset retries cannot be eliminated by
+Ulises retries. Immediate producer EOF/reset retries cannot be eliminated by
 this wrapper. **No exactly-once claim is made; all effects remain disabled.**
 
 ## Control state and prior unsupported paths

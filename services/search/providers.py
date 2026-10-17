@@ -38,7 +38,7 @@ def _get_search_settings() -> dict:
     except Exception:
         settings = {}
     # Headless/native deployments do not necessarily have an admin settings
-    # database.  Require an explicit Odysseus-prefixed override so ordinary UI
+    # database.  Require an explicit Ulises-prefixed override so ordinary UI
     # configuration remains authoritative by default.
     env_provider = os.environ.get("ODYSSEUS_SEARCH_PROVIDER", "").strip().lower()
     if env_provider:
@@ -74,7 +74,7 @@ def _get_provider_key(provider: str) -> str:
     if legacy:
         return legacy
     env_map = {
-        # DATA_BRAVE_API_KEY is the historical Odysseus name; BRAVE_API_KEY is
+        # DATA_BRAVE_API_KEY is the historical Ulises name; BRAVE_API_KEY is
         # the standard name used by headless runners and the Brave SDK.
         "brave": ("DATA_BRAVE_API_KEY", "BRAVE_API_KEY"),
         "google_pse": ("GOOGLE_API_KEY",),

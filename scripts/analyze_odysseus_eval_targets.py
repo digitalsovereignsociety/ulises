@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rank next Odysseus tool-router improvement targets from eval artifacts."""
+"""Rank next Ulises tool-router improvement targets from eval artifacts."""
 
 from __future__ import annotations
 

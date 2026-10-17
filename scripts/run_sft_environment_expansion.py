@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Execute generated SFT workflows through Odysseus with rollback and gating."""
+"""Execute generated SFT workflows through Ulises with rollback and gating."""
 
 from __future__ import annotations
 
@@ -763,7 +763,7 @@ def main() -> None:
     parser.add_argument(
         "--allow-web-search",
         action="store_true",
-        help="Enable Odysseus public web_search/web_fetch for this replay.",
+        help="Enable Ulises public web_search/web_fetch for this replay.",
     )
     parser.add_argument(
         "--fixture-environments",

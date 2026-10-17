@@ -2,7 +2,7 @@
 
 ## 1. Executive Summary
 
-This report documents the final corrective implementation pass for **Odysseus Wave 3 (Runtime Resource Authority)** on branch `feature/runtime-resource-authority`.
+This report documents the final corrective implementation pass for **Ulises Wave 3 (Runtime Resource Authority)** on branch `feature/runtime-resource-authority`.
 
 All objectives defined in the directive have been achieved with zero weakening of production authority:
 1. **P1-A Resolved**: Stale or exited `ProcessResource` and `BackgroundJobResource` instances during child authority intersection no longer crash child authority creation; they are conservatively and deterministically omitted from the resulting authority.

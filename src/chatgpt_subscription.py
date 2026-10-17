@@ -93,7 +93,7 @@ def chatgpt_headers(access_token: Optional[str]) -> Dict[str, str]:
         "Accept": "application/json, text/event-stream",
         "Origin": "https://chatgpt.com",
         "Referer": "https://chatgpt.com/codex",
-        "User-Agent": "Odysseus ChatGPT Subscription",
+        "User-Agent": "Ulises ChatGPT Subscription",
     }
     if access_token:
         headers["Authorization"] = f"Bearer {access_token}"
@@ -479,7 +479,7 @@ def chatgpt_account_id_from_token(access_token: str) -> Optional[str]:
 def usage_request_headers(access_token: str) -> Dict[str, str]:
     headers = {
         "Accept": "application/json",
-        "User-Agent": "Odysseus ChatGPT Subscription",
+        "User-Agent": "Ulises ChatGPT Subscription",
         "Authorization": f"Bearer {access_token}",
     }
     account_id = chatgpt_account_id_from_token(access_token)
@@ -604,7 +604,7 @@ def _normalize_rate_limit_details(raw: Any) -> Dict[str, Any]:
 
 
 def normalize_usage_payload(payload: Any) -> Dict[str, Any]:
-    """Normalize a ``GET /wham/usage`` JSON body into Odysseus' safe contract.
+    """Normalize a ``GET /wham/usage`` JSON body into Ulises' safe contract.
 
     Returns only non-credential fields. The main Codex limit is reported as
     ``limit_id == "codex"`` (as openai/codex does); each entry of

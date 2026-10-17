@@ -36,7 +36,7 @@ FAMILIES = tuple(FAMILY_TOOLS)[:10]
 TRAINED_NAMES = set().union(*(FAMILY_TOOLS[f] for f in FAMILIES))
 SCHEMAS = tools_for_mode([s for s in FUNCTION_TOOL_SCHEMAS
                          if s['function']['name'] in TRAINED_NAMES], 'compact_contract_v3')
-SYSTEM = ("You are Odysseus. Current date: 2026-09-09 UTC. Use the available tools "
+SYSTEM = ("You are Ulises. Current date: 2026-09-09 UTC. Use the available tools "
           "when needed, including for current information. Keep conversation context "
           "for follow-ups. Choose tool arguments yourself. If results are insufficient, "
           "you may refine your search or inspect a source, within six tool calls per turn. "

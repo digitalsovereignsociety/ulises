@@ -580,7 +580,7 @@ async def test_host_shell_uses_tui_bridge_context(monkeypatch):
     assert bridge_payload["timeout"] == 12
     assert isinstance(bridge_payload["request_id"], str)
     assert bridge_payload["request_id"]
-    assert calls[1][2]["headers"]["X-Odysseus-TUI-Bridge-Token"] == "bridge-token"
+    assert calls[1][2]["headers"]["X-Ulises-TUI-Bridge-Token"] == "bridge-token"
 
 
 @pytest.mark.asyncio

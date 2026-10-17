@@ -195,7 +195,7 @@ def cook_batch(endpoint: Any, batch: list[dict[str, Any]]) -> list[dict[str, Any
         if not pending:
             break
         result = teacher_json(endpoint, {
-            "task": "Turn every supplied historical seed into one fresh realistic multi-turn conversation that tests Odysseus tool use.",
+            "task": "Turn every supplied historical seed into one fresh realistic multi-turn conversation that tests Ulises tool use.",
             "rules": [
                 "Return exactly one flow for every source_seed_id; never merge, omit, or duplicate seeds.",
                 "Preserve the seed's behavioral intent, but do not copy its wording mechanically.",
@@ -203,7 +203,7 @@ def cook_batch(endpoint: Any, batch: list[dict[str, Any]]) -> list[dict[str, Any
                 "Every generated flow is replayed independently against a clean fixture. If a later action depends on an object created earlier in the source context, include that creation before using the object.",
                 "Never find, open, or read an invented private object. A new note, document, task, event, skill, email, or research report must be created earlier in that generated flow.",
                 "Each flow has 2-4 user turns and at least one context-dependent follow-up.",
-                "The conversation must naturally require at least one Odysseus tool; for a general question, add an adjacent save, verify, open, or retrieve request.",
+                "The conversation must naturally require at least one Ulises tool; for a general question, add an adjacent save, verify, open, or retrieve request.",
                 "Use natural short wording and occasional realistic misspelling, not regex-like substitutions.",
                 "Do not include record IDs, credentials, real email addresses, destructive shell operations, email sending, purchases, or irreversible actions.",
                 "Expected behavior is semantic and names the appropriate action/tool family without prescribing exact prose.",

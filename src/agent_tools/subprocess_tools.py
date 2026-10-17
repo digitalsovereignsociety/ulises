@@ -85,7 +85,7 @@ async def _cancel_host_shell_bridge_request(
             await client.post(
                 target,
                 json={"request_id": request_id},
-                headers={"X-Odysseus-TUI-Bridge-Token": token},
+                headers={"X-Ulises-TUI-Bridge-Token": token},
             )
     except Exception:
         pass
@@ -729,7 +729,7 @@ class HostShellTool:
                 resp = await client.post(
                     run_url,
                     json=request_body,
-                    headers={"X-Odysseus-TUI-Bridge-Token": token},
+                    headers={"X-Ulises-TUI-Bridge-Token": token},
                 )
                 if resp.status_code >= 400:
                     return {
@@ -757,7 +757,7 @@ class HostShellTool:
                         poll = await client.post(
                             run_url,
                             json={"job_id": auto_job_id},
-                            headers={"X-Odysseus-TUI-Bridge-Token": token},
+                            headers={"X-Ulises-TUI-Bridge-Token": token},
                         )
                         if poll.status_code >= 400:
                             return {

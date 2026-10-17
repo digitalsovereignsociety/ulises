@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Snapshot or restore durable state for one Odysseus SFT fixture owner.
+"""Snapshot or restore durable state for one Ulises SFT fixture owner.
 
 Sessions and chat messages are intentionally excluded so replay evidence keeps
 working. Only owner-scoped tool data and its dependent rows are managed.

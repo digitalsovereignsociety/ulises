@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Expanded live Odysseus eval for compact Qwen tool-router models.
+"""Expanded live Ulises eval for compact Qwen tool-router models.
 
 The important distinction for this project is exact native emission vs.
 app-level success after parser repair. This script records both.

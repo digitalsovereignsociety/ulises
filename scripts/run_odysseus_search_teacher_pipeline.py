@@ -482,7 +482,7 @@ def corrected_final(endpoint: dict[str, str], result: dict[str, Any], reasons: l
             "output": visible_tool_output(result, idx)[:5000],
         })
     prompt = {
-        "task": "Write the final assistant answer for an Odysseus web-search trace.",
+        "task": "Write the final assistant answer for an Ulises web-search trace.",
         "user": result.get("user"),
         "audit_reasons": reasons,
         "tool_evidence": evidence,

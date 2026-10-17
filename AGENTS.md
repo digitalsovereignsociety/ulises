@@ -173,7 +173,7 @@ guard the JS: `cookbook_modules_smoke`, `cookbook_diagnosis_core`,
 - Restored `vet_workspace()` in `src/tool_execution.py`.
 - Updated test paths for memory_routes shim; fixed upload-limits assertion.
 - `WebFetchTool.execute` prepends `[partial content: ...]` when `result.truncated`.
-- Webhook tests assert `X-Ulises-Event` (not `X-Odysseus-Event`).
+- Webhook tests assert `X-Ulises-Event` (not `X-Ulises-Event`).
 - Workspace confinement: grep/glob/ls tools receive `workspace` in ctx.
 - Locale files split from 4 monolithic JSONs into per-namespace directories.
 - `core/translations.py` loads from directory using `dict.update()`.

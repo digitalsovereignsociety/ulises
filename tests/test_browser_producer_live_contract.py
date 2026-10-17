@@ -94,7 +94,7 @@ async def test_live_local_launch_rearm_drops_flags_and_retargets_destroyed_page(
     assert "tab_gone" not in json.dumps(result)
     assert result["lifecycle"]["relaunchedBrowser"] is False
     assert live.pin_armed_for is None
-    # Actual Odysseus refuses before any page command, even with this observation.
+    # Actual Ulises refuses before any page command, even with this observation.
     denied = await PrivateBrowserTool().execute('{"action":"snapshot","page":"t1"}',
         {"owner": "live-contract", "session_id": "thread"})
     assert denied["failure_kind"] == browser.PAGE_FAILURE and denied["executed"] is False

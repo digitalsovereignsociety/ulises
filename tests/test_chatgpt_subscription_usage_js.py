@@ -189,7 +189,7 @@ def test_admin_wires_per_account_usage_and_reconnect_by_exact_ids():
     assert "reconnectBtn.dataset.admChatgptReconnect" in usage_block
     assert "formData.append('reconnect_auth_id', authId)" in usage_block
     assert "formData.append('reconnect_endpoint_id', epId)" in usage_block
-    # The browser only ever talks to Odysseus, never to OpenAI directly.
+    # The browser only ever talks to Ulises, never to OpenAI directly.
     assert "chatgpt.com" not in usage_block
     assert "wham/usage" not in usage_block
 

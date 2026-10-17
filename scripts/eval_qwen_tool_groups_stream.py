@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Evaluate Qwen tool-routing rows through Odysseus streaming + parser code.
+"""Evaluate Qwen tool-routing rows through Ulises streaming + parser code.
 
 This is intentionally below the full chat HTTP route: it does not execute tools
-or mutate user data. It uses the same Odysseus LLM request path and production
+or mutate user data. It uses the same Ulises LLM request path and production
 text parser that the agent loop uses after a local model streams text.
 """
 
@@ -77,7 +77,7 @@ def _row_messages(row: dict[str, Any], mode: str) -> list[dict[str, str]]:
             {
                 "role": "system",
                 "content": (
-                    "Use Odysseus native tool-call tags for explicit tool requests. "
+                    "Use Ulises native tool-call tags for explicit tool requests. "
                     "Make exactly one call, then stop."
                 ),
             },
@@ -88,7 +88,7 @@ def _row_messages(row: dict[str, Any], mode: str) -> list[dict[str, str]]:
             {
                 "role": "system",
                 "content": (
-                    "You are Odysseus. For explicit requests, emit exactly one "
+                    "You are Ulises. For explicit requests, emit exactly one "
                     "native tool call, then stop. Use this map: "
                     "manage_notes=notes/checklists; "
                     "manage_documents=document library; "
@@ -109,7 +109,7 @@ def _row_messages(row: dict[str, Any], mode: str) -> list[dict[str, str]]:
             {
                 "role": "system",
                 "content": (
-                    "You are Odysseus. For explicit requests, emit exactly one "
+                    "You are Ulises. For explicit requests, emit exactly one "
                     "native tool call, then stop. Use: manage_notes for notes "
                     "and checklists; manage_documents for the document library; "
                     "manage_calendar for calendar events; manage_tasks for "
@@ -129,7 +129,7 @@ def _row_messages(row: dict[str, Any], mode: str) -> list[dict[str, str]]:
             {
                 "role": "system",
                 "content": (
-                    "Odysseus tools. Emit one native tool call, then stop. "
+                    "Ulises tools. Emit one native tool call, then stop. "
                     "manage_notes: notes/checklists. manage_documents: document "
                     "library. manage_calendar: calendar events. manage_tasks: "
                     "scheduled/recurring tasks. manage_memory: saved memories. "

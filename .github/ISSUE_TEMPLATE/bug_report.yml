@@ -1,5 +1,5 @@
 name: Bug Report
-description: Report a reproducible bug in Odysseus.
+description: Report a reproducible bug in Ulises.
 labels: ["bug"]
 
 body:
@@ -29,7 +29,7 @@ body:
   - type: input
     id: revision
     attributes:
-      label: Odysseus Revision
+      label: Ulises Revision
       description: |
         From the repository root (on the host when using Docker), run
         `git show -s --abbrev=12 --format='%h (%cs)' HEAD`

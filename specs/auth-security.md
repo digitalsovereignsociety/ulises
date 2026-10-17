@@ -35,7 +35,7 @@ This spec covers current security and trust-boundary behavior in:
 
 ## Trust Boundary
 
-Odysseus is a trusted-user private-network app. Admins intentionally have powerful local capabilities: shell, files, email, calendar, MCP, model serving, vault, settings, and API token management. The security model prevents unauthenticated access, non-admin escalation, prompt-injection through untrusted content, and accidental exposure of internal services.
+Ulises is a trusted-user private-network app. Admins intentionally have powerful local capabilities: shell, files, email, calendar, MCP, model serving, vault, settings, and API token management. The security model prevents unauthenticated access, non-admin escalation, prompt-injection through untrusted content, and accidental exposure of internal services.
 
 `THREAT_MODEL.md` owns high-level security framing, but implementation claims here should be verified against current code when the threat model is stale. This spec records the implementation map that contributors should check before changing auth or untrusted-context flows. Security-header runtime details live in `runtime.md`.
 
@@ -67,7 +67,7 @@ Admin promotion/demotion is a live auth flag change through `AuthManager.set_adm
 
 Cookie requests use the real username. Bearer-token requests are stamped as `request.state.current_user = "api"` plus `api_token_owner`, `api_token_scopes`, and token id. Routes that support API-token access must explicitly use `effective_user()` or route-local scope helpers instead of treating `"api"` as an owner.
 
-Internal loopback calls may stamp `current_user = "internal-tool"` or a validated `X-Odysseus-Owner` username. Network/proxy validation for that bypass lives in `app.py`. Native shell/PID and local Cookbook controls add resource-bound admission and reject an internal header or sentinel as human administration. This boundary is surface-specific: common `core.middleware.require_admin()` still admits a matching internal token or sentinel, including MCP configuration routes; producer-side tool policy is a separate check.
+Internal loopback calls may stamp `current_user = "internal-tool"` or a validated `X-Ulises-Owner` username. Network/proxy validation for that bypass lives in `app.py`. Native shell/PID and local Cookbook controls add resource-bound admission and reject an internal header or sentinel as human administration. This boundary is surface-specific: common `core.middleware.require_admin()` still admits a matching internal token or sentinel, including MCP configuration routes; producer-side tool policy is a separate check.
 
 Missing-owner values remain state-dependent at legacy call sites, but new storage-facing code has one normalization contract:
 

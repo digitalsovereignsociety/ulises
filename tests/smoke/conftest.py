@@ -243,6 +243,6 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
         )
         return
 
-    header = f"Odysseus release smoke - {internal_api_base()}"
+    header = f"Ulises release smoke - {internal_api_base()}"
     terminalreporter.write_line("")
     terminalreporter.write_line(areas.render_table(results, header=header))
