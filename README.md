@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/branding/ulises-wordmark.png" alt="Ulises" width="238">
+  <img src="docs/ulises-wordmark.png" alt="Ulises" width="238">
 </p>
 
 <p align="center">
@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/branding/ulises-browser.jpg" alt="Ulises interface">
+  <img src="docs/ulises-browser.png" alt="Ulises interface">
 </p>
 
 ---
