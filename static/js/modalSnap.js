@@ -21,8 +21,8 @@ import { t, whenReady } from './i18n.js';
 const SNAP_PX = 60;
 const UNSNAP_PX = 80;
 const MIN_CHAT_WIDTH = 380;
-const EMAIL_DOC_SPLIT_WIDTH_KEY = 'ulises-email-doc-split-width';
-const EDGE_DOCK_WIDTH_KEY_PREFIX = 'ulises-edge-dock-width';
+const EMAIL_DOC_SPLIT_WIDTH_KEY = 'odysseus-email-doc-split-width';
+const EDGE_DOCK_WIDTH_KEY_PREFIX = 'odysseus-edge-dock-width';
 const MIN_EDGE_DOCK_WIDTH = 320;
 
 let _edgeDockHandlePositioner = null;
@@ -817,9 +817,7 @@ export function makeEdgeDockController(modal, side = 'right', dockClass) {
     handle.style.pointerEvents = 'auto';
     handle.style.touchAction = 'none';
     handle.style.display = 'none';
-    // This IIFE runs at module load, before init() has resolved a locale, so a
-  // direct t() call here warned and froze the humanised fallback as the title.
-  whenReady().then(() => { handle.title = t('modalSnap.resize_docked'); });
+    handle.title = 'Drag to resize docked window';
     document.body.appendChild(handle);
   }
 
@@ -988,7 +986,7 @@ export function makeEdgeDockController(modal, side = 'right', dockClass) {
   };
   new MutationObserver(schedulePosition).observe(document.body, { childList: true });
   window.addEventListener('resize', _positionEdgeDockResizeHandles);
-  window.addEventListener('ulises:modal-opened', _positionEdgeDockResizeHandles);
+  window.addEventListener('odysseus:modal-opened', _positionEdgeDockResizeHandles);
   _positionEdgeDockResizeHandles();
 })();
 

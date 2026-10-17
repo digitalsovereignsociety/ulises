@@ -1,10 +1,10 @@
 # Threat Model
 
-Ulises is a **self-hosted AI workspace with privileged local access**. This document states the trust boundary so contributors can reason about security decisions without reading through the full auth and middleware stack.
+Odysseus is a **self-hosted AI workspace with privileged local access**. This document states the trust boundary so contributors can reason about security decisions without reading through the full auth and middleware stack.
 
 ## Trust Boundary
 
-Ulises is designed for **trusted users on a private network**, not public exposure. The README describes it as "treat it like an admin console" — that framing is accurate. A logged-in admin can execute shell commands, read and write files, send email, and control model serving. This is intentional. The threat model does not try to prevent admins from doing these things. It does try to prevent:
+Odysseus is designed for **trusted users on a private network**, not public exposure. The README describes it as "treat it like an admin console" — that framing is accurate. A logged-in admin can execute shell commands, read and write files, send email, and control model serving. This is intentional. The threat model does not try to prevent admins from doing these things. It does try to prevent:
 
 - Unauthenticated access
 - Non-admins reaching admin-only capabilities
@@ -37,7 +37,7 @@ Non-admin defaults are in `core/auth.py:DEFAULT_PRIVILEGES`. Tool enforcement is
 
 - **Sessions:** bcrypt passwords, 7-day session tokens stored atomically in `data/sessions.json` via `core/atomic_io.py`.
 - **2FA:** TOTP with 8 single-use backup codes. Verified after password check, before session issuance.
-- **Reserved usernames:** `internal-tool`, `api`, `demo`, `system` cannot be registered or renamed into. Defined in `core/auth.py:RESERVED_USERNAMES`.
+- **Reserved usernames:** request sentinels and the Default/Local storage owner cannot be registered or renamed into. Defined in `core/auth.py:RESERVED_USERNAMES`.
   - `internal-tool` is security-critical: `core/middleware.py:require_admin` treats any request where `request.state.current_user == "internal-tool"` as the in-process tool loopback and grants admin unconditionally. A real account with that name would silently pass every `require_admin` check.
 - **Orphan sessions:** `validate_token` re-checks that the user record still exists on every call. A deleted user's cookie is dropped on next request rather than continuing to authenticate.
 
@@ -46,7 +46,7 @@ Non-admin defaults are in `core/auth.py:DEFAULT_PRIVILEGES`. Tool enforcement is
 Agent tool calls reach admin-gated HTTP routes over an in-process HTTP loopback. The mechanism:
 
 1. At app startup, `core/middleware.py` generates a random `INTERNAL_TOOL_TOKEN` via `secrets.token_hex(32)`. It is never persisted and never sent to clients.
-2. Loopback requests carry `X-Ulises-Internal-Token: <token>` or have `request.state.current_user` already set to `"internal-tool"` by the auth middleware.
+2. Loopback requests carry `X-Odysseus-Internal-Token: <token>` or have `request.state.current_user` already set to `"internal-tool"` by the auth middleware.
 3. `require_admin` recognises either signal and grants access without checking the session user.
 
 The agent may be running in a non-admin user's session, but tool dispatch first calls `src/tool_security.py:owner_is_admin_or_single_user` to verify the session owner is an admin before issuing any loopback call. Non-admin users cannot invoke admin tools even via the agent.
@@ -60,6 +60,17 @@ External content that reaches the LLM is treated as untrusted via `src/prompt_se
 
 **Untrusted surfaces that must go through this wrapper:** web search results, fetched URLs, emails (read), saved memories, skill text, notes, and any tool output sourced from outside the server. Injecting untrusted content directly into the system role is a security bug.
 
+### Post-external-context tool approval gate — on by default
+
+`src/tool_capabilities.py` carries a second layer: once untrusted content has entered a run, `ToolRunSecurityContext.decision_for()` blocks tools that execute code, mutate state, or cause external side effects until the user authorises the action separately.
+
+It is on unless `ODYSSEUS_TOOL_APPROVAL_GATE` is set to a falsy value (`0`/`false`/`no`/`off`). Request authority narrows which tool families a turn may use, but within an admitted family it does not bind the exact action: a request to read email admits `send_email` and `delete_email`, and agent processes inherit the host network. Until those are covered by their own boundaries, this gate is what stops an injected instruction from reaching them. Turning it off lets a successful injection reach `bash`, `host_shell`, `send_email` and `delete_email` without a separate confirmation.
+
+Two exemptions apply even when the gate is on, both deliberate:
+
+- Sources in `_CONTROL_PLANE_CONTEXT_SOURCES` (skills, runtime descriptors, the open editor document, the open email, uploaded files) are treated as control-plane metadata and still permit read-only tools.
+- A TUI run that advertises a host shell bridge and declares `unattended_mode` exempts the local execution set in `TUI_CLIENT_TOOL_NAMES`. Personal, network and deployment-local tools are never exempted.
+
 ## Security Headers
 
 `core/middleware.py:SecurityHeadersMiddleware` sets headers on every response:
@@ -72,7 +83,7 @@ External content that reaches the LLM is treated as untrusted via `src/prompt_se
 
 These are open, acknowledged, and contributor help is welcome:
 
-1. **No shell/filesystem sandbox.** The agent `bash` and `read_file`/`write_file` tools run as the app process user with no network egress filtering or filesystem confinement. A successful prompt-injection reaching a shell-enabled admin session can make outbound requests to internal services. See #1058 for the sandbox proposal.
+1. **No shell/filesystem sandbox.** The agent `bash` and `read_file`/`write_file` tools run as the app process user with no network egress filtering or filesystem confinement. A successful prompt-injection reaching a shell-enabled admin session can make outbound requests to internal services. See #1058 for the sandbox proposal. The tool approval gate above is the compensating control and is on by default; turning it off leaves this gap unmitigated beyond the untrusted-context wrapper.
 
 2. **SSRF via `/api/v1/chat` `base_url` parameter.** A chat-scoped API token can supply an arbitrary `base_url`; the server forwards the LLM request to that host without validating the scheme or address. PR #1039 fixes this.
 

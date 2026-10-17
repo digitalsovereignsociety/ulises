@@ -1,7 +1,7 @@
 """Regression coverage for bidirectional CalDAV sync plumbing.
 
 These tests avoid a live CalDAV server. They pin the local invariants that keep
-Ulises-created CalDAV events from being pruned before they can be pushed.
+Odysseus-created CalDAV events from being pruned before they can be pushed.
 """
 
 from datetime import datetime

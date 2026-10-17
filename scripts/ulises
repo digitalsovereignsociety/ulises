@@ -104,15 +104,15 @@ def main(argv: list[str] | None = None) -> int:
         if len(argv) < 2:
             _print_listing()
             return 0
-        sub = SCRIPTS_DIR / f"ulises-{argv[1]}"
+        sub = SCRIPTS_DIR / f"odysseus-{argv[1]}"
         if not _is_runnable_subcommand(sub):
-            sys.stderr.write(f"ulises: unknown subcommand {argv[1]!r}\n")
+            sys.stderr.write(f"odysseus: unknown subcommand {argv[1]!r}\n")
             return 1
         return subprocess.call([str(sub), "--help"])
 
     # `ulises foo ...` → exec `ulises-foo ...` under the project venv.
     name = argv[0]
-    sub = SCRIPTS_DIR / f"ulises-{name}"
+    sub = SCRIPTS_DIR / f"odysseus-{name}"
     if not _is_runnable_subcommand(sub):
         sys.stderr.write(
             f"ulises: unknown subcommand {name!r}. "

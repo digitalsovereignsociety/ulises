@@ -2,7 +2,6 @@
 import os
 from fastapi import APIRouter, Request, HTTPException, Query
 
-from core.translations import t
 from src.auth_helpers import get_current_user
 from src.tool_security import owner_is_admin_or_single_user
 
@@ -27,7 +26,7 @@ def setup_workspace_routes():
         """
         owner = get_current_user(request)
         if not owner_is_admin_or_single_user(owner):
-            raise HTTPException(status_code=403, detail=t("admin.workspace_admin_only"))
+            raise HTTPException(status_code=403, detail="Workspace browsing is admin-only")
 
         # Resolve symlinks so the reported path is canonical and the UI navigates
         # real directories (defends against symlink games in displayed paths).
@@ -78,9 +77,31 @@ def setup_workspace_routes():
         """
         owner = get_current_user(request)
         if not owner_is_admin_or_single_user(owner):
-            raise HTTPException(status_code=403, detail=t("admin.workspace_selection_admin"))
+            raise HTTPException(status_code=403, detail="Workspace selection is admin-only")
         from src.tool_execution import vet_workspace
         resolved = vet_workspace(path)
+        return {"ok": resolved is not None, "path": resolved}
+
+    @router.get("/default")
+    def default_workspace(request: Request):
+        """Return the explicitly configured backend workspace, if usable.
+
+        WebUI has no local launch directory: it runs against this backend's
+        filesystem. An explicit default gives it the same zero-setup behavior
+        as TUI while keeping workspace access opt-in and server-vetted.
+        """
+        owner = get_current_user(request)
+        if not owner_is_admin_or_single_user(owner):
+            raise HTTPException(status_code=403, detail="Workspace default is admin-only")
+
+        configured = os.environ.get("ODYSSEUS_WORKSPACE_DEFAULT", "").strip()
+        if not configured:
+            return {"ok": False, "path": None}
+
+        from src.tool_execution import vet_workspace
+        from src.workspace_paths import backend_workspace_path
+
+        resolved = vet_workspace(backend_workspace_path(configured))
         return {"ok": resolved is not None, "path": resolved}
 
     return router

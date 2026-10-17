@@ -50,6 +50,12 @@ def test_classify_examples(filename, expected_area, expected_sub):
     assert result.sub_area == expected_sub
 
 
+def test_embedding_lanes_memory_file_keeps_specific_sub_area():
+    result = classify_test_path("tests/test_embedding_lanes_memory.py")
+    assert result.area == "services"
+    assert result.sub_area == "embedding_memory"
+
+
 # --- classify_test_path: fallback --------------------------------------------
 
 def test_unknown_filename_is_uncategorized():
@@ -140,6 +146,6 @@ def test_security_beats_services_when_both_tokens_present():
 
 
 def test_unrelated_helpers_ancestor_is_not_helpers():
-    result = classify_test_path("/work/helpers/ulises/tests/test_owner_scope.py")
+    result = classify_test_path("/work/helpers/odysseus/tests/test_owner_scope.py")
     assert result.area == "security"
     assert result.sub_area == "owner_scope"

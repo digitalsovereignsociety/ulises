@@ -5,10 +5,10 @@ import shlex
 import subprocess
 from copy import deepcopy
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
+from core.middleware import require_admin
 from core.platform_compat import run_ssh_command
-from core.translations import t
 from routes._validators import validate_remote_host, validate_ssh_port
 
 
@@ -17,13 +17,31 @@ from routes._validators import validate_remote_host, validate_ssh_port
 # "metal" routes through the Apple-Silicon path (GGUF-only, llama.cpp/Ollama),
 # the CPU backends through the RAM/offload path, cuda/rocm through vLLM.
 _MANUAL_BACKENDS = {"cuda", "rocm", "metal", "cpu_x86", "cpu_arm"}
+_OFFICIAL_NAMESPACES = {
+    "apple", "allenai", "black-forest-labs", "cohere", "deepseek-ai",
+    "google", "ibm", "lightricks", "meta-llama", "microsoft", "mistralai",
+    "nvidia", "openai", "qwen", "stabilityai", "tencent", "tiiuae",
+    "upstage", "zai-org", "runwayml",
+}
+
+
+def _is_official_model(model: dict) -> bool:
+    """Recognize first-party namespaces without maintaining model-name lists."""
+    # Image rows expose a friendly `name` without its namespace, while regular
+    # rows may use `name`. Prefer whichever field still contains `owner/repo`.
+    model_id = str(model.get("id") or model.get("name") or "")
+    namespace = model_id.split("/", 1)[0].strip().lower() if "/" in model_id else ""
+    # `provider` is a display label for image rows (for example, "Stability AI")
+    # and is not a stable repository namespace. The model id is the canonical
+    # source for this filter, so a recognized namespace is sufficient.
+    return namespace in _OFFICIAL_NAMESPACES
 
 
 def _validate_detection_target(host: str = "", ssh_port: str = "") -> tuple[str, str]:
     host_value = validate_remote_host(host) or ""
     port_value = validate_ssh_port(ssh_port) or ""
     if port_value and not host_value:
-        raise HTTPException(400, t("validators.ssh_port_requires_host"))
+        raise HTTPException(400, "ssh_port requires host")
     return host_value, port_value
 
 
@@ -181,7 +199,11 @@ def _inspect_model_path(model_path: str, host: str = "", ssh_port: str = "") -> 
 
 
 def setup_hwfit_routes():
-    router = APIRouter(prefix="/api/hwfit", tags=["hwfit"])
+    # Admin-gated like the Cookbook routes this backs (/api/cookbook/gpus does
+    # the same SSH host probing): `host`/`ssh_port` make the server SSH out with
+    # its own key to any syntactically valid host, and `model_path` probes the
+    # host filesystem. Single-user mode and internal tool calls still pass.
+    router = APIRouter(prefix="/api/hwfit", tags=["hwfit"], dependencies=[Depends(require_admin)])
 
     @router.get("/system")
     def get_system(host: str = "", ssh_port: str = "", platform: str = "", fresh: bool = False):
@@ -192,7 +214,7 @@ def setup_hwfit_routes():
         return detect_system(host=host, ssh_port=ssh_port, platform=platform, fresh=fresh)
 
     @router.get("/models")
-    def get_models(use_case: str = "", sort: str = "newest", limit: int = 50, search: str = "", host: str = "", quant: str = "", ctx: str = "", gpu_count: str = "", gpu_group: str = "", ssh_port: str = "", platform: str = "", fresh: bool = False, manual_mode: str = "", manual_gpu_count: str = "", manual_vram_gb: str = "", manual_ram_gb: str = "", manual_backend: str = "", ignore_detected_gpu: bool = False, ignore_detected_ram: bool = False, fit_only: bool = False):
+    def get_models(use_case: str = "", sort: str = "newest", limit: int = 50, search: str = "", host: str = "", quant: str = "", ctx: str = "", gpu_count: str = "", gpu_group: str = "", ssh_port: str = "", platform: str = "", fresh: bool = False, refresh_catalog: bool = False, manual_mode: str = "", manual_gpu_count: str = "", manual_vram_gb: str = "", manual_ram_gb: str = "", manual_backend: str = "", ignore_detected_gpu: bool = False, ignore_detected_ram: bool = False, fit_only: bool = False, official_only: bool = False):
         """Rank LLM models against detected hardware and return scored results.
         gpu_count: override GPU count (0 = CPU only, 1-N = simulate N GPUs of the
             active group). gpu_group: index into system.gpu_groups (the homogeneous
@@ -201,16 +223,23 @@ def setup_hwfit_routes():
         fresh=true bypasses the hardware-detection cache."""
         from services.hwfit.hardware import detect_system
         from services.hwfit.fit import rank_models
-        from services.hwfit.models import get_models, model_catalog_path
+        from services.hwfit.models import get_models, refresh_dynamic_catalogs
         host, ssh_port = _validate_detection_target(host, ssh_port)
         system = deepcopy(detect_system(host=host, ssh_port=ssh_port, platform=platform, fresh=fresh))
         if system.get("error"):
             return {"system": system, "models": [], "error": system["error"]}
+        catalog_refresh = None
+        if refresh_catalog:
+            try:
+                catalog_refresh = refresh_dynamic_catalogs(force=True)
+            except Exception as e:
+                catalog_refresh = {"error": str(e)}
         if not get_models():
             return {
                 "system": system,
                 "models": [],
-                "error": f"Model catalog missing or empty: {model_catalog_path()}",
+                "error": "Model catalog is empty. Use Rescan in Cookbook while online to populate runtime model data; offline recommendations require a previously populated cache.",
+                **({"catalog_refresh": catalog_refresh} if catalog_refresh is not None else {}),
             }
 
         if ignore_detected_gpu:
@@ -305,7 +334,106 @@ def setup_hwfit_routes():
             rank_kwargs.pop("target_context", None)
             rank_kwargs.pop("fit_only", None)
         results = rank_models(system, **rank_kwargs)
-        return {"system": system, "models": results}
+        if official_only:
+            results = [m for m in results if _is_official_model(m)]
+        payload = {"system": system, "models": results}
+        if catalog_refresh is not None:
+            payload["catalog_refresh"] = catalog_refresh
+        return payload
+
+    @router.get("/profiles")
+    def get_serve_profiles(model: str = "", model_path: str = "", host: str = "", ssh_port: str = "", platform: str = "", fresh: bool = False, serve_weights_gb: float = 0.0, serve_quant: str = ""):
+        """Compute llama.cpp serve profiles (Quality/Balanced/Speed) for `model`
+        against the detected hardware on `host` (or local). Returns concrete
+        flags (n_gpu_layers, n_cpu_moe, cache_type, ctx) the serve UI can apply.
+
+        `model` is matched against the catalog by name; if it's not in the
+        catalog (e.g. an ad-hoc HF repo), pass enough hints via a minimal synthetic
+        entry isn't possible here, so we return [] and the UI keeps manual flags.
+        """
+        from services.hwfit.hardware import detect_system
+        from services.hwfit.models import get_models
+        from services.hwfit.profiles import compute_serve_profiles
+        host, ssh_port = _validate_detection_target(host, ssh_port)
+        system = detect_system(host=host, ssh_port=ssh_port, platform=platform, fresh=fresh)
+        if system.get("error"):
+            return {"system": system, "profiles": [], "error": system["error"]}
+        catalog = {m.get("name"): m for m in (get_models() or [])}
+
+        def _norm(s):
+            # Normalize for matching: drop org/ prefix, a trailing -GGUF/-gguf
+            # marker, and any quant tag, lowercase. So "DeepSeek-Coder-V2-Lite-
+            # Instruct-GGUF" (a local folder name) matches catalog entry
+            # "deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct".
+            s = (s or "").lower().strip()
+            s = s.split("/")[-1]                     # drop org prefix
+            for suffix in ("-gguf", "_gguf", ".gguf", "gguf"):
+                if s.endswith(suffix):
+                    s = s[: -len(suffix)]
+                    break
+            cut_at = None
+            for idx, ch in enumerate(s):
+                if ch not in "-_." or idx + 1 >= len(s):
+                    continue
+                suffix = s[idx + 1:]
+                if (
+                    suffix in {"fp8", "bf16", "f16"}
+                    or suffix.startswith(("awq", "gptq", "iq"))
+                    or (suffix.startswith("q") and len(suffix) > 1 and suffix[1].isdigit())
+                ):
+                    cut_at = idx
+            if cut_at is not None:
+                s = s[:cut_at]
+            return s
+
+        m = catalog.get(model)
+        if m is None and model:
+            want = _norm(model)
+            for name, entry in catalog.items():
+                nn = _norm(name)
+                if nn and (nn == want or want.endswith(nn) or nn.endswith(want)):
+                    m = entry
+                    break
+        path_meta = _inspect_model_path(model_path or model, host=host, ssh_port=ssh_port)
+        if m is None:
+            return {
+                "system": system,
+                "profiles": [],
+                "error": "model not in catalog",
+                "model_ctx_max": int(path_meta.get("model_ctx_max") or 0),
+                "model_weights_gb": float(path_meta.get("model_weights_gb") or 0),
+                "model_probe_error": path_meta.get("model_probe_error") or "",
+            }
+        # Surface the model's trained context limit so the serve UI can clamp a
+        # user-typed context down to it (asking for ctx > n_ctx_train overflows
+        # and, with a quantized KV cache, can crash the GPU).
+        model_ctx_max = 0
+        for k in ("context_length", "max_position_embeddings", "n_ctx_train", "context"):
+            v = m.get(k)
+            if isinstance(v, (int, float)) and v > 0:
+                model_ctx_max = int(v)
+                break
+        path_ctx_max = int(path_meta.get("model_ctx_max") or 0)
+        if path_ctx_max > 0:
+            model_ctx_max = max(model_ctx_max, path_ctx_max)
+        model_weights_gb = float(path_meta.get("model_weights_gb") or 0)
+        if model_weights_gb <= 0:
+            for k in ("min_vram_gb", "required_gb", "size_gb", "recommended_ram_gb", "min_ram_gb"):
+                v = m.get(k)
+                if isinstance(v, (int, float)) and v > 0:
+                    model_weights_gb = float(v)
+                    break
+        return {
+            "system": system,
+            "profiles": compute_serve_profiles(
+                system, m,
+                serve_weights_gb=(serve_weights_gb or None),
+                serve_quant=(serve_quant or None),
+            ),
+            "model_ctx_max": model_ctx_max,
+            "model_weights_gb": model_weights_gb,
+            "model_probe_error": path_meta.get("model_probe_error") or "",
+        }
 
     @router.get("/profiles")
     def get_serve_profiles(model: str = "", model_path: str = "", host: str = "", ssh_port: str = "", platform: str = "", fresh: bool = False, serve_weights_gb: float = 0.0, serve_quant: str = ""):
@@ -402,7 +530,7 @@ def setup_hwfit_routes():
         }
 
     @router.get("/image-models")
-    def get_image_models(sort: str = "fit", search: str = "", host: str = "", gpu_count: str = "", ssh_port: str = "", platform: str = "", fresh: bool = False, manual_mode: str = "", manual_gpu_count: str = "", manual_vram_gb: str = "", manual_ram_gb: str = "", manual_backend: str = "", ignore_detected_gpu: bool = False, ignore_detected_ram: bool = False):
+    def get_image_models(sort: str = "fit", search: str = "", host: str = "", gpu_count: str = "", ssh_port: str = "", platform: str = "", fresh: bool = False, manual_mode: str = "", manual_gpu_count: str = "", manual_vram_gb: str = "", manual_ram_gb: str = "", manual_backend: str = "", ignore_detected_gpu: bool = False, ignore_detected_ram: bool = False, official_only: bool = False):
         """Rank image generation models against detected hardware."""
         from services.hwfit.hardware import detect_system
         from services.hwfit.image_models import rank_image_models
@@ -421,12 +549,30 @@ def setup_hwfit_routes():
             system["available_ram_gb"] = 0
             system["total_ram_gb"] = 0
         system = _apply_manual_hardware(system, manual_mode, manual_gpu_count, manual_vram_gb, manual_ram_gb, manual_backend)
-        # Image models use a single GPU — always use per-GPU VRAM
-        gpu_vrams = [float(g.get("vram_gb") or 0) for g in (system.get("gpus") or []) if isinstance(g, dict)]
-        single_vram = max(gpu_vrams) if gpu_vrams else ((system.get("gpu_vram_gb") or 0) / max(system.get("gpu_count") or 1, 1))
-        system["gpu_vram_gb"] = single_vram
-        system["gpu_count"] = 1 if single_vram > 0 else 0
+        try:
+            requested_gpu_count = int(gpu_count) if gpu_count != "" else None
+        except ValueError:
+            requested_gpu_count = None
+        if requested_gpu_count == 0:
+            # Respect the UI's RAM toggle. Before this route always rewrote the
+            # system to best-single-GPU VRAM, so image rows never changed when
+            # switching RAM/GPU.
+            system["has_gpu"] = False
+            system["gpu_vram_gb"] = 0
+            system["gpu_count"] = 0
+            system["gpu_only"] = False
+        else:
+            # Image diffusion backends generally use one device per pipeline,
+            # so rank GPU mode against the best single GPU rather than total
+            # multi-GPU VRAM.
+            gpu_vrams = [float(g.get("vram_gb") or 0) for g in (system.get("gpus") or []) if isinstance(g, dict)]
+            single_vram = max(gpu_vrams) if gpu_vrams else ((system.get("gpu_vram_gb") or 0) / max(system.get("gpu_count") or 1, 1))
+            system["gpu_vram_gb"] = single_vram
+            system["gpu_count"] = 1 if single_vram > 0 else 0
+            system["gpu_only"] = True if single_vram > 0 else False
         results = rank_image_models(system, search=search or None, sort=sort)
+        if official_only:
+            results = [m for m in results if _is_official_model(m)]
         return {"system": system, "models": results}
 
     return router

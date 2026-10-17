@@ -50,6 +50,9 @@ _TMUX_LOG_DIR = Path(tempfile.gettempdir()) / "ulises-tmux"
 from core.platform_compat import NVIDIA_PATH_CANDIDATES, SSH_PATH_OVERRIDE
 
 
+from core.platform_compat import NVIDIA_PATH_CANDIDATES, SSH_PATH_OVERRIDE
+
+
 
 def fail(msg: str, code: int = 1) -> None:
     sys.stderr.write(f"error: {msg}\n")

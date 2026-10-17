@@ -52,7 +52,7 @@ def setup_diagnostics_routes(
             }
         except Exception as e:
             logger.error(f"Diagnostics logs retrieval error: {e}")
-            raise HTTPException(500, t("diagnostics.logs_failed").format(error=str(e)))
+            raise HTTPException(500, f"Failed to retrieve logs: {str(e)}")
 
     @router.get("/api/db/stats")
     async def get_database_stats(request: Request) -> Dict[str, Any]:

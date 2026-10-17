@@ -1,6 +1,6 @@
 #Requires -Version 5.1
 <#
-  Ulises - native Windows launcher (no Docker).
+  Odysseus - native Windows launcher (no Docker).
 
   One command to: create a virtualenv, install dependencies, run first-time
   setup (prints an admin password on first run), and start the server.
@@ -163,7 +163,11 @@ if (Test-Path $cudaBase) {
 }
 
 # 7. Start the server (use `python -m uvicorn` - bare `uvicorn` may not be on PATH)
-Write-Step ("Starting Ulises at http://{0}:{1}" -f $BindHost, $Port)
+# -Port only reaches uvicorn as a flag. Everything that builds a URL for this
+# instance - internal_api_base(), companion pairing, the MCP OAuth callback -
+# reads APP_PORT, so set it too or they all assume 7000.
+$env:APP_PORT = $Port
+Write-Step ("Starting Odysseus at http://{0}:{1}" -f $BindHost, $Port)
 Write-Host "Press Ctrl+C to stop."
 Write-Host ""
 & $venvPy -m uvicorn app:app --host $BindHost --port $Port

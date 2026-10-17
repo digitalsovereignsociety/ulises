@@ -1,11 +1,11 @@
 @echo off
 setlocal
-title Update Ulises Docker Deployment
+title Update Odysseus Docker Deployment
 
 pushd "%~dp0" >nul
 
 echo =========================================
-echo Updating Ulises Docker deployment
+echo Updating Odysseus Docker deployment
 echo =========================================
 echo.
 

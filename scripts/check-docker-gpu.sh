@@ -2,7 +2,7 @@
 # check-docker-gpu.sh — Diagnostic and optional setup helper for NVIDIA Docker GPU access.
 #
 # Default mode is READ-ONLY — does not install packages, modify config, or restart Docker.
-# The Ulises app never calls this script automatically.
+# The Odysseus app never calls this script automatically.
 #
 # USAGE
 #   scripts/check-docker-gpu.sh                              # read-only diagnostics (default)
@@ -93,7 +93,7 @@ Examples:
   # Full assisted setup without prompts (automated/CI use):
   scripts/check-docker-gpu.sh --install-nvidia-toolkit --enable-nvidia-overlay --yes
 
-After a successful setup, start Ulises:
+After a successful setup, start Odysseus:
   docker compose up -d --build
 
 Full guide: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
@@ -214,6 +214,22 @@ _check_nvidia_smi() {
     echo
 }
 
+# WSL2 snap Docker cannot see /usr/lib/wsl/lib/libdxcore.so from its confined
+# namespace, so NVIDIA passthrough fails until the user switches to non-snap
+# Docker. DockerRootDir identifies snap installs more reliably than snap(8).
+_is_wsl() {
+    grep -qi microsoft /proc/version 2>/dev/null && return 0
+    [ -d /usr/lib/wsl ] && return 0
+    return 1
+}
+
+_is_docker_snap() {
+    case "$(docker info --format '{{.DockerRootDir}}' 2>/dev/null)" in
+        */snap/docker/*|*/snap.docker/*) return 0 ;;
+    esac
+    return 1
+}
+
 # Returns 1 if Docker is unavailable (callers should stop further GPU checks).
 _check_docker() {
     _info "Checking Docker..."
@@ -258,6 +274,26 @@ _check_gpu_passthrough() {
         echo
         _fail "GPU passthrough failed. Check these steps in order:"
         echo
+        if _is_wsl && _is_docker_snap; then
+            _warn "Detected: Docker installed via snap, running on WSL2."
+            _warn "This is a known incompatibility, not a toolkit/config problem:"
+            _warn "  snap confines Docker's mount namespace, so it cannot see the"
+            _warn "  WSL2-injected GPU library at /usr/lib/wsl/lib/libdxcore.so even"
+            _warn "  though the file exists on the host. Installing/reconfiguring"
+            _warn "  nvidia-container-toolkit will NOT fix this — the numbered"
+            _warn "  steps below will not help until Docker itself is replaced."
+            echo
+            _info "Fix: remove snap Docker and install the official apt-based Docker"
+            _info "Engine instead (unsandboxed, can see /usr/lib/wsl/lib):"
+            echo
+            echo "  sudo snap remove docker"
+            echo "  # then follow: https://docs.docker.com/engine/install/ubuntu/"
+            echo "  sudo nvidia-ctk runtime configure --runtime=docker"
+            echo "  sudo systemctl restart docker"
+            echo
+            _info "Re-run this script afterward to confirm passthrough works."
+            echo
+        fi
         echo "  1. Install NVIDIA Container Toolkit (if not already installed):"
         echo "     Arch:    sudo pacman -S nvidia-container-toolkit"
         echo "     Debian:  sudo apt install nvidia-container-toolkit"
@@ -327,7 +363,7 @@ _enable_nvidia_overlay() {
     if echo "${_current_cf}" | grep -qF "${_overlay_fragment}"; then
         _pass "COMPOSE_FILE already includes the NVIDIA overlay — nothing to change."
         echo
-        _info "Start or restart Ulises to apply:"
+        _info "Start or restart Odysseus to apply:"
         _info "  docker compose up -d --build"
         return 0
     fi
@@ -366,7 +402,7 @@ _enable_nvidia_overlay() {
 
     _pass "COMPOSE_FILE set to: ${_new_cf}"
     echo
-    _info "Start or restart Ulises with the NVIDIA overlay:"
+    _info "Start or restart Odysseus with the NVIDIA overlay:"
     _info "  docker compose up -d --build"
     echo
     _info "To undo, restore the backup:"
@@ -376,7 +412,7 @@ _enable_nvidia_overlay() {
 # ─── mode: default read-only diagnostic ──────────────────────────────────────
 
 _mode_check() {
-    echo "=== Ulises Docker GPU diagnostic ==="
+    echo "=== Odysseus Docker GPU diagnostic ==="
     echo
     _check_nvidia_smi
     _check_docker || { echo "=== Results: ${PASS} passed, ${FAIL} failed ==="; return 1; }
@@ -385,7 +421,7 @@ _mode_check() {
     if [ "${OPT_ENABLE_OVERLAY}" -eq 1 ]; then
         if [ "${_GPU_PASSTHROUGH_OK}" -eq 0 ]; then
             # Hard gate: broken passthrough blocks .env edits regardless of --yes.
-            # Writing COMPOSE_FILE before passthrough works causes Ulises to fail
+            # Writing COMPOSE_FILE before passthrough works causes Odysseus to fail
             # at startup, so this is not a prompt — it is a stop.
             _fail "GPU passthrough is not working — .env will not be modified."
             _info "Fix passthrough first, then re-run with --enable-nvidia-overlay:"

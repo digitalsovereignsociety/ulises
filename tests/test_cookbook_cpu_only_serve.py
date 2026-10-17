@@ -46,7 +46,7 @@ def test_diffusers_is_available_only_on_local_windows_serve_panel():
     assert "return !!(target?.host && target?.platform === 'windows');" in text
     assert "if (_remoteWindowsDiffusersUnsupported(target)) return [['llamacpp','llama.cpp']];" in text
     assert "return [['llamacpp','llama.cpp'],['diffusers','Diffusers']];" in text
-    assert "diffusersWindowsUnsupported" in text
+    assert "Diffusers serving is not supported on remote Windows servers yet." in text
 
 
 def test_windows_diffusers_uses_python_not_python3():
@@ -80,10 +80,10 @@ def test_vllm_route_strips_swap_space_when_runtime_rejects_it():
 
     assert "Setting vLLM --swap-space 0 so the runtime does not reserve CPU swap per GPU." in text
     assert "vLLM serve does not expose --swap-space; removing the flag and patching the runtime default to 0." in text
-    assert "ULISES_VLLM_HELP_CMD" in text
+    assert "ODYSSEUS_VLLM_HELP_CMD" in text
     assert "print(shlex.join(parts[:serve_i + 1] + [\"--help\"]))" in text
-    assert "eval \"$ULISES_VLLM_HELP_CMD\" 2>&1 | grep -q -- \"--swap-space\"" in text
-    assert "eval \"$ULISES_SERVE_CMD\"" in text
+    assert "eval \"$ODYSSEUS_VLLM_HELP_CMD\" 2>&1 | grep -q -- \"--swap-space\"" in text
+    assert "eval \"$ODYSSEUS_SERVE_CMD\"" in text
 
 
 def test_local_windows_platform_comes_from_backend_host_state():
@@ -102,7 +102,7 @@ def test_local_windows_platform_comes_from_backend_host_state():
     assert "platform: _envState.hostPlatform || _envState.platform || ''" not in text
     assert 'return "windows" if IS_WINDOWS else ""' in routes
     assert 'env["hostPlatform"] = _client_host_platform()' in routes
-    assert "return _state_for_client({})" in routes
+    assert "client_state = _state_for_client({})" in routes
     assert 'env.pop("hostPlatform", None)' in routes
     assert "delete env.hostPlatform;" in running
 

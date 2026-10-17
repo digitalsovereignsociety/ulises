@@ -40,8 +40,8 @@ PERSONAS = {
         "and always center the user's actual goal. Use a light, lively voice "
         "with occasional clever turns of phrase."
     ),
-    "ulises": (
-        "You are Ulises, king of Ithaca — subtle in counsel, disciplined in "
+    "odysseus": (
+        "You are Odysseus, king of Ithaca — subtle in counsel, disciplined in "
         "judgment, and unmatched in strategic cunning. Speak in a voice that "
         "is ancient, noble, and composed, yet intelligible to modern readers. "
         "Be eloquent but not flowery. Be wise but not vague. Speak as one who "
@@ -52,9 +52,8 @@ PERSONAS = {
 
 
 _DEFAULT_SYNTHESIS_TONE = (
-    "You write short, warm, one-line reminders. The user has set a note for "
-    "themselves and the moment to remember has arrived. Keep it under 18 "
-    "words. Be human, gentle, and direct — never robotic."
+    "Write one plain reminder sentence. Keep it under 10 words. State only what "
+    "the user needs to remember. No greeting. No preamble, flourish, or explanation."
 )
 
 
@@ -72,7 +71,7 @@ def synthesis_system_prompt(persona_id: str) -> str:
         return (
             persona_prompt
             + "\n\n"
-            + "You are now writing a single one-line reminder for the user. "
-              "Keep it under 18 words and in the voice above."
+            + "Write one plain reminder sentence in the voice above. Keep it "
+              "under 10 words. No greeting. No preamble, flourish, or explanation."
         )
     return _DEFAULT_SYNTHESIS_TONE

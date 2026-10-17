@@ -15,7 +15,6 @@ from pydantic import BaseModel
 
 from routes._validators import validate_remote_host, validate_ssh_port
 from core.platform_compat import _ssh_exec_argv
-from core.translations import t
 
 logger = logging.getLogger(__name__)
 
@@ -71,17 +70,17 @@ def _validate_repo_id(v: str | None) -> str:
 
 def _validate_serve_model_id(v: str | None) -> str:
     if not v:
-        raise HTTPException(400, t("cookbook.repo_id_required"))
+        raise HTTPException(400, "repo_id is required")
     if _REPO_ID_RE.match(v) or _LOCAL_MODEL_ID_RE.match(v) or _OLLAMA_MODEL_ID_RE.match(v):
         return v
-    raise HTTPException(400, t("cookbook.invalid_repo_id_or_model"))
+    raise HTTPException(400, "Invalid repo_id — must be <org>/<name>, an Ollama name:tag, or a cached local model id")
 
 
 def _validate_include(v: str | None) -> str | None:
     if v is None or v == "":
         return None
     if not _INCLUDE_RE.match(v):
-        raise HTTPException(400, t("cookbook.invalid_include_pattern"))
+        raise HTTPException(400, "Invalid include pattern")
     return v
 
 
@@ -118,7 +117,7 @@ def _validate_local_dir(v: str | None) -> str | None:
         v = v[1:-1]
     v = v.rstrip("/") or "/"
     if not (_LOCAL_DIR_RE.match(v) or _WINDOWS_LOCAL_DIR_RE.match(v)):
-        raise HTTPException(400, t("cookbook.invalid_local_dir_path"))
+        raise HTTPException(400, "Invalid local_dir — must be an absolute or ~ path with no shell metacharacters")
     # Reject path segments that start with '-' (option injection). '-' is in the
     # allowlist, so a dir like ``/models/-rf`` or ``D:\models\-rf`` could be read
     # as a CLI flag by hf/etc. — and quoting does NOT stop a value from being
@@ -126,7 +125,7 @@ def _validate_local_dir(v: str | None) -> str | None:
     # quoting can't cover, so the guard lives here, keeping the safety wholly
     # inside the validator rather than relying on consumers.
     if any(seg.startswith("-") for seg in re.split(r"[\\/]", v) if seg):
-        raise HTTPException(400, t("cookbook.invalid_local_dir_segment"))
+        raise HTTPException(400, "Invalid local_dir — path segments cannot start with '-'")
     return v
 
 
@@ -152,7 +151,7 @@ def _shell_path(p: str) -> str:
 def _local_tooling_path_export(executable: str) -> str:
     """Bash line prepending the running interpreter's bin dir to PATH.
 
-    When Ulises runs from a virtualenv, that bin dir holds the tools the
+    When Odysseus runs from a virtualenv, that bin dir holds the tools the
     cookbook runners shell out to (`hf`, `python`). tmux runners start from a
     fresh login shell with the venv NOT activated, so without this they can't
     find `hf` and downloads fail with "hf: command not found" — notably on
@@ -284,7 +283,7 @@ def _venv_safe_local_pip_install_cmd(cmd: str, *, local: bool, in_venv: bool) ->
 
     Cookbook dependency installs run through the model-serve task path so users
     can watch progress in the same log UI. For local POSIX runs, that task
-    prepends Ulises' own interpreter directory to PATH. If Ulises itself is
+    prepends Odysseus' own interpreter directory to PATH. If Odysseus itself is
     running from a venv, `python3` resolves to the venv Python and pip rejects
     `--user` with "User site-packages are not visible in this virtualenv".
 
@@ -351,17 +350,17 @@ def _append_pip_install_runner_lines(runner_lines: list[str], cmd: str) -> None:
     runner_lines.append(f"if {help_check}; then")
     runner_lines.append(f"  {cmd}")
     runner_lines.append("else")
-    runner_lines.append('  echo "[ulises] pip does not support --break-system-packages; installing without it."')
+    runner_lines.append('  echo "[odysseus] pip does not support --break-system-packages; installing without it."')
     runner_lines.append(f"  {without_break}")
     runner_lines.append("fi")
 
 
 def _user_shell_path_bootstrap() -> list[str]:
     return [
-        'ULISES_USER_SHELL="${SHELL:-}"',
-        'if [ -n "$ULISES_USER_SHELL" ] && [ -x "$ULISES_USER_SHELL" ]; then',
-        '  ULISES_USER_PATH="$("$ULISES_USER_SHELL" -ic \'printf "__ULISES_PATH__%s\\n" "$PATH"\' 2>/dev/null | sed -n \'s/^__ULISES_PATH__//p\' | tail -n 1 || true)"',
-        '  if [ -n "$ULISES_USER_PATH" ]; then export PATH="$ULISES_USER_PATH:$PATH"; fi',
+        'ODYSSEUS_USER_SHELL="${SHELL:-}"',
+        'if [ -n "$ODYSSEUS_USER_SHELL" ] && [ -x "$ODYSSEUS_USER_SHELL" ]; then',
+        '  ODYSSEUS_USER_PATH="$("$ODYSSEUS_USER_SHELL" -ic \'printf "__ODYSSEUS_PATH__%s\\n" "$PATH"\' 2>/dev/null | sed -n \'s/^__ODYSSEUS_PATH__//p\' | tail -n 1 || true)"',
+        '  if [ -n "$ODYSSEUS_USER_PATH" ]; then export PATH="$ODYSSEUS_USER_PATH:$PATH"; fi',
         'fi',
         # Windows can expose python3 as a Microsoft Store App Execution Alias
         # under WindowsApps. Git Bash sees that stub as present, but it exits
@@ -440,23 +439,46 @@ def _cached_model_scan_script(model_dirs: list[str] | None = None, add_hf_cache:
         "                if f.is_file(): nf += 1; sz += f.stat().st_size",
         "                if f.name.endswith('.incomplete'): ic = True",
         "        snap = os.path.join(cache, d, 'snapshots')",
-        "        # Windows HF cache stores files directly in snapshots/; blobs/ may be empty.",
-        "        # Fallback: scan snapshots for real files when blobs yielded nothing.",
-        "        if sz == 0 and os.path.isdir(snap):",
+        "        def snapshot_size():",
+        "            total, count, incomplete = 0, 0, False",
+        "            seen_real = set()",
         "            for sd in os.listdir(snap):",
         "                sf = os.path.join(snap, sd)",
         "                if not os.path.isdir(sf): continue",
-        "                for f in os.scandir(sf):",
-        "                    if f.is_file(): nf += 1; sz += f.stat().st_size",
-        "                    if f.name.endswith('.incomplete'): ic = True",
-        "        is_diffusion = False; gguf_files = []",
+        "                for root, dirs, fns in safe_walk(sf):",
+        "                    for fn in fns:",
+        "                        fp = os.path.join(root, fn)",
+        "                        if fn.endswith('.incomplete'): incomplete = True",
+        "                        try:",
+        "                            real = os.path.realpath(fp)",
+        "                            if real in seen_real: continue",
+        "                            seen_real.add(real)",
+        "                            total += os.path.getsize(real)",
+        "                            count += 1",
+        "                        except Exception:",
+        "                            pass",
+        "            return total, count, incomplete",
+        "        # Some HF caches (macOS/MLX/Xet-style) keep blobs elsewhere or expose",
+        "        # snapshot symlinks only. Size snapshots too when blob accounting is empty.",
+        "        if sz == 0 and os.path.isdir(snap):",
+        "            sz2, nf2, ic2 = snapshot_size()",
+        "            sz, nf, ic = sz2, nf2, ic or ic2",
+        "        is_video = bool(re.search(r'(?i)(^|/)Lightricks/LTX-|(^|/)LTX[-_/]|video|text-to-video|image-to-video', rid))",
+        "        is_diffusion = is_video; is_adapter = bool(re.search(r'(?i)(lora|adapter|peft|qlora|control[-_]?lora|diffusion[-_]?lora)', rid)); gguf_files = []",
         "        if os.path.isdir(snap):",
         "            for sd in os.listdir(snap):",
         "                sf = os.path.join(snap, sd)",
         "                if not os.path.isdir(sf): continue",
         "                if os.path.exists(os.path.join(sf, 'model_index.json')): is_diffusion = True",
+        "                if os.path.exists(os.path.join(sf, 'adapter_config.json')) or os.path.exists(os.path.join(sf, 'adapter_model.safetensors')): is_adapter = True",
+        "                for _root, _dirs, _fns in safe_walk(sf):",
+        "                    for _fn in _fns:",
+        "                        _lfn = _fn.lower()",
+        "                        if _lfn.endswith('.safetensors') and re.search(r'(?i)(ltx|video|upscaler)', _lfn): is_video = True; is_diffusion = True",
+        "                        if _lfn in ('adapter_config.json','adapter_model.safetensors','pytorch_lora_weights.safetensors') or 'lora' in _lfn:",
+        "                            is_adapter = True",
         "                for f in collect_ggufs(sf): f['rel_path'] = sd + '/' + f['rel_path']; gguf_files.append(f)",
-        "        models.append({'repo_id':rid,'size_bytes':sz,'nb_files':nf,'has_incomplete':ic,'path':cache,'is_diffusion':is_diffusion,'is_gguf':bool(gguf_files),'gguf_files':gguf_files})",
+        "        models.append({'repo_id':rid,'size_bytes':sz,'nb_files':nf,'has_incomplete':ic,'path':cache,'is_diffusion':is_diffusion,'is_video':is_video,'is_adapter':is_adapter,'is_gguf':bool(gguf_files),'gguf_files':gguf_files})",
         "def hf_cache_paths():",
         "    candidates = []",
         "    def add(p):",
@@ -472,7 +494,18 @@ def _cached_model_scan_script(model_dirs: list[str] | None = None, add_hf_cache:
         "    add('/app/.cache/huggingface/hub')",
         f"    add({add_hf_cache!r})" if add_hf_cache else "",
         "    return candidates",
+        "def normalize_model_dir(p):",
+        "    p = os.path.expanduser((p or '').strip())",
+        "    if not p: return p",
+        "    if os.path.isdir(p) or os.path.isabs(p): return p",
+        "    # Users often paste Linux absolute paths without the leading slash.",
+        "    # Treat home/<user>/... as /home/<user>/... so remote scans work.",
+        "    if p.startswith(('home/', 'mnt/', 'media/', 'data/', 'opt/', 'srv/', 'var/')):",
+        "        prefixed = '/' + p",
+        "        if os.path.isdir(prefixed): return prefixed",
+        "    return p",
         "def scan_dir(p):",
+        "    p = normalize_model_dir(p)",
         "    if not os.path.isdir(p) or not safe_path(p): return",
         "    for d in sorted(os.listdir(p)):",
         "        if d.startswith('.'): continue",
@@ -480,11 +513,12 @@ def _cached_model_scan_script(model_dirs: list[str] | None = None, add_hf_cache:
         "        fp = os.path.join(p, d)",
         "        if not os.path.isdir(fp) or os.path.islink(fp) or not safe_path(fp): continue",
         "        if d in seen: continue",
-        "        is_model = False; gguf_files = []",
+        "        is_model = False; is_adapter = bool(re.search(r'(?i)(lora|adapter|peft|qlora|control[-_]?lora|diffusion[-_]?lora)', d)); gguf_files = []",
         "        for root, dirs, fns in safe_walk(fp):",
         "            for fn in fns:",
         "                if fn.lower().endswith('.gguf'): is_model = True",
         "                elif fn == 'config.json' or fn.endswith('.safetensors') or fn.endswith('.bin'): is_model = True",
+        "                if fn in ('adapter_config.json','adapter_model.safetensors','pytorch_lora_weights.safetensors') or 'lora' in fn.lower(): is_adapter = True",
         "            if is_model: break",
         "        if not is_model: continue",
         "        gguf_files = collect_ggufs(fp)",
@@ -495,7 +529,7 @@ def _cached_model_scan_script(model_dirs: list[str] | None = None, add_hf_cache:
         "                try: nf += 1; sz += os.path.getsize(os.path.join(dp, fn))",
         "                except Exception: pass",
         "        is_diff = os.path.exists(os.path.join(fp, 'model_index.json'))",
-        "        models.append({'repo_id':d,'size_bytes':sz,'nb_files':nf,'has_incomplete':False,'path':p,'is_local_dir':True,'is_diffusion':is_diff,'is_gguf':bool(gguf_files),'gguf_files':gguf_files})",
+        "        models.append({'repo_id':d,'size_bytes':sz,'nb_files':nf,'has_incomplete':False,'path':p,'is_local_dir':True,'is_diffusion':is_diff,'is_adapter':is_adapter,'is_gguf':bool(gguf_files),'gguf_files':gguf_files})",
         "def parse_size(num, unit):",
         "    try: n = float(num)",
         "    except Exception: return 0",
@@ -507,7 +541,7 @@ def _cached_model_scan_script(model_dirs: list[str] | None = None, add_hf_cache:
         "    return int(n)",
         "def scan_ollama():",
         "    if any(m.get('is_ollama') for m in models): return",
-        "    if os.name == 'nt' and not os.environ.get('ULISES_ALLOW_OLLAMA_CLI_SCAN'): return",
+        "    if os.name == 'nt' and not os.environ.get('ODYSSEUS_ALLOW_OLLAMA_CLI_SCAN'): return",
         "    if not shutil.which('ollama'): return",
         "    try:",
         "        p = subprocess.run(['ollama', 'list'], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, timeout=6)",
@@ -542,7 +576,7 @@ def _cached_model_scan_script(model_dirs: list[str] | None = None, add_hf_cache:
         "scan_ollama()",
     ]
     for model_dir in model_dirs or []:
-        lines.append(f"scan_dir(os.path.expanduser({model_dir!r}))")
+        lines.append(f"scan_dir({model_dir!r})")
     lines.append("print(json.dumps(models))")
     return "\n".join(lines) + "\n"
 
@@ -639,7 +673,7 @@ def _ollama_bind_from_cmd(cmd: str | None, *, default_host: str = "127.0.0.1") -
     """Return the Ollama bind host/port requested by a serve command.
 
     Plain local `ollama serve` defaults to loopback. Remote callers can pass a
-    wider default host so the resulting API is reachable by Ulises.
+    wider default host so the resulting API is reachable by Odysseus.
     """
     if not cmd:
         return default_host, "11434"
@@ -726,7 +760,7 @@ def _validate_serve_cmd(v: str | None) -> str | None:
     v = re.sub(r"\\[ \t]*\r?\n[ \t]*", " ", v).strip()
     # Backticks and raw newlines are never legitimate here.
     if any(c in v for c in ("`", "\n", "\r")):
-        raise HTTPException(400, t("cookbook.invalid_chars_cmd"))
+        raise HTTPException(400, "Invalid characters in cmd")
 
     # Known GGUF launcher prelude → validate the serve invocation(s) it guards.
     m = _GGUF_PRELUDE_RE.match(v)
@@ -749,15 +783,15 @@ def _validate_serve_cmd(v: str | None) -> str | None:
 
     # (`$(` was the original intent; bare `$` is fine for shell-safe paths.)
     if any(c in cleaned_v for c in (";", "&&", "||", "$(")):
-        raise HTTPException(400, t("cookbook.invalid_chars_cmd"))
+        raise HTTPException(400, "Invalid characters in cmd")
     _check_serve_binary(v)
     return v
 
 
 def _append_serve_preflight_exit_lines(runner_lines: list[str], *, keep_shell_open: bool) -> None:
     """Append serve-runner lines that surface preflight failures before exit."""
-    runner_lines.append('if [ -n "$ULISES_PREFLIGHT_EXIT" ]; then')
-    runner_lines.append('  echo ""; echo "=== Process exited with code $ULISES_PREFLIGHT_EXIT ==="')
+    runner_lines.append('if [ -n "$ODYSSEUS_PREFLIGHT_EXIT" ]; then')
+    runner_lines.append('  echo ""; echo "=== Process exited with code $ODYSSEUS_PREFLIGHT_EXIT ==="')
     if keep_shell_open:
         # Decouple the post-crash interactive shell from the persistent log
         # file. fds 3/4 were saved BEFORE the tee redirect at the top of
@@ -768,23 +802,23 @@ def _append_serve_preflight_exit_lines(runner_lines: list[str], *, keep_shell_op
         runner_lines.append('  sleep 0.2  # let tee child flush + exit')
         runner_lines.append('  exec "${SHELL:-/bin/bash}"')
     else:
-        runner_lines.append('  exit "$ULISES_PREFLIGHT_EXIT"')
+        runner_lines.append('  exit "$ODYSSEUS_PREFLIGHT_EXIT"')
     runner_lines.append('fi')
 
 
 def _append_vllm_linux_preflight_lines(runner_lines: list[str]) -> None:
     """Append Linux vLLM readiness lines that identify the runtime being used."""
-    # Keep the user install bin visible for Ulises-managed `pip install --user`
+    # Keep the user install bin visible for Odysseus-managed `pip install --user`
     # installs, but then report the actual CLI path so external runtimes are clear.
     runner_lines.append('export PATH="$HOME/.local/bin:$PATH"')
-    runner_lines.append('ULISES_VLLM_BIN="$(command -v vllm 2>/dev/null || true)"')
-    runner_lines.append('if [ -z "$ULISES_VLLM_BIN" ]; then')
+    runner_lines.append('ODYSSEUS_VLLM_BIN="$(command -v vllm 2>/dev/null || true)"')
+    runner_lines.append('if [ -z "$ODYSSEUS_VLLM_BIN" ]; then')
     runner_lines.append('  echo "ERROR: vLLM is not installed."')
-    runner_lines.append('  ULISES_PREFLIGHT_EXIT=127')
+    runner_lines.append('  ODYSSEUS_PREFLIGHT_EXIT=127')
     runner_lines.append('else')
-    runner_lines.append('  echo "[ulises] vLLM CLI: $ULISES_VLLM_BIN"')
-    runner_lines.append('  ULISES_VLLM_VERSION="$("$ULISES_VLLM_BIN" --version 2>&1 | head -n 1 || true)"')
-    runner_lines.append('  if [ -n "$ULISES_VLLM_VERSION" ]; then echo "[ulises] vLLM version: $ULISES_VLLM_VERSION"; fi')
+    runner_lines.append('  echo "[odysseus] vLLM CLI: $ODYSSEUS_VLLM_BIN"')
+    runner_lines.append('  ODYSSEUS_VLLM_VERSION="$("$ODYSSEUS_VLLM_BIN" --version 2>&1 | head -n 1 || true)"')
+    runner_lines.append('  if [ -n "$ODYSSEUS_VLLM_VERSION" ]; then echo "[odysseus] vLLM version: $ODYSSEUS_VLLM_VERSION"; fi')
     runner_lines.append('fi')
 
 def _append_serve_exit_code_lines(
@@ -794,18 +828,18 @@ def _append_serve_exit_code_lines(
     is_pip_install: bool = False,
 ) -> None:
     """Append serve-runner lines that preserve and report the command exit code."""
-    runner_lines.append('ULISES_CMD_EXIT=$?')
+    runner_lines.append('ODYSSEUS_CMD_EXIT=$?')
     if is_pip_install:
-        runner_lines.append('if [ $ULISES_CMD_EXIT -eq 0 ]; then echo ""; echo "DOWNLOAD_OK"; fi')
+        runner_lines.append('if [ $ODYSSEUS_CMD_EXIT -eq 0 ]; then echo ""; echo "DOWNLOAD_OK"; fi')
     if keep_shell_open:
-        runner_lines.append('echo ""; echo "=== Process exited with code $ULISES_CMD_EXIT ==="')
+        runner_lines.append('echo ""; echo "=== Process exited with code $ODYSSEUS_CMD_EXIT ==="')
         # See preflight branch above for the rationale on restoring fds 3/4.
         runner_lines.append('exec 1>&3 2>&4 3>&- 4>&- 2>/dev/null || true')
         runner_lines.append('sleep 0.2  # let tee child flush + exit')
         runner_lines.append('exec "${SHELL:-/bin/bash}"')
     else:
-        runner_lines.append('echo ""; echo "=== Process exited with code $ULISES_CMD_EXIT ==="')
-        runner_lines.append('exit "$ULISES_CMD_EXIT"')
+        runner_lines.append('echo ""; echo "=== Process exited with code $ODYSSEUS_CMD_EXIT ==="')
+        runner_lines.append('exit "$ODYSSEUS_CMD_EXIT"')
 
 
 def _append_llama_cpp_linux_accel_build_lines(runner_lines: list[str]) -> None:
@@ -819,64 +853,64 @@ def _append_llama_cpp_linux_accel_build_lines(runner_lines: list[str]) -> None:
     # cmake/build-essential/git/CUDA-headers needed at all. The from-source
     # build below stays as a fallback (custom flags, esoteric arch, no
     # internet, etc). 30 seconds vs 5+ minutes of compile, and removes
-    # every OS-package dep from the launch path. Sets _ulises_have_prebuilt=1
+    # every OS-package dep from the launch path. Sets _odysseus_have_prebuilt=1
     # on success; the existing build-tier if/elif chain below is gated on
     # that variable so we never compile twice or shadow the prebuilt symlink.
-    runner_lines.append('    _ulises_have_prebuilt=""')
-    runner_lines.append('    _ulises_arch="$(uname -m)"')
-    runner_lines.append('    _ulises_prebuilt_url=""')
-    runner_lines.append('    if command -v curl >/dev/null 2>&1 && [ "$_ulises_arch" = "x86_64" ]; then')
-    runner_lines.append('      _ulises_pat=""')
-    runner_lines.append('      _ulises_has_nv_inline() { command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi -L 2>/dev/null | grep -q "GPU "; }')
-    runner_lines.append('      _ulises_has_vk_inline() { ldconfig -p 2>/dev/null | grep -q "libvulkan\\.so" || command -v vulkaninfo >/dev/null 2>&1 || [ -e /usr/lib/x86_64-linux-gnu/libvulkan.so.1 ]; }')
-    runner_lines.append('      _ulises_has_vkdev_inline() { ls /dev/dri/renderD* >/dev/null 2>&1 || (lspci 2>/dev/null | grep -Ei \'VGA|3D|Display\' | grep -Eiq \'AMD|ATI|Radeon\'); }')
-    runner_lines.append('      if _ulises_has_nv_inline; then')
-    runner_lines.append('        _ulises_pat="ubuntu.*cuda"')
-    runner_lines.append('      elif _ulises_has_vkdev_inline && _ulises_has_vk_inline; then')
-    runner_lines.append('        _ulises_pat="ubuntu.*vulkan"')
+    runner_lines.append('    _odysseus_have_prebuilt=""')
+    runner_lines.append('    _odysseus_arch="$(uname -m)"')
+    runner_lines.append('    _odysseus_prebuilt_url=""')
+    runner_lines.append('    if command -v curl >/dev/null 2>&1 && [ "$_odysseus_arch" = "x86_64" ]; then')
+    runner_lines.append('      _odysseus_pat=""')
+    runner_lines.append('      _odysseus_has_nv_inline() { command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi -L 2>/dev/null | grep -q "GPU "; }')
+    runner_lines.append('      _odysseus_has_vk_inline() { ldconfig -p 2>/dev/null | grep -q "libvulkan\\.so" || command -v vulkaninfo >/dev/null 2>&1 || [ -e /usr/lib/x86_64-linux-gnu/libvulkan.so.1 ]; }')
+    runner_lines.append('      _odysseus_has_vkdev_inline() { ls /dev/dri/renderD* >/dev/null 2>&1 || (lspci 2>/dev/null | grep -Ei \'VGA|3D|Display\' | grep -Eiq \'AMD|ATI|Radeon\'); }')
+    runner_lines.append('      if _odysseus_has_nv_inline; then')
+    runner_lines.append('        _odysseus_pat="ubuntu.*cuda"')
+    runner_lines.append('      elif _odysseus_has_vkdev_inline && _odysseus_has_vk_inline; then')
+    runner_lines.append('        _odysseus_pat="ubuntu.*vulkan"')
     runner_lines.append('      else')
-    runner_lines.append('        _ulises_pat="ubuntu-x64\\\\.zip"')
+    runner_lines.append('        _odysseus_pat="ubuntu-x64\\\\.zip"')
     runner_lines.append('      fi')
-    runner_lines.append('      _ulises_prebuilt_url="$(curl -fsSL --max-time 15 https://api.github.com/repos/ggml-org/llama.cpp/releases/latest 2>/dev/null | grep \'"browser_download_url"\' | cut -d\'"\' -f4 | grep -iE "$_ulises_pat" | grep -iv "arm\\|aarch64" | head -1)"')
+    runner_lines.append('      _odysseus_prebuilt_url="$(curl -fsSL --max-time 15 https://api.github.com/repos/ggml-org/llama.cpp/releases/latest 2>/dev/null | grep \'"browser_download_url"\' | cut -d\'"\' -f4 | grep -iE "$_odysseus_pat" | grep -iv "arm\\|aarch64" | head -1)"')
     runner_lines.append('    fi')
     # Accept any of unzip / bsdtar / python3 -m zipfile as the extractor.
     # python3 is essentially always present on modern Linux, so this lets
     # the prebuilt path work on minimal Ubuntu installs that lack `unzip`.
-    runner_lines.append('    if [ -n "$_ulises_prebuilt_url" ] && (command -v unzip >/dev/null 2>&1 || command -v bsdtar >/dev/null 2>&1 || command -v python3 >/dev/null 2>&1); then')
-    runner_lines.append('      echo "[ulises] Found prebuilt llama-server: $_ulises_prebuilt_url"')
-    runner_lines.append('      mkdir -p ~/bin "$HOME/.cache/ulises/llama-cpp-prebuilt" && cd "$HOME/.cache/ulises/llama-cpp-prebuilt"')
+    runner_lines.append('    if [ -n "$_odysseus_prebuilt_url" ] && (command -v unzip >/dev/null 2>&1 || command -v bsdtar >/dev/null 2>&1 || command -v python3 >/dev/null 2>&1); then')
+    runner_lines.append('      echo "[odysseus] Found prebuilt llama-server: $_odysseus_prebuilt_url"')
+    runner_lines.append('      mkdir -p ~/bin "$HOME/.cache/odysseus/llama-cpp-prebuilt" && cd "$HOME/.cache/odysseus/llama-cpp-prebuilt"')
     runner_lines.append('      rm -f llama-cpp.zip')
-    runner_lines.append('      if curl -fsSL --max-time 120 "$_ulises_prebuilt_url" -o llama-cpp.zip && [ -s llama-cpp.zip ]; then')
+    runner_lines.append('      if curl -fsSL --max-time 120 "$_odysseus_prebuilt_url" -o llama-cpp.zip && [ -s llama-cpp.zip ]; then')
     runner_lines.append('        rm -rf build && mkdir -p build')
     runner_lines.append('        if command -v unzip >/dev/null 2>&1; then unzip -qq -o llama-cpp.zip -d build; elif command -v bsdtar >/dev/null 2>&1; then bsdtar -xf llama-cpp.zip -C build; else python3 -c "import zipfile; zipfile.ZipFile(\\"llama-cpp.zip\\").extractall(\\"build\\")"; fi')
-    runner_lines.append('        _ulises_extracted="$(find build -type f -name llama-server 2>/dev/null | head -1)"')
-    runner_lines.append('        if [ -n "$_ulises_extracted" ]; then')
-    runner_lines.append('          chmod +x "$_ulises_extracted"')
-    runner_lines.append('          ln -sf "$_ulises_extracted" ~/bin/llama-server')
-    runner_lines.append('          _ulises_libdir="$(dirname "$_ulises_extracted")"')
-    runner_lines.append('          mkdir -p ~/.config && echo "export LD_LIBRARY_PATH=\\"$_ulises_libdir:\\${LD_LIBRARY_PATH:-}\\"" > ~/.config/ulises-llama-cpp-env')
-    runner_lines.append('          _ulises_have_prebuilt=1')
-    runner_lines.append('          echo "[ulises] Prebuilt llama-server installed at $_ulises_extracted"')
+    runner_lines.append('        _odysseus_extracted="$(find build -type f -name llama-server 2>/dev/null | head -1)"')
+    runner_lines.append('        if [ -n "$_odysseus_extracted" ]; then')
+    runner_lines.append('          chmod +x "$_odysseus_extracted"')
+    runner_lines.append('          ln -sf "$_odysseus_extracted" ~/bin/llama-server')
+    runner_lines.append('          _odysseus_libdir="$(dirname "$_odysseus_extracted")"')
+    runner_lines.append('          mkdir -p ~/.config && echo "export LD_LIBRARY_PATH=\\"$_odysseus_libdir:\\${LD_LIBRARY_PATH:-}\\"" > ~/.config/odysseus-llama-cpp-env')
+    runner_lines.append('          _odysseus_have_prebuilt=1')
+    runner_lines.append('          echo "[odysseus] Prebuilt llama-server installed at $_odysseus_extracted"')
     runner_lines.append('        fi')
     runner_lines.append('      fi')
-    runner_lines.append('      [ -z "$_ulises_have_prebuilt" ] && echo "[ulises] Prebuilt download/extract failed — falling back to from-source build."')
-    runner_lines.append('    elif [ -z "$_ulises_prebuilt_url" ]; then')
-    runner_lines.append('      echo "[ulises] No matching prebuilt llama-server for this host (arch=$_ulises_arch) — will build from source."')
+    runner_lines.append('      [ -z "$_odysseus_have_prebuilt" ] && echo "[odysseus] Prebuilt download/extract failed — falling back to from-source build."')
+    runner_lines.append('    elif [ -z "$_odysseus_prebuilt_url" ]; then')
+    runner_lines.append('      echo "[odysseus] No matching prebuilt llama-server for this host (arch=$_odysseus_arch) — will build from source."')
     runner_lines.append('    fi')
-    runner_lines.append('  if [ -z "$_ulises_have_prebuilt" ]; then')
+    runner_lines.append('  if [ -z "$_odysseus_have_prebuilt" ]; then')
     # Detect pip-installed nvcc (from vLLM/nvidia CUDA wheels) and put it on PATH
     # so cmake's CUDA configure can find it — BUT only when actual NVIDIA
     # hardware is present. On AMD/Intel hosts the pip nvcc is a misleading
     # leftover (no libcudart, no GPU it could target) and would otherwise
     # send the build down the CUDA branch and fail with "CUDA Toolkit not
     # found" instead of trying Vulkan.
-    runner_lines.append('    _ulises_has_nvidia_hw() {')
+    runner_lines.append('    _odysseus_has_nvidia_hw() {')
     runner_lines.append('      command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi -L 2>/dev/null | grep -q "GPU " && return 0')
     runner_lines.append('      ls /dev/nvidia* >/dev/null 2>&1 && return 0')
     runner_lines.append('      lspci 2>/dev/null | grep -iE \'VGA|3D|Display\' | grep -iq nvidia && return 0')
     runner_lines.append('      return 1')
     runner_lines.append('    }')
-    runner_lines.append('    if _ulises_has_nvidia_hw; then')
+    runner_lines.append('    if _odysseus_has_nvidia_hw; then')
     runner_lines.append('      for _cudir in ~/.local/lib/python*/site-packages/nvidia/cu13 ~/.local/lib/python*/site-packages/nvidia/cu12 ~/.local/lib/python*/site-packages/nvidia/cuda_nvcc; do')
     runner_lines.append('        [ -x "$_cudir/bin/nvcc" ] && export CUDA_HOME="$_cudir" && export PATH="$_cudir/bin:$PATH" && break')
     runner_lines.append('      done')
@@ -891,35 +925,35 @@ def _append_llama_cpp_linux_accel_build_lines(runner_lines: list[str]) -> None:
     # diagnosis pattern (cookbook_routes.py / cookbook_helpers.py) surfaces
     # an explicit "install cmake" suggestion in the Cookbook diagnosis
     # toolbar after the inevitable build failure.
-    runner_lines.append('    _ulises_apt_bootstrap() {')
+    runner_lines.append('    _odysseus_apt_bootstrap() {')
     runner_lines.append('      local _missing=""')
     runner_lines.append('      command -v cmake >/dev/null 2>&1 || _missing="$_missing cmake"')
     runner_lines.append('      command -v g++ >/dev/null 2>&1 || command -v gcc >/dev/null 2>&1 || _missing="$_missing build-essential"')
     runner_lines.append('      command -v git >/dev/null 2>&1 || _missing="$_missing git"')
     runner_lines.append('      [ -z "$_missing" ] && return 0')
     runner_lines.append('      if command -v apt-get >/dev/null 2>&1 && sudo -n true 2>/dev/null; then')
-    runner_lines.append('        echo "[ulises] Auto-installing missing build deps via apt:$_missing"')
+    runner_lines.append('        echo "[odysseus] Auto-installing missing build deps via apt:$_missing"')
     runner_lines.append('        sudo -n env DEBIAN_FRONTEND=noninteractive apt-get update -qq 2>&1 | tail -3')
     runner_lines.append('        sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends $_missing 2>&1 | tail -5 || true')
     runner_lines.append('      elif command -v pacman >/dev/null 2>&1 && sudo -n true 2>/dev/null; then')
-    runner_lines.append('        echo "[ulises] Auto-installing missing build deps via pacman:$_missing"')
+    runner_lines.append('        echo "[odysseus] Auto-installing missing build deps via pacman:$_missing"')
     runner_lines.append('        local _pacpkgs="$(echo "$_missing" | sed -e \'s/build-essential/base-devel/g\')"')
     runner_lines.append('        sudo -n pacman -Sy --needed --noconfirm $_pacpkgs 2>&1 | tail -5 || true')
     runner_lines.append('      elif command -v dnf >/dev/null 2>&1 && sudo -n true 2>/dev/null; then')
-    runner_lines.append('        echo "[ulises] Auto-installing missing build deps via dnf:$_missing"')
+    runner_lines.append('        echo "[odysseus] Auto-installing missing build deps via dnf:$_missing"')
     runner_lines.append('        local _dnfpkgs="$(echo "$_missing" | sed -e \'s/build-essential/gcc gcc-c++ make/g\')"')
     runner_lines.append('        sudo -n dnf install -y $_dnfpkgs 2>&1 | tail -5 || true')
     runner_lines.append('      else')
-    runner_lines.append('        echo "[ulises] WARNING: missing build deps ($_missing) — passwordless sudo is unavailable, cannot auto-install. Cookbook Diagnosis will explain the fix after the build fails."')
+    runner_lines.append('        echo "[odysseus] WARNING: missing build deps ($_missing) — passwordless sudo is unavailable, cannot auto-install. Cookbook Diagnosis will explain the fix after the build fails."')
     runner_lines.append('      fi')
     runner_lines.append('    }')
-    runner_lines.append('    _ulises_apt_bootstrap')
-    runner_lines.append('    _ulises_missing_build_deps=""')
-    runner_lines.append('    command -v cmake >/dev/null 2>&1 || _ulises_missing_build_deps="$_ulises_missing_build_deps cmake"')
-    runner_lines.append('    command -v git >/dev/null 2>&1 || _ulises_missing_build_deps="$_ulises_missing_build_deps git"')
-    runner_lines.append('    command -v g++ >/dev/null 2>&1 || command -v gcc >/dev/null 2>&1 || _ulises_missing_build_deps="$_ulises_missing_build_deps build-essential"')
-    runner_lines.append('    if [ -n "$_ulises_missing_build_deps" ]; then')
-    runner_lines.append('      echo "ERROR: llama.cpp source build needs missing packages:$_ulises_missing_build_deps"')
+    runner_lines.append('    _odysseus_apt_bootstrap')
+    runner_lines.append('    _odysseus_missing_build_deps=""')
+    runner_lines.append('    command -v cmake >/dev/null 2>&1 || _odysseus_missing_build_deps="$_odysseus_missing_build_deps cmake"')
+    runner_lines.append('    command -v git >/dev/null 2>&1 || _odysseus_missing_build_deps="$_odysseus_missing_build_deps git"')
+    runner_lines.append('    command -v g++ >/dev/null 2>&1 || command -v gcc >/dev/null 2>&1 || _odysseus_missing_build_deps="$_odysseus_missing_build_deps build-essential"')
+    runner_lines.append('    if [ -n "$_odysseus_missing_build_deps" ]; then')
+    runner_lines.append('      echo "ERROR: llama.cpp source build needs missing packages:$_odysseus_missing_build_deps"')
     runner_lines.append('      if command -v apt-get >/dev/null 2>&1; then')
     runner_lines.append('        echo "Install on this host: sudo apt-get update && sudo apt-get install -y cmake build-essential git"')
     runner_lines.append('      elif command -v pacman >/dev/null 2>&1; then')
@@ -928,17 +962,17 @@ def _append_llama_cpp_linux_accel_build_lines(runner_lines: list[str]) -> None:
     runner_lines.append('        echo "Install on this host: sudo dnf install -y cmake gcc gcc-c++ make git"')
     runner_lines.append('      fi')
     runner_lines.append('      echo "Alternative: install a native llama-server on PATH, then relaunch."')
-    runner_lines.append('      ULISES_PREFLIGHT_EXIT=127')
+    runner_lines.append('      ODYSSEUS_PREFLIGHT_EXIT=127')
     runner_lines.append('    fi')
     runner_lines.append('    cd ~/llama.cpp')
-    runner_lines.append('    _ulises_has_vulkan() {')
+    runner_lines.append('    _odysseus_has_vulkan() {')
     runner_lines.append('      ldconfig -p 2>/dev/null | grep -q \'libvulkan\\.so\' && return 0')
     runner_lines.append('      [ -e /usr/lib/libvulkan.so.1 ] && return 0')
     runner_lines.append('      [ -e /usr/lib/x86_64-linux-gnu/libvulkan.so.1 ] && return 0')
     runner_lines.append('      command -v vulkaninfo >/dev/null 2>&1 && return 0')
     runner_lines.append('      return 1')
     runner_lines.append('    }')
-    runner_lines.append('    _ulises_has_vulkan_device() {')
+    runner_lines.append('    _odysseus_has_vulkan_device() {')
     runner_lines.append('      ls /dev/dri/renderD* >/dev/null 2>&1 && return 0')
     runner_lines.append('      lspci 2>/dev/null | grep -Ei \'VGA|3D|Display\' | grep -Eiq \'AMD|ATI|Radeon\' && return 0')
     runner_lines.append('      return 1')
@@ -954,15 +988,15 @@ def _append_llama_cpp_linux_accel_build_lines(runner_lines: list[str]) -> None:
     runner_lines.append('        export HIPCXX="${HIPCXX:-$(hipconfig -l)/clang}"')
     runner_lines.append('        export HIP_PATH="${HIP_PATH:-$(hipconfig -R)}"')
     runner_lines.append('      fi')
-    runner_lines.append('      echo "[ulises] ROCm/HIP detected — building llama-server with HIP support..."')
+    runner_lines.append('      echo "[odysseus] ROCm/HIP detected — building llama-server with HIP support..."')
     runner_lines.append('      cmake -B build -DCMAKE_BUILD_TYPE=Release -DGGML_HIP=ON && cmake --build build -j"$NPROC" --target llama-server && ln -sf ~/llama.cpp/build/bin/llama-server ~/bin/llama-server')
-    runner_lines.append('    elif command -v nvcc &>/dev/null && _ulises_has_nvidia_hw; then')
+    runner_lines.append('    elif command -v nvcc &>/dev/null && _odysseus_has_nvidia_hw; then')
     runner_lines.append('      rm -rf build')
     # nvcc alone is not sufficient — pip-installed CUDA wheels or incomplete
     # tooling can expose nvcc without shipping libcudart, causing cmake to fail
     # mid-build with "CUDA runtime library not found". Check cudart explicitly
     # via a small helper so the guard stays readable.
-    runner_lines.append('      _ulises_has_cudart() {')
+    runner_lines.append('      _odysseus_has_cudart() {')
     runner_lines.append('        ldconfig -p 2>/dev/null | grep -q \'libcudart\\.so\' && return 0')
     runner_lines.append('        local _cuh="${CUDA_HOME:-/usr/local/cuda}"')
     runner_lines.append('        ls "$_cuh/lib64/libcudart.so"* &>/dev/null && return 0')
@@ -972,27 +1006,27 @@ def _append_llama_cpp_linux_accel_build_lines(runner_lines: list[str]) -> None:
     runner_lines.append('        ls "${_cuh%/cuda_nvcc}/cuda_runtime/lib/libcudart.so"* &>/dev/null && return 0')
     runner_lines.append('        return 1')
     runner_lines.append('      }')
-    runner_lines.append('      if _ulises_has_cudart; then')
-    runner_lines.append('        echo "[ulises] CUDA nvcc + cudart found — building llama-server with CUDA (GPU) support..."')
+    runner_lines.append('      if _odysseus_has_cudart; then')
+    runner_lines.append('        echo "[odysseus] CUDA nvcc + cudart found — building llama-server with CUDA (GPU) support..."')
     runner_lines.append('        cmake -B build -DCMAKE_BUILD_TYPE=Release -DGGML_CUDA=ON && cmake --build build -j"$NPROC" --target llama-server && ln -sf ~/llama.cpp/build/bin/llama-server ~/bin/llama-server')
     runner_lines.append('      else')
-    runner_lines.append('        echo "[ulises] WARNING: nvcc found but CUDA runtime (libcudart.so) is not visible — building llama-server for CPU only."')
-    runner_lines.append('        echo "[ulises]   GPU inference will not be available for this llama.cpp build."')
-    runner_lines.append('        echo "[ulises]   Ensure libcudart is installed (e.g. cuda-runtime package) and visible via ldconfig or CUDA_HOME."')
+    runner_lines.append('        echo "[odysseus] WARNING: nvcc found but CUDA runtime (libcudart.so) is not visible — building llama-server for CPU only."')
+    runner_lines.append('        echo "[odysseus]   GPU inference will not be available for this llama.cpp build."')
+    runner_lines.append('        echo "[odysseus]   Ensure libcudart is installed (e.g. cuda-runtime package) and visible via ldconfig or CUDA_HOME."')
     runner_lines.append('        cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build -j"$NPROC" --target llama-server && ln -sf ~/llama.cpp/build/bin/llama-server ~/bin/llama-server')
     runner_lines.append('      fi')
-    runner_lines.append('    elif _ulises_has_vulkan_device && _ulises_has_vulkan; then')
-    runner_lines.append('      echo "[ulises] Vulkan-capable GPU detected (no ROCm/CUDA toolchain installed) — building llama-server with Vulkan support..."')
+    runner_lines.append('    elif _odysseus_has_vulkan_device && _odysseus_has_vulkan; then')
+    runner_lines.append('      echo "[odysseus] Vulkan-capable GPU detected (no ROCm/CUDA toolchain installed) — building llama-server with Vulkan support..."')
     runner_lines.append('      rm -rf build-vulkan')
     runner_lines.append('      cmake -B build-vulkan -DCMAKE_BUILD_TYPE=Release -DGGML_VULKAN=ON && cmake --build build-vulkan -j"$NPROC" --target llama-server && ln -sf ~/llama.cpp/build-vulkan/bin/llama-server ~/bin/llama-server')
     runner_lines.append('    else')
-    runner_lines.append('      echo "[ulises] WARNING: no HIP/CUDA/Vulkan toolchain found — building llama-server for CPU only."')
-    runner_lines.append('      echo "[ulises]   GPU inference will not be available for this llama.cpp build."')
-    runner_lines.append('      echo "[ulises]   Install Vulkan (libvulkan-dev) / ROCm for AMD GPUs or CUDA tooling for NVIDIA, then re-launch this serve task."')
+    runner_lines.append('      echo "[odysseus] WARNING: no HIP/CUDA/Vulkan toolchain found — building llama-server for CPU only."')
+    runner_lines.append('      echo "[odysseus]   GPU inference will not be available for this llama.cpp build."')
+    runner_lines.append('      echo "[odysseus]   Install Vulkan (libvulkan-dev) / ROCm for AMD GPUs or CUDA tooling for NVIDIA, then re-launch this serve task."')
     runner_lines.append('      rm -rf build')
     runner_lines.append('      cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build -j"$NPROC" --target llama-server && ln -sf ~/llama.cpp/build/bin/llama-server ~/bin/llama-server')
     runner_lines.append('    fi')
-    runner_lines.append('  fi  # end _ulises_have_prebuilt guard')
+    runner_lines.append('  fi  # end _odysseus_have_prebuilt guard')
 
 
 def _llama_cpp_rebuild_cmd(update_source: bool = False) -> str:
@@ -1011,10 +1045,10 @@ def _llama_cpp_rebuild_cmd(update_source: bool = False) -> str:
         update_cmd = (
             'if [ -d "$HOME/llama.cpp/.git" ]; then '
             'git -C "$HOME/llama.cpp" pull --ff-only --depth 1 || '
-            'echo "[ulises] WARNING: llama.cpp source update failed; clearing cached build anyway."; '
+            'echo "[odysseus] WARNING: llama.cpp source update failed; clearing cached build anyway."; '
             'elif command -v git >/dev/null 2>&1; then '
             'git clone --depth 1 https://github.com/ggml-org/llama.cpp "$HOME/llama.cpp" || '
-            'echo "[ulises] WARNING: llama.cpp clone failed; clearing cached build anyway."; '
+            'echo "[odysseus] WARNING: llama.cpp clone failed; clearing cached build anyway."; '
             'fi && '
         )
     return (
@@ -1022,7 +1056,7 @@ def _llama_cpp_rebuild_cmd(update_source: bool = False) -> str:
         f'{update_cmd}'
         'rm -f "$HOME/bin/llama-server" && '
         'rm -rf "$HOME/llama.cpp/build" "$HOME/llama.cpp/build-vulkan" && '
-        'echo "[ulises] Cleared the cached llama.cpp build. '
+        'echo "[odysseus] Cleared the cached llama.cpp build. '
         'Re-launch the serve task to rebuild llama-server from source '
         '(Vulkan, HIP, or CUDA will be used if a matching toolchain is now available)."'
     )
@@ -1050,6 +1084,10 @@ class ServeRequest(BaseModel):
     hf_token: str | None = None
     gpus: str | None = None
     platform: str | None = None    # "linux", "termux", or "windows"
+    # Optional explicit image runtime adapter. "auto" preserves compatibility
+    # with older callers; catalog-backed launches can set this without relying
+    # on model-name heuristics in the generated runner.
+    runtime_adapter: str | None = None
 
 
 def _parse_serve_phase(snapshot: str, task_type: str = "serve") -> dict:
@@ -1169,6 +1207,41 @@ def _safe_env_prefix(ep: str | None) -> str | None:
     return f'[ -f "{path}" ] && source "{path}" || true'
 
 
+def _local_windows_bash_env_prefix(ep: str | None) -> str | None:
+    """Convert a frontend PowerShell venv prefix for the local Git Bash runner."""
+    if not ep:
+        return ep
+
+    prefix = ep.strip()
+    if not prefix.startswith("&"):
+        return ep
+
+    raw_path = prefix[1:].lstrip()
+    if not raw_path:
+        return ep
+    if raw_path.startswith("'"):
+        if len(raw_path) < 2 or not raw_path.endswith("'"):
+            return ep
+        quoted_path = raw_path[1:-1]
+        if "'" in quoted_path.replace("''", ""):
+            return ep
+        path = quoted_path.replace("''", "'")
+    else:
+        path = raw_path.rstrip()
+        if "'" in path or '"' in path:
+            return ep
+    if any(c in path for c in "\r\n;&|`$<>"):
+        return ep
+    if not path.replace("\\", "/").casefold().endswith("/scripts/activate.ps1"):
+        return ep
+
+    bash_path = _git_bash_path(path)
+    if "\\" in bash_path:
+        return ep
+    bash_path = bash_path[: -len("Activate.ps1")] + "activate"
+    return "source " + shlex.quote(bash_path)
+
+
 def _ssh_ps(host, script_path, port=None):
     """Build SSH command to run a PowerShell script on a Windows remote."""
     pf = f"-p {port} " if port and port != "22" else ""
@@ -1176,7 +1249,7 @@ def _ssh_ps(host, script_path, port=None):
 
 
 # Windows session dir — stored in user's temp on the remote
-WIN_SESSION_DIR = "$env:TEMP\\\\ulises-sessions"
+WIN_SESSION_DIR = "$env:TEMP\\\\odysseus-sessions"
 
 
 def _diagnose_serve_output(text: str) -> dict | None:
@@ -1192,7 +1265,7 @@ def _diagnose_serve_output(text: str) -> dict | None:
     patterns = [
         (
             r"No available memory for the cache blocks|Available KV cache memory:.*-",
-            t("cookbook.diagnosis.no_gpu_memory"),
+            "No GPU memory left for KV cache after loading model.",
             [
                 {"label": "retry with GPU memory utilization 0.95", "op": "replace", "flag": "--gpu-memory-utilization", "value": "0.95"},
                 {"label": "retry with context 2048", "op": "replace", "flag": "--max-model-len", "value": "2048"},
@@ -1200,7 +1273,7 @@ def _diagnose_serve_output(text: str) -> dict | None:
         ),
         (
             r"CUDA out of memory|torch\.cuda\.OutOfMemoryError|CUDA error: out of memory|warming up sampler|max_num_seqs.*gpu_memory_utilization",
-            t("cookbook.diagnosis.gpu_oom"),
+            "GPU ran out of memory during startup or warmup.",
             [
                 {"label": "retry with context 4096", "op": "replace", "flag": "--max-model-len", "value": "4096"},
                 {"label": "retry with GPU memory utilization 0.80", "op": "replace", "flag": "--gpu-memory-utilization", "value": "0.80"},
@@ -1209,7 +1282,7 @@ def _diagnose_serve_output(text: str) -> dict | None:
         ),
         (
             r"not divisib|must be divisible|attention heads.*divisible",
-            t("cookbook.diagnosis.tp_incompatible"),
+            "Tensor parallel size is incompatible with the model.",
             [
                 {"label": "retry with tensor parallel size 1", "op": "replace", "flag": "--tensor-parallel-size", "value": "1"},
                 {"label": "retry with tensor parallel size 2", "op": "replace", "flag": "--tensor-parallel-size", "value": "2"},
@@ -1217,7 +1290,7 @@ def _diagnose_serve_output(text: str) -> dict | None:
         ),
         (
             r"KV cache.*too (small|large)|max_model_len.*exceeds|maximum.*context",
-            t("cookbook.diagnosis.context_too_large"),
+            "Context length is too large for available GPU memory.",
             [
                 {"label": "retry with context 8192", "op": "replace", "flag": "--max-model-len", "value": "8192"},
                 {"label": "retry with context 4096", "op": "replace", "flag": "--max-model-len", "value": "4096"},
@@ -1225,17 +1298,17 @@ def _diagnose_serve_output(text: str) -> dict | None:
         ),
         (
             r"enable-auto-tool-choice requires --tool-call-parser",
-            t("cookbook.diagnosis.auto_tool_choice"),
+            "Auto tool choice requires an explicit tool call parser.",
             [{"label": "retry with Hermes tool parser", "op": "append", "arg": "--tool-call-parser hermes"}],
         ),
         (
             r"Please pass.*trust.remote.code=True|contains custom code which must be executed to correctly load|does not recognize this architecture|model type.*but Transformers does not",
-            t("cookbook.diagnosis.custom_code_needed"),
+            "Model requires custom code or newer model support.",
             [{"label": "retry with --trust-remote-code", "op": "append", "arg": "--trust-remote-code"}],
         ),
         (
             r"There is no module or parameter named ['\"]lm_head\.input_scale['\"]|lm_head\.input_scale|weight_scale_2",
-            t("cookbook.diagnosis.modelopt_quant"),
+            "vLLM cannot load this ModelOpt LM-head quantized checkpoint with the current runtime.",
             [
                 {
                     "label": "upgrade vLLM through the environment that provides this CLI, or use a compatible checkpoint",
@@ -1245,22 +1318,23 @@ def _diagnose_serve_output(text: str) -> dict | None:
         ),
         (
             r"Either a revision or a version must be specified|transformers\.integrations\.hub_kernels|kernels/layer",
-            t("cookbook.diagnosis.kernel_mismatch"),
+            "vLLM/Transformers kernel package mismatch.",
             [{"label": "update vLLM, Transformers, and kernels on this server", "op": "dependency", "package": "vllm transformers kernels"}],
         ),
         (
             r"Address already in use|bind.*address.*in use",
-            t("cookbook.diagnosis.port_in_use"),
+            "Port is already in use.",
             [{"label": "retry on port 8001", "op": "replace", "flag": "--port", "value": "8001"}],
         ),
         (
             r"No CUDA GPUs are available|no GPU.*found|CUDA_VISIBLE_DEVICES.*invalid",
-            t("cookbook.diagnosis.no_gpus_visible"),
+            "No GPUs are visible to the serve process.",
             [{"label": "clear Cookbook GPU selection or choose available GPUs", "op": "settings", "field": "gpus", "value": ""}],
         ),
         (
             r"Failed to infer device type|NVML Shared Library Not Found|No module named 'amdsmi'|platform is not available",
-            t("cookbook.diagnosis.unsupported_gpu"),
+            "vLLM could not find a supported GPU (CUDA or ROCm). "
+            "This machine may have integrated or unsupported graphics only.",
             [
                 {"label": "switch to llama.cpp (CPU/Metal, works without a discrete GPU)", "op": "manual"},
                 {"label": "switch to Ollama (CPU/Metal, works without a discrete GPU)", "op": "manual"},
@@ -1268,23 +1342,58 @@ def _diagnose_serve_output(text: str) -> dict | None:
         ),
         (
             r"vllm.*command not found|No module named vllm|ERROR: vLLM is not installed",
-            t("cookbook.diagnosis.vllm_not_installed"),
+            "vLLM is not installed or not in PATH on this server.",
             [{"label": "install vLLM in Cookbook Dependencies", "op": "dependency", "package": "vllm"}],
         ),
         (
-            r"sgl_kernel[\s\S]*(Python\.h|libnuma\.so\.1|common_ops)|"
-            r"(Python\.h|libnuma\.so\.1|common_ops)[\s\S]*sgl_kernel|"
+            r"sgl_kernel[\s\S]*(Python\.h|libnuma\.so\.1|common_ops|libnvrtc\.so)|"
+            r"(Python\.h|libnuma\.so\.1|common_ops|libnvrtc\.so)[\s\S]*sgl_kernel|"
+            r"Could not load any common_ops library|"
             r"Please ensure sgl_kernel is properly installed",
-            t("cookbook.diagnosis.sglang_deps_missing"),
+            "SGLang native kernel/runtime is missing or mismatched on this server.",
             [
+                {"label": "repair sglang-kernel in this Python environment", "op": "dependency", "package": "sglang-kernel"},
                 {"label": "install OS packages: libnuma-dev python3.12-dev build-essential", "op": "manual"},
-                {"label": "upgrade sglang-kernel after OS packages are installed", "op": "manual"},
+                {"label": "if libnvrtc is still missing, install the matching CUDA/NVRTC runtime on this host", "op": "manual"},
             ],
         ),
         (
             r"sglang.*command not found|No module named sglang|SGLang is not installed",
-            t("cookbook.diagnosis.sglang_not_installed"),
+            "SGLang is not installed or not in PATH on this server.",
             [{"label": "install SGLang in Cookbook Dependencies", "op": "dependency", "package": "sglang[all]"}],
+        ),
+        (
+            r"No module named ['\"]?mlx_lm|mlx_lm.*command not found|MLX is not installed|MLX LM is not installed",
+            "MLX LM is not installed on this server.",
+            [{"label": "install mlx-lm in Cookbook Dependencies", "op": "dependency", "package": "mlx-lm"}],
+        ),
+        (
+            r"OmniGen2Pipeline|module diffusers has no attribute .*Pipeline|custom_pipeline=.*failed",
+            "This image model uses a custom Diffusers pipeline that the launch environment does not know yet.",
+            [{"label": "update Diffusers image dependencies", "op": "dependency", "package": "diffusers transformers accelerate"}],
+        ),
+        (
+            r"mflux-generate-qwen.*not found|mflux-generate.*not found|MLX image serving requires mflux|No module named ['\"]?mflux",
+            "MLX image serving requires mflux on this Apple Silicon server.",
+            [{"label": "install mflux in Cookbook Dependencies", "op": "dependency", "package": "mflux"}],
+        ),
+        (
+            r"mlx-lama-swift|odysseus-mlx-inpaint|mlx-lama-serve|LaMa / MI-GAN MLX inpainting models require",
+            "LaMa / MI-GAN MLX inpainting requires an Odysseus-compatible mlx-lama-swift bridge on this Apple Silicon server.",
+            [{"label": "build mlx-lama-swift bridge and put odysseus-mlx-inpaint or mlx-lama-serve on PATH", "op": "dependency", "package": "mlx_lama_swift"}],
+        ),
+        (
+            r"mlx-ddcolor-swift|odysseus-mlx-colorize|mlx-ddcolor-serve|DDColor MLX models require",
+            "DDColor MLX colorization requires an Odysseus-compatible mlx-ddcolor-swift bridge on this Apple Silicon server.",
+            [{"label": "build mlx-ddcolor-swift bridge and put odysseus-mlx-colorize or mlx-ddcolor-serve on PATH", "op": "dependency", "package": "mlx_ddcolor_swift"}],
+        ),
+        (
+            r"Unable to quantize model of type <class ['\"]mlx_lm\.models\.switch_layers\.QuantizedSwitchLinear['\"]>|QuantizedSwitchLinear",
+            "MLX-LM tried to quantize an already-quantized DeepSeek switch layer.",
+            [
+                {"label": "relaunch from the cached local Hugging Face snapshot path on this Mac", "op": "manual"},
+                {"label": "Odysseus now rewrites MLX repo-id launches to a cached snapshot when one exists", "op": "manual"},
+            ],
         ),
         # System build deps come BEFORE the generic llama.cpp catch-all so
         # cmake / build-essential / git missing → a specific OS-package
@@ -1292,37 +1401,37 @@ def _diagnose_serve_output(text: str) -> dict | None:
         # itself fails to compile when cmake is absent).
         (
             r"cmake: command not found|cmake.*not found.*[Cc]ould not",
-            t("cookbook.diagnosis.cmake_missing"),
+            "cmake is required to build llama.cpp from source but isn't installed on this server.",
             [{"label": "install build deps for llama.cpp (apt: cmake build-essential git / pacman: cmake base-devel git / dnf: cmake gcc-c++ make git / brew: cmake git)", "op": "dependency", "package": "llama-cpp-python[server]"}],
         ),
         (
             r"^(make|g\+\+|gcc): command not found|Could not find C\+\+ compiler",
-            t("cookbook.diagnosis.compiler_missing"),
+            "A C/C++ compiler (build-essential) is required to build llama.cpp from source.",
             [{"label": "install build deps for llama.cpp on this server", "op": "dependency", "package": "llama-cpp-python[server]"}],
         ),
         (
             r"^git: command not found",
-            t("cookbook.diagnosis.git_missing"),
+            "git is required to clone the llama.cpp source tree.",
             [{"label": "install build deps for llama.cpp on this server", "op": "dependency", "package": "llama-cpp-python[server]"}],
         ),
         (
             r"llama-server.*command not found|llama\.cpp.*not found|No module named.*llama_cpp|No module named 'starlette_context'",
-            t("cookbook.diagnosis.llamacpp_deps_missing"),
+            "llama.cpp / llama-cpp-python dependencies are missing.",
             [{"label": "install llama.cpp dependencies or llama-cpp-python[server]", "op": "dependency", "package": "llama-cpp-python[server]"}],
         ),
         (
             r"No GGUF found on this host|no \.gguf file|No GGUF file found",
-            t("cookbook.diagnosis.no_gguf_found"),
+            "No GGUF file found for this model on this host. The llama.cpp backend needs a .gguf file.",
             [{"label": "download a GGUF build of this model (repo name usually ends in -GGUF, file like Q4_K_M.gguf)", "op": "manual"}],
         ),
         (
-            r"No module named 'torch'|No module named torch|No module named 'diffusers'|No module named diffusers",
-            t("cookbook.diagnosis.diffusion_deps_missing"),
-            [{"label": "install diffusers[torch] in Cookbook Dependencies", "op": "dependency", "package": "diffusers[torch]"}],
+            r"No module named 'torch'|No module named torch|No module named 'torchvision'|No module named torchvision|No module named 'diffusers'|No module named diffusers|No module named 'scipy'|No module named scipy|install scipy if you want to use beta sigmas|requires the Torchvision library",
+            "Diffusion serving requires PyTorch, Torchvision, Diffusers, Accelerate, and SciPy.",
+            [{"label": "install Diffusers image deps in Cookbook Dependencies", "op": "dependency", "package": "diffusers[torch] torchvision accelerate scipy python-multipart"}],
         ),
         (
             r"403 Forbidden|401 Unauthorized|Access to model.*is restricted|gated repo|not in the authorized list|awaiting a review",
-            t("cookbook.diagnosis.model_access_denied"),
+            "Model access is gated or unauthorized.",
             [{"label": "set HF token and request model access on HuggingFace", "op": "manual"}],
         ),
     ]
@@ -1333,7 +1442,7 @@ def _diagnose_serve_output(text: str) -> dict | None:
         r"Application startup complete|GET /v1/|Uvicorn running on", tail, re.I
     ):
         return {
-            "message":             t("cookbook.traceback_detected"),
+            "message": "Python traceback detected during serve startup.",
             "suggestions": [{"label": "inspect traceback and retry with adjusted backend/settings", "op": "manual"}],
         }
     return None

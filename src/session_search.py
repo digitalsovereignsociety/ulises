@@ -207,11 +207,66 @@ def _search_like(
     )
     if not include_archived:
         q = q.filter(DBSession.archived == False)
+    q = q.filter(~DBSession.name.like("SFT trace batch%"))
     if restrict_owner:
         q = _owner_filter(q, owner, include_legacy_owner)
     rows = q.order_by(DBChatMessage.timestamp.desc()).limit(limit).all()
     shaped = ((msg, session_name, _snippet(msg.content or "", query)) for msg, session_name in rows)
     return _rows_to_results(db, shaped, query, context_messages)
+
+
+def search_session_titles(
+    query: str,
+    limit: int = 20,
+    owner: str | None = None,
+    include_archived: bool = False,
+    context_messages: int = 1,
+    include_legacy_owner: bool = True,
+    db=None,
+) -> list[SessionSearchResult]:
+    """Find transcripts by session title when the title is the user's cue.
+
+    ``search_session_messages`` intentionally searches message content. The
+    agent-facing chat tool also receives short requests such as a session
+    title, so provide a scoped title lookup without weakening its owner or
+    archived-session boundaries.
+    """
+    query = (query or "").strip()
+    if not query:
+        return []
+
+    limit = max(1, min(int(limit or 20), 100))
+    context_messages = max(0, min(int(context_messages or 0), 3))
+    owns_db = db is None
+    if owns_db:
+        db = SessionLocal()
+    try:
+        sessions = db.query(DBSession).filter(
+            DBSession.name.ilike(f"%{_escape_like(query)}%", escape="\\"),
+            ~DBSession.name.like("SFT trace batch%"),
+        )
+        if not include_archived:
+            sessions = sessions.filter(DBSession.archived == False)
+        sessions = _owner_filter(sessions, owner, include_legacy_owner)
+        sessions = sessions.order_by(DBSession.updated_at.desc()).limit(limit).all()
+
+        rows = []
+        for session in sessions:
+            message = (
+                db.query(DBChatMessage)
+                .filter(
+                    DBChatMessage.session_id == session.id,
+                    DBChatMessage.role.in_(SEARCH_ROLES),
+                )
+                .order_by(DBChatMessage.timestamp.desc())
+                .first()
+            )
+            if message is not None:
+                rows.append((message, session.name, _snippet(message.content or "", query)))
+        return _rows_to_results(db, rows, query, context_messages)
+    finally:
+        if owns_db:
+            db.close()
 
 
 def _fetch_messages_by_id(db, message_ids):
@@ -270,6 +325,7 @@ def _search_fts(
         WHERE chat_messages_fts MATCH :fts_query
           {archived_clause}
           {owner_clause}
+          AND s.name NOT LIKE 'SFT trace batch%'
           AND m.role IN ('user', 'assistant')
         ORDER BY bm25(chat_messages_fts), m.timestamp DESC
         LIMIT :limit

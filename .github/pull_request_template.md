@@ -4,12 +4,16 @@
 
 ## Target branch
 
-- [ ] This PR targets **`dev`**, not `main`. All PRs land in `dev`; `main` is curated by the maintainer at each release. If your PR is on `main` by accident, click "Edit" on this PR and change the base.
+- [ ] This PR targets the correct integration branch: **`lab`** in the private maintainer-preview repository, or **`dev`** in the public repository. `main` remains release-curated.
 
 ## Linked Issue
 
-<!-- Every PR should be linked to an issue.
-     Use one of:  Fixes #NNN  |  Part of #NNN  |  Closes #NNN  -->
+<!-- Public-repository PRs must link an issue:
+     Fixes #NNN  |  Part of #NNN  |  Closes #NNN
+
+     Private maintainer-preview PRs may instead use:
+     N/A — maintainer integration work
+-->
 
 Fixes #
 
@@ -24,10 +28,11 @@ Fixes #
 
 ## Checklist
 
-- [ ] I searched [open issues](https://github.com/ChicoCifrado/ulises/issues) and [open PRs](https://github.com/ChicoCifrado/ulises/pulls) — this is not a duplicate.
-- [ ] This PR targets `dev`
+- [ ] I searched [open issues](https://github.com/odysseus-dev/odysseus/issues) and [open PRs](https://github.com/odysseus-dev/odysseus/pulls) — this is not a duplicate.
+- [ ] This PR targets the correct integration branch (`lab` in maintainer-preview; `dev` in the public repository)
 - [ ] My changes are limited to the scope described above — no unrelated refactors or whitespace changes mixed in.
 - [ ] I actually ran the app (`docker compose up` or `uvicorn app:app`) and verified the change works end-to-end. Type-checks and unit tests are not enough.
+- [ ] I did not run the app/runtime validation and stated that gap in **How to Test**. Leave this unchecked when the app-run box above is checked.
 
 ## How to Test
 
@@ -43,7 +48,7 @@ Fixes #
 **Anything that changes what the UI looks like — buttons, icons, padding, colors, fonts, spacing, layout, CSS, HTML, SVG, or any `static/js/` module that draws to the DOM — needs all of the following. PRs that change rendering without these WILL be closed.**
 
 - [ ] **Screenshot or short clip** of the change in the running app, attached below. Mobile screenshot too if the change affects mobile.
-- [ ] **Style match**: the change uses Ulises's existing visual language. Specifically:
+- [ ] **Style match**: the change uses Odysseus's existing visual language. Specifically:
   - Reuse existing CSS variables (`--red`, `--fg`, `--bg`, `--card`, `--border`, etc.) — do not introduce new color values, font sizes, or spacing units.
   - Reuse existing button/input/card/border classes. Don't invent parallel styling.
   - **No Unicode emoji in UI or code.** Use inline SVG (matching the monochrome icon style already in `static/index.html`) or plain text.

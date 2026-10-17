@@ -16,7 +16,7 @@ import tempfile
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-_TMP = Path(tempfile.mkdtemp(prefix="ulises-imap-leak-fixes-"))
+_TMP = Path(tempfile.mkdtemp(prefix="odysseus-imap-leak-fixes-"))
 os.environ.setdefault("DATA_DIR", str(_TMP))
 os.environ.setdefault("DATABASE_URL", f"sqlite:///{_TMP / 'app.db'}")
 
@@ -281,7 +281,7 @@ def test_open_imap_connection_shuts_down_on_starttls_failure(monkeypatch):
     ))
     conn.starttls = MagicMock(side_effect=RuntimeError("STARTTLS rejected"))
 
-    monkeypatch.setattr(helpers.imaplib, "IMAP4", lambda *a, **kw: conn)
+    monkeypatch.setattr(helpers, "_PolicyIMAP4", lambda *a, **kw: conn)
 
     raised = False
     try:

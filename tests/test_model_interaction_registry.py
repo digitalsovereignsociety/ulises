@@ -91,13 +91,14 @@ def test_list_models_no_endpoints(monkeypatch):
 
 
 def test_dispatched_via_registry_not_dispatch_ai_tool():
-    """The model tools route through the combined dispatch_ai_tool elif branch."""
+    """The model tools route through the registry (_document_tool_dispatch), and
+    are no longer in the dispatch_ai_tool elif tuple."""
     source = (Path(__file__).resolve().parent.parent / "src" / "tool_execution.py").read_text(encoding="utf-8")
-    marker = "from src.ai_interaction import dispatch_ai_tool"
-    assert marker in source
+    assert 'elif tool in ("chat_with_model", "ask_teacher", "list_models"):' in source
 
+    marker = "from src.ai_interaction import dispatch_ai_tool"
     idx = source.index(marker)
     branch_head = source.rfind("elif tool in (", 0, idx)
-    branch = source[branch_head:idx]
+    legacy_tuple = source[branch_head:idx]
     for name in _MODEL_TOOLS:
-        assert f'"{name}"' in branch, f"{name} not in dispatch_ai_tool branch"
+        assert f'"{name}"' not in legacy_tuple, f"{name} still routed via dispatch_ai_tool"

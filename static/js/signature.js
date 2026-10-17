@@ -29,6 +29,20 @@ function _safeSignatureDataUrl(raw) {
   return /^data:image\/png;base64,[a-z0-9+/=\s]+$/i.test(value) ? value : '';
 }
 
+function _esc(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function _safeSignatureDataUrl(raw) {
+  const value = String(raw || '').trim();
+  return /^data:image\/png;base64,[a-z0-9+/=\s]+$/i.test(value) ? value : '';
+}
+
 // Last signature the user picked or created in this session. Lets the export
 // modal pre-fill subsequent signature fields with the same one — sign once,
 // applies everywhere.
@@ -317,7 +331,7 @@ class SmoothPad {
 }
 
 function _modal(innerHtml) {
-  // Match the app's standard .modal pattern (defined in static/style.css).
+  // Match the app's standard .modal pattern from the main stylesheet cascade.
   const overlay = document.createElement('div');
   overlay.className = 'modal sig-modal-overlay';
   overlay.style.cssText = 'pointer-events:auto;background:rgba(0,0,0,0.45);z-index:10100;';
@@ -389,8 +403,8 @@ export function capture(opts = {}) {
         <div class="modal-body">
           <canvas class="sig-canvas" width="900" height="280" data-no-swipe-dismiss></canvas>
           <div style="margin-top:10px;display:flex;align-items:center;gap:10px;font-size:0.78rem;">
-            <label for="sig-smoothness" style="white-space:nowrap;opacity:0.8;">${t('signature.smoothness')}</label>
-            <input id="sig-smoothness" class="sig-smoothness" type="range" min="0" max="10" step="1" value="${initialSmooth}" style="flex:1;">
+            <label for="sig-smoothness" style="white-space:nowrap;opacity:0.8;">Smoothness</label>
+            <input id="sig-smoothness" class="sig-smoothness preset-range" type="range" min="0" max="10" step="1" value="${initialSmooth}" style="flex:1;">
             <span class="sig-smoothness-val" style="width:18px;text-align:right;font-variant-numeric:tabular-nums;opacity:0.7;">${initialSmooth}</span>
           </div>
           <input class="sig-name" type="text" placeholder="${t('signature.name_placeholder')}" style="margin-top:10px;">

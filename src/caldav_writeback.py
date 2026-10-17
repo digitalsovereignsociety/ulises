@@ -1,7 +1,7 @@
 """CalDAV write-back: push local create/update/delete out to the remote (#800).
 
 ``src/caldav_sync.py`` is a one-way pull (remote → local). So events created,
-edited, or deleted in Ulises on a CalDAV-backed calendar only changed the local
+edited, or deleted in Odysseus on a CalDAV-backed calendar only changed the local
 SQLite copy and never reached the server (iCloud/Nextcloud/Radicale/Fastmail) —
 they'd silently disappear on the next pull and never show on the user's phone.
 
@@ -33,14 +33,15 @@ def build_event_ical(ev: dict) -> str:
     """Serialize a local event dict to a VCALENDAR/VEVENT iCalendar string.
 
     ``ev`` keys: uid, summary, description, location, dtstart (datetime),
-    dtend (datetime), all_day (bool), is_utc (bool), rrule (str).
+    dtend (datetime), all_day (bool), is_utc (bool), rrule (str),
+    recurrence_exdates (list[str]).
     Mirrors how the pull path interprets is_utc/all_day so a round-trip is stable.
     """
     from icalendar import Calendar, Event as iEvent
     from icalendar.prop import vRecur
 
     cal = Calendar()
-    cal.add("prodid", "-//Ulises//CalDAV write-back//EN")
+    cal.add("prodid", "-//Odysseus//CalDAV write-back//EN")
     cal.add("version", "2.0")
 
     ve = iEvent()
@@ -70,6 +71,15 @@ def build_event_ical(ev: dict) -> str:
             ve.add("rrule", vRecur.from_ical(ev["rrule"]))
         except Exception:
             logger.debug("CalDAV write-back: skipping unparseable rrule %r", ev.get("rrule"))
+    for exdate in ev.get("recurrence_exdates") or []:
+        try:
+            if ev.get("all_day"):
+                ve.add("exdate", datetime.strptime(exdate[:10], "%Y-%m-%d").date())
+            else:
+                dt = datetime.strptime(exdate[:16], "%Y-%m-%dT%H:%M")
+                ve.add("exdate", dt.replace(tzinfo=timezone.utc) if ev.get("is_utc") else dt)
+        except Exception:
+            logger.debug("CalDAV write-back: skipping unparseable exdate %r", exdate)
 
     cal.add_component(ve)
     return cal.to_ical().decode("utf-8")
@@ -182,11 +192,14 @@ def _writeback_blocking(local_cal_id, ev, delete, url, username, password,
     # Redirects disabled here too: the write-back path opens its own DAVClient,
     # so it needs the same SSRF-via-redirect protection as the pull path.
     client = _build_dav_client(url, username, password)
-    calendars = _discover_calendars(client)
-    if not calendars:
-        return {"ok": False, "error": "no remote calendars discovered"}
-    return push_event(calendars, local_cal_id, ev, delete=delete,
-                      owner=owner, account_id=account_id)
+    try:
+        calendars = _discover_calendars(client)
+        if not calendars:
+            return {"ok": False, "error": "no remote calendars discovered"}
+        return push_event(calendars, local_cal_id, ev, delete=delete,
+                          owner=owner, account_id=account_id)
+    finally:
+        client.close()
 
 
 def _persist_writeback_result(owner: str, calendar_id: str, uid: str, result: dict, *, delete: bool) -> None:

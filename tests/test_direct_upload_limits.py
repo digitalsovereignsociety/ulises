@@ -26,7 +26,7 @@ async def test_read_upload_limited_rejects_oversized_upload():
         await read_upload_limited(_upload("too-big.bin", b"abcde"), 4, "Test upload")
 
     assert exc.value.status_code == 413
-    assert exc.value.detail == "File size exceeds 4 bytes limit"
+    assert exc.value.detail == "Test upload exceeds 4 bytes limit"
 
 
 def test_upload_limit_formatting_is_human_readable():
@@ -50,7 +50,7 @@ def test_direct_upload_routes_use_bounded_reads():
         "routes/calendar_routes.py": [
             "read_upload_limited(file, ICS_MAX_BYTES",
         ],
-        "routes/email_routes.py": [
+        "routes/email/email_routes.py": [
             "read_upload_limited(file, EMAIL_COMPOSE_UPLOAD_MAX_BYTES",
         ],
     }

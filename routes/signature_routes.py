@@ -36,21 +36,21 @@ def _normalize_signature_png(raw: str) -> str:
     if m:
         b64 = m.group("data")
     elif _ANY_IMAGE_DATA_URL_RE.match(raw):
-        raise HTTPException(400, detail=t("signature.must_be_png"))
+        raise HTTPException(400, "Signature data must be a PNG image")
     else:
         b64 = raw
     if len(b64) > _MAX_SIGNATURE_B64:
-        raise HTTPException(400, detail=t("signature.png_too_large"))
+        raise HTTPException(400, "Signature PNG is too large")
     try:
         payload = base64.b64decode(b64, validate=True)
     except Exception:
-        raise HTTPException(400, detail=t("signature.must_be_base64_png"))
+        raise HTTPException(400, "Signature data must be base64-encoded PNG bytes")
     if not payload:
-        raise HTTPException(400, detail=t("signature.png_empty"))
+        raise HTTPException(400, "Signature PNG is empty")
     if len(payload) > _MAX_SIGNATURE_BYTES:
-        raise HTTPException(400, detail=t("signature.png_too_large"))
+        raise HTTPException(400, "Signature PNG is too large")
     if not payload.startswith(_PNG_MAGIC):
-        raise HTTPException(400, detail=t("signature.must_be_png"))
+        raise HTTPException(400, "Signature data must be a PNG image")
     return base64.b64encode(payload).decode("ascii")
 
 
@@ -58,7 +58,7 @@ def _signature_dimension(value: Optional[int]) -> Optional[int]:
     if value is None:
         return None
     if not isinstance(value, int) or value < 1 or value > _MAX_SIGNATURE_DIMENSION:
-        raise HTTPException(400, detail=t("signature.dimensions_invalid"))
+        raise HTTPException(400, "Signature dimensions are invalid")
     return value
 
 

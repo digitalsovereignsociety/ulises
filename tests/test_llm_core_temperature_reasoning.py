@@ -86,6 +86,53 @@ def test_normal_model_payload_keeps_temperature_above_one(monkeypatch):
     assert payload["temperature"] == 1.2
 
 
+def test_local_odysseus_tool_router_preserves_explicit_artifact_budget():
+    payload = {"temperature": 0.2, "max_tokens": 8192}
+
+    llm_core._apply_local_generation_stability(
+        payload,
+        "http://192.168.1.21:18183/v1/chat/completions",
+        "odysseus-qwen3.5-tools-pre-heretic",
+    )
+
+    assert payload["temperature"] == 0.0
+    assert payload["max_tokens"] == 8192
+
+
+def test_local_odysseus_tool_router_defaults_missing_budget():
+    payload = {"temperature": 0.2}
+
+    llm_core._apply_local_generation_stability(
+        payload,
+        "http://192.168.1.21:18183/v1/chat/completions",
+        "odysseus-qwen3.5-tools-pre-heretic",
+    )
+
+    assert payload["max_tokens"] == 1024
+
+
+def test_local_minimax_mlx_payload_gets_stability_defaults(monkeypatch):
+    import src.model_context as model_context
+
+    monkeypatch.setattr(model_context, "is_local_endpoint", lambda _url: True)
+    payload = {
+        "model": "example-org/MiniMax-M2.7-BF16-mlx-4Bit",
+        "temperature": 0.9,
+    }
+
+    llm_core._apply_local_generation_stability(
+        payload,
+        "http://192.168.1.22:8091/v1/chat/completions",
+        "example-org/MiniMax-M2.7-BF16-mlx-4Bit",
+    )
+
+    assert payload["temperature"] == 0.2
+    assert payload["top_p"] == 0.9
+    assert payload["top_k"] == 20
+    assert payload["max_tokens"] == 2048
+    assert payload["repetition_penalty"] == 1.12
+
+
 def test_chatgpt_subscription_payload_omits_max_output_tokens():
     # ChatGPT Subscription Codex API does not support max_output_tokens —
     # passing it returns HTTP 400 "Unsupported parameter: max_output_tokens".

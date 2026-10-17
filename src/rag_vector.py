@@ -14,6 +14,7 @@ import numpy as np
 from typing import List, Dict, Any, Optional, Set
 
 from src.constants import CHROMA_DIR
+from src.index_walk import prune_index_dirs, is_indexable_file
 from pathlib import Path
 
 from src.embedding_lanes import (
@@ -34,10 +35,41 @@ DEFAULT_FILE_EXTENSIONS: Set[str] = {
     '.csv', '.html', '.css', '.js', '.pdf'
 }
 
+# Tool-internal directories that match DEFAULT_FILE_EXTENSIONS but are never
+# Directory-walk pruning is single-sourced in src.index_walk so the vector and
+# keyword indexers apply the same hidden/junk policy and cannot drift (#5559).
+
 VECTOR_WEIGHT = 0.7
 KEYWORD_WEIGHT = 0.3
 
 COLLECTION_NAME = "ulises_rag"
+
+
+def _generate_doc_id(text: str, owner: str = "") -> str:
+    # Owner-scope the id so two owners can index byte-identical chunks
+    # without the second one's add early-returning on the first's id and
+    # being silently dropped from their owner-filtered search results.
+    # Empty owner reproduces the legacy text-only id so the unowned/base
+    # index keeps its existing ids and isn't re-churned.
+    key = f"{owner}\x00{text}" if owner else text
+    return f"doc_{hashlib.sha256(key.encode('utf-8')).hexdigest()[:16]}"
+
+
+def _rewrite_owner_path(value: str, path_map: Dict[str, str], path_prefixes: List[tuple]) -> str:
+    if not isinstance(value, str) or not value:
+        return value
+    abs_value = os.path.abspath(value)
+    mapped = path_map.get(abs_value)
+    if mapped:
+        return mapped
+    for old_prefix, new_prefix in path_prefixes:
+        old_abs = os.path.abspath(old_prefix)
+        new_abs = os.path.abspath(new_prefix)
+        if abs_value == old_abs:
+            return new_abs
+        if abs_value.startswith(old_abs + os.sep):
+            return new_abs + abs_value[len(old_abs):]
+    return value
 
 
 def _generate_doc_id(text: str, owner: str = "") -> str:
@@ -497,8 +529,15 @@ class VectorRAG:
         failed = 0
 
         try:
-            for root, _, files in os.walk(directory):
+            for root, dirs, files in os.walk(directory):
+                # Prune in place so os.walk never descends into hidden or junk
+                # directories (#5559), via the shared index_walk policy. The
+                # passed-in root is exempt: a user who deliberately targets a
+                # hidden directory gets it.
+                prune_index_dirs(dirs)
                 for fname in files:
+                    if not is_indexable_file(fname):
+                        continue
                     fpath = os.path.join(root, fname)
                     ext = Path(fname).suffix.lower()
                     if ext not in file_extensions:

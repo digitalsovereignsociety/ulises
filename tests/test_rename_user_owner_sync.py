@@ -86,7 +86,7 @@ def _request(
         personal_docs_manager=personal_docs_manager,
     )
     return SimpleNamespace(
-        cookies={"ulises_session": token},
+        cookies={"odysseus_session": token},
         app=SimpleNamespace(state=state),
         state=SimpleNamespace(current_user="admin"),
     )
@@ -114,6 +114,12 @@ def _force_sql_owner_migration_failure(monkeypatch):
         def filter(self, *_args, **_kwargs):
             return self
 
+        def order_by(self, *_args, **_kwargs):
+            return self
+
+        def all(self):
+            return []
+
         def update(self, *_args, **_kwargs):
             raise RuntimeError("forced owner migration failure")
 
@@ -124,6 +130,12 @@ def _force_sql_owner_migration_failure(monkeypatch):
 
         def query(self, _model):
             return FailingQuery()
+
+        def get_bind(self):
+            return SimpleNamespace(dialect=SimpleNamespace(name="postgresql"))
+
+        def get(self, _model, _key, **_kwargs):
+            return object()
 
         def rollback(self):
             self.rolled_back = True
@@ -187,7 +199,7 @@ def test_rename_no_session_manager_does_not_crash(rename_endpoint):
     endpoint, _am, tmp_path = rename_endpoint
     # app.state without a session_manager must not raise.
     req = SimpleNamespace(
-        cookies={"ulises_session": "t"},
+        cookies={"odysseus_session": "t"},
         app=SimpleNamespace(state=SimpleNamespace(invalidate_token_cache=lambda: None)),
         state=SimpleNamespace(current_user="admin"),
     )
@@ -353,8 +365,8 @@ def test_rename_updates_active_research_before_completed_json_sweep(rename_endpo
 
 
 def test_rename_research_respects_custom_data_dir(monkeypatch, tmp_path):
-    """DEEP_RESEARCH_DIR (which honours ULISES_DATA_DIR) is used, not a
-    hardcoded relative path. Before the fix, setting ULISES_DATA_DIR made
+    """DEEP_RESEARCH_DIR (which honours ODYSSEUS_DATA_DIR) is used, not a
+    hardcoded relative path. Before the fix, setting ODYSSEUS_DATA_DIR made
     the rename silently patch a different directory from where research files
     actually live, so reports still disappeared after rename."""
     import routes.auth_routes as ar

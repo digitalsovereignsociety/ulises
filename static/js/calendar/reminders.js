@@ -9,9 +9,9 @@
 // `start()` kicks off the poll loop + permission request. Call once from
 // the calendar's entry module.
 
-import { t } from '../i18n.js';
-import uiModule from '../ui.js';
-import { API_BASE } from '../apiBase.js';
+import uiModule from '../ui.js?v=20260916largetoolscroll1';
+
+const API_BASE = window.location.origin;
 
 let _notifFired = new Set(JSON.parse(localStorage.getItem('cal-notif-fired') || '[]'));
 

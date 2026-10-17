@@ -8,105 +8,84 @@ Sub-modules:
   - tool_parsing.py: regex patterns, parse/strip functions
   - tool_schemas.py: FUNCTION_TOOL_SCHEMAS, function_call_to_tool_block
   - tool_execution.py: execute_tool_block, format_tool_result, MCP helpers
-  - tool_implementations.py: do_* tool functions (search, skills, tasks, api)
-  - admin_tools.py: admin do_* tool functions (endpoints, mcp, webhooks, tokens, settings)
-  - document_tools.py: active document helpers
+  - tool_implementations.py: all do_* tool functions
 """
 
 import logging
-from collections import namedtuple
-
+from src.tool_security import BUILTIN_EMAIL_TOOLS
 from src.tool_utils import _truncate, get_mcp_manager, set_mcp_manager
+from src.tool_types import TOOL_TAGS, ToolBlock
 
 logger = logging.getLogger(__name__)
 
-from .subprocess_tools import BashTool, PythonTool
-from .web_tools import WebSearchTool, WebFetchTool
-from .filesystem_tools import ReadFileTool, WriteFileTool, EditFileTool, LsTool, GlobTool, GrepTool
+from .subprocess_tools import BashTool, HostShellTool, PythonTool
+from .web_tools import WebSearchTool, WebFetchTool, PdfExtractTool, PrivateBrowserTool, YouTubeTool
+from .weather_tools import WeatherTool
+from .media_tools import ExtractTextTool, InspectMediaTool, TranscribeMediaTool
+from .filesystem_tools import ReadFileTool, WriteFileTool, EditFileTool, ApplyPatchTool, LsTool, GlobTool, GrepTool, GetWorkspaceTool
+from .coding_tools import TodoWriteTool
+from .document_tools import CreateDocumentTool, UpdateDocumentTool, EditDocumentTool, SuggestDocumentTool, ManageDocumentTool
+from .interaction_tools import AskUserTool, UpdatePlanTool
+from .model_interaction_tools import ChatWithModelTool, AskTeacherTool, ListModelsTool
+from .bg_job_tools import ManageBgJobsTool
+from .session_tools import CreateSessionTool, ListSessionsTool, SendToSessionTool, ManageSessionTool
+from .admin_tools import (
+    ADMIN_TOOL_HANDLERS,
+    do_manage_endpoints, do_manage_mcp, do_manage_webhooks,
+    do_manage_tokens, do_manage_settings,
+)
 
 TOOL_HANDLERS = {
     "bash": BashTool().execute,
+    "host_shell": HostShellTool().execute,
     "python": PythonTool().execute,
     "web_search": WebSearchTool().execute,
+    "get_weather": WeatherTool().execute,
     "web_fetch": WebFetchTool().execute,
+    "pdf_extract": PdfExtractTool().execute,
+    "youtube_tool": YouTubeTool().execute,
+    "private_browser": PrivateBrowserTool().execute,
+    "inspect_media": InspectMediaTool().execute,
+    "extract_text": ExtractTextTool().execute,
+    "transcribe_media": TranscribeMediaTool().execute,
     "read_file": ReadFileTool().execute,
     "write_file": WriteFileTool().execute,
     "edit_file": EditFileTool().execute,
+    "apply_patch": ApplyPatchTool().execute,
+    "todowrite": TodoWriteTool().execute,
     "ls": LsTool().execute,
     "glob": GlobTool().execute,
     "grep": GrepTool().execute,
+    "create_document": CreateDocumentTool().execute,
+    "update_document": UpdateDocumentTool().execute,
+    "edit_document": EditDocumentTool().execute,
+    "suggest_document": SuggestDocumentTool().execute,
+    "manage_documents": ManageDocumentTool().execute,
+    "get_workspace": GetWorkspaceTool().execute,
+    "ask_user": AskUserTool().execute,
+    "update_plan": UpdatePlanTool().execute,
+    "chat_with_model": ChatWithModelTool().execute,
+    "ask_teacher": AskTeacherTool().execute,
+    "list_models": ListModelsTool().execute,
+    "manage_bg_jobs": ManageBgJobsTool().execute,
+    "create_session": CreateSessionTool().execute,
+    "list_sessions": ListSessionsTool().execute,
+    "send_to_session": SendToSessionTool().execute,
+    "manage_session": ManageSessionTool().execute,
 }
-
-from .admin_tools import ADMIN_TOOL_HANDLERS
+# Config/integration admin tools (manage_endpoints/mcp/webhooks/tokens/settings).
 TOOL_HANDLERS.update(ADMIN_TOOL_HANDLERS)
-
-from .document_tools import (
-    ManageDocumentTool, CreateDocumentTool, UpdateDocumentTool, EditDocumentTool, SuggestDocumentTool,
-)
-TOOL_HANDLERS["create_document"] = CreateDocumentTool().execute
-TOOL_HANDLERS["update_document"] = UpdateDocumentTool().execute
-TOOL_HANDLERS["edit_document"] = EditDocumentTool().execute
-TOOL_HANDLERS["suggest_document"] = SuggestDocumentTool().execute
-TOOL_HANDLERS["manage_documents"] = ManageDocumentTool().execute
-
-from .model_interaction_tools import ChatWithModelTool, AskTeacherTool, ListModelsTool
-TOOL_HANDLERS["chat_with_model"] = ChatWithModelTool().execute
-TOOL_HANDLERS["ask_teacher"] = AskTeacherTool().execute
-TOOL_HANDLERS["list_models"] = ListModelsTool().execute
-
-from .session_tools import CreateSessionTool, ListSessionsTool, SendToSessionTool, ManageSessionTool
-TOOL_HANDLERS["create_session"] = CreateSessionTool().execute
-TOOL_HANDLERS["list_sessions"] = ListSessionsTool().execute
-TOOL_HANDLERS["send_to_session"] = SendToSessionTool().execute
-TOOL_HANDLERS["manage_session"] = ManageSessionTool().execute
 
 # ---------------------------------------------------------------------------
 # Constants (re-exported for backward compatibility — single source of truth
 # is src.constants; always prefer importing from there for new code)
 # ---------------------------------------------------------------------------
-MAX_AGENT_ROUNDS = 50
+# Keep an agent turn bounded by default. Callers can still opt into a higher
+# limit explicitly, but a stale/repeating tool loop must not consume a whole
+# session before the user gets control back.
+MAX_AGENT_ROUNDS = 20
 SHELL_TIMEOUT = 60
 PYTHON_TIMEOUT = 30
-
-# Tool types that trigger execution
-TOOL_TAGS = {"bash", "python", "web_search", "web_fetch", "read_file", "write_file", "edit_file",
-             "grep", "glob", "ls",
-             "create_document", "update_document", "edit_document",
-             "search_chats",
-             "chat_with_model", "create_session", "list_sessions",
-             "send_to_session",
-             "pipeline",
-             "manage_session", "manage_memory", "list_models",
-             "ui_control", "generate_image", "ask_user", "update_plan",
-             "manage_tasks", "api_call", "ask_teacher", "manage_skills",
-             "suggest_document",
-             "manage_endpoints", "manage_mcp", "manage_webhooks",
-             "manage_tokens", "manage_documents", "manage_settings",
-             "manage_notes", "manage_calendar",
-             "resolve_contact", "manage_contact", "list_email_accounts", "send_email", "list_emails",
-             "read_email", "reply_to_email", "bulk_email", "archive_email",
-             "delete_email", "mark_email_read",
-             "search_emails", "draft_email", "draft_email_reply", "ai_draft_email_reply",
-             "download_attachment",
-             # Cookbook tools (LLM serving + downloads). Without these
-             # entries, native function calls to e.g. list_served_models
-             # are rejected as "Unknown function call" before reaching
-             # the dispatcher — silent failure for the whole cookbook
-             # surface.
-             "download_model", "serve_model",
-             "list_served_models", "stop_served_model",
-             "list_downloads", "cancel_download",
-             "search_hf_models", "list_cached_models",
-             "list_serve_presets", "serve_preset", "adopt_served_model",
-             "list_cookbook_servers",
-             # Other tools the agent reaches for that were also missing.
-             "edit_image", "trigger_research", "manage_research",
-             # Generic loopback to any UI-button endpoint (cookbook,
-             # gallery, email folders, etc.) — agent uses this when
-             # there's no named tool wrapper for the action.
-             "app_api"}
-
-ToolBlock = namedtuple("ToolBlock", ["tool_type", "content"])
 
 # ---------------------------------------------------------------------------
 # Re-exports from sub-modules
@@ -136,19 +115,13 @@ from src.tool_execution import (  # noqa: E402, F401
     format_tool_result,
 )
 
+# Document functions
+from .document_tools import (
+    set_active_document, 
+    set_active_model
+)
+
 # Implementations
-from src.agent_tools.document_tools import (  # noqa: E402, F401
-    set_active_document,
-    set_active_model,
-    get_active_document,
-)
-from src.agent_tools.admin_tools import (  # noqa: E402, F401
-    do_manage_endpoints,
-    do_manage_mcp,
-    do_manage_webhooks,
-    do_manage_tokens,
-    do_manage_settings,
-)
 from src.tool_implementations import (  # noqa: E402, F401
     do_search_chats,
     do_manage_skills,

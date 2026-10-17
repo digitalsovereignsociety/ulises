@@ -91,13 +91,26 @@ def test_empty_header():
 
 
 @pytest.mark.asyncio
+async def test_legacy_account_listing_explains_default_email_tool_fallback(monkeypatch):
+    monkeypatch.setattr(es, "_read_accounts_from_db", lambda: [])
+    monkeypatch.setattr(es, "_fixture_email_enabled", lambda: False)
+    monkeypatch.setattr(es, "_fixture_account_rows", lambda: [])
+
+    out = await es.call_tool("list_email_accounts", {})
+
+    assert "Default single-account mode is active" in out[0].text
+    assert "omit the `account` field and continue" in out[0].text
+    assert "search_emails" in out[0].text
+
+
+@pytest.mark.asyncio
 async def test_mcp_email_accounts_are_filtered_by_hidden_owner(tmp_path, monkeypatch):
     db_path = tmp_path / "app.db"
     _init_accounts_db(db_path)
     monkeypatch.setattr(es, "APP_DB", str(db_path))
     es._ACCOUNT_CACHE.clear()
 
-    out = await es.call_tool("list_email_accounts", {"_ulises_owner": "alice"})
+    out = await es.call_tool("list_email_accounts", {"_odysseus_owner": "alice"})
     text = out[0].text
 
     assert "Alice Mail" in text
@@ -207,7 +220,7 @@ async def test_mcp_email_owner_cannot_use_other_owner_account_for_list_read_send
     ]
 
     for tool_name, args in calls:
-        out = await es.call_tool(tool_name, {**args, "_ulises_owner": "alice"})
+        out = await es.call_tool(tool_name, {**args, "_odysseus_owner": "alice"})
         assert "Email account not found for selector" in out[0].text, tool_name
         assert "Bob Mail" not in out[0].text or "Available accounts" in out[0].text
 
@@ -232,7 +245,7 @@ async def test_mcp_send_email_stages_with_visible_owner_account_id(tmp_path, mon
             "subject": "Review",
             "body": "Please review.",
             "account": "Alice Mail",
-            "_ulises_owner": "alice",
+            "_odysseus_owner": "alice",
         },
     )
 
@@ -262,7 +275,7 @@ async def test_mcp_send_email_stages_owner_scoped_pending_draft(tmp_path, monkey
             "to": "recipient@example.com",
             "subject": "Review",
             "body": "Please review.",
-            "_ulises_owner": "alice",
+            "_odysseus_owner": "alice",
         },
     )
 
@@ -317,11 +330,11 @@ async def test_mcp_draft_email_document_uses_hidden_owner(monkeypatch):
             "to": "recipient@example.com",
             "subject": "Draft subject",
             "body": "Draft body",
-            "_ulises_owner": "alice",
+            "_odysseus_owner": "alice",
         },
     )
 
-    assert "Created Ulises email draft" in out[0].text
+    assert "Created Odysseus email draft" in out[0].text
     docs = [obj for obj in saved if isinstance(obj, FakeDocument)]
     assert len(docs) == 1
     assert docs[0].owner == "alice"

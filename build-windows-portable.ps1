@@ -1,13 +1,13 @@
 #Requires -Version 5.1
 <#
-  Build a portable Windows distribution for Ulises.
+  Build a portable Windows distribution for Odysseus.
 
   Output layout:
-    dist\Ulises\Ulises.exe
-    dist\Ulises\static\...
-    dist\Ulises\scripts\...
-    dist\Ulises\mcp_servers\...
-    dist\Ulises\services\hwfit\data\...
+    dist\Odysseus\Odysseus.exe
+    dist\Odysseus\static\...
+    dist\Odysseus\scripts\...
+    dist\Odysseus\mcp_servers\...
+    dist\Odysseus\services\hwfit\data\...
 
   The app then keeps using its normal filesystem layout when frozen.
 
@@ -55,6 +55,9 @@ Write-Step "Building portable exe bundle"
 Remove-Item -Recurse -Force build, dist -ErrorAction SilentlyContinue
 
 $dataArgs = @(
+    "--add-data", "licenses;licenses",
+    "--add-data", "THIRD_PARTY_PROVENANCE.json;.",
+    "--add-data", "ACKNOWLEDGMENTS.md;.",
     "--add-data", "static;static",
     "--add-data", "scripts;scripts",
     "--add-data", "mcp_servers;mcp_servers",
@@ -63,10 +66,10 @@ $dataArgs = @(
     "--add-data", ".env.example;.env.example"
 )
 
-& $pyExe -m PyInstaller --noconfirm --clean --onedir --noconsole --icon=static/icon.ico --name Ulises @dataArgs launcher.py
+& $pyExe -m PyInstaller --noconfirm --clean --onedir --noconsole --icon=static/icon.ico --name Odysseus @dataArgs launcher.py
 if ($LASTEXITCODE -ne 0) { Fail "PyInstaller build failed." }
 
 Write-Host ""
 Write-Host "Build complete." -ForegroundColor Green
-Write-Host "Portable app folder: $PSScriptRoot\dist\Ulises" -ForegroundColor Green
+Write-Host "Portable app folder: $PSScriptRoot\dist\Odysseus" -ForegroundColor Green
 Write-Host "Distribute the whole folder (or zip it) so static assets and scripts stay with the exe." -ForegroundColor Green
