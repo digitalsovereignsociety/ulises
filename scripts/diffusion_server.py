@@ -7,6 +7,8 @@ Ulises's image generation tool.
 Usage:
     python3 scripts/diffusion_server.py --model /path/to/model --port 8100
 """
+from __future__ import annotations
+
 import os
 import sys
 import importlib

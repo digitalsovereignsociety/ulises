@@ -16,6 +16,8 @@ These tests pin BOTH halves:
   * pathological "many openers, no closer" input completes promptly.
 """
 
+from __future__ import annotations
+
 import re
 import time
 

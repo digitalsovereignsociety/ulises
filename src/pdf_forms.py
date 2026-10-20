@@ -5,6 +5,8 @@ Used to decide whether an uploaded PDF should be treated as a fillable form
 through document_processor._process_pdf).
 """
 
+from __future__ import annotations
+
 import logging
 import re
 from typing import Any

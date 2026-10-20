@@ -26,7 +26,7 @@
 // compare catalog and the diagnosis catalog). Every one of those files is
 // precached, so none of it reached the browser.
 const CACHE_NAME = 'ulises-v341';
-const PRECACHE_DIGEST = 'a641f8602822a500';
+const PRECACHE_DIGEST = '4f3133d1fdecc354';
 
 const PRECACHE = [
   '/',

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # routes/upload_routes.py
 import os
 import time

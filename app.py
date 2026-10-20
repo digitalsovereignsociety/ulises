@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # app.py — slim orchestrator
 import mimetypes
 import os

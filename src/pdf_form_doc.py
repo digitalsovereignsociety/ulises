@@ -12,6 +12,8 @@ The export route reads that pointer to find the source PDF + sidecar JSON,
 then asks an LLM to map markdown values back to AcroForm field names.
 """
 
+from __future__ import annotations
+
 import json
 import logging
 import os

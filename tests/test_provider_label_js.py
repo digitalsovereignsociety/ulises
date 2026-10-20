@@ -8,6 +8,8 @@ identified by probing /props during discovery and stored as the endpoint's name.
 The rule here: loopback → "Local"; private-LAN IPs → "Local"; known remote
 provider hosts → their provider name.
 """
+from __future__ import annotations
+
 import json
 import re
 import shutil

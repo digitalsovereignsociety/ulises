@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # routes/note_routes.py
 """Google Keep-style notes / checklists API."""
 

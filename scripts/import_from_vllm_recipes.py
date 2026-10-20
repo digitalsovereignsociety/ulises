@@ -20,6 +20,8 @@ Usage:
 
 Auth: set HF_TOKEN to access gated repos when --add-missing.
 """
+from __future__ import annotations
+
 import argparse
 import json
 import os

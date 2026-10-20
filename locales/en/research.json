@@ -63,6 +63,17 @@
     "query_hint_7": "e.g. Why do cats knead with their paws? Cover the leading behavioural explanations",
     "query_hint_8": "e.g. Side effects and benefits of long-term creatine supplementation",
     "query_hint_9": "e.g. How does end-to-end encryption work in Signal, step by step",
-    "query_hint_10": "e.g. The history of the printing press in East Asia, 700 CE → 1600 CE"
+    "query_hint_10": "e.g. The history of the printing press in East Asia, 700 CE → 1600 CE",
+    "query_placeholder": "Describe your research query…",
+    "placeholder_hint_1": "e.g. Trace Ulises's journey back to Ithaca…",
+    "placeholder_hint_2": "e.g. Compare Rust and Go for building a web API…",
+    "placeholder_hint_3": "e.g. Verify whether honey really never spoils…",
+    "placeholder_hint_4": "e.g. How to roast a duck so the skin gets crispy…",
+    "placeholder_hint_5": "e.g. The collapse of Bronze Age civilizations…",
+    "placeholder_hint_6": "e.g. Best M.2 NVMe SSDs under $200…",
+    "placeholder_hint_7": "e.g. Why cats knead with their paws…",
+    "placeholder_hint_8": "e.g. Side effects and benefits of creatine…",
+    "placeholder_hint_9": "e.g. How end-to-end encryption works…",
+    "placeholder_hint_10": "e.g. The history of printing in East Asia…"
   }
 }

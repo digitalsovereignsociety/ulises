@@ -6,6 +6,8 @@ stored as a base64 PNG so it can be embedded inline anywhere without a
 separate fetch.
 """
 
+from __future__ import annotations
+
 import base64
 import logging
 import re

@@ -12,6 +12,8 @@ Pure unit test: calls the route handlers directly with a mock Request (no
 server, network, or browser), mirroring tests/test_skills_delete_owner.py.
 """
 
+from __future__ import annotations
+
 import json
 import textwrap
 from pathlib import Path

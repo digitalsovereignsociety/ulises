@@ -14,6 +14,8 @@ Usage:
 
 Auth: set HF_TOKEN env var (or huggingface-cli login) to access gated repos.
 """
+from __future__ import annotations
+
 import argparse
 import json
 import os

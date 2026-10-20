@@ -208,14 +208,15 @@ globalThis.location = {
   search: '', hash: '', assign() {}, replace() {}, reload() {},
 };
 globalThis.history = { pushState() {}, replaceState() {}, back() {}, forward() {}, length: 1 };
-globalThis.navigator = {
+Object.defineProperty(globalThis, 'navigator', {
+  value: {
   language: 'en-US', languages: ['en-US', 'en'], userAgent: 'node',
   platform: 'linux', hardwareConcurrency: 4, clipboard: {},
   serviceWorker: { register: () => Promise.resolve(), controller: null },
   permissions: { query: () => Promise.resolve({ state: 'granted' }) },
   mediaDevices: { enumerateDevices: () => Promise.resolve([]) },
   wakeLock: { request: () => Promise.reject(new Error('n/a')) },
-};
+}, configurable: true, writable: true });
 globalThis.CSS = { escape: (s) => String(s), supports: () => false };
 globalThis.innerWidth = 1280;
 globalThis.innerHeight = 800;

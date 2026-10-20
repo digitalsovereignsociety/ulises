@@ -9,6 +9,8 @@ Shared constants ``_internal_headers`` and ``_INTERNAL_BASE`` still live in
 them does a function-local import to avoid a top-level circular dependency,
 matching the system-domain split.
 """
+from __future__ import annotations
+
 import asyncio
 import json
 import logging

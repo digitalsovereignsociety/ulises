@@ -1,5 +1,7 @@
 """Shared auth helpers used by all route files."""
 
+from __future__ import annotations
+
 import os
 from typing import Optional
 from fastapi import Request, HTTPException

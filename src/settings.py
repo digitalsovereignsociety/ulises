@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # src/settings.py
 """Centralized settings and features management.
 

@@ -1,5 +1,7 @@
 """Static regressions for Docker/devops hardening contracts."""
 
+from __future__ import annotations
+
 import ast
 import re
 from pathlib import Path

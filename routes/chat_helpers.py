@@ -1,5 +1,7 @@
 """Shared helpers for chat routes — context building, post-response tasks, auth resolution."""
 
+from __future__ import annotations
+
 import asyncio
 import json
 import logging

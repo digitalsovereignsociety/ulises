@@ -41,6 +41,21 @@
     "start_discussion_failed": "Start discussion failed {{msg}}",
     "tidy_failed": "Tidy failed {{msg}}",
     "untitled_document": "Untitled document",
-    "zipping_documents": "Zipping documents {{count}}"
+    "zipping_documents": "Zipping documents {{count}}",
+    "import": "Import",
+    "create": "Create",
+    "recent": "Recent",
+    "tidy": "Tidy",
+    "no_documents_yet": "No documents yet",
+    "import_placeholder": "Import files or drag them here",
+    "create_placeholder": "Create a new document",
+    "recent_placeholder": "Recent documents",
+    "empty_state": "Import or create a document to get started",
+    "empty_title": "No documents",
+    "bulk_tidy": "Tidy in bulk",
+    "bulk_tidy_title": "Organize selected documents",
+    "bulk_archive": "Archive in bulk",
+    "bulk_delete": "Delete in bulk",
+    "search_placeholder": "Search titles and content…"
   }
 }

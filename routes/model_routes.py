@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # routes/model_routes.py
 """Routes for model and provider management."""
 import os

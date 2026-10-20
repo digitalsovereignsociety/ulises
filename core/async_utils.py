@@ -5,6 +5,8 @@ fire-and-forget coroutine so that unhandled exceptions are logged
 instead of silently lost.
 """
 
+from __future__ import annotations
+
 import asyncio
 import logging
 

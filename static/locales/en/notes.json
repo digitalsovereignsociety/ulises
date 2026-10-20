@@ -72,6 +72,7 @@
     "view_archive": "View archive",
     "all": "All",
     "filter_reminders_label": "Filter reminders",
-    "exit_archive": "Exit archive"
+    "exit_archive": "Exit archive",
+    "reminders": "Reminders"
   }
 }

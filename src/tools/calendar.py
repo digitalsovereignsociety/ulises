@@ -4,6 +4,8 @@ Extracted from tool_implementations.py as part of slice 1 (#4082/#4071).
 Holds the manage_calendar tool (CalDAV-backed event CRUD).
 ``src.tool_implementations`` re-exports these for backward compatibility.
 """
+from __future__ import annotations
+
 import json
 import logging
 import re

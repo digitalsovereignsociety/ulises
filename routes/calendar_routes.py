@@ -1,5 +1,7 @@
 """Calendar routes — local SQLite-backed calendar CRUD."""
 
+from __future__ import annotations
+
 import logging
 import re
 import uuid

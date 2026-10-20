@@ -1150,6 +1150,11 @@ def _migrate_add_token_columns():
 def _migrate_add_owner_to_table(table_name: str, index_name: str):
     """Generic helper: add owner TEXT column + index to a table if missing."""
     import sqlite3
+    import re
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", table_name):
+        raise ValueError(f"Unsafe table name: {table_name!r}")
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", index_name):
+        raise ValueError(f"Unsafe index name: {index_name!r}")
     db_path = DATABASE_URL.replace("sqlite:///", "")
     if not os.path.exists(db_path):
         return
@@ -1288,7 +1293,10 @@ def _migrate_assign_legacy_owner():
             "gallery_albums", "gallery_people", "user_tool_data",
             "api_tokens", "webhooks",
         ]
+        import re
         for table in tables:
+            if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", table):
+                continue
             try:
                 cursor = conn.execute(f"PRAGMA table_info({table})")
                 columns = [row[1] for row in cursor.fetchall()]

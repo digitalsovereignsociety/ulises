@@ -1,5 +1,7 @@
 """Webpage content fetching with caching, PDF extraction, and summarization helpers."""
 
+from __future__ import annotations
+
 import copy
 import io
 import ipaddress

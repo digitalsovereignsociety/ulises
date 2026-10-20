@@ -1,5 +1,7 @@
 """API Token management routes — /api/tokens/*."""
 
+from __future__ import annotations
+
 import secrets
 import uuid
 

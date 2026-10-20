@@ -14,6 +14,8 @@ These are agent tools — the LLM writes fenced code blocks and they execute
 through the standard agent_tools.py pipeline.
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import logging

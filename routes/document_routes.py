@@ -1,5 +1,7 @@
 """Document routes — CRUD for living documents with version history."""
 
+from __future__ import annotations
+
 import uuid
 import logging
 from datetime import datetime, timezone

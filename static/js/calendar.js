@@ -848,7 +848,7 @@ function _headerHTML() {
     <div class="cal-toolbar-nav">
       <button class="cal-nav" id="cal-prev">&larr;</button>
       <button class="cal-nav cal-today-btn" id="cal-today" data-i18n="calendar.today">Today</button>
-      <span class="cal-title">${_view === 'agenda' ? '<span data-i18n="calendar.upcoming">Upcoming</span>' : t('calendar.month_' + _currentDate.getMonth()) + ' ' + _currentDate.getFullYear()}${weekSuffix}</span>
+      <span class="cal-title">${_view === 'agenda' ? '<span data-i18n="calendar.upcoming">Upcoming</span>' : (() => { const _mk = 'calendar.month_' + _currentDate.getMonth(); return t(_mk) })() + ' ' + _currentDate.getFullYear()}${weekSuffix}</span>
       <button class="cal-nav" id="cal-next">&rarr;</button>
     </div>
     <div class="cal-toolbar-right">

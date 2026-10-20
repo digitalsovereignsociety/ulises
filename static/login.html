@@ -334,7 +334,11 @@
 
   const rememberToggle = document.getElementById('rememberToggle');
 
-  const _t = (k, f) => (window._t ? window._t(k) : f);
+  const _t = (k, f) => {
+    if (!window._t) return f
+    const v = window._t(k)
+    return (typeof v === 'string' && v !== '' && v !== k) ? v : f
+  }
 
   function setMode(m) {
     mode = m;

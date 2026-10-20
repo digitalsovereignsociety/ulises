@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # routes/skills_routes.py
 """REST API for the Skills system.
 

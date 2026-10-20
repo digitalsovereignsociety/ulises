@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # routes/session_routes.py
 import re
 import html

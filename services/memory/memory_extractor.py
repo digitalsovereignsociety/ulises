@@ -10,6 +10,8 @@ Periodically audits all memories via LLM to consolidate duplicates,
 rewrite vague entries, and remove junk.
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 import logging

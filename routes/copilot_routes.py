@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # routes/copilot_routes.py
 """GitHub Copilot device-flow login.
 

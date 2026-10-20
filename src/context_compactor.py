@@ -5,6 +5,8 @@ Auto-compacts conversation history when approaching context window limits.
 Summarizes older messages via the same LLM, preserving key context.
 """
 
+from __future__ import annotations
+
 import json
 import logging
 from typing import Any, Dict, List, Optional
