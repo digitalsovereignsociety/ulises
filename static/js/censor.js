@@ -8,7 +8,7 @@
 import { t } from './i18n.js';
 let _enabled = true;
 let _observer = null;
-const PREF_KEY = 'ulises-sensitive-blur';
+const PREF_KEY = 'odysseus-sensitive-blur';
 export const _prefEnabled = () => {
   try {
     return localStorage.getItem(PREF_KEY) === 'on';

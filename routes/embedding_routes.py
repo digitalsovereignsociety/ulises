@@ -9,7 +9,6 @@ from pathlib import Path
 from fastapi import APIRouter, HTTPException, Form, Depends
 from core.constants import EMBEDDING_ENDPOINT_FILE, FASTEMBED_CACHE_DIR
 from core.middleware import require_admin
-from core.translations import t
 from src.runtime_paths import get_app_root
 
 logger = logging.getLogger(__name__)
@@ -236,7 +235,7 @@ def setup_embedding_routes():
         except ValueError as e:
             raise HTTPException(400, str(e))
         if not model_path.is_dir():
-            return {"deleted": False, "message": t("embedding.not_cached")}
+            return {"deleted": False, "message": "Model not cached"}
 
         shutil.rmtree(model_path)
         logger.info(f"Deleted cached model: {model_name} ({model_path})")
@@ -271,6 +270,18 @@ def setup_embedding_routes():
         )
         if not ok:
             raise HTTPException(400, t("embedding.rejected_url").format(reason=reason))
+
+        # SSRF hardening: validate the user-supplied URL before any outbound
+        # request. Local-first means loopback/LAN endpoints are allowed by
+        # default; non-HTTP(S) schemes and the cloud metadata range are always
+        # rejected. Set EMBEDDING_BLOCK_PRIVATE_IPS=true for full lockdown.
+        from src.url_safety import check_outbound_url
+        ok, reason = check_outbound_url(
+            url,
+            block_private=os.getenv("EMBEDDING_BLOCK_PRIVATE_IPS", "false").lower() == "true",
+        )
+        if not ok:
+            raise HTTPException(400, f"Rejected endpoint URL: {reason}")
 
         # Quick health check
         try:

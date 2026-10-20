@@ -11,21 +11,21 @@ This directory contains the Claude Code skill bundle for Ulises.
 5. Configure the terminal Claude Code session:
 
 ```bash
-export ULISES_URL=http://your-ulises-host:7000
-export ULISES_API_TOKEN=ody_generated_token
+export ODYSSEUS_URL=http://your-odysseus-host:7000
+export ODYSSEUS_API_TOKEN=ody_generated_token
 mkdir -p ~/.claude
-curl -fsSL -H "Authorization: Bearer $ULISES_API_TOKEN" "$ULISES_URL/api/claude/plugin.zip" -o /tmp/ulises-claude-skill.zip
-python3 -m zipfile -e /tmp/ulises-claude-skill.zip ~/.claude/
+curl -fsSL -H "Authorization: Bearer $ODYSSEUS_API_TOKEN" "$ODYSSEUS_URL/api/claude/plugin.zip" -o /tmp/odysseus-claude-skill.zip
+python3 -m zipfile -e /tmp/odysseus-claude-skill.zip ~/.claude/
 ```
 
-Claude Code auto-loads anything under `~/.claude/skills/`, so the `ulises` skill is
-available in any session that has `ULISES_URL` and `ULISES_API_TOKEN` in its
+Claude Code auto-loads anything under `~/.claude/skills/`, so the `odysseus` skill is
+available in any session that has `ODYSSEUS_URL` and `ODYSSEUS_API_TOKEN` in its
 environment.
 
 ## What's in the bundle
 
-- `skills/ulises/SKILL.md` — the skill definition Claude Code reads.
-- `skills/ulises/scripts/ulises_api.py` — small helper that calls the scoped
+- `skills/odysseus/SKILL.md` — the skill definition Claude Code reads.
+- `skills/odysseus/scripts/odysseus_api.py` — small helper that calls the scoped
   `/api/codex/*` endpoints (these are the canonical scope-gated agent API; the
   `codex` path is historic and shared by all agent integrations).
 

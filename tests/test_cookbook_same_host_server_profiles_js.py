@@ -5,7 +5,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 COOKBOOK = (ROOT / "static/js/cookbook.js").read_text(encoding="utf-8")
-SHARED = (ROOT / "static/js/cookbook-shared.js").read_text(encoding="utf-8")
 HWFIT = (ROOT / "static/js/cookbook-hwfit.js").read_text(encoding="utf-8")
 DOWNLOAD = (ROOT / "static/js/cookbookDownload.js").read_text(encoding="utf-8")
 SERVE = (ROOT / "static/js/cookbookServe.js").read_text(encoding="utf-8")
@@ -14,11 +13,11 @@ RUNNING = (ROOT / "static/js/cookbookRunning.js").read_text(encoding="utf-8")
 
 def test_server_dropdown_options_use_profile_keys_not_hosts():
     assert "remoteServerKey" in COOKBOOK
-    assert "export function _serverKey(s)" in SHARED
-    assert "s?.name || ''" in SHARED
-    assert "s?.host || ''" in SHARED
-    assert "s?.port || ''" in SHARED
-    assert "s?.envPath || ''" in SHARED
+    assert "export function _serverKey(s)" in COOKBOOK
+    assert "s?.name || ''" in COOKBOOK
+    assert "s?.host || ''" in COOKBOOK
+    assert "s?.port || ''" in COOKBOOK
+    assert "s?.envPath || ''" in COOKBOOK
     assert 'const value = _serverKey(s);' in COOKBOOK
     assert 'option value="${esc(s.host)}"' not in COOKBOOK
 
@@ -32,8 +31,8 @@ def test_selected_server_helpers_prefer_profile_key_before_host_fallback():
 
 def test_cookbook_submodules_resolve_visible_profile_selection():
     assert "_serverByVal?.(_ssv)" in DOWNLOAD
-    assert "_serverByVal?.(_envState.remoteServerKey || host)" in DOWNLOAD
-    assert "_serverByVal?.(_envState.remoteServerKey || _zh)" in DOWNLOAD
+    assert "_serverByVal?.(_envState.remoteServerKey || _envState.remoteHost || '')" in DOWNLOAD
+    assert "_serverByVal?.(zombieCandidate.remoteServerKey || zombieCandidate.payload?.remote_server_key || _zh)" in DOWNLOAD
     assert "_serverByVal(_envState.remoteServerKey || remoteHost)" in HWFIT
     assert "hk: _currentServerValue()" in HWFIT
     assert "sel.value = _currentServerValue();" in HWFIT

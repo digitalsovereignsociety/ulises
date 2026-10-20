@@ -151,7 +151,7 @@ def test_rate_limit_accommodates_a_full_batch():
     # The per-minute file cap must comfortably exceed the frontend batch cap,
     # or a single legitimate multi-file attach trips it (issue #1346).
     h = UploadHandler.__new__(UploadHandler)
-    UploadHandler.__init__(h, base_dir="/tmp", upload_dir="/tmp/_ulises_test_uploads_cfg")
+    UploadHandler.__init__(h, base_dir="/tmp", upload_dir="/tmp/_odysseus_test_uploads_cfg")
     assert h.upload_rate_limit >= _max_files_from_frontend()
 
 
@@ -191,7 +191,7 @@ async def test_chat_image_upload_is_added_to_gallery(tmp_path, monkeypatch):
     up.setup_upload_routes(h)
     endpoint = _endpoint(up.router)
 
-    result = await endpoint(_request(user="alice"), [_image_upload()])
+    result = await endpoint(_request(user="alice"), [_image_upload()], gallery_id=None)
     uploaded = result["files"][0]
 
     assert uploaded["gallery_id"]

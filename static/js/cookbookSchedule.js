@@ -16,7 +16,6 @@
 // BUILTIN_ACTIONS + src/cookbook_serve_lifecycle.py + its
 // registration line in app.py.
 
-import { t } from './i18n.js';
 try { (function () {
   function _safe(fn) {
     return function () {
@@ -30,6 +29,21 @@ try { (function () {
       .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
   }
 
+  function fetchWithTimeout(input, init = {}, timeoutMs = 20000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    const parentSignal = init.signal;
+    const abortFromParent = () => controller.abort();
+    if (parentSignal) {
+      if (parentSignal.aborted) controller.abort();
+      else parentSignal.addEventListener("abort", abortFromParent, { once: true });
+    }
+    return fetch(input, { ...init, signal: controller.signal }).finally(() => {
+      clearTimeout(timer);
+      parentSignal?.removeEventListener("abort", abortFromParent);
+    });
+  }
+
   // Cached handle to the ui.js showToast function. Bound lazily on
   // first use because ui.js is an ES module — it's not on `window`
   // unless something else has explicitly exposed it.
@@ -37,7 +51,7 @@ try { (function () {
   async function _getToast() {
     if (_toastFn) return _toastFn;
     try {
-      const m = await import("/static/js/ui.js");
+      const m = await import("/static/js/ui.js?v=20260916largetoolscroll1");
       _toastFn = m.default?.showToast || m.showToast || null;
     } catch (_) { _toastFn = null; }
     return _toastFn;
@@ -56,7 +70,7 @@ try { (function () {
   let _tasksMod = null;
   async function _getTasksMod() {
     if (_tasksMod) return _tasksMod;
-    try { _tasksMod = await import("/static/js/tasks.js"); } catch (_) {}
+    try { _tasksMod = await import("/static/js/tasks.js?v=20260914taskmodel1"); } catch (_) {}
     return _tasksMod;
   }
   async function openTaskInTasksTab(taskId) {
@@ -171,7 +185,7 @@ try { (function () {
       || arrowBtn.parentElement?.parentElement
       || arrowBtn.parentElement;
     if (!anchor) {
-      toast(t('cookbookSchedule.couldNotFindPanel'));
+      toast("Couldn't find a panel to mount the schedule form");
       return;
     }
     // Toggle.
@@ -275,7 +289,7 @@ try { (function () {
       saveBtn.disabled = true;
       saveBtn.textContent = "Saving…";
       try {
-        const r = await fetch("/api/tasks", {
+        const r = await fetchWithTimeout("/api/tasks", {
           method: "POST", credentials: "same-origin",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -284,8 +298,8 @@ try { (function () {
         if (!r.ok || data.error) {
           fail(data.error || data.detail || `HTTP ${r.status}`);
           saveBtn.disabled = false;
-          saveBtn.textContent = t('cookbookSchedule.save_btn');
-          toast(t('cookbookSchedule.saveFailed', { error: data.error || data.detail || r.status }));
+          saveBtn.textContent = "Save schedule";
+          toast(`Schedule save failed: ${data.error || data.detail || r.status}`);
           return;
         }
         if (mirrorToCalendar) {
@@ -294,11 +308,11 @@ try { (function () {
           // Best-effort: if anything here fails, we still consider the
           // task creation a success (the task itself works regardless).
           try {
-            const calsRes = await fetch("/api/calendar/calendars", { credentials: "same-origin" });
+            const calsRes = await fetchWithTimeout("/api/calendar/calendars", { credentials: "same-origin" });
             const calsBody = calsRes.ok ? await calsRes.json() : {};
             let cookbookCal = (calsBody.calendars || []).find(c => (c.name || "").toLowerCase() === "cookbook");
             if (!cookbookCal) {
-              const mk = await fetch("/api/calendar/calendars?name=Cookbook&color=%233b82f6", {
+              const mk = await fetchWithTimeout("/api/calendar/calendars?name=Cookbook&color=%233b82f6", {
                 method: "POST", credentials: "same-origin",
               });
               if (mk.ok) {
@@ -329,7 +343,7 @@ try { (function () {
               color: "#3b82f6",
             };
             if (cookbookCal?.href) evBody.calendar_href = cookbookCal.href;
-            const evRes = await fetch("/api/calendar/events", {
+            const evRes = await fetchWithTimeout("/api/calendar/events", {
               method: "POST", credentials: "same-origin",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(evBody),
@@ -351,7 +365,7 @@ try { (function () {
                 // the task never got the cookbook_event_uid marker and the
                 // server-side delete-cascade had nothing to follow when the
                 // user later deleted the task.
-                await fetch(`/api/tasks/${encodeURIComponent(data.id)}`, {
+                await fetchWithTimeout(`/api/tasks/${encodeURIComponent(data.id)}`, {
                   method: "PUT", credentials: "same-origin",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({ prompt: updatedPrompt }),
@@ -362,7 +376,7 @@ try { (function () {
         }
         form.remove();
         const newTaskId = data.id || data.task_id || "";
-        toast(t('cookbookSchedule.createdTask', { fullName }), {
+        toast(`Created task: Serve: ${fullName}`, {
           leadingIcon: "check",
           action: "Open",
           duration: 5000,
@@ -372,7 +386,7 @@ try { (function () {
         fail(String(e));
         saveBtn.disabled = false;
         saveBtn.textContent = "Save schedule";
-        toast(t('cookbookSchedule.saveFailed', { error: e }));
+        toast(`Schedule save failed: ${e}`);
       }
     }));
   }

@@ -16,6 +16,7 @@ from routes.cookbook_helpers import (
     _llama_cpp_rebuild_cmd,
     _append_vllm_linux_preflight_lines,
     _local_tooling_path_export,
+    _local_windows_bash_env_prefix,
     _pip_install_attempt,
     _pip_install_fallback_chain,
     _ollama_bind_from_cmd,
@@ -105,6 +106,70 @@ def test_safe_env_prefix_accepts_powershell_activation_path():
         _safe_env_prefix("& 'C:\\Users\\me\\venv\\Scripts\\Activate.ps1'")
         == "& 'C:\\Users\\me\\venv\\Scripts\\Activate.ps1'"
     )
+
+
+@pytest.mark.parametrize(
+    ("prefix", "expected"),
+    [
+        ("& 'C:\\Users\\me\\venv\\Scripts\\Activate.ps1'", "source /c/Users/me/venv/Scripts/activate"),
+        (r"& C:\Users\me\venv\Scripts\Activate.ps1", "source /c/Users/me/venv/Scripts/activate"),
+        (
+            r"& C:\Users\me\My Envs\venv\Scripts\Activate.ps1",
+            "source '/c/Users/me/My Envs/venv/Scripts/activate'",
+        ),
+        (
+            "& 'C:\\Users\\me\\My Envs\\venv\\Scripts\\Activate.ps1'",
+            "source '/c/Users/me/My Envs/venv/Scripts/activate'",
+        ),
+        (r"& D:/Envs/venv/Scripts/Activate.ps1", "source /d/Envs/venv/Scripts/activate"),
+    ],
+)
+def test_local_windows_bash_env_prefix_converts_powershell_venv_activation(prefix, expected):
+    converted = _local_windows_bash_env_prefix(prefix)
+
+    assert converted == expected
+    assert _safe_env_prefix(converted).startswith('[ -f "')
+
+
+@pytest.mark.parametrize(
+    "prefix",
+    [
+        None,
+        "",
+        "source /home/me/venv/bin/activate",
+        "conda activate qwen35",
+        'eval "$(conda shell.bash hook)" && conda activate qwen35',
+        r"& \\server\share\venv\Scripts\Activate.ps1",
+    ],
+)
+def test_local_windows_bash_env_prefix_leaves_other_prefixes_unchanged(prefix):
+    assert _local_windows_bash_env_prefix(prefix) == prefix
+
+
+def test_local_windows_bash_env_prefix_handles_long_whitespace_input():
+    prefix = "\t" * 100_000
+
+    assert _local_windows_bash_env_prefix(prefix) == prefix
+
+
+@pytest.mark.parametrize(
+    "relative_path",
+    ["static/js/cookbookRunning.js", "static/js/cookbookDownload.js"],
+)
+def test_primary_windows_venv_emitters_quote_activation_path(relative_path):
+    source = (Path(__file__).resolve().parents[1] / relative_path).read_text(encoding="utf-8")
+
+    assert "'& ' + _psQuote(" in source
+    assert "_psQuote = shared._psQuote;" in source
+
+
+def test_windows_venv_conversion_stays_scoped_to_local_git_bash_runners():
+    source = (Path(__file__).resolve().parents[1] / "routes/cookbook_routes.py").read_text(encoding="utf-8")
+    guarded_conversion = (
+        "_local_windows_bash_env_prefix(req.env_prefix) if local_windows else req.env_prefix"
+    )
+
+    assert source.count(guarded_conversion) == 2
 
 
 def test_validate_local_dir_accepts_external_drive_paths_with_spaces():
@@ -360,10 +425,10 @@ def test_vllm_preflight_reports_cli_and_version():
     script = "\n".join(lines)
 
     assert 'export PATH="$HOME/.local/bin:$PATH"' in script
-    assert 'ULISES_VLLM_BIN="$(command -v vllm 2>/dev/null || true)"' in script
-    assert 'echo "[ulises] vLLM CLI: $ULISES_VLLM_BIN"' in script
-    assert '"$ULISES_VLLM_BIN" --version' in script
-    assert 'ULISES_PREFLIGHT_EXIT=127' in script
+    assert 'ODYSSEUS_VLLM_BIN="$(command -v vllm 2>/dev/null || true)"' in script
+    assert 'echo "[odysseus] vLLM CLI: $ODYSSEUS_VLLM_BIN"' in script
+    assert '"$ODYSSEUS_VLLM_BIN" --version' in script
+    assert 'ODYSSEUS_PREFLIGHT_EXIT=127' in script
 
 
 def test_venv_safe_local_pip_install_strips_user_flags_only_for_local_venv():
@@ -479,16 +544,16 @@ def test_serve_preflight_failure_keeps_tmux_pane_visible():
     capture the helpful error, leaving users with a blank "crashed" card.
     """
     runner_lines = [
-        'ULISES_PREFLIGHT_EXIT=""',
+        'ODYSSEUS_PREFLIGHT_EXIT=""',
         'echo "ERROR: vLLM is not installed. Open Cookbook -> Dependencies and install vllm on this server, then launch again."',
-        'ULISES_PREFLIGHT_EXIT=127',
+        'ODYSSEUS_PREFLIGHT_EXIT=127',
     ]
     _append_serve_preflight_exit_lines(runner_lines, keep_shell_open=True)
     script = "\n".join(runner_lines)
 
     assert "ERROR: vLLM is not installed" in script
-    assert 'ULISES_PREFLIGHT_EXIT=127' in script
-    assert 'echo "=== Process exited with code $ULISES_PREFLIGHT_EXIT ==="' in script
+    assert 'ODYSSEUS_PREFLIGHT_EXIT=127' in script
+    assert 'echo "=== Process exited with code $ODYSSEUS_PREFLIGHT_EXIT ==="' in script
     assert 'exec "${SHELL:-/bin/bash}"' in script
     assert "exit 127" not in script
 
@@ -499,8 +564,8 @@ def test_serve_runner_preserves_command_exit_code():
     _append_serve_exit_code_lines(runner_lines, keep_shell_open=True)
     script = "\n".join(runner_lines)
 
-    assert "ULISES_CMD_EXIT=$?" in script
-    assert 'echo "=== Process exited with code $ULISES_CMD_EXIT ==="' in script
+    assert "ODYSSEUS_CMD_EXIT=$?" in script
+    assert 'echo "=== Process exited with code $ODYSSEUS_CMD_EXIT ==="' in script
     assert 'echo "=== Process exited with code $? ==="' not in script
 
 
@@ -512,7 +577,7 @@ def test_pip_serve_runner_emits_download_ok_before_exit_marker():
 
     assert 'echo "DOWNLOAD_OK"' in script
     assert script.index('echo "DOWNLOAD_OK"') < script.index("=== Process exited with code")
-    assert 'exit "$ULISES_CMD_EXIT"' in script
+    assert 'exit "$ODYSSEUS_CMD_EXIT"' in script
 
 
 def test_validate_serve_cmd_accepts_vllm_kv_cache_dtype():
@@ -647,7 +712,7 @@ def test_llama_cpp_linux_bootstrap_checks_cudart_before_cuda_build():
     _append_llama_cpp_linux_accel_build_lines(runner_lines)
     script = "\n".join(runner_lines)
 
-    assert '_ulises_has_cudart' in script
+    assert '_odysseus_has_cudart' in script
     assert "grep -q 'libcudart\\.so'" in script
     # lib64 and lib variants for CUDA_HOME and /usr/local/cuda
     assert '$_cuh/lib64/libcudart.so' in script
@@ -657,7 +722,7 @@ def test_llama_cpp_linux_bootstrap_checks_cudart_before_cuda_build():
     # pip-installed nvidia runtime wheel sibling path
     assert 'cuda_runtime/lib/libcudart.so' in script
     # entire helper definition precedes the CUDA cmake invocation
-    assert script.index('_ulises_has_cudart') < script.index('DGGML_CUDA=ON')
+    assert script.index('_odysseus_has_cudart') < script.index('DGGML_CUDA=ON')
 
 
 def test_llama_cpp_linux_bootstrap_cuda_cmake_present_when_cudart_found():
@@ -723,7 +788,12 @@ def test_local_windows_download_pid_tracks_inner_bash_and_stop_kills_tree():
     routes_src = (Path(__file__).resolve().parents[1] / "routes" / "cookbook_routes.py").read_text(encoding="utf-8")
     running_src = (Path(__file__).resolve().parents[1] / "static" / "js" / "cookbookRunning.js").read_text(encoding="utf-8")
 
-    assert 'printf \'%s\\\\n\' \\"$$\\" > {pp}' in routes_src
+    # The Windows-local runner publishes Python's valid Win32 fallback before
+    # allowing Git Bash to replace it with /proc/$$/winpid.
+    assert "_windows_local_pid_record_line(pid_path, pid_ready_path)" in routes_src
+    assert "/proc/$$/winpid" in routes_src
+    assert "pid_ready_path.touch()" in routes_src
+    assert '\\"$$\\" > {pp}' not in routes_src
     assert "function Stop-Tree([int]$Id)" in running_src
     assert "('ParentProcessId = ' + $Id)" in running_src
     assert "Stop-Tree ([int]$p)" in running_src
@@ -799,7 +869,7 @@ def test_cached_model_scan_uses_ollama_api_before_cli_and_windows_opt_in():
     assert "scan_ollama_api()\nscan_ollama()" in script
     assert "if any(m.get('is_ollama') for m in models): return" in script
     assert "os.name == 'nt'" in script
-    assert "ULISES_ALLOW_OLLAMA_CLI_SCAN" in script
+    assert "ODYSSEUS_ALLOW_OLLAMA_CLI_SCAN" in script
 
 
 @pytest.mark.skipif(os.name != "nt", reason="Windows Ollama CLI startup guard")
@@ -824,7 +894,7 @@ def test_cached_model_scan_does_not_launch_ollama_cli_on_windows(tmp_path):
     env = dict(os.environ)
     env["PATH"] = str(tmp_path) + os.pathsep + env.get("PATH", "")
     env["HOME"] = str(empty_home)
-    env.pop("ULISES_ALLOW_OLLAMA_CLI_SCAN", None)
+    env.pop("ODYSSEUS_ALLOW_OLLAMA_CLI_SCAN", None)
     proc = subprocess.run(
         [sys.executable, str(scan_py)],
         check=True,

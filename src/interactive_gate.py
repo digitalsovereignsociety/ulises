@@ -2,7 +2,7 @@
 
 Background tasks are allowed to run only after normal UI/API traffic has
 settled. This keeps scheduled jobs and email pollers from competing with the
-user opening Odysseus, Cookbook, email, documents, notes, or other panels.
+user opening Ulises, Cookbook, email, documents, notes, or other panels.
 """
 
 from __future__ import annotations
@@ -15,7 +15,9 @@ import time
 
 _ACTIVE_REQUESTS = 0
 _LAST_ACTIVITY = 0.0
+_LAST_BROWSER_ACTIVITY = 0.0
 _COND: asyncio.Condition | None = None
+_COND_LOOP: asyncio.AbstractEventLoop | None = None
 
 
 def _enabled() -> bool:
@@ -37,17 +39,35 @@ def _max_wait_seconds() -> float:
         return 0.0
 
 
+def _browser_active_seconds() -> float:
+    """How long a visible Ulises browser heartbeat blocks background tasks."""
+    try:
+        return max(0.0, float(os.getenv("BACKGROUND_TASK_BROWSER_ACTIVE_SECONDS", "45")))
+    except Exception:
+        return 45.0
+
+
 def _condition() -> asyncio.Condition:
-    global _COND
-    if _COND is None:
+    global _COND, _COND_LOOP
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = None
+    if _COND is None or _COND_LOOP is not loop:
         _COND = asyncio.Condition()
+        _COND_LOOP = loop
     return _COND
 
 
 _PASSIVE_EXACT_PATHS = {
+    "/api/activity/heartbeat",
+    "/api/client-perf",
     "/api/tasks/notifications",
+    "/api/tasks/runs/recent",
     "/api/research/active",
     "/api/email/urgency-state",
+    # UI idle poll sibling of urgency-state; must not pre-empt background tasks.
+    "/api/email/unread-state",
 }
 
 _PASSIVE_PREFIXES = (
@@ -55,6 +75,19 @@ _PASSIVE_PREFIXES = (
     "/api/health",
     "/api/prefs",
 )
+
+
+async def maybe_stop_background_tasks_for_heartbeat(stop_background) -> bool:
+    """Stop background work for browser activity only when the gate is enabled.
+
+    ``stop_background`` is injected by the application boundary so this policy
+    remains independently testable without importing the full FastAPI app.
+    """
+    if not _enabled():
+        return False
+
+    await stop_background(reason="browser heartbeat")
+    return True
 
 
 def should_track_interactive_request(path: str, method: str = "GET") -> bool:
@@ -67,6 +100,65 @@ def should_track_interactive_request(path: str, method: str = "GET") -> bool:
     if any(path.startswith(prefix) for prefix in _PASSIVE_PREFIXES):
         return False
     return True
+
+
+async def mark_browser_activity() -> None:
+    """Record that an authenticated browser tab is visibly using Ulises."""
+    global _LAST_BROWSER_ACTIVITY
+    if not _enabled():
+        return
+    cond = _condition()
+    async with cond:
+        _LAST_BROWSER_ACTIVITY = time.monotonic()
+        cond.notify_all()
+
+
+def _has_recent_browser_activity(now: float | None = None) -> bool:
+    ttl = _browser_active_seconds()
+    if ttl <= 0 or _LAST_BROWSER_ACTIVITY <= 0:
+        return False
+    return ((now if now is not None else time.monotonic()) - _LAST_BROWSER_ACTIVITY) < ttl
+
+
+def has_foreground_activity(now: float | None = None) -> bool:
+    """Return True when foreground browser/model work should stop background jobs.
+
+    Passive polling endpoints are excluded by should_track_interactive_request,
+    so active/recent request tracking is safe to use here. This matters during
+    initial page load: the heartbeat may not have landed yet, but the user is
+    already waiting on real UI requests.
+    """
+    if not _enabled():
+        return False
+    t = now if now is not None else time.monotonic()
+    if _ACTIVE_REQUESTS > 0:
+        return True
+    if _LAST_ACTIVITY > 0 and (t - _LAST_ACTIVITY) < _quiet_seconds():
+        return True
+    return _has_recent_browser_activity(t) or _has_active_chat_stream()
+
+
+def _has_active_chat_stream() -> bool:
+    """Best-effort check for foreground model work that outlives HTTP requests.
+
+    Chat/agent streams are detached from the browser SSE so a stream can keep
+    running after the request that started it has returned. Background LLM
+    tasks must still wait for those runs; otherwise helpers like email
+    auto-translate compete with the user's active chat on the same local model.
+    """
+    try:
+        from routes import chat_routes as _chat_routes
+        active_streams = getattr(_chat_routes, "_active_streams", {}) or {}
+        if active_streams:
+            return True
+    except Exception:
+        pass
+    try:
+        from src import agent_runs
+        runs = getattr(agent_runs, "_RUNS", {}) or {}
+        return any(getattr(run, "status", None) == "running" for run in runs.values())
+    except Exception:
+        return False
 
 
 @asynccontextmanager
@@ -109,11 +201,13 @@ async def wait_for_interactive_quiet(label: str = "") -> bool:
         async with cond:
             now = time.monotonic()
             quiet_remaining = quiet - (now - _LAST_ACTIVITY)
-            if _ACTIVE_REQUESTS <= 0 and quiet_remaining <= 0:
+            active_stream = _has_active_chat_stream()
+            browser_active = _has_recent_browser_activity(now)
+            if _ACTIVE_REQUESTS <= 0 and quiet_remaining <= 0 and not active_stream and not browser_active:
                 return waited
 
             waited = True
-            timeout = 0.25 if _ACTIVE_REQUESTS > 0 else min(max(quiet_remaining, 0.05), 0.5)
+            timeout = 0.25 if (_ACTIVE_REQUESTS > 0 or active_stream or browser_active) else min(max(quiet_remaining, 0.05), 0.5)
             if deadline is not None:
                 remaining = deadline - now
                 if remaining <= 0:

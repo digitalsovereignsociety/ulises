@@ -4,10 +4,8 @@ import os
 
 from fastapi import HTTPException, UploadFile
 
-from core.translations import t
-
 DEFAULT_CHAT_UPLOAD_MAX_BYTES = 10 * 1024 * 1024
-CHAT_UPLOAD_MAX_BYTES_ENV = "ULISES_CHAT_UPLOAD_MAX_BYTES"
+CHAT_UPLOAD_MAX_BYTES_ENV = "ODYSSEUS_CHAT_UPLOAD_MAX_BYTES"
 
 
 def format_byte_limit(limit: int) -> str:
@@ -19,33 +17,15 @@ def format_byte_limit(limit: int) -> str:
 
 
 def read_byte_limit_env(name: str, default: int) -> int:
-    """
-    Read an integer byte-limit from env.
-
-    Supports legacy ODYSSEUS_* env var names for backward compatibility:
-    If `name` starts with "ULISES_", we check "ODYSSEUS_..." first, then the
-    original "ULISES_...". If neither is set we return default.
-    """
-    candidates = [name]
-    if name.startswith("ULISES_"):
-        candidates.insert(0, name.replace("ULISES_", "ODYSSEUS_", 1))
-
-    raw = None
-    for n in candidates:
-        v = os.getenv(n)
-        if v is not None and v.strip():
-            raw = v
-            break
-
-    if raw is None:
+    raw = os.getenv(name)
+    if raw is None or not raw.strip():
         return default
-
     try:
         limit = int(raw)
     except ValueError as exc:
-        raise ValueError(f"{n} must be an integer byte count") from exc
+        raise ValueError(f"{name} must be an integer byte count") from exc
     if limit < 1:
-        raise ValueError(f"{n} must be greater than 0")
+        raise ValueError(f"{name} must be greater than 0")
     return limit
 
 
@@ -55,29 +35,32 @@ def get_chat_upload_max_bytes() -> int:
 
 # Per-route upload byte-limits, single-sourced here (issue #3364). Each is
 # validated + env-overridable via read_byte_limit_env: set the matching
-# ULISES_*_MAX_BYTES env var to an integer byte count to tune it; an invalid
+# ODYSSEUS_*_MAX_BYTES env var to an integer byte count to tune it; an invalid
 # value fails fast at import rather than crashing mid-request. Defaults match
 # the prior per-route values, so behavior is unchanged unless an env var is set.
 GALLERY_UPLOAD_MAX_BYTES = read_byte_limit_env(
-    "ULISES_GALLERY_UPLOAD_MAX_BYTES", 100 * 1024 * 1024
+    "ODYSSEUS_GALLERY_UPLOAD_MAX_BYTES", 100 * 1024 * 1024
 )
 GALLERY_TRANSFORM_UPLOAD_MAX_BYTES = read_byte_limit_env(
-    "ULISES_GALLERY_TRANSFORM_UPLOAD_MAX_BYTES", 25 * 1024 * 1024
+    "ODYSSEUS_GALLERY_TRANSFORM_UPLOAD_MAX_BYTES", 25 * 1024 * 1024
+)
+EDITOR_DRAFT_MAX_BYTES = read_byte_limit_env(
+    "ODYSSEUS_EDITOR_DRAFT_MAX_BYTES", 256 * 1024 * 1024
 )
 MEMORY_IMPORT_MAX_BYTES = read_byte_limit_env(
-    "ULISES_MEMORY_IMPORT_MAX_BYTES", 10 * 1024 * 1024
+    "ODYSSEUS_MEMORY_IMPORT_MAX_BYTES", 10 * 1024 * 1024
 )
 PERSONAL_UPLOAD_MAX_BYTES = read_byte_limit_env(
-    "ULISES_PERSONAL_UPLOAD_MAX_BYTES", 25 * 1024 * 1024
+    "ODYSSEUS_PERSONAL_UPLOAD_MAX_BYTES", 25 * 1024 * 1024
 )
 EMAIL_COMPOSE_UPLOAD_MAX_BYTES = read_byte_limit_env(
-    "ULISES_EMAIL_COMPOSE_UPLOAD_MAX_BYTES", 25 * 1024 * 1024
+    "ODYSSEUS_EMAIL_COMPOSE_UPLOAD_MAX_BYTES", 25 * 1024 * 1024
 )
 STT_MAX_AUDIO_BYTES = read_byte_limit_env(
-    "ULISES_STT_MAX_AUDIO_BYTES", 25 * 1024 * 1024
+    "ODYSSEUS_STT_MAX_AUDIO_BYTES", 25 * 1024 * 1024
 )
 ICS_MAX_BYTES = read_byte_limit_env(
-    "ULISES_ICS_MAX_BYTES", 10 * 1024 * 1024
+    "ODYSSEUS_ICS_MAX_BYTES", 10 * 1024 * 1024
 )
 
 
@@ -87,6 +70,6 @@ async def read_upload_limited(upload: UploadFile, limit: int, label: str = "Uplo
     if len(data) > limit:
         raise HTTPException(
             status_code=413,
-            detail=t("upload.file_too_large").format(limit=format_byte_limit(limit)),
+            detail=f"{label} exceeds {format_byte_limit(limit)} limit",
         )
     return data

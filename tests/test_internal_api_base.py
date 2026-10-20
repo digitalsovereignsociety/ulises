@@ -8,15 +8,15 @@ import core.constants as cc
 
 
 def _base(monkeypatch, **env):
-    for k in ("ULISES_INTERNAL_BASE", "APP_PORT"):
+    for k in ("ODYSSEUS_INTERNAL_BASE", "APP_PORT"):
         monkeypatch.delenv(k, raising=False)
     for k, v in env.items():
         monkeypatch.setenv(k, v)
     return cc.internal_api_base()
 
 
-def test_default_is_legacy_7000(monkeypatch):
-    assert _base(monkeypatch) == "http://127.0.0.1:7000"
+def test_default_matches_app_bind_port(monkeypatch):
+    assert _base(monkeypatch) == "http://127.0.0.1:7011"
 
 
 def test_app_port_is_honored(monkeypatch):
@@ -26,7 +26,7 @@ def test_app_port_is_honored(monkeypatch):
 def test_explicit_override_wins_and_is_stripped(monkeypatch):
     # Override beats APP_PORT and trailing slash is trimmed.
     assert _base(monkeypatch, APP_PORT="7860",
-                 ULISES_INTERNAL_BASE="https://proxy.example/") == "https://proxy.example"
+                 ODYSSEUS_INTERNAL_BASE="https://proxy.example/") == "https://proxy.example"
 
 
 def test_uses_127_not_localhost(monkeypatch):
@@ -41,7 +41,7 @@ def test_no_hardcoded_loopback_left_in_call_sites():
         "src/tools/_common.py",
         "src/cookbook_serve_lifecycle.py",
         "src/builtin_actions.py",
-        "routes/task_routes.py",
+        "routes/task/task_routes.py",
     ):
         text = (root / rel).read_text(encoding="utf-8")
         # Allow it only inside comments; flag any code occurrence.

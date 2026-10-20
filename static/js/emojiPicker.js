@@ -8,6 +8,8 @@
  * faces (😂, 👍, 😎) have no text form and are intentionally excluded.
  */
 
+import { topPortalZ } from './toolWindowZOrder.js';
+
 // Each entry: [char, label, svgPath OR svg]
 // SVG icons matching Lucide style (24x24 viewBox, 2 stroke)
 import { t } from './i18n.js';
@@ -159,7 +161,7 @@ function togglePicker(anchor, target) {
   _pickerEl.style.position = 'fixed';
   _pickerEl.style.top = (rect.bottom + 4) + 'px';
   _pickerEl.style.left = rect.left + 'px';
-  _pickerEl.style.zIndex = '10000';
+  _pickerEl.style.zIndex = String(topPortalZ());
 
   requestAnimationFrame(() => {
     const pr = _pickerEl.getBoundingClientRect();

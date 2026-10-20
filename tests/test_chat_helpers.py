@@ -1,7 +1,18 @@
 import asyncio
+import os
+import shutil
+import uuid
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+
+
+def test_clean_repeated_assistant_content_collapses_concatenated_copies():
+    from routes.chat_helpers import clean_repeated_assistant_content
+
+    answer = "The second event starts at 1:00 AM."
+    assert clean_repeated_assistant_content(answer * 3) == answer
 from fastapi import HTTPException
 
 import routes.chat_helpers as chat_helpers
@@ -9,13 +20,53 @@ from routes.chat_helpers import (
     _enforce_chat_privileges,
     _session_is_research_spinoff,
     auto_name_session,
+    auto_name_session_after_stream,
     build_chat_context,
+    build_uploaded_file_manifest,
+    clean_repeated_assistant_content,
     clean_thinking_for_save,
+    fallback_session_title,
     needs_auto_name,
     PreprocessedMessage,
     PresetInfo,
     save_assistant_response,
 )
+
+
+def test_clean_repeated_assistant_content_collapses_rejoined_calendar_answer():
+    answer = (
+        "Here's your calendar for the week:\n\n"
+        "- Monday -- Nothing planned\n"
+        "- Tuesday -- Rent payment\n\n"
+        "Nothing else comes up for the week."
+    )
+    dirty = (
+        "ls.\n</think>\n\n"
+        f"{answer}"
+        "ls.\n</think>\n\n"
+        f"{answer}\n"
+        f"{answer}"
+    )
+
+    assert clean_repeated_assistant_content(dirty) == answer
+
+
+def test_clean_repeated_assistant_content_preserves_single_answer():
+    answer = "Here's your calendar for September:\n\n- Sep 4 -- Lunch with Jon"
+
+    assert clean_repeated_assistant_content(answer) == answer
+
+
+def test_qwen_thinking_process_uses_last_explicit_final_marker():
+    leaked = (
+        "Thinking Process:\n\n1. Analyze the request.\n\n"
+        "Final Output Generation:\nDraft answer.\n\n"
+        "Wait, check the context again.\n\n"
+        "Final decision:\nThe preceding result says web access was disabled."
+    )
+    visible, metadata = clean_thinking_for_save(leaked)
+    assert visible == "The preceding result says web access was disabled."
+    assert metadata["thinking"].startswith("1. Analyze the request.")
 
 
 class _AuthManager:
@@ -145,6 +196,130 @@ class _FakeSession:
         self.history.append(message)
 
 
+class _ManifestUploadHandler:
+    def __init__(self, upload_dir, rows):
+        self.upload_dir = str(upload_dir)
+        self.rows = rows
+        self.calls = []
+
+    def _inside_upload_dir(self, path):
+        base = os.path.realpath(self.upload_dir)
+        candidate = os.path.realpath(path)
+        try:
+            return os.path.commonpath([base, candidate]) == base
+        except ValueError:
+            return False
+
+    def resolve_upload(self, upload_id, owner=None):
+        self.calls.append((upload_id, owner))
+        row = self.rows.get(upload_id)
+        if isinstance(row, dict) and row.get("owner") and row.get("owner") != owner:
+            return None
+        return row
+
+
+def _manifest_test_dir(name):
+    root = Path(__file__).resolve().parents[1] / "tmp_pytest_probe" / f"{name}-{uuid.uuid4().hex}"
+    root.mkdir(parents=True, exist_ok=False)
+    return root
+
+
+def test_build_uploaded_file_manifest_filters_and_nulls_unreadable_paths(monkeypatch):
+    root = _manifest_test_dir("manifest")
+    try:
+        upload_dir = root / "uploads"
+        upload_dir.mkdir()
+        good = upload_dir / "good.txt"
+        good.write_text("hello", encoding="utf-8")
+        outside = root / "outside.txt"
+        outside.write_text("nope", encoding="utf-8")
+        missing = upload_dir / "missing.txt"
+
+        import src.settings as settings
+
+        monkeypatch.setattr(
+            settings,
+            "get_setting",
+            lambda key: [str(upload_dir)] if key == "tool_path_extra_roots" else None,
+        )
+        handler = _ManifestUploadHandler(upload_dir, {
+            "good": {
+                "id": "good",
+                "name": "good.txt",
+                "mime": "text/plain",
+                "size": 5,
+                "path": str(good),
+                "owner": "alice",
+            },
+            "bob": {
+                "id": "bob",
+                "name": "bob.txt",
+                "path": str(good),
+                "owner": "bob",
+            },
+            "outside": {
+                "id": "outside",
+                "name": "outside.txt",
+                "path": str(outside),
+                "owner": "alice",
+            },
+            "missing": {
+                "id": "missing",
+                "name": "missing.txt",
+                "path": str(missing),
+                "owner": "alice",
+            },
+            "bad": ["not", "a", "dict"],
+        })
+
+        manifest = build_uploaded_file_manifest(
+            ["good", "bob", "outside", "missing", "bad"],
+            handler,
+            owner="alice",
+        )
+
+        assert [item["id"] for item in manifest] == ["good", "outside", "missing"]
+        assert manifest[0]["type"] == "attachment_ref"
+        assert manifest[0]["attachment_id"] == "good"
+        assert manifest[0]["uri"] == "odysseus://attachment/good"
+        assert manifest[0]["read_policy"] == "owner_checked_upload"
+        assert os.path.realpath(manifest[0]["path"]) == os.path.realpath(good)
+        assert manifest[1]["path"] is None
+        assert manifest[2]["path"] is None
+        assert handler.calls == [
+            ("good", "alice"),
+            ("bob", "alice"),
+            ("outside", "alice"),
+            ("missing", "alice"),
+            ("bad", "alice"),
+        ]
+    finally:
+        shutil.rmtree(root, ignore_errors=True)
+
+
+def test_build_uploaded_file_manifest_hides_paths_read_file_cannot_open(monkeypatch):
+    root = _manifest_test_dir("manifest-unreadable")
+    try:
+        upload_dir = root / "uploads"
+        upload_dir.mkdir()
+        upload = upload_dir / "upload.txt"
+        upload.write_text("hello", encoding="utf-8")
+        handler = _ManifestUploadHandler(upload_dir, {
+            "upload": {"id": "upload", "name": "upload.txt", "path": str(upload), "owner": "alice"},
+        })
+
+        def reject_path(_path):
+            raise ValueError("outside the allowed roots")
+
+        monkeypatch.setattr("src.tool_execution._resolve_tool_path", reject_path)
+
+        manifest = build_uploaded_file_manifest(["upload"], handler, owner="alice")
+
+        assert manifest[0]["path"] is None
+    finally:
+        shutil.rmtree(root, ignore_errors=True)
+
+
 @pytest.mark.parametrize("name,expected", [
     # 24h format (the bug this PR fixes)
     ("deepseek-v4-flash 14:05:33", True),
@@ -170,6 +345,40 @@ class _FakeSession:
 ])
 def test_needs_auto_name(name, expected):
     assert needs_auto_name(name) == expected, f"needs_auto_name({name!r}) should be {expected}"
+
+
+def test_auto_name_after_stream_reloads_session_before_naming(monkeypatch):
+    stale = SimpleNamespace(id="sid", name="kimi-k3 1:23:45 PM", history=[])
+    fresh = SimpleNamespace(
+        id="sid",
+        name="kimi-k3 1:23:45 PM",
+        history=[SimpleNamespace(role="user", content="search the web for Richmond")],
+    )
+    calls = []
+
+    class Manager:
+        def get_session(self, session_id):
+            assert session_id == "sid"
+            return fresh
+
+    async def fake_auto_name(manager, sess):
+        calls.append(sess)
+
+    monkeypatch.setattr(chat_helpers, "_is_session_stream_active", lambda _sid: False)
+    monkeypatch.setattr(chat_helpers, "auto_name_session", fake_auto_name)
+
+    asyncio.run(auto_name_session_after_stream("sid", Manager(), stale))
+
+    assert calls == [fresh]
+
+
+def test_fallback_session_title_uses_first_prompt_words():
+    assert (
+        fallback_session_title(
+            "Find the answer online and keep it concise: where does alaska the last frontier take place?"
+        )
+        == "Find the answer online and keep"
+    )
 
 
 def test_clean_thinking_for_save_extracts_gemma4_thought_channel():
@@ -213,10 +422,22 @@ def test_clean_thinking_for_save_extracts_thought_tag():
     assert metadata["thinking"] == "internal reasoning"
 
 
-def test_save_assistant_response_preserves_actual_and_requested_model():
+def test_clean_thinking_for_save_preserves_interrupted_thinking_only_turn():
+    content, metadata = clean_thinking_for_save(
+        '<think time="2.4">partial reasoning before stop',
+        {"stopped": True, "model": "thinking-model"},
+    )
+
+    assert content == ""
+    assert metadata["thinking"] == "partial reasoning before stop"
+    assert metadata["thinking_time"] == "2.4"
+    assert metadata["thinking_interrupted"] is True
+
+
+def test_save_assistant_response_incognito_does_not_mutate_session_history():
     sess = _FakeSession("selected-model")
 
-    save_assistant_response(
+    saved_id = save_assistant_response(
         sess,
         session_manager=None,
         session_id="s1",
@@ -225,8 +446,24 @@ def test_save_assistant_response_preserves_actual_and_requested_model():
         incognito=True,
     )
 
-    assert sess.history[-1].metadata["requested_model"] == "selected-model"
-    assert sess.history[-1].metadata["model"] == "actual-model"
+    assert saved_id is None
+    assert sess.history == []
+
+
+def test_add_user_message_incognito_does_not_mutate_session_history():
+    sess = _FakeSession("selected-model")
+    chat_handler = SimpleNamespace(update_session_name_if_needed=lambda *_args, **_kwargs: None)
+    preprocessed = PreprocessedMessage(
+        enhanced_message="secret",
+        user_content="secret",
+        text_for_context="secret",
+        youtube_transcripts=[],
+        attachment_meta=[],
+    )
+
+    chat_helpers.add_user_message(sess, chat_handler, preprocessed, incognito=True)
+
+    assert sess.history == []
 
 
 class _SpinMsg:
@@ -435,3 +672,107 @@ async def test_build_chat_context_keeps_cookie_user_owner_scope(monkeypatch):
         "preface_owner": "bob",
         "compact_owner": "bob",
     }
+
+
+async def _build_context_web_probe(monkeypatch, *, message, use_web, agent_mode):
+    captured = {"use_web": None}
+
+    async def fake_preprocess(chat_handler, message, att_ids, sess, **kwargs):
+        return PreprocessedMessage(
+            enhanced_message=message,
+            user_content=message,
+            text_for_context=message,
+            youtube_transcripts=[],
+            attachment_meta=[],
+        )
+
+    def fake_extract_preset(chat_handler, preset_id):
+        return PresetInfo(
+            temperature=0.7,
+            max_tokens=1024,
+            system_prompt=None,
+            character_name=None,
+        )
+
+    def fake_build_context_preface(**kwargs):
+        captured["use_web"] = kwargs["use_web"]
+        return [], [], []
+
+    async def fake_maybe_compact(sess, endpoint_url, model, messages, headers, owner=None):
+        return messages, 8192, False
+
+    monkeypatch.setattr(chat_helpers, "preprocess", fake_preprocess)
+    monkeypatch.setattr(chat_helpers, "extract_preset", fake_extract_preset)
+    monkeypatch.setattr(chat_helpers, "load_prefs_for_user", lambda owner: {"memory_enabled": True, "skills_enabled": True})
+    monkeypatch.setattr(chat_helpers, "_normalize_model_id_from_cache", lambda sess: None)
+    monkeypatch.setattr(chat_helpers, "normalize_model_id", lambda endpoint_url, model, **kwargs: None)
+    monkeypatch.setattr(chat_helpers, "maybe_compact", fake_maybe_compact)
+    monkeypatch.setattr(chat_helpers, "trim_for_context", lambda messages, context_length: messages)
+
+    import src.user_time as user_time
+
+    monkeypatch.setattr(
+        user_time,
+        "current_datetime_context_message",
+        lambda now_utc=None: {"role": "user", "content": "[Context - current date/time]"},
+        raising=False,
+    )
+
+    sess = SimpleNamespace(
+        endpoint_url="http://model.local/v1/chat/completions",
+        model="test-model",
+        headers={},
+        history=[],
+        messages=[],
+    )
+    sess.get_context_messages = lambda: list(sess.messages)
+    request = SimpleNamespace(state=SimpleNamespace(api_token=False, current_user="alice"))
+
+    await build_chat_context(
+        sess=sess,
+        request=request,
+        chat_handler=SimpleNamespace(),
+        chat_processor=SimpleNamespace(build_context_preface=fake_build_context_preface),
+        message=message,
+        session_id="session-1",
+        use_web=use_web,
+        incognito=True,
+        agent_mode=agent_mode,
+    )
+    return captured
+
+
+@pytest.mark.asyncio
+async def test_build_chat_context_treats_use_web_false_string_as_false(monkeypatch):
+    captured = await _build_context_web_probe(
+        monkeypatch,
+        message="latest apple news",
+        use_web="false",
+        agent_mode=False,
+    )
+
+    assert captured["use_web"] is False
+
+
+@pytest.mark.asyncio
+async def test_build_chat_context_skips_pre_web_for_agent_calendar_turn(monkeypatch):
+    captured = await _build_context_web_probe(
+        monkeypatch,
+        message="when is my next appointment",
+        use_web="true",
+        agent_mode=True,
+    )
+
+    assert captured["use_web"] is False
+
+
+@pytest.mark.asyncio
+async def test_build_chat_context_skips_pre_web_for_agent_notes_turn(monkeypatch):
+    captured = await _build_context_web_probe(
+        monkeypatch,
+        message="show my latest notes",
+        use_web="true",
+        agent_mode=True,
+    )
+
+    assert captured["use_web"] is False

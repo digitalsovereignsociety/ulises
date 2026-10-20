@@ -25,8 +25,7 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import HTMLResponse
 
 from core.middleware import require_admin
-from core.translations import t
-from src.auth_helpers import get_current_user
+from src.auth_helpers import _auth_disabled, get_current_user
 
 from companion import pairing as _pairing
 
@@ -65,7 +64,7 @@ def require_models_scope(request: Request) -> None:
         scopes = [scope.strip() for scope in scopes.split(",")]
     scope_set = {str(scope).strip() for scope in scopes if str(scope).strip()}
     if _pairing.COMPANION_SCOPE not in scope_set:
-        raise HTTPException(403, t("admin.admin_only"))
+        raise HTTPException(403, "API token requires chat scope")
 
 
 def mint_pairing_token(owner: str, invalidate=None) -> tuple[str, str]:
@@ -116,8 +115,9 @@ def setup_companion_routes() -> APIRouter:
         The stock /api/models route scopes to get_current_user, which for a
         bearer token is the sandboxed pseudo-user "api" (owns nothing). Here we
         scope to the token's real owner instead, plus legacy null-owner shared
-        rows -- the same rule as owner_filter. Read-only; never returns api_key
-        material.
+        rows -- the same rule as owner_filter. Explicit auth-disabled mode keeps
+        the stock route's single-user all-endpoints view. Read-only; never
+        returns api_key material.
         """
         require_models_scope(request)
         import json as _json
@@ -126,6 +126,11 @@ def setup_companion_routes() -> APIRouter:
         from src.endpoint_resolver import build_chat_url
 
         owner = token_owner(request)
+        single_user_mode = (
+            owner is None
+            and not getattr(request.state, "api_token", False)
+            and _auth_disabled()
+        )
         out = []
         db = SessionLocal()
         try:
@@ -136,7 +141,7 @@ def setup_companion_routes() -> APIRouter:
             if owner:
                 q = q.filter((ModelEndpoint.owner == owner) | (ModelEndpoint.owner == None))  # noqa: E711
             for ep in q.all():
-                if not owner_can_see(ep.owner, owner):
+                if not single_user_mode and not owner_can_see(ep.owner, owner):
                     continue
                 try:
                     model_ids = _json.loads(ep.cached_models) if ep.cached_models else []
@@ -171,25 +176,21 @@ def setup_companion_routes() -> APIRouter:
         link or <img> (CSRF). The actual mint is the POST handler below.
         """
         require_admin(request)
-        _title = t("companion.pair_title")
-        _desc = t("companion.pair_description")
-        _btn = t("companion.pair_button")
-        _note = t("companion.admin_note")
-        page = f"""<!doctype html>
+        page = """<!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{_title}</title>
+<title>Pair a device</title>
 <style>
-  body{{font-family:-apple-system,system-ui,sans-serif;max-width:520px;margin:48px auto;padding:0 20px;color:#e8e8e8;background:#16161a}}
-  .card{{background:#1f1f25;border:1px solid #2c2c35;border-radius:14px;padding:28px;text-align:center}}
-  button{{background:#7c9cff;color:#0e0e12;border:none;border-radius:10px;padding:12px 20px;font-size:15px;font-weight:600;cursor:pointer}}
+  body{font-family:-apple-system,system-ui,sans-serif;max-width:520px;margin:48px auto;padding:0 20px;color:#e8e8e8;background:#16161a}
+  .card{background:#1f1f25;border:1px solid #2c2c35;border-radius:14px;padding:28px;text-align:center}
+  button{background:#7c9cff;color:#0e0e12;border:none;border-radius:10px;padding:12px 20px;font-size:15px;font-weight:600;cursor:pointer}
 </style></head>
 <body><div class="card">
-  <h2>{_title}</h2>
-  <p>{_desc}</p>
+  <h2>Pair a device</h2>
+  <p>Generate a one-time pairing code (a chat-scoped API token) for a LAN client.</p>
   <form method="POST" action="/api/companion/pair">
-    <button type="submit">{_btn}</button>
+    <button type="submit">Generate pairing code</button>
   </form>
-  <p style="color:#8a8a96;font-size:12px;margin-top:18px">{_note}</p>
+  <p style="color:#8a8a96;font-size:12px;margin-top:18px">Admin only. Each code mints a new token, shown once. Manage or revoke under Settings &rarr; API tokens.</p>
 </div></body></html>"""
         return HTMLResponse(page)
 
@@ -201,19 +202,27 @@ def setup_companion_routes() -> APIRouter:
         the code works immediately, no restart. `?format=json` returns the
         payload for an in-app pairing screen."""
         require_admin(request)
+        try:
+            configured_origin = _pairing.configured_companion_origin()
+        except ValueError as exc:
+            raise HTTPException(500, str(exc)) from None
         owner = get_current_user(request)
         invalidate = getattr(request.app.state, "invalidate_token_cache", None)
         token_id, raw_token = mint_pairing_token(owner, invalidate)
 
-        hosts = _pairing.lan_ip_candidates()
-        host = hosts[0] if hosts else "127.0.0.1"
-        port = request.url.port or _pairing.default_port()
+        if configured_origin:
+            host, port = configured_origin
+            hosts = [host]
+        else:
+            hosts = _pairing.lan_ip_candidates()
+            host = hosts[0] if hosts else "127.0.0.1"
+            port = request.url.port or _pairing.default_port()
         payload = _pairing.pairing_payload(host, port, raw_token)
         qr = _pairing.pairing_qr_png_data_uri(payload)
         qr_ok = bool(qr and qr.startswith("data:image/png;base64,"))
 
         if (request.query_params.get("format") or "").lower() == "json":
-            return {
+            response = {
                 "host": host,
                 "port": port,
                 "token": raw_token,
@@ -222,20 +231,19 @@ def setup_companion_routes() -> APIRouter:
                 "payload": payload,
                 "qr": qr if qr_ok else None,
             }
+            return response
 
         import json as _json
         payload_json = _json.dumps(payload, separators=(",", ":"))
         # Only ever emit a known PNG data-URI into the src; every other value is
         # html.escaped.
         qr_block = (
-            f'<img src="{html.escape(qr)}" alt="{t("companion.pairing_code")}" width="260" height="260">'
-            if qr_ok else f"<p><em>{t('companion.pairing_qr_unavailable')}</em></p>"
+            f'<img src="{html.escape(qr)}" alt="Pairing QR" width="260" height="260">'
+            if qr_ok else "<p><em>QR rendering unavailable -- enter the details manually.</em></p>"
         )
-        _code_title = t("companion.pairing_code")
-        _warn = t("companion.pairing_warning").format(token_id=html.escape(token_id))
         page = f"""<!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{_code_title}</title>
+<title>Pairing code</title>
 <style>
   body{{font-family:-apple-system,system-ui,sans-serif;max-width:520px;margin:40px auto;padding:0 20px;color:#e8e8e8;background:#16161a}}
   .card{{background:#1f1f25;border:1px solid #2c2c35;border-radius:14px;padding:24px;text-align:center}}
@@ -244,13 +252,15 @@ def setup_companion_routes() -> APIRouter:
   .warn{{color:#e0a85e;font-size:13px;margin-top:18px}}
 </style></head>
 <body><div class="card">
-  <h2>{_code_title}</h2>
+  <h2>Pairing code</h2>
   {qr_block}
-  <div class="row"><strong>{t('companion.host')}:</strong> <code>{html.escape(host)}</code></div>
-  <div class="row"><strong>{t('companion.port')}:</strong> <code>{html.escape(str(port))}</code></div>
-  <div class="row"><strong>{t('companion.token')}:</strong> <code>{html.escape(raw_token)}</code></div>
-  <div class="row"><strong>{t('companion.payload')}:</strong> <code>{html.escape(payload_json)}</code></div>
-  <p class="warn">{_warn}</p>
+  <div class="row"><strong>Host:</strong> <code>{html.escape(host)}</code></div>
+  <div class="row"><strong>Port:</strong> <code>{html.escape(str(port))}</code></div>
+  <div class="row"><strong>Token:</strong> <code>{html.escape(raw_token)}</code></div>
+  <div class="row"><strong>Payload:</strong> <code>{html.escape(payload_json)}</code></div>
+  <p class="warn">Shown once. This grants chat access to your Ulises; revoke it
+  in Settings &rarr; API tokens (id <code>{html.escape(token_id)}</code>). The
+  device must be on the same network, and the server must bind to your LAN.</p>
 </div></body></html>"""
         return HTMLResponse(page)
 

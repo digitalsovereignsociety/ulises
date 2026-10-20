@@ -24,7 +24,7 @@ def _parse_tailscale_status(raw: str) -> Dict[str, Any]:
     return data if isinstance(data, dict) else {}
 
 
-def _first_tailscale_ipv4(value: list) -> Optional[str]:
+def _first_tailscale_ipv4(value: Any) -> Optional[str]:
     if not isinstance(value, list):
         return None
     for ip in value:
@@ -38,7 +38,10 @@ def discover_tailscale_hosts() -> List[str]:
     global _hosts_cache, _hosts_cache_time
 
     now = time.time()
-    if _hosts_cache and (now - _hosts_cache_time) < _HOSTS_CACHE_TTL:
+    # Gate on the timestamp, not the list: a successful query that found no
+    # eligible peers is a real answer, and testing the list's truthiness made
+    # that case re-run `tailscale status` (up to a 5s timeout) on every call.
+    if _hosts_cache_time and (now - _hosts_cache_time) < _HOSTS_CACHE_TTL:
         return list(_hosts_cache)
 
     hosts = []

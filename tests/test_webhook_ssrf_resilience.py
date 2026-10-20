@@ -13,12 +13,10 @@ from tests.helpers.import_state import clear_module, preserve_import_state
 # attributes for both src.database and core.database after the block, preventing
 # stub/engine leakage into siblings.
 #
-# Importing the real core.database reads DATABASE_URL at import time (default
-# sqlite:///./data/app.db). In a clean worktree with no ./data directory that
-# raises sqlite3.OperationalError during collection. Pin DATABASE_URL to
-# in-memory SQLite for the import: it needs no filesystem path. Note: init_db()
-# is NOT called at module import time anymore — it runs in app.py's startup
-# event — but DATABASE_URL is still read eagerly via create_engine().
+# Importing the real core.database runs init_db() -> create_all() against
+# DATABASE_URL (default sqlite:///./data/app.db); in a clean worktree with no
+# ./data directory that raises sqlite3.OperationalError during collection. Pin
+# DATABASE_URL to in-memory SQLite for the import: it needs no filesystem path
 # and leaves no artifact, and these tests never touch the real engine
 # (validate_webhook_url is pure; the delivery test monkeypatches SessionLocal).
 # patch.dict restores the prior DATABASE_URL after the block.
@@ -97,7 +95,6 @@ async def test_webhook_delivery_uses_naive_utc_timestamps(monkeypatch):
 
     class _Response:
         status_code = 204
-
 
     db = _Db()
     monkeypatch.setattr(wm, "SessionLocal", lambda: db)

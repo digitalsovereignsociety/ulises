@@ -15,7 +15,6 @@ from fastapi import HTTPException
 from fastapi import UploadFile
 from typing import List, Optional
 
-from core.translations import t
 from src.upload_limits import format_byte_limit, get_chat_upload_max_bytes
 
 logger = logging.getLogger(__name__)
@@ -50,6 +49,12 @@ _VISION_MODEL_KEYWORDS = (
     # open / local
     "vision", "multimodal", "llava", "bakllava", "moondream", "pixtral", "minicpm",
     "internvl", "cogvlm", "qwen-vl", "qwen2-vl", "qwen3-vl", "qwen3vl",
+    # Qwen3.5 is a natively multimodal family even when a served-model alias
+    # omits the traditional "VL" suffix (for example qwen35-9b-base-native).
+    "qwen3.5", "qwen3_5", "qwen35",
+    # The hosted Flash alias accepts images despite lacking a vision/VL suffix.
+    # Keep this exact: deepseek-v4-pro on the same provider is text-only.
+    "deepseek-flash",
     # multimodal families whose names don't contain "vision"/"vl" but DO accept
     # images — without these the image is silently dropped for common Ollama tags
     # like gemma3:4b or gemma4:12b (issue #1274). Gemma 3/4 (4b+), Llama 4 (all),
@@ -219,7 +224,7 @@ def validate_file_upload(file: UploadFile) -> UploadFile:
                 status_code=400,
                 detail={
                     "error": "FILE_TOO_LARGE",
-                    "message": t("upload.file_too_large").format(limit=format_byte_limit(upload_limit))
+                    "message": f"File size exceeds {format_byte_limit(upload_limit)} limit"
                 }
             )
     except IOError as e:

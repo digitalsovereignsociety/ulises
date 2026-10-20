@@ -44,7 +44,7 @@ def _normalize_scopes(scopes: str | list[str] | None = None, profile: str | None
     profile_key = (profile or "").strip()
     if profile_key:
         if profile_key not in TOKEN_PROFILES:
-            raise HTTPException(400, t("api_tokens.unknown_profile"))
+            raise HTTPException(400, "Unknown token profile")
         requested = list(TOKEN_PROFILES[profile_key])
     elif isinstance(scopes, list):
         requested = [str(s).strip() for s in scopes if str(s).strip()]
@@ -56,7 +56,7 @@ def _normalize_scopes(scopes: str | list[str] | None = None, profile: str | None
     normalized = []
     for scope in requested:
         if scope not in ALLOWED_SCOPES:
-            raise HTTPException(400, t("api_tokens.unknown_scope").format(scope=scope))
+            raise HTTPException(400, f"Unknown token scope: {scope}")
         if scope not in normalized:
             normalized.append(scope)
 
@@ -168,9 +168,9 @@ def setup_api_token_routes() -> APIRouter:
         with get_db_session() as db:
             token = db.query(ApiToken).filter(ApiToken.id == token_id).first()
             if not token:
-                raise HTTPException(404, t("api_tokens.not_found"))
+                raise HTTPException(404, "Token not found")
             if current_user and token.owner != current_user:
-                raise HTTPException(403, t("api_tokens.not_yours"))
+                raise HTTPException(403, "Not your token")
             if isinstance(payload.get("name"), str) and payload["name"].strip():
                 token.name = payload["name"].strip()[:MAX_NAME_LEN]
             # Only touch scopes when the caller actually sent them. A partial
@@ -202,9 +202,9 @@ def setup_api_token_routes() -> APIRouter:
         with get_db_session() as db:
             token = db.query(ApiToken).filter(ApiToken.id == token_id).first()
             if not token:
-                raise HTTPException(404, t("api_tokens.not_found"))
+                raise HTTPException(404, "Token not found")
             if current_user and token.owner != current_user:
-                raise HTTPException(403, t("api_tokens.not_yours"))
+                raise HTTPException(403, "Not your token")
             db.delete(token)
         _invalidate_cache(request)
         return {"status": "deleted"}

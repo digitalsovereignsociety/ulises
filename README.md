@@ -3,74 +3,105 @@
 </p>
 
 <p align="center">
-  Un espacio de trabajo de IA auto-alojado para chat, agentes, investigación, documentos, correo electrónico, notas, calendario y flujos de trabajo con modelos locales.
+  A self-hosted AI workspace for chat, agents, research, documents, email, notes, calendar, and local model workflows.
 </p>
 
 <p align="center">
-  <a href="#inicio-rapido">Inicio Rápido</a> ·
-  <a href="docs/setup.md">Guía de Instalación</a> ·
-  <a href="CONTRIBUTING.md">Contribuir</a> ·
-  <a href="ROADMAP.md">Hoja de Ruta</a>
+  <a href="#quick-start">Quick Start</a> ·
+  <a href="website/setup.md">Setup Guide</a> ·
+  <a href="CONTRIBUTING.md">Contributing</a> ·
+  <a href="ROADMAP.md">Roadmap</a>
 </p>
 
 <p align="center">
-  <a href="https://repology.org/project/ulises-ai/versions"><img src="https://repology.org/badge/vertical-allrepos/ulises-ai.svg" alt="Estado de paquetes"></a>
+  <a href="https://repology.org/project/ulises-ai/versions"><img src="https://repology.org/badge/vertical-allrepos/ulises-ai.svg" alt="Packaging status"></a>
 </p>
 
 <p align="center">
-  <img src="docs/ulises-browser.png" alt="Interfaz de Ulises">
+  <img src="docs/ulises-browser.png" alt="Ulises interface">
 </p>
 
 ---
 
 ## Inicio Rápido
 
-> `dev` es la rama por defecto y recibe los cambios más recientes primero. Usa [`main`](https://github.com/ChicoCifrado/ulises/tree/main) si prefieres una rama más estable.
+> `dev` is the default branch and gets the newest changes first. Use [`main`](https://github.com/odysseus-dev/odysseus/tree/main) if you want the more curated branch.
 
 ```bash
-git clone https://github.com/ChicoCifrado/ulises.git
+git clone https://github.com/odysseus-dev/odysseus.git
 cd ulises
 cp .env.example .env
 docker compose up -d --build
 ```
 
-Abre `http://localhost:7000` cuando los contenedores estén saludables. La primera contraseña de administrador se muestra en `docker compose logs ulises`.
+Open `http://localhost:7011` when the containers are healthy. The first admin password is printed in `docker compose logs ulises`.
 
-Las instalaciones nativas, notas sobre GPU, instrucciones para Windows/macOS, HTTPS y configuración están en la [guía de instalación](docs/setup.md).
+The compose files pull the official multi-arch image `ghcr.io/odysseus-dev/odysseus` (published by CI on every push to `main` and `dev`) and only build locally if the pull fails — so this also works on hosts without a build toolchain, e.g. as a [Portainer](https://www.portainer.io/) stack.
 
-## Funcionalidades
+**Production deployments:** pin the immutable tag instead of `:latest`. `:latest` and bare `:X.Y.Z` tags move on every push to `main`, but `:X.Y.Z-<sha>` (e.g. `1.0.2-7c8070f`) always refers to one specific build:
 
-- **Chat + Agentes** — modelos locales/API, herramientas, MCP, archivos, shell, habilidades y memoria.
-- **Cookbook** — recomendaciones de modelos según hardware, descargas y servido.
-- **Investigación Profunda** — investigación web multi-paso con lectura de fuentes y generación de informes.
-- **Comparar** — pruebas ciegas lado a lado de modelos y síntesis.
-- **Documentos** — editor orientado a la escritura con ediciones por IA, sugerencias, Markdown, HTML, CSV y resaltado de sintaxis.
-- **Correo Electrónico** — bandeja de entrada IMAP/SMTP con clasificación, etiquetas, resúmenes, recordatorios y borradores de respuesta.
-- **Notas, Tareas + Calendario** — recordatorios, tareas pendientes, tareas programadas de agentes y sincronización CalDAV.
-- **Extras** — galería/editor de imágenes, temas, subidas, búsqueda web, preajustes, sesiones y 2FA.
+```bash
+ODYSSEUS_IMAGE=ghcr.io/odysseus-dev/odysseus:1.0.2-7c8070f docker compose up -d
+```
+
+Native installs, GPU notes, Windows/macOS instructions, HTTPS, and configuration live in the [setup guide](website/setup.md).
+
+## Features
+
+- **Chat + Agents** — local/API models, tools, MCP, files, shell, skills, and memory.
+- **Cookbook** — hardware-aware model recommendations, downloads, and serving.
+- **Deep Research** — multi-step web research with source reading and report generation.
+- **Compare** — blind side-by-side model testing and synthesis.
+- **Documents** — writing-first editor with AI edits, suggestions, Markdown, HTML, CSV, and syntax highlighting.
+- **Email** — IMAP/SMTP inbox with triage, tags, summaries, reminders, and reply drafts.
+- **Notes, Tasks + Calendar** — reminders, todos, scheduled agent tasks, and CalDAV sync.
+- **Extras** — gallery/image editor, themes, uploads, web search, presets, sessions, and 2FA.
 
 ## Demo
 
-Un tour interactivo completo está disponible en la página de inicio: [`docs/index.html`](docs/index.html).
+A full hover-to-play tour lives on the [Ulises landing page](https://odysseus-dev.github.io/odysseus/). Its source lives under [`website/`](website/).
 
-## Contribuir
+## Contributing
 
-La ayuda es bienvenida. Los mejores puntos de entrada son: probar instalaciones desde cero, errores de configuración de proveedores, mejoras en la interfaz móvil/editor, documentación y refactorizaciones pequeñas y enfocadas. Consulta [CONTRIBUTING.md](CONTRIBUTING.md) y [ROADMAP.md](ROADMAP.md).
+Help is welcome. The best entry points are fresh-install testing, provider setup bugs, mobile/editor polish, docs, and small focused refactors. See [CONTRIBUTING.md](CONTRIBUTING.md) and [ROADMAP.md](ROADMAP.md).
 
-## Seguridad
+## Security
 
-Ulises es un espacio de trabajo auto-alojado con potentes herramientas locales. Mantén la autenticación activada, no incluyas datos privados en Git y no expongas puertos de modelos/servicios directamente al público. Los detalles de despliegue están en la [guía de instalación](docs/setup.md#security-notes).
+Ulises is a self-hosted workspace with powerful local tools. Keep auth enabled, keep private data out of Git, and do not expose raw model/service ports publicly.
 
-## Historial de Estrellas
+- Keep `AUTH_ENABLED=true` for any network-accessible deployment.
+- Keep `LOCALHOST_BYPASS=false` outside local development.
 
-<a href="https://www.star-history.com/?repos=ChicoCifrado%2Fulises&type=date&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=ChicoCifrado/ulises&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=ChicoCifrado/ulises&type=date&legend=top-left" />
-   <img alt="Gráfico de historial de estrellas" src="https://api.star-history.com/chart?repos=ChicoCifrado/ulises&type=date&legend=top-left" />
- </picture>
-</a>
+Deployment details are in the [setup guide](website/setup.md#security-notes).
 
-## Licencia
+## Community & Growth
 
-AGPL-3.0-or-later — consulta [LICENSE](LICENSE) y [ACKNOWLEDGMENTS.md](ACKNOWLEDGMENTS.md).
+<p align="center">
+  <a href="https://trendshift.io/repositories/43167">
+      <a href="https://trendshift.io/repositories/43167?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-43167" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/43167/monthly" alt="odysseus-dev%2Fodysseus | Trendshift" width="230"/></a>
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://star-history.dera.page/#odysseus-dev/odysseus&type=date&legend=top-left">
+    <picture>
+      <source
+        media="(prefers-color-scheme: dark)"
+        srcset="https://star-history.dera.page/svg?repos=odysseus-dev/odysseus&type=date&theme=dark&legend=top-left"
+      />
+      <source
+        media="(prefers-color-scheme: light)"
+        srcset="https://star-history.dera.page/svg?repos=odysseus-dev/odysseus&type=date&legend=top-left"
+      />
+      <img
+        src="https://star-history.dera.page/svg?repos=odysseus-dev/odysseus&type=date&legend=top-left"
+        alt="Ulises GitHub star history"
+        width="100%"
+      />
+    </picture>
+  </a>
+</p>
+
+## License
+
+AGPL-3.0-or-later -- see [LICENSE](LICENSE) and [ACKNOWLEDGMENTS.md](ACKNOWLEDGMENTS.md).

@@ -3,19 +3,48 @@
 
 import Storage from './storage.js';
 
+function markComposerUserEdited() {
+  const msgInput = document.getElementById('message');
+  if (!msgInput || msgInput.dataset.startupPreserveBound === '1') return;
+  msgInput.dataset.startupPreserveBound = '1';
+  msgInput.addEventListener('input', () => {
+    window.__odysseusComposerUserEdited = !!msgInput.value;
+    syncComposerModelPicker(msgInput);
+  });
+  syncComposerModelPicker(msgInput);
+}
+
+// Keep the model picker while the composer is empty or short. Once the user
+// has enough text for the picker to compete with the input area, hide only
+// the picker so the prompt gets the full row width instead of being clipped.
+function syncComposerModelPicker(msgInput) {
+  const wrap = document.getElementById('model-picker-wrap');
+  if (!wrap || !msgInput) return;
+  const lineHeight = parseFloat(getComputedStyle(msgInput).lineHeight) || 21;
+  const typedEnough = msgInput.value.trim().length >= 64 || msgInput.scrollHeight > lineHeight * 2.2;
+  wrap.classList.toggle('picker-auto-hidden', typedEnough);
+}
+
 function clearFreshComposerRestore() {
   const msgInput = document.getElementById('message');
   if (!msgInput) return;
-  const hasSessionTarget = !!(window.location.hash || Storage.get('lastSessionId'));
+  markComposerUserEdited();
+  const hash = window.location.hash || '';
+  const isEntityHash = /^#(?:document|note|image|email|event|task|skill|research)-/.test(hash)
+    || /^#open=notes&note=/.test(hash);
+  const hasSessionTarget = !!(hash && !isEntityHash);
   if (hasSessionTarget) return;
+  if (window.__odysseusComposerUserEdited || document.activeElement === msgInput) return;
   if (msgInput.value) {
     msgInput.value = '';
     msgInput.dispatchEvent(new Event('input', { bubbles: true }));
   }
 }
 
+markComposerUserEdited();
 clearFreshComposerRestore();
 window.addEventListener('pageshow', clearFreshComposerRestore);
+document.addEventListener('DOMContentLoaded', markComposerUserEdited, { once: true });
 
 // SECURITY: defense-in-depth state wipe on user switch. If the authenticated
 // user is different from the one whose state is cached in this browser,
@@ -62,7 +91,7 @@ window.addEventListener('pageshow', clearFreshComposerRestore);
       // Research — sidebar tool + the in-input deep-research toggle.
       hideOn('#tool-research-btn, #research-toggle-btn', privs.can_use_research);
       // Memory & skills (rail/tool button only — UI/API entry).
-      hideOn('#tool-memory-btn', privs.can_manage_memory);
+      hideOn('#tool-memory-btn, #rail-memory, #tool-skills-btn, #rail-skills', privs.can_manage_memory);
       // Agent mode toggle — force chat mode by hiding the Agent toggle button.
       if (privs.can_use_agent === false) {
         const _agent = document.getElementById('mode-agent-btn');
@@ -356,29 +385,6 @@ window.addEventListener('pageshow', clearFreshComposerRestore);
     });
   }
 
-  // Fade welcome screen when mobile keyboard opens (input focus/blur)
-  if ('ontouchstart' in window) {
-    document.addEventListener('DOMContentLoaded', function() {
-      var _msgInput = document.getElementById('message');
-      if (!_msgInput) return;
-      _msgInput.addEventListener('focus', function() {
-        var welcome = document.getElementById('welcome-screen');
-        if (welcome && !welcome.classList.contains('hidden')) {
-          welcome.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
-          welcome.style.opacity = '0';
-          welcome.style.transform = 'translate(-50%, -50%) scale(0.92)';
-        }
-      });
-      _msgInput.addEventListener('blur', function() {
-        var welcome = document.getElementById('welcome-screen');
-        if (welcome && !welcome.classList.contains('hidden')) {
-          welcome.style.transition = 'opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
-          welcome.style.opacity = '';
-          welcome.style.transform = '';
-        }
-      });
-    });
-  }
 }
 
 /* ── Release welcome-screen entrance animations once the page is settled ──

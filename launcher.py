@@ -14,6 +14,13 @@ import threading
 import time
 import webbrowser
 
+# PyInstaller multiprocessing children re-enter this executable with a private
+# bootstrap argument. Consume it before splash/UI or application imports so a
+# spawn-based worker does not relaunch the full desktop application.
+if __name__ == "__main__":
+    import multiprocessing
+    multiprocessing.freeze_support()
+
 # Define a dummy NullWriter to suppress standard stream crashes (isatty etc.) in GUI mode
 class NullWriter:
     def write(self, text):
@@ -44,7 +51,7 @@ if getattr(sys, 'frozen', False):
             splash_root.configure(bg="#1a1c23")
 
             # Accented borders
-            splash_root.config(highlightbackground="#6663F1", highlightcolor="#6663F1", highlightthickness=1)
+            splash_root.config(highlightbackground="#e06c75", highlightcolor="#e06c75", highlightthickness=1)
 
             w, h = 360, 160
             ws = splash_root.winfo_screenwidth()
@@ -53,7 +60,7 @@ if getattr(sys, 'frozen', False):
             y = (hs - h) // 2
             splash_root.geometry(f"{w}x{h}+{x}+{y}")
 
-            tk.Label(splash_root, text="⛵ Ulises", font=("Segoe UI", 22, "bold"), bg="#1a1c23", fg="#6663F1").pack(pady=(22, 2))
+            tk.Label(splash_root, text="⛵ Ulises", font=("Segoe UI", 22, "bold"), bg="#1a1c23", fg="#e06c75").pack(pady=(22, 2))
             tk.Label(splash_root, text="Launching background services...", font=("Segoe UI", 10), bg="#1a1c23", fg="#d1d4e0").pack(pady=2)
             tk.Label(splash_root, text="Please wait, this will take a few seconds.", font=("Segoe UI", 8, "italic"), bg="#1a1c23", fg="#5c6370").pack(pady=(12, 0))
 
@@ -67,7 +74,7 @@ if getattr(sys, 'frozen', False):
 
 
 def create_tray_image():
-    # Generate a beautiful 64x64 icon matching Ulises brand red accent (#6663F1)
+    # Generate a beautiful 64x64 icon matching Ulises brand red accent (#e06c75)
     from PIL import Image, ImageDraw
     image = Image.new('RGBA', (64, 64), (0, 0, 0, 0))
     dc = ImageDraw.Draw(image)
@@ -130,7 +137,7 @@ if __name__ == "__main__":
     from app import app
 
     bind_host = os.getenv("APP_BIND", "127.0.0.1")
-    bind_port = int(os.getenv("APP_PORT", "7000"))
+    bind_port = int(os.getenv("APP_PORT", "7011"))
     url = f"http://{bind_host}:{bind_port}"
 
     if getattr(sys, 'frozen', False):

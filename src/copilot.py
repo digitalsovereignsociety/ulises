@@ -32,12 +32,12 @@ import httpx
 # we reuse the public VS Code client id (the de-facto standard third-party
 # clients use). Override via env if you register your own allow-listed app.
 COPILOT_CLIENT_ID = os.environ.get(
-    "ULISES_COPILOT_CLIENT_ID", "01ab8ac9400c4e429b23"
+    "ODYSSEUS_COPILOT_CLIENT_ID", "01ab8ac9400c4e429b23"
 )
 
 # Dated API version header required by the Copilot API (models + chat).
 COPILOT_API_VERSION = os.environ.get(
-    "ULISES_COPILOT_API_VERSION", "2026-06-01"
+    "ODYSSEUS_COPILOT_API_VERSION", "2026-06-01"
 )
 
 # Public Copilot API base. GitHub Enterprise uses ``copilot-api.<domain>``.
@@ -46,13 +46,13 @@ COPILOT_BASE = "https://api.githubcopilot.com"
 # Copilot wants an editor-like User-Agent + integration id. These identify the
 # client to GitHub; keep them stable.
 COPILOT_USER_AGENT = os.environ.get(
-    "ULISES_COPILOT_USER_AGENT", "Ulises/1.0"
+    "ODYSSEUS_COPILOT_USER_AGENT", "Ulises/1.0"
 )
 COPILOT_INTEGRATION_ID = os.environ.get(
-    "ULISES_COPILOT_INTEGRATION_ID", "vscode-chat"
+    "ODYSSEUS_COPILOT_INTEGRATION_ID", "vscode-chat"
 )
 COPILOT_EDITOR_VERSION = os.environ.get(
-    "ULISES_COPILOT_EDITOR_VERSION", "Ulises/1.0"
+    "ODYSSEUS_COPILOT_EDITOR_VERSION", "Ulises/1.0"
 )
 
 # OAuth scope requested during the device flow.
@@ -230,7 +230,10 @@ def request_flags(messages) -> tuple:
     """
     msgs = messages or []
     last = msgs[-1] if msgs else None
-    agent = bool(last) and last.get("role") != "user"
+    # A message element can be a non-dict (clients send `"messages": ["hi"]`);
+    # the vision loop below already guards each element with isinstance, so do
+    # the same here rather than call .get() on a bare string.
+    agent = isinstance(last, dict) and last.get("role") != "user"
     vision = False
     for m in msgs:
         content = m.get("content") if isinstance(m, dict) else None

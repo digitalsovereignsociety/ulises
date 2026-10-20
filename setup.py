@@ -8,7 +8,6 @@ initial admin user. Safe to re-run (skips what already exists).
 import importlib
 import os
 import platform
-import secrets
 import shutil
 import subprocess
 import sys
@@ -18,7 +17,7 @@ sys.path.insert(0, BASE_DIR)
 from src.constants import (
     DATA_DIR, AUTH_FILE, UPLOAD_DIR, PERSONAL_DIR, PERSONAL_UPLOADS_DIR,
     TTS_CACHE_DIR, GENERATED_IMAGES_DIR, DEEP_RESEARCH_DIR, CHROMA_DIR,
-    RAG_DIR, MEMORY_VECTORS_DIR, PASSWORD_MIN_LENGTH,
+    RAG_DIR, MEMORY_VECTORS_DIR, AGENT_WORKSPACE_DIR, PASSWORD_MIN_LENGTH,
 )
 from core.auth import RESERVED_USERNAMES
 
@@ -33,6 +32,7 @@ DIRS = [
     CHROMA_DIR,
     RAG_DIR,
     MEMORY_VECTORS_DIR,
+    AGENT_WORKSPACE_DIR,
     os.path.join(BASE_DIR, "logs"),
 ]
 
@@ -88,29 +88,6 @@ def _prompt_admin_credentials():
     return username, password
 
 
-def _admin_env(*names: str) -> str:
-    """First non-empty value among ``names``.
-
-    Commit d13276a ("rebase: Odysseus -> Ulises") renamed every ODYSSEUS_*
-    variable to ULISES_* without a fallback, so a pre-rename .env silently
-    stopped configuring anything. Legacy names are accepted here (same
-    candidate-list approach as src/upload_limits.py:read_byte_limit_env) so an
-    un-migrated config keeps working instead of quietly producing a random
-    admin password.
-    """
-    for name in names:
-        value = os.getenv(name)
-        if value is not None and value.strip():
-            return value.strip()
-    return ""
-
-
-def _admin_env_flag(name: str) -> bool:
-    """True when a boolean-ish env var is set to something other than false."""
-    value = os.getenv(name, "").strip().lower()
-    return value not in ("", "0", "false", "no", "off")
-
-
 def create_default_admin():
     """Create an initial admin user if none exists."""
     auth_path = AUTH_FILE
@@ -123,25 +100,24 @@ def create_default_admin():
         import json
 
         # Priority: env vars > interactive prompt > random password
-        username = _admin_env("ULISES_ADMIN_USER", "ODYSSEUS_ADMIN_USER").lower()
-        password = _admin_env("ULISES_ADMIN_PASSWORD", "ODYSSEUS_ADMIN_PASSWORD")
-        password_from_env = bool(password)
+        username = os.getenv("ODYSSEUS_ADMIN_USER", "").strip().lower()
+        password = os.getenv("ODYSSEUS_ADMIN_PASSWORD", "").strip()
 
         if username and password:
             # Both provided via env — validate before using
             if username in RESERVED_USERNAMES:
-                print(f"  [error] ULISES_ADMIN_USER '{username}' is a reserved username")
+                print(f"  [error] ODYSSEUS_ADMIN_USER '{username}' is a reserved username")
                 return "failed"
             if len(password) < PASSWORD_MIN_LENGTH:
-                print(f"  [error] ULISES_ADMIN_PASSWORD must be at least {PASSWORD_MIN_LENGTH} characters")
+                print(f"  [error] ODYSSEUS_ADMIN_PASSWORD must be at least {PASSWORD_MIN_LENGTH} characters")
                 return "failed"
-        elif sys.stdin.isatty() and not _admin_env_flag("ULISES_SKIP_ADMIN_PROMPT"):
+        elif sys.stdin.isatty() and not os.getenv("ODYSSEUS_SKIP_ADMIN_PROMPT"):
             # Interactive terminal — ask the user
             username, password = _prompt_admin_credentials()
         else:
             # Non-interactive (Docker, CI) — fall back to generated password
             username = username or "admin"
-            password = password or secrets.token_urlsafe(18)
+            password = password or __import__("secrets").token_urlsafe(18)
 
         username = username or "admin"
         hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
@@ -156,16 +132,13 @@ def create_default_admin():
         with open(auth_path, "w", encoding="utf-8") as f:
             json.dump(auth_data, f, indent=2)
 
-        # `password_from_env` is decided before the prompt fallback above, so a
-        # prompt- or random-derived password still prints the temporary warning
-        # while a legacy ODYSSEUS_ADMIN_PASSWORD does not.
-        if sys.stdin.isatty() and password_from_env:
+        if sys.stdin.isatty() and not os.getenv("ODYSSEUS_ADMIN_PASSWORD"):
             print(f"  [ok] Admin account created ({username})")
         else:
             print(f"  [ok] Initial admin user created ({username})")
-            if not password_from_env:
+            if not os.getenv("ODYSSEUS_ADMIN_PASSWORD"):
                 print(f"        Temporary password: {password}")
-                print(f"        ** Change it after first login. Set ULISES_ADMIN_PASSWORD to choose your own. **")
+                print(f"        ** Change it after first login. Set ODYSSEUS_ADMIN_PASSWORD to choose your own. **")
         return "created"
     except ImportError as e:
         if "incompatible architecture" in str(e).lower():
@@ -282,6 +255,19 @@ def main():
     # Silicon under an x86/Rosetta Python) before importing anything native.
     check_arch()
 
+    # Load .env so pre-seeded ODYSSEUS_ADMIN_USER / ODYSSEUS_ADMIN_PASSWORD (and
+    # other deployment vars) are honored on native installs, not just when they
+    # are exported in the shell. Mirrors app.py: encoding="utf-8-sig" tolerates a
+    # UTF-8 BOM in a Notepad-saved .env. load_dotenv does not override already
+    # exported OS env vars, so the existing precedence is preserved. python-dotenv
+    # is a hard dependency (requirements.txt) and is verified by check_deps below.
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(BASE_DIR, ".env"), encoding="utf-8-sig")
+
+    # Fail fast with a clear message if the CPU architecture is wrong (Apple
+    # Silicon under an x86/Rosetta Python) before importing anything native.
+    check_arch()
+
     print("1. Creating directories...")
     create_dirs()
 
@@ -311,7 +297,7 @@ def main():
     print("\n=== Setup complete ===")
     # start-macos.sh launches the server itself (on its own port) right after
     # this, so suppress the manual hint there to avoid a contradictory URL.
-    if not os.getenv("ULISES_SKIP_RUN_HINT"):
+    if not os.getenv("ODYSSEUS_SKIP_RUN_HINT"):
         print(f"\nStart the server with:")
         print(f"  python -m uvicorn app:app --host 127.0.0.1 --port 7000")
         print(f"\nThen open http://localhost:7000")

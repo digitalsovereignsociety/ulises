@@ -23,8 +23,9 @@ export const KEYS = {
   MCP_ACTIVE: 'ulises-mcp-active',
   SECTION_ORDER: 'sidebar-section-order',
   ADMIN_LAST_TAB: 'admin-last-tab',
-  DENSITY: 'ulises-density',
-  WORKSPACE: 'ulises-workspace'
+  DENSITY: 'odysseus-density',
+  UI_SCALE: 'odysseus-ui-scale',
+  WORKSPACE: 'odysseus-workspace'
 };
 
 /**

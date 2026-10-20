@@ -2,7 +2,7 @@
 // Lightweight popup that surfaces the existing /command registry as users
 // type. Reads COMMANDS from slashCommands.js — no command logic lives here.
 
-import { COMMANDS, LEGACY_ALIASES } from './slashCommands.js';
+import { COMMANDS, LEGACY_ALIASES } from './slashCommands.js?v=20260921chatgptusage1';
 
 const POPUP_ID = 'slash-autocomplete';
 const MAX_VISIBLE = 14;
@@ -133,7 +133,7 @@ function _ensurePopup(textarea) {
   el.id = POPUP_ID;
   el.className = 'slash-autocomplete-popup';
   el.setAttribute('role', 'listbox');
-  el.setAttribute('aria-label', t('slashAutocomplete.aria_label'));
+  el.setAttribute('aria-label', 'Slash commands');
   document.body.appendChild(el);
   return el;
 }
@@ -158,7 +158,7 @@ function _position(popup, textarea) {
 
 function _render(popup, items, selectedIdx, query) {
   if (!items.length) {
-    popup.innerHTML = `<div class="slash-ac-empty">${t('slashAutocomplete.no_match', { query: _esc(query) })}</div>`;
+    popup.innerHTML = `<div class="slash-ac-empty">No commands match <code>${_esc(query)}</code></div>`;
     return;
   }
   // Group by category for the headers
