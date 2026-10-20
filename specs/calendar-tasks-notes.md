@@ -17,7 +17,7 @@ This spec covers calendar, reminders, tasks, assistant runs, and notes in:
 - agent/tool call sites in `src/tool_index.py` and `src/tool_implementations.py`;
 - scoped Codex wrappers in `routes/codex_routes.py`;
 - database models `CalendarCal`, `CalendarEvent`, `ScheduledTask`, `TaskRun`, `Note`, and `CrewMember`;
-- direct DB CLIs `scripts/odysseus-calendar`, `scripts/odysseus-notes`, and `scripts/odysseus-tasks`;
+- direct DB CLIs `scripts/ulises-calendar`, `scripts/ulises-notes`, and `scripts/ulises-tasks`;
 - frontend modules `static/js/calendar.js`, `static/js/calendar/*`, `static/js/tasks.js`, the `static/js/notes.js` compatibility facade and maintained `frontend/src/features/notes/` graph deployed under `static/js/features/notes/`, and `static/js/assistant.js`;
 - tests covering calendar routes/utilities, CalDAV, recurrence, timezone handling, scheduler behavior, task webhooks, notes CLI/tool behavior, and task CLI behavior.
 
@@ -30,7 +30,7 @@ This spec covers calendar, reminders, tasks, assistant runs, and notes in:
 Runtime behavior:
 
 - local default calendars are created lazily per owner with stable UUID5 candidates. Default creation remains inside the caller's transaction so a failed event write cannot leave an orphaned calendar; SQLite serializes the absent-row check with `BEGIN IMMEDIATE`, other backends recover insert races inside a savepoint, and renamed-owner ID collisions advance through deterministic slots. List-only callers explicitly commit the lazy default.
-- route-level no-login calendar access normalizes empty owner values to `ODYSSEUS_FALLBACK_OWNER` or `owner@localhost`, so route-created calendar rows do not use the empty string as their storage owner;
+- route-level no-login calendar access normalizes empty owner values to `ULISES_FALLBACK_OWNER` or `owner@localhost`, so route-created calendar rows do not use the empty string as their storage owner;
 - CalDAV account config lives in per-user prefs as `caldav_accounts`, with the legacy `/api/calendar/config` route reading/upserting the first account;
 - recurring rules are expanded server-side, including compound recurrence IDs;
 - RRULE expansion is capped and marks truncated responses;
@@ -43,7 +43,7 @@ Runtime behavior:
 - ICS import is per-owner, capped, creates fresh local IDs in the target import calendar, and preserves zero-duration events as visible imported rows rather than dropping them as empty ranges;
 - writeback is best-effort and local SQLite remains source of truth when remote writes fail.
 
-Calendar credentials are encrypted at rest and are not returned to clients. CalDAV URL validation rejects unsafe schemes, credentials, fragments, localhost names, bad ports, unsafe IP literals, and hostnames resolving to disallowed addresses, with `ODYSSEUS_ALLOW_PRIVATE_CALDAV=1` as the explicit private-IP escape hatch. CalDAV sync/writeback clients disable redirects so credentials are not followed to another origin. The connection-test client keeps proxy/environment trust disabled but explicitly loads an operator `SSL_CERT_FILE` or `REQUESTS_CA_BUNDLE` when the file exists so private/self-signed deployments use the same CA trust intent as real sync.
+Calendar credentials are encrypted at rest and are not returned to clients. CalDAV URL validation rejects unsafe schemes, credentials, fragments, localhost names, bad ports, unsafe IP literals, and hostnames resolving to disallowed addresses, with `ULISES_ALLOW_PRIVATE_CALDAV=1` as the explicit private-IP escape hatch. CalDAV sync/writeback clients disable redirects so credentials are not followed to another origin. The connection-test client keeps proxy/environment trust disabled but explicitly loads an operator `SSL_CERT_FILE` or `REQUESTS_CA_BUNDLE` when the file exists so private/self-signed deployments use the same CA trust intent as real sync.
 
 ## Tasks And Assistant Runs
 
@@ -65,7 +65,7 @@ Task runtime behavior:
 - LLM and research tasks can carry a built-in `character_id` persona prompt that the scheduler prepends at execution time;
 - task-created chat sessions can be foldered under `Tasks`, and startup migration backfills task/research folders for legacy sessions;
 - event-bus triggers persist counters and `next_run` before scheduler handoff;
-- the in-process scheduler is gated by `ODYSSEUS_INPROCESS_TASKS`, and multiple enabled app processes can double-run work.
+- the in-process scheduler is gated by `ULISES_INPROCESS_TASKS`, and multiple enabled app processes can double-run work.
 - action tasks with `run_local`, `run_script`, `ssh_command`, or
   `cookbook_serve` are admin-only. `routes.task_routes` enforces this on create/update/manual run and hides those actions from `/meta/actions` for non-admin owners; webhook and scheduler execution pause the task and clear `next_run` if an admin-only action belongs to a non-admin owner.
 - background LLM task execution uses the background workload path, and the
@@ -184,7 +184,7 @@ The canonical Notes composition entry owns one `createNotesState()` instance, in
 
 Background startup is idempotent: after three seconds it loads active notes, then starts a 30-second reminder interval and immediate check. Close/minimize/force-close dispose panel resources but leave that page-owned interval running. Scans use the current shared note collection, skip archived/date-only/fired notes, fire within the previous minute, and advance or mark older reminders; archived-only/error-cleared lists can still defer active reminders. Server synthesis has a 1.5-second local-notification fallback, with toast/highlight persistence. This browser path remains separate from backend delivery receipts.
 
-Drafts persist synchronously on input/change and serialize existing-note network autosaves after 500 ms; successful saves clear only the matching draft, while failure/new/drawing drafts remain recoverable. Canvas bitmaps are not draft JSON. Explicit drawing save awaits PNG upload before optimistic submission. Selection dispatches `odysseus:notes-context-selected` synchronously and exits only when the consumer sets `accepted`; chat retains context/session authority. Closing releases owned portals/listeners/gestures/observers, and late fetch/masonry work checks panel connectivity/open state. It does not add universal async generation guards: fetch remains last-completion-wins, optimistic creation replaces the first remaining temporary note, and bulk actions can swallow individual failures before refetch/reporting requested counts.
+Drafts persist synchronously on input/change and serialize existing-note network autosaves after 500 ms; successful saves clear only the matching draft, while failure/new/drawing drafts remain recoverable. Canvas bitmaps are not draft JSON. Explicit drawing save awaits PNG upload before optimistic submission. Selection dispatches `ulises:notes-context-selected` synchronously and exits only when the consumer sets `accepted`; chat retains context/session authority. Closing releases owned portals/listeners/gestures/observers, and late fetch/masonry work checks panel connectivity/open state. It does not add universal async generation guards: fetch remains last-completion-wins, optimistic creation replaces the first remaining temporary note, and bulk actions can swallow individual failures before refetch/reporting requested counts.
 
 ## Current Gaps
 
@@ -195,6 +195,6 @@ Drafts persist synchronously on input/change and serialize existing-note network
 - Reminder delivery needs tests across frontend `/fire-reminder`, backend `dispatch_reminder()`, scheduler note pings, channel degradation, and dedupe.
 - Codex todo/calendar scope and owner mapping needs dedicated regression coverage.
 - Direct DB CLIs need either documented route-bypassing support status or shared helpers to avoid owner/timezone/writeback drift.
-- `scripts/odysseus-webhook` builds the live `/api/tasks/{task_id}/webhook/{token}` path with percent-encoded path segments; its direct DB token rotation/revocation behavior remains a local compatibility surface.
+- `scripts/ulises-webhook` builds the live `/api/tasks/{task_id}/webhook/{token}` path with percent-encoded path segments; its direct DB token rotation/revocation behavior remains a local compatibility surface.
 - Assistant default documentation/code comments still mention check-ins that are no longer auto-seeded.
 - App backup import/export does not cover the calendar/task/note rows described by this spec.

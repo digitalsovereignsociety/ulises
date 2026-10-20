@@ -12,7 +12,7 @@ import sessionModule from './sessions.js';
 import fileHandlerModule from './fileHandler.js?v=20260909mobileattachmentedit1';
 
 const API_BASE = window.location.origin;
-const ACTIVE_EDITOR_SESSION_KEY = 'odysseus-gallery-active-editor-v1';
+const ACTIVE_EDITOR_SESSION_KEY = 'ulises-gallery-active-editor-v1';
 let _open = false;
 let _galleryResizeHandler = null;
 
@@ -2862,7 +2862,7 @@ export function openGallery() {
   const _bulkActionsBtn = document.getElementById('gallery-bulk-actions');
   function _showGalleryBulkMenu(anchor) {
     document.querySelectorAll('.gallery-bulk-menu').forEach(dismissOrRemove);
-    // Standard Odysseus dropdown (.dropdown + dropdown-item-compact) so it
+    // Standard Ulises dropdown (.dropdown + dropdown-item-compact) so it
     // matches every other menu in the app. Positioned fixed at the button.
     const dropdown = document.createElement('div');
     dropdown.className = 'dropdown gallery-bulk-menu';

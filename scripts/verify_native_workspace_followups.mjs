@@ -9,7 +9,7 @@ const root = path.resolve(new URL('..', import.meta.url).pathname);
 const base = process.env.BASE_URL || 'http://127.0.0.1:7011';
 const endpointId = process.env.ENDPOINT_ID || '1d1022ef';
 const endpointUrl = process.env.ENDPOINT_URL || (() => { throw new Error("ENDPOINT_URL is required"); })();
-const model = process.env.MODEL || 'odysseus-qwen3.5-tools-pre-heretic';
+const model = process.env.MODEL || 'ulises-qwen3.5-tools-pre-heretic';
 const owner = 'sft_alex_creator';
 const reportPath = path.resolve(process.env.REPORT_PATH || path.join(root, `reports/native-workspace-followups-${new Date().toISOString().replace(/[:.]/g, '-')}.json`));
 if (!reportPath.startsWith(path.join(root, 'reports') + path.sep) || fs.existsSync(reportPath)) throw Error('Report path must be new and under reports/');
@@ -122,7 +122,7 @@ let cases = [
 ].filter(spec => !selected.size || selected.has(spec.name));
 if (!cases.length) throw Error('No matching cases selected');
 
-const auth = JSON.parse(fs.readFileSync(process.env.ODYSSEUS_AUTH_SESSION_FILE || (() => { throw new Error("ODYSSEUS_AUTH_SESSION_FILE is required"); })(), 'utf8'));
+const auth = JSON.parse(fs.readFileSync(process.env.ULISES_AUTH_SESSION_FILE || (() => { throw new Error("ULISES_AUTH_SESSION_FILE is required"); })(), 'utf8'));
 const token = Object.entries(auth).find(([, value]) => value?.username === owner)?.[0];
 if (!token) throw Error(`No active ${owner} session`);
 const report = {
@@ -156,9 +156,9 @@ let browser, context;
 try {
   browser = await chromium.launch({ headless: true, args: ['--no-proxy-server'] });
   context = await browser.newContext({ serviceWorkers: 'block', extraHTTPHeaders: { 'Accept-Encoding': 'identity' } });
-  await context.addCookies([{ name: 'odysseus_session', value: token, url: base }]);
+  await context.addCookies([{ name: 'ulises_session', value: token, url: base }]);
   for (const spec of cases) {
-    const workspace = fs.mkdtempSync(path.join(os.tmpdir(), `odysseus-${spec.name}-`));
+    const workspace = fs.mkdtempSync(path.join(os.tmpdir(), `ulises-${spec.name}-`));
     if (spec.fixture) fs.writeFileSync(path.join(workspace, spec.fixture[0]), spec.fixture[1]);
     const result = { name: spec.name, expected_tools: spec.tools, turns: [], cleanup: { session: false, workspace: false }, status: 'running' };
     report.cases.push(result); save();
@@ -171,7 +171,7 @@ try {
       if (!created.ok()) throw Error(`Session create HTTP ${created.status()}`);
       session = (await created.json()).id;
       const runtime = JSON.stringify({
-        surface: 'odysseus-native', terminal_agent: true, unattended_mode: true,
+        surface: 'ulises-native', terminal_agent: true, unattended_mode: true,
         input_files: spec.fixture ? [`/workspace/${spec.fixture[0]}`] : [],
       });
       for (let index = 0; index < spec.prompts.length; index++) {

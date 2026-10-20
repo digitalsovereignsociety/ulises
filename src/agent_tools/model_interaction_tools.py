@@ -135,7 +135,7 @@ async def list_models(content: str, session_id: Optional[str] = None, owner: Opt
 
     # ``list_models`` historically treated every filter as a literal model-ID
     # substring. For recommendation terms that produced an empty catalog even
-    # though Odysseus already has a hardware detector and fit ranker. Preserve
+    # though Ulises already has a hardware detector and fit ranker. Preserve
     # the catalog behavior for real model/provider filters, but give these
     # semantic filters their expected read-only meaning.
     if keyword in {

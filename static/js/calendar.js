@@ -417,8 +417,8 @@ function _adjustDayDrawerForSelection(body, dateStr) {
     body.classList.add('cal-calendar-full');
     body.style.removeProperty('--cal-detail-h');
     try {
-      localStorage.removeItem('odysseus.cal.detailH');
-      localStorage.setItem('odysseus.cal.splitSnap', 'calendar');
+      localStorage.removeItem('ulises.cal.detailH');
+      localStorage.setItem('ulises.cal.splitSnap', 'calendar');
     } catch {}
     return !wasCalendarFull || wasEventsFull || hadExplicitHeight;
   }
@@ -434,8 +434,8 @@ function _adjustDayDrawerForSelection(body, dateStr) {
   body.classList.remove('cal-calendar-full');
   body.style.setProperty('--cal-detail-h', `${targetHeight}px`);
   try {
-    localStorage.removeItem('odysseus.cal.splitSnap');
-    localStorage.setItem('odysseus.cal.detailH', String(targetHeight));
+    localStorage.removeItem('ulises.cal.splitSnap');
+    localStorage.setItem('ulises.cal.detailH', String(targetHeight));
   } catch {}
   return true;
 }
@@ -726,7 +726,7 @@ function _restoreSidebar() {
 
 // ── Badge ──
 
-const BADGE_SEEN_KEY = 'odysseus-calendar-badge-seen';
+const BADGE_SEEN_KEY = 'ulises-calendar-badge-seen';
 
 function _todayStr() {
   const d = new Date();
@@ -2445,7 +2445,7 @@ function _wireAll(body) {
     if (calBody && splitter) {
       const eventsFullClass = 'cal-events-full';
       const calendarFullClass = 'cal-calendar-full';
-      const savedSnap = localStorage.getItem('odysseus.cal.splitSnap');
+      const savedSnap = localStorage.getItem('ulises.cal.splitSnap');
       if (!calBody.classList.contains(eventsFullClass) && !calBody.classList.contains(calendarFullClass)) {
         if (savedSnap === 'events') calBody.classList.add(eventsFullClass);
         else if (savedSnap === 'calendar') calBody.classList.add(calendarFullClass);
@@ -2456,13 +2456,13 @@ function _wireAll(body) {
       // the day-detail pane up and down on every character.
       const alreadySet = calBody.style.getPropertyValue('--cal-detail-h');
       if (!alreadySet) {
-        const saved = parseInt(localStorage.getItem('odysseus.cal.detailH') || '0', 10);
+        const saved = parseInt(localStorage.getItem('ulises.cal.detailH') || '0', 10);
         if (saved && saved > 80) calBody.style.setProperty('--cal-detail-h', saved + 'px');
       }
       let startY = 0, startH = 240, dragging = false, moved = false;
       const clearSplitSnap = () => {
         calBody.classList.remove(eventsFullClass, calendarFullClass);
-        try { localStorage.removeItem('odysseus.cal.splitSnap'); } catch {}
+        try { localStorage.removeItem('ulises.cal.splitSnap'); } catch {}
       };
       const onMove = (ev) => {
         if (!dragging) return;
@@ -2493,7 +2493,7 @@ function _wireAll(body) {
         if (moved) {
           const cur = calBody.style.getPropertyValue('--cal-detail-h');
           const px = parseInt(cur, 10);
-          if (px) { try { localStorage.setItem('odysseus.cal.detailH', String(px)); } catch {} }
+          if (px) { try { localStorage.setItem('ulises.cal.detailH', String(px)); } catch {} }
         }
       };
       const onDown = (ev) => {
@@ -2531,8 +2531,8 @@ function _wireAll(body) {
         calBody.classList.toggle(calendarFullClass, target === 'calendar');
         calBody.style.removeProperty('--cal-detail-h');
         try {
-          localStorage.removeItem('odysseus.cal.detailH');
-          localStorage.setItem('odysseus.cal.splitSnap', target);
+          localStorage.removeItem('ulises.cal.detailH');
+          localStorage.setItem('ulises.cal.splitSnap', target);
         } catch {}
       };
       splitter.addEventListener('dblclick', () => {
@@ -2898,14 +2898,14 @@ function _wireAll(body) {
     const bodyHeight = calBody?.getBoundingClientRect().height || 0;
     const detailHeight = detail?.getBoundingClientRect().height || 0;
     const drawerWasPinnedOpen = calBody?.classList.contains('cal-events-full') ||
-      localStorage.getItem('odysseus.cal.splitSnap') === 'events' ||
+      localStorage.getItem('ulises.cal.splitSnap') === 'events' ||
       (bodyHeight > 0 && detailHeight >= bodyHeight - 40);
     if (drawerWasPinnedOpen && calBody) {
       calBody.classList.remove('cal-events-full', 'cal-calendar-full');
       calBody.style.removeProperty('--cal-detail-h');
       try {
-        localStorage.removeItem('odysseus.cal.detailH');
-        localStorage.removeItem('odysseus.cal.splitSnap');
+        localStorage.removeItem('ulises.cal.detailH');
+        localStorage.removeItem('ulises.cal.splitSnap');
       } catch {}
     }
     _view = b.dataset.view;
@@ -4451,7 +4451,7 @@ function isCalendarOpen() {
 }
 
 // ── Persistent cache (localStorage) ──
-const LS_KEY = 'odysseus-calendar-cache';
+const LS_KEY = 'ulises-calendar-cache';
 const LS_TTL = 10 * 60 * 1000; // 10 min
 
 function _saveCache() {

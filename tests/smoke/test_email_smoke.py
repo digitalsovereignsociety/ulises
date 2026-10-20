@@ -2,7 +2,7 @@
 
 Email is the one area with no way to reach a real account deterministically,
 and the repo already solved that: `routes/email_routes.py` carries a
-fixture path gated on `ODYSSEUS_EMAIL_FIXTURE=1` plus a fixture file in
+fixture path gated on `ULISES_EMAIL_FIXTURE=1` plus a fixture file in
 the data dir. This uses that mechanism rather than inventing a second
 one - which means it also only covers what the fixture covers. Real IMAP
 sync and SMTP send stay out, and say so in the table's gap list.
@@ -25,7 +25,7 @@ UNREAD_STATE_PATH = "/api/email/unread-state"
 # routes/email_routes.py's `_fixture_email_file`.
 FIXTURE_FILENAME = "fixture_email_messages.json"
 
-SUBJECT = "Odysseus smoke inbox message"
+SUBJECT = "Ulises smoke inbox message"
 BODY = "Body of the smoke fixture message."
 SENDER = "Smoke Sender <smoke@example.invalid>"
 
@@ -66,8 +66,8 @@ def _fixture_rows(client):
     if not rows:
         pytest.skip(
             "the instance is not serving the email fixture, so there is no "
-            "deterministic inbox to read. Boot it with ODYSSEUS_EMAIL_FIXTURE=1 "
-            "(scripts/odysseus-smoke does)."
+            "deterministic inbox to read. Boot it with ULISES_EMAIL_FIXTURE=1 "
+            "(scripts/ulises-smoke does)."
         )
     return rows
 

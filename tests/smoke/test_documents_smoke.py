@@ -4,7 +4,7 @@ from __future__ import annotations
 DOCUMENT_PATH = "/api/document"
 LIBRARY_PATH = "/api/documents/library"
 
-TITLE = "Odysseus smoke document"
+TITLE = "Ulises smoke document"
 FIRST = "First revision, written by the release smoke suite."
 SECOND = "Second revision, written by the release smoke suite."
 

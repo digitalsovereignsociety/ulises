@@ -234,7 +234,7 @@ def test_tui_bridge_write_file_rejects_text_for_binary_artifact(monkeypatch, tmp
                 "write_file",
                 '{"path":"/tmp_workspace/results/screenshot.png","content":"The screenshot is complete."}',
                 "run-1",
-                {"surface": "odysseus-tui"},
+                {"surface": "ulises-tui"},
             )
 
         finally:

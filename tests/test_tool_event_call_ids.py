@@ -23,7 +23,7 @@ def test_generates_stable_id_for_harness_follow_through_call():
     second = _resolved_tool_call_id(None, **kwargs)
 
     assert first == second
-    assert first.startswith("odysseus-auto-")
+    assert first.startswith("ulises-auto-")
 
 
 def test_generated_ids_distinguish_tool_positions():

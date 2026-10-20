@@ -2,7 +2,7 @@
 
 ## 1. Executive Summary
 
-This report documents the final corrective implementation pass for **Odysseus Wave 3 (Runtime Resource Authority)** on branch `feature/runtime-resource-authority`.
+This report documents the final corrective implementation pass for **Ulises Wave 3 (Runtime Resource Authority)** on branch `feature/runtime-resource-authority`.
 
 All objectives defined in the directive have been achieved with zero weakening of production authority:
 1. **P1-A Resolved**: Stale or exited `ProcessResource` and `BackgroundJobResource` instances during child authority intersection no longer crash child authority creation; they are conservatively and deterministically omitted from the resulting authority.
@@ -124,8 +124,8 @@ All 28 tests were classified and migrated without weakening production authority
 | `test_corrected_ids_execute_after_repeated_ambiguous_title_failures[2]` | `test_failed_call_correction.py` | B | Asserted fail-closed terminal denial on ambiguous selector |
 | `test_corrected_ids_execute_after_repeated_ambiguous_title_failures[3]` | `test_failed_call_correction.py` | B | Asserted fail-closed terminal denial on ambiguous selector |
 | `test_failed_shell_retains_exit_status_and_both_streams_for_followup` | `test_preview_execution_evidence.py` | A | Wrapped in `launch_authority` |
-| `test_host_shell_uses_tui_bridge_context` | `test_review_regressions.py` | A | Added `surface: "odysseus-tui"` to bridge context |
-| `test_host_shell_forwards_detach_and_job_polling` | `test_review_regressions.py` | A | Added `surface: "odysseus-tui"` to bridge context |
+| `test_host_shell_uses_tui_bridge_context` | `test_review_regressions.py` | A | Added `surface: "ulises-tui"` to bridge context |
+| `test_host_shell_forwards_detach_and_job_polling` | `test_review_regressions.py` | A | Added `surface: "ulises-tui"` to bridge context |
 | `test_host_shell_rejects_non_local_bridge_url_before_http` | `test_review_regressions.py` | B | Asserted fail-closed unresolved backend identity |
 | `test_public_agent_policy_blocks_sensitive_tools` | `test_review_regressions.py` | A | Provided `_FakeMcpManager` and workspace file |
 | `test_disabled_qualified_email_tool_blocks_bare_alias` | `test_review_regressions.py` | A | Direct `execute_tool_block` with explicit authority |

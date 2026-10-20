@@ -1,4 +1,4 @@
-"""Native local-media inspection tools for the Odysseus agent loop."""
+"""Native local-media inspection tools for the Ulises agent loop."""
 
 from __future__ import annotations
 
@@ -440,13 +440,13 @@ class ExtractTextTool:
             # same URI shape as uploads.  This alias grants no extra access:
             # convert it back to /workspace and let the normal confinement
             # resolver enforce the active root.
-            if raw_path.startswith('odysseus://workspace/'):
-                raw_path = '/workspace/' + raw_path[len('odysseus://workspace/'):]
-            if raw_path.startswith('odysseus://'):
+            if raw_path.startswith('ulises://workspace/'):
+                raw_path = '/workspace/' + raw_path[len('ulises://workspace/'):]
+            if raw_path.startswith('ulises://'):
                 # Upload access is independent of a filesystem workspace and
                 # must never inherit an administrator's cross-owner override.
                 from src.tool_utils import get_upload_handler
-                ref = re.fullmatch(r'odysseus://attachment/([A-Za-z0-9_-]+(?:\.[A-Za-z0-9]+)?)', raw_path)
+                ref = re.fullmatch(r'ulises://attachment/([A-Za-z0-9_-]+(?:\.[A-Za-z0-9]+)?)', raw_path)
                 owner = (_ctx or {}).get('owner')
                 from src.agent_runtime.owned_resources import bound_attachment_path
                 bound_path = bound_attachment_path(owner, raw_path)
@@ -488,7 +488,7 @@ class ExtractTextTool:
                     # documents completely. Larger PDFs can be inspected in
                     # page ranges with inspect_media.
                     rendered_count = min(page_count, 12)
-                    with tempfile.TemporaryDirectory(prefix="odysseus-pdf-ocr-") as temp_dir:
+                    with tempfile.TemporaryDirectory(prefix="ulises-pdf-ocr-") as temp_dir:
                         for index in range(rendered_count):
                             rendered = document[index].render(scale=2.0).to_pil().convert("RGB")
                             image_path = Path(temp_dir) / f"page-{index + 1}.png"
@@ -2122,7 +2122,7 @@ class InspectMediaTool:
 
 
 class TranscribeMediaTool:
-    """Transcribe local audio/video with Odysseus's local Whisper backend."""
+    """Transcribe local audio/video with Ulises's local Whisper backend."""
 
     async def execute(self, content: str, _ctx: dict) -> dict:
         try:
@@ -2186,7 +2186,7 @@ class TranscribeMediaTool:
             return {"error": "transcribe_media end must be after start", "exit_code": 1}
 
         explicit_model = str(args.get("model") or "").strip()
-        configured_model = str(os.environ.get("ODYSSEUS_STT_MODEL") or "").strip()
+        configured_model = str(os.environ.get("ULISES_STT_MODEL") or "").strip()
         if explicit_model:
             model_name = explicit_model
         elif configured_model:
@@ -2207,7 +2207,7 @@ class TranscribeMediaTool:
             stem = re.sub(r"[^A-Za-z0-9._-]+", "-", path.stem).strip("-.") or "media"
             identity = f"{path.resolve()}\0{start:.3f}\0{end}\0{model_name}"
             digest = hashlib.sha256(identity.encode("utf-8")).hexdigest()[:10]
-            relative = Path(".odysseus") / "transcripts" / f"{stem}-{digest}.txt"
+            relative = Path(".ulises") / "transcripts" / f"{stem}-{digest}.txt"
             output_path = workspace / relative
             output_raw = "/workspace/" + relative.as_posix()
             output_format = "txt"

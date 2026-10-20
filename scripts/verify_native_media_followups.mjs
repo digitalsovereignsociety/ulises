@@ -8,7 +8,7 @@ const root = path.resolve(new URL('..', import.meta.url).pathname);
 const base = process.env.BASE_URL || 'http://127.0.0.1:7011';
 const endpointId = process.env.ENDPOINT_ID || '1d1022ef';
 const endpointUrl = process.env.ENDPOINT_URL || (() => { throw new Error("ENDPOINT_URL is required"); })();
-const model = process.env.MODEL || 'odysseus-qwen3.5-tools-pre-heretic';
+const model = process.env.MODEL || 'ulises-qwen3.5-tools-pre-heretic';
 const owner = 'sft_alex_creator';
 const expectCleanRoute = process.env.EXPECT_CLEAN_ROUTE !== 'false';
 const expectNativeContractMetadata = process.env.EXPECT_NATIVE_CONTRACT_METADATA !== 'false';
@@ -28,7 +28,7 @@ if (!reportPath.startsWith(path.join(root, 'reports') + path.sep) || fs.existsSy
 let cases = [
   {
     name: 'inspect-video-refine', tool: 'inspect_media',
-    workspace: (process.env.ODYSSEUS_WORKSPACE || '/workspace'),
+    workspace: (process.env.ULISES_WORKSPACE || '/workspace'),
     input: '/workspace/fixtures/commuter_drive.mp4',
     prompts: [
       'Inspect /workspace/fixtures/commuter_drive.mp4 with overview sampling and report the visible road scene. Read only.',
@@ -39,7 +39,7 @@ let cases = [
   },
   {
     name: 'transcribe-audio-repeat', tool: 'transcribe_media',
-    workspace: (process.env.ODYSSEUS_WORKSPACE || '/workspace'),
+    workspace: (process.env.ULISES_WORKSPACE || '/workspace'),
     input: '/workspace/jo.wav',
     prompts: [
       'Transcribe the speech in /workspace/jo.wav. Read only and do not create an output file.',
@@ -49,7 +49,7 @@ let cases = [
   },
   {
     name: 'ocr-image-refine', tool: 'extract_text',
-    workspace: (process.env.ODYSSEUS_WORKSPACE || '/workspace'),
+    workspace: (process.env.ULISES_WORKSPACE || '/workspace'),
     input: '/workspace/tests/fixtures/vl/quarterly-dashboard.png',
     prompts: [
       'Use local OCR to extract the exact visible text from /workspace/tests/fixtures/vl/quarterly-dashboard.png. Include text positions. Read only.',
@@ -65,7 +65,7 @@ for (const spec of cases) {
   const hostInput = path.join(spec.workspace, spec.input.replace(/^\/workspace\//, ''));
   if (!fs.existsSync(hostInput)) throw Error(`Missing fixture for ${spec.name}`);
 }
-const auth = JSON.parse(fs.readFileSync(process.env.ODYSSEUS_AUTH_SESSION_FILE || (() => { throw new Error("ODYSSEUS_AUTH_SESSION_FILE is required"); })(), 'utf8'));
+const auth = JSON.parse(fs.readFileSync(process.env.ULISES_AUTH_SESSION_FILE || (() => { throw new Error("ULISES_AUTH_SESSION_FILE is required"); })(), 'utf8'));
 const token = Object.entries(auth).find(([, value]) => value?.username === owner)?.[0];
 if (!token) throw Error(`No active ${owner} session`);
 const report = { model, status: 'running', cases: [], privacy: 'Only local fixture basenames, tool names, argument keys, and boolean checks retained; no media, OCR text, transcripts, model answer, or tool output.' };
@@ -81,7 +81,7 @@ let browser, context;
 try {
   browser = await chromium.launch({ headless: true, args: ['--no-proxy-server'] });
   context = await browser.newContext({ serviceWorkers: 'block', extraHTTPHeaders: { 'Accept-Encoding': 'identity' } });
-  await context.addCookies([{ name: 'odysseus_session', value: token, url: base }]);
+  await context.addCookies([{ name: 'ulises_session', value: token, url: base }]);
   for (const spec of cases) {
     const result = { name: spec.name, expected_tool: spec.tool, fixture: path.basename(spec.input), turns: [], cleanup: false, status: 'running' };
     report.cases.push(result); save();
@@ -94,7 +94,7 @@ try {
       if (!created.ok()) throw Error(`Session create HTTP ${created.status()}`);
       session = (await created.json()).id;
       const runtime = JSON.stringify({
-        surface: 'odysseus-native', terminal_agent: true, unattended_mode: true,
+        surface: 'ulises-native', terminal_agent: true, unattended_mode: true,
         input_files: [spec.input],
       });
       for (let index = 0; index < spec.prompts.length; index++) {

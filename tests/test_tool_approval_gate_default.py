@@ -27,9 +27,9 @@ print(json.dumps({
 
 
 def _probe(gate_value):
-    env = {key: value for key, value in os.environ.items() if key != "ODYSSEUS_TOOL_APPROVAL_GATE"}
+    env = {key: value for key, value in os.environ.items() if key != "ULISES_TOOL_APPROVAL_GATE"}
     if gate_value is not None:
-        env["ODYSSEUS_TOOL_APPROVAL_GATE"] = gate_value
+        env["ULISES_TOOL_APPROVAL_GATE"] = gate_value
     out = subprocess.run(
         [sys.executable, "-c", _PROBE], cwd=REPO, env=env,
         capture_output=True, text=True, timeout=60, check=True,

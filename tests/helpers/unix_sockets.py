@@ -33,7 +33,7 @@ _SHORT_ROOT = os.path.realpath(tempfile.gettempdir() if os.name == "nt" else "/t
 @contextmanager
 def bound_unix_socket(name="docker.sock"):
     """Yield the path of a listening AF_UNIX socket, cleaned up on exit."""
-    directory = os.path.realpath(tempfile.mkdtemp(prefix="odysseus-sock-", dir=_SHORT_ROOT))
+    directory = os.path.realpath(tempfile.mkdtemp(prefix="ulises-sock-", dir=_SHORT_ROOT))
     path = os.path.join(directory, name)
     if len(path) > 103:  # pragma: no cover - guards the guard
         raise AssertionError(f"socket path is {len(path)} bytes, over the limit: {path}")

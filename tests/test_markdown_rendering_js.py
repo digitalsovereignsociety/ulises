@@ -121,19 +121,19 @@ def _run_svg_case(markdown: str):
         const browser = await chromium.launch({ headless: true });
         try {
           const page = await browser.newPage();
-          await page.goto(process.env.ODYSSEUS_TEST_STATIC_ORIGIN + '/static/js/documentStats.js');
+          await page.goto(process.env.ULISES_TEST_STATIC_ORIGIN + '/static/js/documentStats.js');
           await page.setContent('<div id="toast"></div><div id="sidebar"></div>');
           const html = await page.evaluate(async input => {
             const mod = await import('/static/js/markdown.js');
             return mod.mdToHtml(input);
-          }, JSON.parse(process.env.ODYSSEUS_SVG_TEST_INPUT));
+          }, JSON.parse(process.env.ULISES_SVG_TEST_INPUT));
           console.log(JSON.stringify({ html }));
         } finally { await browser.close(); }
       })().catch(error => { console.error(error); process.exit(1); });
     '''
     result = subprocess.run(
         ["node", "-e", script], cwd=_REPO, capture_output=True, text=True,
-        env={**os.environ, "ODYSSEUS_SVG_TEST_INPUT": json.dumps(markdown)}, timeout=30,
+        env={**os.environ, "ULISES_SVG_TEST_INPUT": json.dumps(markdown)}, timeout=30,
     )
     assert result.returncode == 0, result.stderr
     return json.loads(result.stdout)["html"]

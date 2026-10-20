@@ -60,8 +60,8 @@ def _run_checker(
     *,
     missing_labels=(),
     draft=False,
-    owner="odysseus-dev",
-    repo="odysseus",
+    owner="ulises-dev",
+    repo="ulises",
 ):
     harness = r"""
 const checkPrDescription = require(process.argv[1]);
@@ -191,7 +191,7 @@ def test_maintainer_preview_accepts_explicit_na_linked_issue():
         ["README.md"],
         _body(linked_issue="N/A — maintainer integration work"),
         owner="pewdiepie-archdaemon",
-        repo="odysseus-maintainer-preview",
+        repo="ulises-maintainer-preview",
     )
 
     assert _added_labels(calls) == {"ready for review"}
@@ -204,7 +204,7 @@ def test_maintainer_preview_rejects_ambiguous_non_issue_text():
         ["README.md"],
         _body(linked_issue="No tracking needed"),
         owner="pewdiepie-archdaemon",
-        repo="odysseus-maintainer-preview",
+        repo="ulises-maintainer-preview",
     )
 
     assert any(call["method"] == "setFailed" for call in calls)

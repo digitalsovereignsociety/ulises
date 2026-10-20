@@ -28,7 +28,7 @@ changes the contract everywhere.
 | Reminders | `_checkReminders`, `_startReminderLoop`, `_initReminders`, notification permission/display and due/fired badge calculations | Application reminder workflow plus injected clock/storage/notification/API ports |
 | Draft autosave | `_draftKey`, `_collectFormDraft`, `_wireDraftAutosave`, `_applyDraftToNote`, `_commitOpenInPlaceEditor` | Draft workflow with editor view/persistence ports and serialized saves |
 | UI | `openPanel`, `closePanel`, `_renderNotes`, forms/cards/checklists, masonry, color/photo/drawing, mobile swipe/reorder | Scoped UI modules with explicit mount/dispose and application operations |
-| Agent context | `#notes-send-agent` handler, selected IDs, `odysseus:notes-context-selected` | Preserve event payload and synchronous acknowledgement; Chat owns attachment/session state |
+| Agent context | `#notes-send-agent` handler, selected IDs, `ulises:notes-context-selected` | Preserve event payload and synchronous acknowledgement; Chat owns attachment/session state |
 | Agent solve action | `_agentSolveNote`: default-chat lookup, session creation and chat stream | Separate existing workflow; do not conflate with selected-note attachment |
 | Compatibility coordinator | Default controller, named aliases, `window.notesModule`, delayed reminder startup | Stable legacy facade/composition bridge until consumers safely migrate |
 
@@ -55,20 +55,20 @@ extraction; do not stop background reminders merely because a panel closes.
 Listener cleanup concerns require characterization, not an unrelated fix hidden
 inside an extraction.
 
-Persistence includes `odysseus-notes-view`, label collapse and hint preferences,
+Persistence includes `ulises-notes-view`, label collapse and hint preferences,
 fired/glowed/pending/active reminder markers, dismissed timestamp, and
-`odysseus-note-draft-<id>` including `__new__`. Current direct APIs include Notes
+`ulises-note-draft-<id>` including `__new__`. Current direct APIs include Notes
 CRUD/reorder/fire-reminder and upload, plus default-chat/session/chat-stream for
 the existing solve action. Backend owner isolation and permission handling stay
 authoritative and are outside this frontend decomposition's implementation scope.
 
 ## PR #6495 contract that every relevant slice preserves
 
-Notes sends `odysseus:notes-context-selected` with `{ noteIds, accepted: false }`.
+Notes sends `ulises:notes-context-selected` with `{ noteIds, accepted: false }`.
 Chat's synchronous listener accepts only a valid active or pending chat, updates
 session/pending selection, sets `accepted`, and updates the context indicator.
 Notes clears select mode only after acceptance. Session lifecycle events
-`odysseus:session-changed` carry session/materialization information. Chat appends
+`ulises:session-changed` carry session/materialization information. Chat appends
 selected IDs as `selected_note_ids` when sending; server parsing validates IDs,
 filters by owner and treats the resulting prompt context as untrusted.
 

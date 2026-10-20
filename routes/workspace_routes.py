@@ -94,7 +94,7 @@ def setup_workspace_routes():
         if not owner_is_admin_or_single_user(owner):
             raise HTTPException(status_code=403, detail="Workspace default is admin-only")
 
-        configured = os.environ.get("ODYSSEUS_WORKSPACE_DEFAULT", "").strip()
+        configured = os.environ.get("ULISES_WORKSPACE_DEFAULT", "").strip()
         if not configured:
             return {"ok": False, "path": None}
 

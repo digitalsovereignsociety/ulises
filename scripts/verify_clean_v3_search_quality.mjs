@@ -11,14 +11,14 @@ const base = process.env.BASE_URL || 'http://127.0.0.1:7011';
 const owner = 'sft_alex_creator';
 const endpointId = process.env.ENDPOINT_ID || '1d1022ef';
 const endpointUrl = process.env.ENDPOINT_URL || (() => { throw new Error("ENDPOINT_URL is required"); })();
-const model = process.env.MODEL || 'odysseus-qwen3.5-tools-pre-heretic';
+const model = process.env.MODEL || 'ulises-qwen3.5-tools-pre-heretic';
 const varietyOnly = process.env.VARIETY_ONLY === '1';
 const temperatureOverride = process.env.TEMPERATURE === undefined ? null : Number(process.env.TEMPERATURE);
 if (temperatureOverride !== null && (!Number.isFinite(temperatureOverride) || temperatureOverride < 0 || temperatureOverride > 2)) throw Error('TEMPERATURE must be between 0 and 2');
 const run = new Date().toISOString().replace(/[:.]/g, '-');
 const reportPath = path.resolve(process.env.REPORT_PATH || path.join(root, `reports/clean-v3-search-quality-${run}.json`));
 if (!reportPath.startsWith(path.join(root, 'reports') + path.sep) || fs.existsSync(reportPath)) throw Error('Report path must be new and under reports/');
-const sessions = JSON.parse(fs.readFileSync(process.env.ODYSSEUS_AUTH_SESSION_FILE || (() => { throw new Error("ODYSSEUS_AUTH_SESSION_FILE is required"); })(), 'utf8'));
+const sessions = JSON.parse(fs.readFileSync(process.env.ULISES_AUTH_SESSION_FILE || (() => { throw new Error("ULISES_AUTH_SESSION_FILE is required"); })(), 'utf8'));
 const token = Object.entries(sessions).find(([, value]) => value?.username === owner)?.[0];
 if (!token) throw Error(`No active ${owner} session`);
 
@@ -59,7 +59,7 @@ async function createSession(context, name) {
 async function preparePage(context, id) {
   const page = await context.newPage();
   await page.goto(`${base}/#${id}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
-  await page.waitForFunction(session => window.__odysseusSessionReadyId === session, id);
+  await page.waitForFunction(session => window.__ulisesSessionReadyId === session, id);
   const agent = page.locator('#mode-agent-btn');
   if (await agent.getAttribute('aria-pressed') !== 'true') await agent.click();
   if (!await page.locator('#web-toggle').isChecked()) await page.locator('#web-toggle-btn').click();
@@ -118,7 +118,7 @@ let browser;
 try {
   browser = await chromium.launch({ headless: true, args: ['--no-proxy-server'] });
   const context = await browser.newContext({ serviceWorkers: 'block', extraHTTPHeaders: { 'Accept-Encoding': 'identity' } });
-  await context.addCookies([{ name: 'odysseus_session', value: token, url: base }]);
+  await context.addCookies([{ name: 'ulises_session', value: token, url: base }]);
 
   if (varietyOnly) {
     const cases = [

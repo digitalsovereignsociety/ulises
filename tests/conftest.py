@@ -166,11 +166,11 @@ def _serve_test_static():
 
     Binds an ephemeral port so several worktrees can run their own suite at the
     same time, and publishes the resulting origin through
-    ``ODYSSEUS_TEST_STATIC_ORIGIN``.  The browser tests shell out to node, which
+    ``ULISES_TEST_STATIC_ORIGIN``.  The browser tests shell out to node, which
     inherits the environment, so the snippets read the origin from
     ``process.env`` instead of hardcoding a port.
 
-    Set ``ODYSSEUS_TEST_STATIC_PORT`` to pin a specific port when something
+    Set ``ULISES_TEST_STATIC_PORT`` to pin a specific port when something
     outside pytest has to reach this server.
     """
     import os
@@ -198,21 +198,21 @@ def _serve_test_static():
     class _Server(socketserver.ThreadingTCPServer):
         allow_reuse_address = daemon_threads = True
 
-    requested = int(os.environ.get("ODYSSEUS_TEST_STATIC_PORT") or 0)
+    requested = int(os.environ.get("ULISES_TEST_STATIC_PORT") or 0)
     if not 0 <= requested <= 65535:
-        raise ValueError("ODYSSEUS_TEST_STATIC_PORT must be between 0 and 65535")
+        raise ValueError("ULISES_TEST_STATIC_PORT must be between 0 and 65535")
     try:
         server = _Server(("127.0.0.1", requested), _Handler)
     except OSError as exc:
         # Port 0 cannot collide, so this only fires for an explicit pin.
         raise RuntimeError(
-            f"ODYSSEUS_TEST_STATIC_PORT={requested} is not bindable; unset it to "
+            f"ULISES_TEST_STATIC_PORT={requested} is not bindable; unset it to "
             "let the browser tests pick an ephemeral port"
         ) from exc
 
     origin = f"http://127.0.0.1:{server.server_address[1]}"
-    previous_origin = os.environ.get("ODYSSEUS_TEST_STATIC_ORIGIN")
-    os.environ["ODYSSEUS_TEST_STATIC_ORIGIN"] = origin
+    previous_origin = os.environ.get("ULISES_TEST_STATIC_ORIGIN")
+    os.environ["ULISES_TEST_STATIC_ORIGIN"] = origin
 
     # One thread per connection: Chromium can hold a speculative connection
     # open without a request, which stalled serial service for ~30s.
@@ -222,9 +222,9 @@ def _serve_test_static():
         yield origin
     finally:
         if previous_origin is None:
-            os.environ.pop("ODYSSEUS_TEST_STATIC_ORIGIN", None)
+            os.environ.pop("ULISES_TEST_STATIC_ORIGIN", None)
         else:
-            os.environ["ODYSSEUS_TEST_STATIC_ORIGIN"] = previous_origin
+            os.environ["ULISES_TEST_STATIC_ORIGIN"] = previous_origin
         server.shutdown()
         server.server_close()
 

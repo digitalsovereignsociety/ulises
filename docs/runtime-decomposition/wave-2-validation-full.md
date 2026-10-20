@@ -1,6 +1,6 @@
 # Wave 2 final validation
 
-Worktree: `odysseus-runtime-request-authority`; branch:
+Worktree: `ulises-runtime-request-authority`; branch:
 `feature/runtime-request-authority`.
 Starting SHA: `d6c3c98c75e03f70c05ebe4058c6fa12e0395f62`.
 The final SHA is the local commit containing this report, returned in the final
@@ -33,15 +33,15 @@ project dependency declarations. No global dotenv-disable override was used.
 ## Commands
 
 ```sh
-ODYSSEUS_TEST_STATIC_PORT=0 .venv/bin/python -m pytest -q tests/test_request_authority.py
+ULISES_TEST_STATIC_PORT=0 .venv/bin/python -m pytest -q tests/test_request_authority.py
 
-ODYSSEUS_TEST_STATIC_PORT=0 .venv/bin/python -m pytest -q tests/test_request_authority.py tests/test_turn_contract*.py tests/test_tool_policy.py tests/test_tool_approval*.py tests/test_execution_capabilities.py tests/test_ajax*.py tests/test_task_*.py tests/test_bg_*.py
+ULISES_TEST_STATIC_PORT=0 .venv/bin/python -m pytest -q tests/test_request_authority.py tests/test_turn_contract*.py tests/test_tool_policy.py tests/test_tool_approval*.py tests/test_execution_capabilities.py tests/test_ajax*.py tests/test_task_*.py tests/test_bg_*.py
 
-ODYSSEUS_TEST_PYTHON="$PWD/.venv/bin/python" bash scripts/validate_runtime_wave1.sh
+ULISES_TEST_PYTHON="$PWD/.venv/bin/python" bash scripts/validate_runtime_wave1.sh
 
-ODYSSEUS_TEST_STATIC_PORT=0 .venv/bin/python -m pytest -q tests/test_request_authority.py tests/test_agent_*.py tests/test_turn_contract*.py tests/test_tool_policy.py tests/test_tool_approval*.py tests/test_task_*.py tests/test_bg_*.py tests/test_*completion*.py tests/test_foreground_model_routing.py tests/test_client_tool_routing.py tests/test_workspace_confine.py tests/test_product_turn_contract_route.py tests/test_execution_bridge.py tests/test_execution_capabilities.py tests/test_ajax*.py tests/test_external_context_tool_gate.py tests/test_tool_path_confinement.py tests/test_edit_file.py tests/test_runtime_evidence_contract.py tests/test_review_regressions.py tests/test_image_creation_routing.py tests/test_ask_user_tool.py tests/test_update_plan_tool.py tests/test_weather_search_recovery.py tests/test_clean_agent_preview.py tests/test_skill_audit*.py tests/test_preview_execution_evidence.py
+ULISES_TEST_STATIC_PORT=0 .venv/bin/python -m pytest -q tests/test_request_authority.py tests/test_agent_*.py tests/test_turn_contract*.py tests/test_tool_policy.py tests/test_tool_approval*.py tests/test_task_*.py tests/test_bg_*.py tests/test_*completion*.py tests/test_foreground_model_routing.py tests/test_client_tool_routing.py tests/test_workspace_confine.py tests/test_product_turn_contract_route.py tests/test_execution_bridge.py tests/test_execution_capabilities.py tests/test_ajax*.py tests/test_external_context_tool_gate.py tests/test_tool_path_confinement.py tests/test_edit_file.py tests/test_runtime_evidence_contract.py tests/test_review_regressions.py tests/test_image_creation_routing.py tests/test_ask_user_tool.py tests/test_update_plan_tool.py tests/test_weather_search_recovery.py tests/test_clean_agent_preview.py tests/test_skill_audit*.py tests/test_preview_execution_evidence.py
 
-ODYSSEUS_TEST_STATIC_PORT=0 .venv/bin/python -m pytest -q
+ULISES_TEST_STATIC_PORT=0 .venv/bin/python -m pytest -q
 
 .venv/bin/python -m compileall -q -x '(^|/)(\.venv|\.git|node_modules|data|logs|uploads)/' .
 git ls-files -z '*.js' '*.mjs' | xargs -0 -n 1 node --check

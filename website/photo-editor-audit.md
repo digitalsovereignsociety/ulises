@@ -4,7 +4,7 @@ Date: 2026-08-30
 
 ## Executive Verdict
 
-Odysseus already has the structure of a real layered raster editor. It is not a
+Ulises already has the structure of a real layered raster editor. It is not a
 mockup: layers, nested groups, masks, selections, retained text, blending,
 history, document geometry, project recovery, controlled export, and several AI
 workflows operate on an editable document model.

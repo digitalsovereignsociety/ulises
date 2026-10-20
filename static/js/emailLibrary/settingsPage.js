@@ -6,7 +6,7 @@
 //
 // Two things here reach outside settings, which is why they live together.
 // Turning away-replies on writes a matching calendar event, so this module owns
-// the `odysseus.email.autoReplyCalendarEvent.*` keys and the create/update/
+// the `ulises.email.autoReplyCalendarEvent.*` keys and the create/update/
 // delete sync against /api/calendar. And the inline-image preference is read by
 // ./bodyRender.js while rendering a message, not only by the settings form.
 
@@ -34,7 +34,7 @@ import { _openUnsubscribeReviewModal } from './unsubscribe.js';
 const API_BASE = window.location.origin;
 
 function _emailInlineImagesStorageKey(accountId = state._libAccountId) {
-  return `odysseus.email.viewInlineImages.${String(accountId || 'default')}`;
+  return `ulises.email.viewInlineImages.${String(accountId || 'default')}`;
 }
 
 export function _readEmailInlineImagesPreference(accountId = state._libAccountId) {
@@ -116,7 +116,7 @@ function _todayDateInputValue() {
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
 }
 
-const _AUTO_REPLY_CALENDAR_KEY_PREFIX = 'odysseus.email.autoReplyCalendarEvent.';
+const _AUTO_REPLY_CALENDAR_KEY_PREFIX = 'ulises.email.autoReplyCalendarEvent.';
 const _autoReplyCalendarSyncs = new Map();
 
 function _autoReplyCalendarKey(accountId) {
@@ -153,7 +153,7 @@ function _autoReplyCalendarPayload(cfg, accountId = state._libAccountId) {
     dtstart: start,
     dtend: _addLocalCalendarDays(end, 1),
     all_day: true,
-    description: `Odysseus email auto reply - account:${String(accountId || '')}`,
+    description: `Ulises email auto reply - account:${String(accountId || '')}`,
   };
 }
 
@@ -168,7 +168,7 @@ async function _findAutoReplyCalendarEventUids(cfg, accountId) {
     });
     if (!response.ok) return [];
     const data = await response.json().catch(() => ({}));
-    const marker = `Odysseus email auto reply - account:${String(accountId || '')}`;
+    const marker = `Ulises email auto reply - account:${String(accountId || '')}`;
     return (data.events || [])
       .filter(ev => String(ev?.description || '').startsWith(marker))
       .map(ev => String(ev?.uid || '').trim())
@@ -494,7 +494,7 @@ export function _emailWritingStyleHtml(style) {
       <div class="email-settings-section-head">
         <div>
           <div class="email-settings-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Email Reply Writing Style</span></div>
-          <div class="email-settings-section-desc email-settings-support-copy">Used when Odysseus drafts replies for you.</div>
+          <div class="email-settings-section-desc email-settings-support-copy">Used when Ulises drafts replies for you.</div>
         </div>
       </div>
       <div id="email-settings-style-body" class="email-settings-section-body">
@@ -634,9 +634,9 @@ export function _bindEmailSettingsPageControls(page) {
   };
   showTagsToggle?.addEventListener('change', (ev) => {
     state._libShowTags = !!ev.target.checked;
-    localStorage.setItem('odysseus.email.showTags', state._libShowTags ? '1' : '0');
+    localStorage.setItem('ulises.email.showTags', state._libShowTags ? '1' : '0');
     _renderGrid();
-    document.dispatchEvent(new CustomEvent('odysseus:email-tags-toggle', { detail: { show: state._libShowTags } }));
+    document.dispatchEvent(new CustomEvent('ulises:email-tags-toggle', { detail: { show: state._libShowTags } }));
     if (state._libShowTags && !_loadedEmailsHaveVisibleTags()) _notifyNoLoadedEmailTags();
     syncDisplayTagsState();
   });

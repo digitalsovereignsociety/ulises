@@ -168,7 +168,7 @@ class BackgroundToolJobs:
                     session = db.get(database.Session, job.session_id)
                     if not session or session.owner != job.owner:
                         continue
-                    message_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f'odysseus:background:{job.id}:{job.session_id}'))
+                    message_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f'ulises:background:{job.id}:{job.session_id}'))
                     if not db.get(database.ChatMessage, message_id):
                         content = job.summary
                         if not payload.get('error'):

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Expanded live Odysseus eval for compact Qwen tool-router models.
+"""Expanded live Ulises eval for compact Qwen tool-router models.
 
 The important distinction for this project is exact native emission vs.
 app-level success after parser repair. This script records both.
@@ -20,10 +20,10 @@ import httpx
 
 try:
     # Works when imported by the test suite from the repository root.
-    from scripts.eval_odysseus_tool_use import _cookie, _reported_model, run_case
+    from scripts.eval_ulises_tool_use import _cookie, _reported_model, run_case
 except ModuleNotFoundError:
     # Preserve direct script execution from the scripts directory.
-    from eval_odysseus_tool_use import _cookie, _reported_model, run_case
+    from eval_ulises_tool_use import _cookie, _reported_model, run_case
 
 
 DEFAULT_CASES: list[dict[str, Any]] = [
@@ -480,7 +480,7 @@ def main() -> None:
     output.parent.mkdir(parents=True, exist_ok=True)
 
     client = httpx.Client(
-        cookies={"odysseus_session": _cookie(Path(args.cookie_file))},
+        cookies={"ulises_session": _cookie(Path(args.cookie_file))},
         follow_redirects=False,
     )
     records: list[dict[str, Any]] = []

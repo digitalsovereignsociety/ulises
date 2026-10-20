@@ -12,7 +12,7 @@ from typing import Any
 
 from datasets import load_dataset
 
-from run_odysseus_search_teacher_pipeline import call_deepseek_json, db_deepseek_endpoint
+from run_ulises_search_teacher_pipeline import call_deepseek_json, db_deepseek_endpoint
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]

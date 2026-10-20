@@ -17,7 +17,7 @@ def test_closed_subprocess_environment_drops_all_unlisted_credentials(monkeypatc
 
 async def test_real_python_child_does_not_inherit_ambient_credentials(workspace, monkeypatch):
     from tests.test_runtime_resource_integration import authority, dispatch
-    for name in ('OPENAI_API_KEY', 'HF_TOKEN', 'PATH_TOKEN', 'DATABASE_URL', 'ODYSSEUS_INTERNAL_TOKEN'):
+    for name in ('OPENAI_API_KEY', 'HF_TOKEN', 'PATH_TOKEN', 'DATABASE_URL', 'ULISES_INTERNAL_TOKEN'):
         monkeypatch.setenv(name, 'never-inherit-this-value')
     _, result = await dispatch(authority(workspace, 'python'), 'python',
         'import os\nprint(any(v == "never-inherit-this-value" for v in os.environ.values()))')

@@ -73,13 +73,13 @@ def _uids_from_fetch_rows(data) -> set[str]:
 _ACCOUNT_CACHE: dict = {}  # key = normalized account selector -> config dict
 _EMAIL_LIST_CACHE_TTL_SECONDS = float(os.environ.get("EMAIL_LIST_CACHE_TTL_SECONDS", "20"))
 _EMAIL_LIST_CACHE: dict = {}
-_MCP_OWNER_ARG = "_odysseus_owner"
-_MCP_SESSION_ARG = "_odysseus_session_id"
+_MCP_OWNER_ARG = "_ulises_owner"
+_MCP_SESSION_ARG = "_ulises_session_id"
 _CURRENT_OWNER: ContextVar[str | None] = ContextVar("email_mcp_owner", default=None)
 _CURRENT_SESSION_ID: ContextVar[str | None] = ContextVar("email_mcp_session_id", default=None)
-_OWNER_ENV_KEYS = ("ODYSSEUS_MCP_EMAIL_OWNER", "ODYSSEUS_EMAIL_OWNER")
+_OWNER_ENV_KEYS = ("ULISES_MCP_EMAIL_OWNER", "ULISES_EMAIL_OWNER")
 _OWNER_SCOPE_ERROR = (
-    "Error: email MCP requires an authenticated owner or ODYSSEUS_MCP_EMAIL_OWNER "
+    "Error: email MCP requires an authenticated owner or ULISES_MCP_EMAIL_OWNER "
     "when owner-scoped email accounts are configured."
 )
 
@@ -205,7 +205,7 @@ def _default_document_owner() -> str | None:
     but the document library is owner-filtered. Stamp drafts to the configured
     single/default admin so assistant-created email drafts are visible.
     """
-    owner = os.environ.get("ODYSSEUS_DOCUMENT_OWNER", "").strip()
+    owner = os.environ.get("ULISES_DOCUMENT_OWNER", "").strip()
     if owner:
         return owner
     try:
@@ -1119,7 +1119,7 @@ def _unblock_sender(sender: str, account: str | None = None) -> dict:
 
 
 def _fixture_email_enabled() -> bool:
-    return os.environ.get("ODYSSEUS_EMAIL_FIXTURE") == "1" and _fixture_email_file().exists()
+    return os.environ.get("ULISES_EMAIL_FIXTURE") == "1" and _fixture_email_file().exists()
 
 
 def _fixture_folder_key(folder: str | None) -> str:
@@ -2609,13 +2609,13 @@ def _stash_agent_draft(*, to, subject, body, in_reply_to=None, references=None,
                 error TEXT,
                 owner TEXT DEFAULT '',
                 account_id TEXT,
-                odysseus_kind TEXT
+                ulises_kind TEXT
             )
         """)
         conn.execute("""
             INSERT INTO scheduled_emails
             (id, to_addr, cc, bcc, subject, body, in_reply_to, references_hdr,
-             attachments, send_at, created_at, status, account_id, odysseus_kind, owner)
+             attachments, send_at, created_at, status, account_id, ulises_kind, owner)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'agent_draft', ?, ?, ?)
         """, (
             pending_id,
@@ -2799,7 +2799,7 @@ def _create_email_draft_document(
     account=None,
     source_message_id=None,
 ):
-    """Create an Odysseus email compose document for user review. Does not send."""
+    """Create an Ulises email compose document for user review. Does not send."""
     from core.database import SessionLocal, Document, DocumentVersion
     try:
         from src.event_bus import fire_event
@@ -2924,7 +2924,7 @@ def _create_email_draft_document(
 
 
 def _draft_reply_to_email(uid, body, folder="INBOX", reply_all=False, account=None, title=None):
-    """Create a threaded Odysseus reply draft document. Does not send."""
+    """Create a threaded Ulises reply draft document. Does not send."""
     fixture = _fixture_email_action_target(uid=uid, folder=folder, account=account)
     if fixture is not None:
         sender = str(fixture.get("from_address") or fixture.get("from") or "")
@@ -3017,7 +3017,7 @@ def _draft_reply_to_email(uid, body, folder="INBOX", reply_all=False, account=No
 
 
 async def _ai_draft_reply_to_email(uid, folder="INBOX", reply_all=False, account=None, title=None):
-    """Generate a reply with Odysseus' AI-reply prompt/style, then create a compose doc."""
+    """Generate a reply with Ulises' AI-reply prompt/style, then create a compose doc."""
     read_result = _read_email(uid=uid, folder=folder, account=account)
     if "error" in read_result:
         return read_result
@@ -3589,7 +3589,7 @@ async def list_tools() -> list[Tool]:
         Tool(
             name="list_email_accounts",
             description=(
-                "List the email accounts configured in Odysseus. Returns each account's "
+                "List the email accounts configured in Ulises. Returns each account's "
                 "name, email address, and whether it's the default. Use this first when "
                 "the user asks about a specific inbox by name (e.g. 'check work')."
             ),
@@ -3721,7 +3721,7 @@ async def list_tools() -> list[Tool]:
             description=(
                 "Send a new email via SMTP. Provide recipient(s), subject, and body. "
                 "This sends immediately; for normal assistant-written email, prefer "
-                "draft_email so the user can review and send from Odysseus. "
+                "draft_email so the user can review and send from Ulises. "
                 "For replying to an existing thread, use reply_to_email instead. "
                 "Pass `account` to send from a non-default mailbox."
             ),
@@ -3741,10 +3741,10 @@ async def list_tools() -> list[Tool]:
         Tool(
             name="draft_email",
             description=(
-                "Create a new Odysseus email compose draft document. This DOES NOT send. "
+                "Create a new Ulises email compose draft document. This DOES NOT send. "
                 "Use this as the default way to write an email for the user: it opens "
                 "a reviewable email document with To/Cc/Bcc/Subject/body, and the user "
-                "can edit or press Send in Odysseus. "
+                "can edit or press Send in Ulises. "
                 "For a reply to an existing email use draft_email_reply instead, preserving its thread. "
                 f"{_writing_style_guidance()}"
             ),
@@ -3756,7 +3756,7 @@ async def list_tools() -> list[Tool]:
                     "body": {"type": "string", "description": "Draft body"},
                     "cc": {"type": "string", "description": "CC address(es), comma-separated (optional)"},
                     "bcc": {"type": "string", "description": "BCC address(es), comma-separated (optional)"},
-                    "title": {"type": "string", "description": "Optional Odysseus document title"},
+                    "title": {"type": "string", "description": "Optional Ulises document title"},
                     **ACCOUNT_PROP,
                 },
                 "required": ["to", "subject", "body"],
@@ -3767,7 +3767,7 @@ async def list_tools() -> list[Tool]:
             description=(
                 "Reply to an existing email by UID. This sends immediately. Do NOT use "
                 "for normal 'write/draft a reply saying X' requests; use "
-                "draft_email_reply so the user can review and send from Odysseus. "
+                "draft_email_reply so the user can review and send from Ulises. "
                 "Only use this when the user explicitly says to send now. Automatically threads the reply with "
                 "In-Reply-To and References headers, prefixes 'Re:' on the subject, and "
                 "uses the original sender as the recipient. Set reply_all=true to also CC "
@@ -3789,7 +3789,7 @@ async def list_tools() -> list[Tool]:
         Tool(
             name="draft_email_reply",
             description=(
-                "Create an Odysseus email reply draft document for an existing email UID. "
+                "Create an Ulises email reply draft document for an existing email UID. "
                 "This DOES NOT send. It threads the draft with In-Reply-To/References, "
                 "prefills the recipient and subject, and stores source email metadata so "
                 "the user can review and send from the normal email composer. "
@@ -3804,7 +3804,7 @@ async def list_tools() -> list[Tool]:
                     "body": {"type": "string", "description": "Draft reply body text"},
                     "folder": {"type": "string", "description": "IMAP folder (default: INBOX)", "default": "INBOX"},
                     "reply_all": {"type": "boolean", "description": "Reply to all recipients (default: false)", "default": False},
-                    "title": {"type": "string", "description": "Optional Odysseus document title"},
+                    "title": {"type": "string", "description": "Optional Ulises document title"},
                     **ACCOUNT_PROP,
                 },
                 "required": ["uid", "body"],
@@ -3813,7 +3813,7 @@ async def list_tools() -> list[Tool]:
         Tool(
             name="ai_draft_email_reply",
             description=(
-                "Generate an AI reply using Odysseus' existing AI Reply behavior, "
+                "Generate an AI reply using Ulises' existing AI Reply behavior, "
                 "including Settings > Email > Writing Style, then create an email "
                 "compose document for review. This DOES NOT send and does NOT save "
                 "to the mailbox Drafts folder. Use this when the user asks you to "
@@ -3825,7 +3825,7 @@ async def list_tools() -> list[Tool]:
                     "uid": {"type": "string", "description": "Exact Email UID from list_emails/read_email; never invent UID 1"},
                     "folder": {"type": "string", "description": "IMAP folder (default: INBOX)", "default": "INBOX"},
                     "reply_all": {"type": "boolean", "description": "Reply to all recipients (default: false)", "default": False},
-                    "title": {"type": "string", "description": "Optional Odysseus document title"},
+                    "title": {"type": "string", "description": "Optional Ulises document title"},
                     **ACCOUNT_PROP,
                 },
                 "required": ["uid"],
@@ -4413,7 +4413,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
                     type="text",
                     text=(
                         f"Draft staged for approval (pending id: {result.get('pending_id')}). "
-                        "Nothing has been sent yet. Review and approve it in Odysseus before delivery."
+                        "Nothing has been sent yet. Review and approve it in Ulises before delivery."
                     ),
                 )]
             acct_note = f" (from {result['account']})" if result.get("account") else ""
@@ -4438,9 +4438,9 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
             return [TextContent(
                 type="text",
                 text=(
-                    f"Created Odysseus email draft [{result['title']}](#document-{result['doc_id']}) "
+                    f"Created Ulises email draft [{result['title']}](#document-{result['doc_id']}) "
                     f"(document ID: {result['doc_id']}){acct_note}. "
-                    "It has not been sent; open the document in Odysseus to review and send."
+                    "It has not been sent; open the document in Ulises to review and send."
                 ),
             )]
 
@@ -4485,9 +4485,9 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
             return [TextContent(
                 type="text",
                 text=(
-                    f"Created Odysseus reply draft [{result['title']}](#document-{result['doc_id']}) for UID {uid} "
+                    f"Created Ulises reply draft [{result['title']}](#document-{result['doc_id']}) for UID {uid} "
                     f"(document ID: {result['doc_id']}){acct_note}. "
-                    "It has not been sent; open the document in Odysseus to review and send."
+                    "It has not been sent; open the document in Ulises to review and send."
                 ),
             )]
 
@@ -4508,10 +4508,10 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
             return [TextContent(
                 type="text",
                 text=(
-                    f"Generated AI reply and created Odysseus compose draft "
+                    f"Generated AI reply and created Ulises compose draft "
                     f"[{result['title']}](#document-{result['doc_id']}) for UID {uid} "
                     f"(document ID: {result['doc_id']}){acct_note}. "
-                    "It has not been sent; open the document in Odysseus to review and send."
+                    "It has not been sent; open the document in Ulises to review and send."
                 ),
             )]
 
@@ -4674,7 +4674,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
             lines.append(f"Moved {result.get('moved_to_junk', 0)} current message(s) to Junk.")
             if result.get("moved_uids"):
                 lines.append("Moved UIDs: " + ", ".join(result["moved_uids"][:20]))
-            lines.append("Future matching fixture mail will appear in Junk; real IMAP routing depends on provider-side filters or Odysseus polling.")
+            lines.append("Future matching fixture mail will appear in Junk; real IMAP routing depends on provider-side filters or Ulises polling.")
             return [TextContent(type="text", text="\n".join(lines))]
 
         else:

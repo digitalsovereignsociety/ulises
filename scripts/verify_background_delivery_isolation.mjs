@@ -10,7 +10,7 @@ try {
     const box = document.querySelector('#chat-history');
     const first = box.firstElementChild;
     let current = 'chat-a', resolveRequest;
-    window.__odysseusSessionReadyId = current;
+    window.__ulisesSessionReadyId = current;
     const originalFetch = window.fetch;
     const payload = { jobs: [{ status: 'delivered', message: {
       role: 'assistant', content: 'Finished research', metadata: { _db_id: 'fixture-result' },
@@ -25,10 +25,10 @@ try {
     const pause = () => new Promise(resolve => setTimeout(resolve, 25));
     const stop = startBackgroundToolJobs({ getSessionId: () => current, addMessage: append });
     try {
-      current = 'chat-b'; window.__odysseusSessionReadyId = current;
+      current = 'chat-b'; window.__ulisesSessionReadyId = current;
       resolveRequest(); await pause();
       const checks = { switched_chat_does_not_receive_stale_result: box.children.length === 1 };
-      current = 'chat-a'; window.__odysseusSessionReadyId = current;
+      current = 'chat-a'; window.__ulisesSessionReadyId = current;
       const streaming = document.createElement('div'); streaming.className = 'msg-ai streaming'; box.append(streaming);
       document.dispatchEvent(new Event('visibilitychange')); resolveRequest(); await pause();
       checks.active_reply_not_interrupted = !box.querySelector('[data-db-id]');

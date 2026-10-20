@@ -62,7 +62,7 @@ test('finish action uses the exact run and keeps the agent thread visible', asyn
       if (new URL(route.request().url()).pathname === '/') {
         return route.fulfill({ contentType: 'text/html', body: '<main></main>' });
       }
-      seen.push({ url: route.request().url(), runId: route.request().headers()['x-odysseus-run-id'] });
+      seen.push({ url: route.request().url(), runId: route.request().headers()['x-ulises-run-id'] });
       return route.fulfill({ contentType: 'application/json', body: '{"accepted":true}' });
     });
     await page.goto('http://progress.test/');

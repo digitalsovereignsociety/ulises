@@ -4,7 +4,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { chromium } from 'playwright';
 
-const origin = process.env.ODYSSEUS_TEST_STATIC_ORIGIN;
+const origin = process.env.ULISES_TEST_STATIC_ORIGIN;
 const evidence = process.env.NOTES_EVIDENCE_DIR;
 if (evidence) fs.mkdirSync(evidence, { recursive: true });
 const baseline = process.env.NOTES_BASELINE === '1';
@@ -38,7 +38,7 @@ try {
     const styles = [...shell.matchAll(/<link[^>]+rel="stylesheet"[^>]*>/g)].map(m => m[0]).join('\n');
     await page.setContent(`<html><head><meta name="viewport" content="width=device-width,initial-scale=1">${styles}</head><body><div id="chat-container"></div><div id="toast"></div><button id="tool-notes-btn"><span id="notes-new-note-btn"></span></button><button id="rail-notes"></button></body></html>`);
     await page.evaluate(() => {
-      localStorage.setItem('odysseus-notes-first-open-hint-v1', '1');
+      localStorage.setItem('ulises-notes-first-open-hint-v1', '1');
       window.referenceIntervals = [];
       window.referenceMouseups = new Set();
       const add = window.addEventListener.bind(window), remove = window.removeEventListener.bind(window);
@@ -69,7 +69,7 @@ try {
     await page.locator('.note-card-cb').first().check({ force: mobile });
     await page.locator('#notes-send-agent').click();
     assert.equal(await page.locator('.note-card-selectmode').count(), 3, 'rejected selection stays selected');
-    await page.evaluate(() => window.addEventListener('odysseus:notes-context-selected', e => { window.referenceSelected = e.detail.noteIds; e.detail.accepted = true; }, { once: true }));
+    await page.evaluate(() => window.addEventListener('ulises:notes-context-selected', e => { window.referenceSelected = e.detail.noteIds; e.detail.accepted = true; }, { once: true }));
     await page.locator('#notes-send-agent').click();
     assert.equal(await page.locator('.note-card-selectmode').count(), 0);
     assert.equal((await page.evaluate(() => window.referenceSelected)).length, 1);
@@ -110,8 +110,8 @@ try {
     else await page.locator('[data-note-id="plain"] .note-card-title').click();
     if (mobile) await page.locator('.note-form-content-reader').tap({ position: { x: 5, y: 5 } });
     await page.locator('.note-form-content').fill('Recovered draft');
-    assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('odysseus-note-draft-plain')).content), 'Recovered draft');
-    await page.waitForFunction(() => !localStorage.getItem('odysseus-note-draft-plain'));
+    assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('ulises-note-draft-plain')).content), 'Recovered draft');
+    await page.waitForFunction(() => !localStorage.getItem('ulises-note-draft-plain'));
     assert.ok(requests.some(r => r.method === 'PUT' && JSON.parse(r.body).content === 'Recovered draft'));
     await page.locator('.note-form-type-pill[data-type="draw"]').click();
     const canvas = page.locator('.note-form-canvas');

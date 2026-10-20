@@ -4,11 +4,11 @@ One command that boots this worktree and drives every advertised feature
 area once, end to end, against a real instance.
 
 ```bash
-scripts/odysseus-smoke            # boot, run every area, stop again
-scripts/odysseus-smoke --keep-up  # leave the instance running afterwards
-scripts/odysseus-smoke --no-boot  # drive whatever is already up here
-scripts/odysseus-smoke --areas    # print the coverage table without booting
-scripts/odysseus-smoke -- -k notes
+scripts/ulises-smoke            # boot, run every area, stop again
+scripts/ulises-smoke --keep-up  # leave the instance running afterwards
+scripts/ulises-smoke --no-boot  # drive whatever is already up here
+scripts/ulises-smoke --areas    # print the coverage table without booting
+scripts/ulises-smoke -- -k notes
 ```
 
 ## Why it exists
@@ -33,26 +33,26 @@ rendering is already covered by the computed-style snapshot, and the
 with browser coverage. A browser would have added flake and start-up
 cost for no extra signal.
 
-It owns no instance logic. `scripts/odysseus-dev` already derives ports
+It owns no instance logic. `scripts/ulises-dev` already derives ports
 per worktree, keeps the data dir and ChromaDB out of `data/`, and waits
-on `/api/ready` rather than a TCP accept, so `scripts/odysseus-smoke`
+on `/api/ready` rather than a TCP accept, so `scripts/ulises-smoke`
 boots through it and only adds the scenarios and the report.
 
 ## The contract with the runner
 
-Four environment values, which are what `odysseus dev env` prints plus
+Four environment values, which are what `ulises dev env` prints plus
 the dev admin account:
 
 | Variable | Read through | Used for |
 |---|---|---|
 | `APP_PORT` | `src.constants.internal_api_base()` | which instance to drive |
-| `ODYSSEUS_ADMIN_USER` | - | who to authenticate as |
-| `ODYSSEUS_ADMIN_PASSWORD` | - | " |
-| `ODYSSEUS_DATA_DIR` | `src.constants.DATA_DIR` | where the email fixture file goes |
+| `ULISES_ADMIN_USER` | - | who to authenticate as |
+| `ULISES_ADMIN_PASSWORD` | - | " |
+| `ULISES_DATA_DIR` | `src.constants.DATA_DIR` | where the email fixture file goes |
 
 Run under a plain `pytest` with none of them set, every scenario skips
 with the reason and the full suite stays green. `APP_PORT` pointing at
-one of `odysseus dev`'s reserved ports - a normal launch of this
+one of `ulises dev`'s reserved ports - a normal launch of this
 checkout, the machine's own instance - is refused rather than driven,
 because the scenarios create and delete real records.
 
@@ -68,14 +68,14 @@ came back.
 
 Email uses the repo's own deterministic path rather than a second
 mechanism: `routes/email_routes.py` serves a fixture inbox when
-`ODYSSEUS_EMAIL_FIXTURE=1` and a fixture file is in the data dir. The
+`ULISES_EMAIL_FIXTURE=1` and a fixture file is in the data dir. The
 suite writes the file and restores whatever was there; the flag is read
 inside the app's process, which is why the runner owns the boot.
 
 ## What is covered
 
 One scenario per area, each asserting a user-visible outcome rather than
-a status code. `scripts/odysseus-smoke --areas` prints the current list.
+a status code. `scripts/ulises-smoke --areas` prints the current list.
 
 | Area | What it asserts |
 |---|---|
@@ -132,7 +132,7 @@ must be registered.
 ## What a run leaves behind
 
 Every scenario deletes what it created, with two exceptions on the
-scratch instance: the preference key `odysseus_smoke_preference`, which
+scratch instance: the preference key `ulises_smoke_preference`, which
 has no delete route, and the uploaded attachment, which the app's own
-upload cleanup owns. Both live in `.odysseus-dev/data/`, never in
+upload cleanup owns. Both live in `.ulises-dev/data/`, never in
 `data/`.

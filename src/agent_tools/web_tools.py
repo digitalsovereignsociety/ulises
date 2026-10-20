@@ -86,15 +86,15 @@ def _bounded_browser_identity(value: str, *, max_length: int = 20) -> str:
 def _scoped_browser_session(namespace: str, session_id: str) -> str:
     """Build one upstream-compatible session key for runtime isolation."""
 
-    scope = f"{str(namespace or 'odysseus-ui')}\0{str(session_id or '')}"
+    scope = f"{str(namespace or 'ulises-ui')}\0{str(session_id or '')}"
     return f"ody-{_bounded_browser_identity(scope)}"
 
 
 def _browser_namespace(env: dict[str, str] | None) -> str:
     return str(
-        (env or {}).get("ODYSSEUS_BROWSER_NAMESPACE")
-        or os.getenv("ODYSSEUS_BROWSER_NAMESPACE", "odysseus-ui")
-    ).strip() or "odysseus-ui"
+        (env or {}).get("ULISES_BROWSER_NAMESPACE")
+        or os.getenv("ULISES_BROWSER_NAMESPACE", "ulises-ui")
+    ).strip() or "ulises-ui"
 
 
 # Browser CLI processes started by the current private_browser call, so a
@@ -819,7 +819,7 @@ class WebFetchTool:
 class PdfExtractTool:
     """Extract focused, source-attributed passages from a PDF URL or workspace file.
 
-    This deliberately builds on Odysseus' native web reader instead of adding
+    This deliberately builds on Ulises' native web reader instead of adding
     a benchmark transport.  The separate semantic affordance keeps models from
     downloading PDFs with ad-hoc Python and then guessing when extraction fails.
     Local task PDFs use the same positioned reader, but are resolved through the
@@ -2060,7 +2060,7 @@ class YouTubeTool:
         url = f"https://www.googleapis.com/youtube/v3/commentThreads?{params}"
 
         def _fetch() -> dict:
-            req = urllib.request.Request(url, headers={"User-Agent": "odysseus-ui/1.0"})
+            req = urllib.request.Request(url, headers={"User-Agent": "ulises-ui/1.0"})
             with urllib.request.urlopen(req, timeout=15) as resp:
                 return json.loads(resp.read().decode("utf-8", errors="replace"))
 
@@ -2659,10 +2659,10 @@ class PrivateBrowserTool:
         return '\n\n'.join(snapshots + errors) if snapshots else text
 
     def _new_screenshot_path(self) -> Path:
-        configured = os.getenv("ODYSSEUS_BROWSER_SCREENSHOT_DIR")
+        configured = os.getenv("ULISES_BROWSER_SCREENSHOT_DIR")
         candidates = [
             Path(configured) if configured else Path("/app/data/tmp/private-browser"),
-            Path(tempfile.gettempdir()) / "odysseus-private-browser",
+            Path(tempfile.gettempdir()) / "ulises-private-browser",
         ]
         screenshot_dir = candidates[-1]
         for candidate in candidates:

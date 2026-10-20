@@ -541,7 +541,7 @@ def test_verified_artifact_survives_provider_error_during_finish_round(monkeypat
         relevant_tools={"write_file", "private_browser"},
         runtime_context={
             "terminal_agent": True,
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "completion_requirements": {
                 "required_artifacts": ["/workspace/output.html"],
             },
@@ -589,7 +589,7 @@ def test_uninspected_artifact_still_fails_on_provider_error(monkeypatch):
         relevant_tools={"write_file"},
         runtime_context={
             "terminal_agent": True,
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "completion_requirements": {
                 "required_artifacts": ["/workspace/answer.json"],
             },
@@ -680,7 +680,7 @@ def test_finish_nudge_does_not_accept_unfinished_correction_promise(monkeypatch)
         relevant_tools={"write_file", "private_browser"},
         runtime_context={
             "terminal_agent": True,
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "completion_requirements": {
                 "required_artifacts": ["/workspace/output.html"],
             },

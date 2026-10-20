@@ -14,7 +14,7 @@ def test_remove_session_sft_trace_rows_moves_all_session_rows_to_trash(monkeypat
         {"session_id": "delete-me", "user": "three"},
     ]
     path.write_text("\n".join(json.dumps(row) for row in rows) + "\n")
-    monkeypatch.setenv("ODYSSEUS_SFT_TRACE_DIR", str(trace_dir))
+    monkeypatch.setenv("ULISES_SFT_TRACE_DIR", str(trace_dir))
 
     removed = remove_session_sft_trace_rows("sft_alex", "delete-me")
 
@@ -29,8 +29,8 @@ def test_remove_session_sft_trace_rows_moves_all_session_rows_to_trash(monkeypat
 def test_append_sft_trace_record_writes_runtime_revision(monkeypatch, tmp_path):
     trace_dir = tmp_path / "traces"
     trace_dir.mkdir()
-    monkeypatch.setenv("ODYSSEUS_SFT_TRACE_DIR", str(trace_dir))
-    monkeypatch.setenv("ODYSSEUS_RUNTIME_REVISION", "revision-under-test")
+    monkeypatch.setenv("ULISES_SFT_TRACE_DIR", str(trace_dir))
+    monkeypatch.setenv("ULISES_RUNTIME_REVISION", "revision-under-test")
     sess = SimpleNamespace(
         name="trace session",
         history=[SimpleNamespace(role="user", content="do the task")],

@@ -9,8 +9,8 @@ let _idCounter = 0;
 
 // Dismissed-from-panel IDs persist across reloads so Clear actually sticks.
 // (Items still live on disk and in the Library; this just hides them here.)
-const _DISMISSED_KEY = 'odysseus-research-dismissed';
-const _ERRORS_KEY = 'odysseus-research-errors';
+const _DISMISSED_KEY = 'ulises-research-dismissed';
+const _ERRORS_KEY = 'ulises-research-errors';
 function _loadDismissed() {
   try {
     const raw = localStorage.getItem(_DISMISSED_KEY);

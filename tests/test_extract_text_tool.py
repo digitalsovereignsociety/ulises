@@ -31,12 +31,12 @@ def test_ocr_can_read_only_the_callers_uploaded_image_without_a_workspace(monkey
     monkeypatch.setattr(ocr_engine, 'extract_image_text', lambda path, **kwargs: {'lines': [{'t': '42'}]})
     token = _active_workspace.set(None)
     try:
-        args = json.dumps({'path': 'odysseus://attachment/fixture-upload.png'})
+        args = json.dumps({'path': 'ulises://attachment/fixture-upload.png'})
         owned = asyncio.run(ExtractTextTool().execute(args, {'owner': 'alice'}))
         other = asyncio.run(ExtractTextTool().execute(args, {'owner': 'bob'}))
         anonymous = asyncio.run(ExtractTextTool().execute(args, {}))
         host = asyncio.run(ExtractTextTool().execute(json.dumps({'path': str(source)}), {'owner': 'alice'}))
-        traversal = asyncio.run(ExtractTextTool().execute(json.dumps({'path': 'odysseus://attachment/../fixture-upload.png'}), {'owner': 'alice'}))
+        traversal = asyncio.run(ExtractTextTool().execute(json.dumps({'path': 'ulises://attachment/../fixture-upload.png'}), {'owner': 'alice'}))
     finally:
         _active_workspace.reset(token)
     assert owned['exit_code'] == 0 and owned['ocr']['lines'][0]['t'] == '42'
@@ -77,10 +77,10 @@ def test_extract_text_accepts_workspace_uri_alias_without_weakening_confinement(
     token = _active_workspace.set(str(tmp_path))
     try:
         result = asyncio.run(ExtractTextTool().execute(json.dumps({
-            "path": "odysseus://workspace/source.png",
+            "path": "ulises://workspace/source.png",
         }), {}))
         escaped = asyncio.run(ExtractTextTool().execute(json.dumps({
-            "path": "odysseus://workspace/../outside.png",
+            "path": "ulises://workspace/../outside.png",
         }), {}))
     finally:
         _active_workspace.reset(token)

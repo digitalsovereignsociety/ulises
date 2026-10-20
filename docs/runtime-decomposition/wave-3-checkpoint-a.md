@@ -199,7 +199,7 @@ git ls-files -u
 The final pre-commit gate passed 387 focused tests and 3364 integrated tests,
 with 3 platform skips and 2 existing xfails. The focused gate spans 12 files;
 the integrated gate spans the 145-file manifest. Validation used
-`/tmp/odysseus-wave3-validation/bin/python` with functional bubblewrap.
+`/tmp/ulises-wave3-validation/bin/python` with functional bubblewrap.
 Compileall, diff whitespace, conflict-marker and unmerged-index gates passed.
 The post-commit integrated result is recorded in the final checkpoint report.
 Final adversarial review found a numeric-PID-only cached-handle lookup in that

@@ -18,7 +18,7 @@ No single checklist replaces engineering judgment. Increase depth with risk.
 Example read-only commands:
 
 ```bash
-REPO="odysseus-dev/odysseus"
+REPO="ulises-dev/ulises"
 PR=1234
 gh pr view "$PR" --repo "$REPO" --json title,state,isDraft,headRefOid,baseRefName,mergeable
 gh pr diff "$PR" --repo "$REPO"
@@ -94,7 +94,7 @@ This P0-P3 classification is [triage guidance](triage.md#practical-priority-lang
 For a final manual merge, GitHub CLI supports an exact-head guard:
 
 ```bash
-gh pr merge 1234 --repo odysseus-dev/odysseus --squash \
+gh pr merge 1234 --repo ulises-dev/ulises --squash \
   --match-head-commit <reviewed-full-head-sha>
 ```
 

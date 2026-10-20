@@ -13,7 +13,7 @@ from src.turn_contract import resolve_full_inventory_contract, resolve_turn_cont
 @pytest.mark.parametrize('model', ['ajax', 'deepseek-v4-flash'])
 @pytest.mark.parametrize('denied', [frozenset(), frozenset({'python', 'web_search'})])
 def test_webui_compact_inventory_survives_both_contract_stages(model, denied):
-    assert _clean_v3_route_for_model(model, 'odysseus_compact')
+    assert _clean_v3_route_for_model(model, 'ulises_compact')
     policy = ToolPolicy(disabled_tools=denied)
     schemas = [s for s in FUNCTION_TOOL_SCHEMAS
                if s['function']['name'] in PREVIEW_TOOLS]

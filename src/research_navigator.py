@@ -2,7 +2,7 @@
 
 Deep Research historically had its own narrow Search -> Fetch path.  This
 module gives the research engine a small normalized surface for richer web
-navigation while still reusing Odysseus' existing web tooling.
+navigation while still reusing Ulises' existing web tooling.
 """
 
 from __future__ import annotations
@@ -191,7 +191,7 @@ class ResearchNavigator:
             return []
 
     async def fetch(self, url: str, *, timeout: int = 10, max_bytes: int | None = None) -> ResearchPage:
-        """Fetch readable text from a URL using Odysseus' web fetcher."""
+        """Fetch readable text from a URL using Ulises' web fetcher."""
         try:
             from src.search.content import fetch_webpage_content
 

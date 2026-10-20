@@ -1,4 +1,4 @@
-# Odysseus frontend architecture handbook
+# Ulises frontend architecture handbook
 
 Status: F1 merged in PR #6701. The complete Notes reference is implemented as an
 unpublished review diff on `refactor/notes-reference-decomposition`. Read its
@@ -62,7 +62,7 @@ one-way public index import would pass the gate.
 
 Cross-feature events must document event name, payload, acknowledgement, owner,
 subscription disposal and delivery timing. Keep them local and specific; F1 adds
-no global event bus. Preserve `odysseus:notes-context-selected` and its synchronous
+no global event bus. Preserve `ulises:notes-context-selected` and its synchronous
 `accepted` acknowledgement in future Notes work. The server remains authoritative
 for owner filtering and untrusted selected IDs. Frontend APIs cannot grant access.
 

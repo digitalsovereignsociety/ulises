@@ -49,17 +49,17 @@ The paths below are historical decision records, not runtime resource links.
 - SAN-169: `website/chat.webm`
 - SAN-170: `website/notes.webm`
 - SAN-171: `static/icons/sglang-mark.png`
-- SAN-172: `assets/branding/odysseus-browser.jpg`
+- SAN-172: `assets/branding/ulises-browser.jpg`
 - SAN-173: `static/icons/icon-maskable-512.png`
 - SAN-174: `website/gallery.webm`
 - SAN-176: `website/bg.webm`
 - SAN-178: `static/icons/ollama-mark.png`
-- SAN-180: `assets/branding/odysseus.jpg`
+- SAN-180: `assets/branding/ulises.jpg`
 - SAN-182: `website/document.webm`
 - SAN-185: `static/icons/sglang-logo.png`
 - SAN-186: `static/icons/icon-192.png`
 - SAN-187: `website/theme.webm`
-- SAN-188: `assets/branding/odysseus-wordmark.png`
+- SAN-188: `assets/branding/ulises-wordmark.png`
 - SAN-189: `static/icons/icon-512.png`
 - SAN-190: `website/research.webm`
 
@@ -74,17 +74,17 @@ The historical SAN entries recorded above reflect the conservative posture adopt
 
 The original SHA-256 hashes are recorded below. Ambiguous third-party assets (such as vendor marks and third-party libraries) remain deliberately omitted.
 
-- RESTORE-001: `assets/branding/odysseus-browser.jpg` (SHA-256: `96bc894113d3db1a8e19535047e85fef7bfe7e643d45973d6effb945dce667df`): README interface screenshot introduced by pewdiepie-archdaemon in commit "Refresh README screenshot".
-- RESTORE-002: `assets/branding/odysseus-wordmark.png` (SHA-256: `5e20708f9709735c66692c0cffc74734d61cfa256d48f9095c6870bcd53f4552`): README wordmark artwork introduced by pewdiepie-archdaemon in commit "Refresh README presentation".
-- RESTORE-003: `assets/branding/odysseus.jpg` (SHA-256: `cd5e87b12f1e9e7baca6a6c5e95012130c9e26c6e31526e864eaf17096fcd05e`): Project branding image from commit e5c99a5eee62fc7df0e2dca5e46cbc87399047d6 ("Odysseus v1.0") by pewdiepie-archdaemon, used by build-macos-app.sh for launcher icon generation.
-- RESTORE-004: `website/bg.webm` (SHA-256: `157f732539a6072d55164da23d65afa9423782728dd067154867fcebb176fb35`): Landing page background video from commit e5c99a5eee62fc7df0e2dca5e46cbc87399047d6 ("Odysseus v1.0") by pewdiepie-archdaemon.
-- RESTORE-005: `website/chat.webm` (SHA-256: `d69f319192cec2cac1831e08ee99ae902398f1b163021e42b3fda05a0d7ab4d5`): Chat demo video from commit e5c99a5eee62fc7df0e2dca5e46cbc87399047d6 ("Odysseus v1.0") by pewdiepie-archdaemon.
-- RESTORE-006: `website/compare.webm` (SHA-256: `90d8c68dbc2ac3029b258598a7e2c2c5c8f5d6d702b9d31f0c729e5517093f51`): Model comparison demo video from commit e5c99a5eee62fc7df0e2dca5e46cbc87399047d6 ("Odysseus v1.0") by pewdiepie-archdaemon.
-- RESTORE-007: `website/document.webm` (SHA-256: `754e4ae071e9def5151749a03ad284cd41385354620fc8afea3c5c4f50f64a0d`): Document editor demo video from commit e5c99a5eee62fc7df0e2dca5e46cbc87399047d6 ("Odysseus v1.0") by pewdiepie-archdaemon.
-- RESTORE-008: `website/gallery.webm` (SHA-256: `b3bbe99c55b5cd1de32cb8e84fa31044761b7724a76a4bae4d4b0acaed7f3500`): Image gallery demo video from commit e5c99a5eee62fc7df0e2dca5e46cbc87399047d6 ("Odysseus v1.0") by pewdiepie-archdaemon.
-- RESTORE-009: `website/notes.webm` (SHA-256: `2a82b501271c4b60927e575bb22f8c986e3d1a4089a5518f84b46e534dea37d7`): Notes demo video from commit e5c99a5eee62fc7df0e2dca5e46cbc87399047d6 ("Odysseus v1.0") by pewdiepie-archdaemon.
-- RESTORE-010: `website/research.webm` (SHA-256: `2495a1a6cc1ea037f7460d065e3af6aacf091b240edebc436ce4bca5e83dab87`): Deep research demo video from commit e5c99a5eee62fc7df0e2dca5e46cbc87399047d6 ("Odysseus v1.0") by pewdiepie-archdaemon.
-- RESTORE-011: `website/theme.webm` (SHA-256: `6bd5a4140e9eeb9e06bee217319d331e9c8c873763fcb9040425fb38878b8410`): Theme demo video from commit e5c99a5eee62fc7df0e2dca5e46cbc87399047d6 ("Odysseus v1.0") by pewdiepie-archdaemon.
+- RESTORE-001: `assets/branding/ulises-browser.jpg` (SHA-256: `96bc894113d3db1a8e19535047e85fef7bfe7e643d45973d6effb945dce667df`): README interface screenshot introduced by pewdiepie-archdaemon in commit "Refresh README screenshot".
+- RESTORE-002: `assets/branding/ulises-wordmark.png` (SHA-256: `5e20708f9709735c66692c0cffc74734d61cfa256d48f9095c6870bcd53f4552`): README wordmark artwork introduced by pewdiepie-archdaemon in commit "Refresh README presentation".
+- RESTORE-003: `assets/branding/ulises.jpg` (SHA-256: `cd5e87b12f1e9e7baca6a6c5e95012130c9e26c6e31526e864eaf17096fcd05e`): Project branding image from commit e5c99a5eee62fc7df0e2dca5e46cbc87399047d6 ("Ulises v1.0") by pewdiepie-archdaemon, used by build-macos-app.sh for launcher icon generation.
+- RESTORE-004: `website/bg.webm` (SHA-256: `157f732539a6072d55164da23d65afa9423782728dd067154867fcebb176fb35`): Landing page background video from commit e5c99a5eee62fc7df0e2dca5e46cbc87399047d6 ("Ulises v1.0") by pewdiepie-archdaemon.
+- RESTORE-005: `website/chat.webm` (SHA-256: `d69f319192cec2cac1831e08ee99ae902398f1b163021e42b3fda05a0d7ab4d5`): Chat demo video from commit e5c99a5eee62fc7df0e2dca5e46cbc87399047d6 ("Ulises v1.0") by pewdiepie-archdaemon.
+- RESTORE-006: `website/compare.webm` (SHA-256: `90d8c68dbc2ac3029b258598a7e2c2c5c8f5d6d702b9d31f0c729e5517093f51`): Model comparison demo video from commit e5c99a5eee62fc7df0e2dca5e46cbc87399047d6 ("Ulises v1.0") by pewdiepie-archdaemon.
+- RESTORE-007: `website/document.webm` (SHA-256: `754e4ae071e9def5151749a03ad284cd41385354620fc8afea3c5c4f50f64a0d`): Document editor demo video from commit e5c99a5eee62fc7df0e2dca5e46cbc87399047d6 ("Ulises v1.0") by pewdiepie-archdaemon.
+- RESTORE-008: `website/gallery.webm` (SHA-256: `b3bbe99c55b5cd1de32cb8e84fa31044761b7724a76a4bae4d4b0acaed7f3500`): Image gallery demo video from commit e5c99a5eee62fc7df0e2dca5e46cbc87399047d6 ("Ulises v1.0") by pewdiepie-archdaemon.
+- RESTORE-009: `website/notes.webm` (SHA-256: `2a82b501271c4b60927e575bb22f8c986e3d1a4089a5518f84b46e534dea37d7`): Notes demo video from commit e5c99a5eee62fc7df0e2dca5e46cbc87399047d6 ("Ulises v1.0") by pewdiepie-archdaemon.
+- RESTORE-010: `website/research.webm` (SHA-256: `2495a1a6cc1ea037f7460d065e3af6aacf091b240edebc436ce4bca5e83dab87`): Deep research demo video from commit e5c99a5eee62fc7df0e2dca5e46cbc87399047d6 ("Ulises v1.0") by pewdiepie-archdaemon.
+- RESTORE-011: `website/theme.webm` (SHA-256: `6bd5a4140e9eeb9e06bee217319d331e9c8c873763fcb9040425fb38878b8410`): Theme demo video from commit e5c99a5eee62fc7df0e2dca5e46cbc87399047d6 ("Ulises v1.0") by pewdiepie-archdaemon.
 - RESTORE-012: `static/icons/icon-192.png` (SHA-256: `d9f54e07d2a8dca6302125d84436176a26a056745c5adb29ef521345c161e359`): Project PWA icon (192x192) contributed in PR #428 (commit 615134851d5c17897b96bba43b7961a00770d45b), generated from the project logo SVG.
 - RESTORE-013: `static/icons/icon-512.png` (SHA-256: `785872b140da58087f23539ed187fe0f69de6eb9690abf995b10c93b5b518388`): Project PWA icon (512x512) contributed in PR #428 (commit 615134851d5c17897b96bba43b7961a00770d45b), generated from the project logo SVG.
 - RESTORE-014: `static/icons/icon-maskable-512.png` (SHA-256: `7ed567fe0de6b6b451eec35c8fb2b465d84a3b23945135c19c4fa388ac976449`): Project PWA maskable icon (512x512) contributed in PR #428 (commit 615134851d5c17897b96bba43b7961a00770d45b), generated from the project logo SVG.

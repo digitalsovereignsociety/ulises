@@ -20,14 +20,14 @@ import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 # Two model ids so the Compare area has something to reveal.
-MODEL_PRIMARY = "odysseus-smoke-primary"
-MODEL_SECONDARY = "odysseus-smoke-secondary"
+MODEL_PRIMARY = "ulises-smoke-primary"
+MODEL_SECONDARY = "ulises-smoke-secondary"
 MODELS = (MODEL_PRIMARY, MODEL_SECONDARY)
 
 # The marker each reply starts with. Distinctive enough that finding it
 # in a response body cannot be a coincidence, and short enough to read
 # in a failure message.
-REPLY_MARKER = "ODYSSEUS-SMOKE-REPLY"
+REPLY_MARKER = "ULISES-SMOKE-REPLY"
 
 # Bind on loopback, kernel-assigned port. No literal port anywhere.
 BIND_HOST = "127.0.0.1"

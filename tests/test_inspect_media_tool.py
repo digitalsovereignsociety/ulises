@@ -261,7 +261,7 @@ def test_inspect_media_treats_suffixless_directory_as_sampling_destination(tmp_p
             "path": "/workspace/video.mp4",
             "segments": [{"start": 0, "end": 1}, {"start": 1, "end": 2}],
             "frames": 4,
-            "output_path": "/workspace/.odysseus",
+            "output_path": "/workspace/.ulises",
         }), {}))
     finally:
         _active_workspace.reset(token)
@@ -1697,7 +1697,7 @@ def test_transcribe_media_returns_timestamped_local_segments(tmp_path: Path, mon
     assert result["segments"] == 2
     assert "00:00:01.250" in result["transcript"]
     assert "夏洛" in result["transcript"]
-    assert result["output_path"].startswith("/workspace/.odysseus/transcripts/dialogue-")
+    assert result["output_path"].startswith("/workspace/.ulises/transcripts/dialogue-")
     assert "text begins after the first '] '" in result["output"]
     assert "identify its start and the next section boundary" in result["output"]
     persisted = tmp_path / result["output_path"].removeprefix("/workspace/")
@@ -1920,7 +1920,7 @@ def test_transcribe_media_prefers_quality_for_focused_ranges(tmp_path: Path, mon
             used.append(self.name)
             return iter([]), SimpleNamespace(language="zh", language_probability=1.0)
 
-    monkeypatch.delenv("ODYSSEUS_STT_MODEL", raising=False)
+    monkeypatch.delenv("ULISES_STT_MODEL", raising=False)
     monkeypatch.setitem(media_tools._WHISPER_MODELS, "small", FakeWhisper("small"))
     monkeypatch.setitem(media_tools._WHISPER_MODELS, "base", FakeWhisper("base"))
     token = _active_workspace.set(str(tmp_path))
@@ -2085,7 +2085,7 @@ def test_visual_evidence_window_is_bounded_with_explicit_override(monkeypatch):
     assert len(visual["content"]) - 1 == 1
 
     messages.clear()
-    monkeypatch.setenv("ODYSSEUS_MAX_VISUAL_EVIDENCE_IMAGES", "6")
+    monkeypatch.setenv("ULISES_MAX_VISUAL_EVIDENCE_IMAGES", "6")
     _append_tool_results(
         messages, "", [{"id": "call-1", "name": "inspect_media", "arguments": "{}"}], [{}], ["frames"], True, 1,
         tool_result_records=records,
@@ -2094,7 +2094,7 @@ def test_visual_evidence_window_is_bounded_with_explicit_override(monkeypatch):
     assert len(visual["content"]) - 1 == 3
 
     messages.clear()
-    monkeypatch.setenv("ODYSSEUS_MAX_VISUAL_EVIDENCE_FRAMES", "6")
+    monkeypatch.setenv("ULISES_MAX_VISUAL_EVIDENCE_FRAMES", "6")
     _append_tool_results(
         messages, "", [{"id": "call-1", "name": "inspect_media", "arguments": "{}"}], [{}], ["frames"], True, 1,
         tool_result_records=records,
@@ -2108,7 +2108,7 @@ def test_visual_evidence_window_is_bounded_with_explicit_override(monkeypatch):
 def test_visual_frames_are_uniformly_bounded_within_one_media_result(monkeypatch):
     from src.agent_loop import _append_tool_results
 
-    monkeypatch.setenv("ODYSSEUS_MAX_VISUAL_EVIDENCE_FRAMES", "3")
+    monkeypatch.setenv("ULISES_MAX_VISUAL_EVIDENCE_FRAMES", "3")
     messages = []
     records = [{
         "tool_name": "inspect_media",

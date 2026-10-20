@@ -132,7 +132,7 @@ def load_existing_repair_sessions(paths: list[Path]) -> set[str]:
 
 
 def prompt(target: dict[str, Any], session: dict[str, Any]) -> list[dict[str, str]]:
-    system = """You repair Odysseus email-agent SFT traces.
+    system = """You repair Ulises email-agent SFT traces.
 Return strict JSON only with this shape:
 {
   "session_id": "...",

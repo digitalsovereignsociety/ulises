@@ -1,10 +1,10 @@
 # Threat Model
 
-Odysseus is a **self-hosted AI workspace with privileged local access**. This document states the trust boundary so contributors can reason about security decisions without reading through the full auth and middleware stack.
+Ulises is a **self-hosted AI workspace with privileged local access**. This document states the trust boundary so contributors can reason about security decisions without reading through the full auth and middleware stack.
 
 ## Trust Boundary
 
-Odysseus is designed for **trusted users on a private network**, not public exposure. The README describes it as "treat it like an admin console" — that framing is accurate. A logged-in admin can execute shell commands, read and write files, send email, and control model serving. This is intentional. The threat model does not try to prevent admins from doing these things. It does try to prevent:
+Ulises is designed for **trusted users on a private network**, not public exposure. The README describes it as "treat it like an admin console" — that framing is accurate. A logged-in admin can execute shell commands, read and write files, send email, and control model serving. This is intentional. The threat model does not try to prevent admins from doing these things. It does try to prevent:
 
 - Unauthenticated access
 - Non-admins reaching admin-only capabilities
@@ -46,7 +46,7 @@ Non-admin defaults are in `core/auth.py:DEFAULT_PRIVILEGES`. Tool enforcement is
 Agent tool calls reach admin-gated HTTP routes over an in-process HTTP loopback. The mechanism:
 
 1. At app startup, `core/middleware.py` generates a random `INTERNAL_TOOL_TOKEN` via `secrets.token_hex(32)`. It is never persisted and never sent to clients.
-2. Loopback requests carry `X-Odysseus-Internal-Token: <token>` or have `request.state.current_user` already set to `"internal-tool"` by the auth middleware.
+2. Loopback requests carry `X-Ulises-Internal-Token: <token>` or have `request.state.current_user` already set to `"internal-tool"` by the auth middleware.
 3. `require_admin` recognises either signal and grants access without checking the session user.
 
 The agent may be running in a non-admin user's session, but tool dispatch first calls `src/tool_security.py:owner_is_admin_or_single_user` to verify the session owner is an admin before issuing any loopback call. Non-admin users cannot invoke admin tools even via the agent.
@@ -64,7 +64,7 @@ External content that reaches the LLM is treated as untrusted via `src/prompt_se
 
 `src/tool_capabilities.py` carries a second layer: once untrusted content has entered a run, `ToolRunSecurityContext.decision_for()` blocks tools that execute code, mutate state, or cause external side effects until the user authorises the action separately.
 
-It is on unless `ODYSSEUS_TOOL_APPROVAL_GATE` is set to a falsy value (`0`/`false`/`no`/`off`). Request authority narrows which tool families a turn may use, but within an admitted family it does not bind the exact action: a request to read email admits `send_email` and `delete_email`, and agent processes inherit the host network. Until those are covered by their own boundaries, this gate is what stops an injected instruction from reaching them. Turning it off lets a successful injection reach `bash`, `host_shell`, `send_email` and `delete_email` without a separate confirmation.
+It is on unless `ULISES_TOOL_APPROVAL_GATE` is set to a falsy value (`0`/`false`/`no`/`off`). Request authority narrows which tool families a turn may use, but within an admitted family it does not bind the exact action: a request to read email admits `send_email` and `delete_email`, and agent processes inherit the host network. Until those are covered by their own boundaries, this gate is what stops an injected instruction from reaching them. Turning it off lets a successful injection reach `bash`, `host_shell`, `send_email` and `delete_email` without a separate confirmation.
 
 Two exemptions apply even when the gate is on, both deliberate:
 

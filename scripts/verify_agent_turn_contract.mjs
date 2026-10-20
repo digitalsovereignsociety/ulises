@@ -41,7 +41,7 @@ for (const k of inheritedProxyKeys) delete process.env[k];
 process.env.NO_PROXY = '*';
 process.env.no_proxy = '*';
 const owner = 'sft_alex_creator';
-const data = (process.env.ODYSSEUS_DATA_DIR || path.join(root, 'data'));
+const data = (process.env.ULISES_DATA_DIR || path.join(root, 'data'));
 const turnMs = number('turn-ms', 45000, 120000);
 const totalMs = number('total-ms', 600000, 1800000);
 const maxTurns = number('max-turns', 80, 120);
@@ -149,7 +149,7 @@ function boundedSubsetFromHistory(prompt, answer, prior) {
 // Conservative fixture-specific detection, including a preamble below a thinking label.
 const noVisibleLeak = text => !/<think>|Thinking Process:|UNTRUSTED SOURCE DATA|(?:^|\n)\s*(?:The user (?:wants|is asking|requests)\b|Analyze the Request:)/i.test(text);
 // Playwright errors may embed request headers (including session cookies).
-const safeError = error => String(error).split('\n')[0].replace(/odysseus_session=[^\s;]+/g, 'odysseus_session=[REDACTED]');
+const safeError = error => String(error).split('\n')[0].replace(/ulises_session=[^\s;]+/g, 'ulises_session=[REDACTED]');
 const bare = s => String(s || '').replace(/^mcp__email__/, '');
 function parseSSE(body) {
   return body.replace(/\r\n/g, '\n').split('\n\n').flatMap(frame => {
@@ -224,12 +224,12 @@ try {
     check(parseSSE('data: {"type":"tool_start","tool":"bash"}\r\n\r\ndata: [DONE]\r\n\r\n').at(-1).type === 'done', 'SSE framing regression');
     check(parseSSE('data: broken\n\n')[0].type === 'invalid_sse', 'Malformed SSE must fail');
     check(formFields({ postData: () => 'name="allow_web_search"\r\n\r\nfalse\r\n' }).allow_web_search === 'false', 'Toggle field parser');
-    check(!safeError('Timeout\n cookie: odysseus_session=secret').includes('secret'), 'Error redaction');
+    check(!safeError('Timeout\n cookie: ulises_session=secret').includes('secret'), 'Error redaction');
     check(!noVisibleLeak('View thinking process\n\nThe user wants a list of emails'), 'Fixture reasoning preamble detection');
     check(noVisibleLeak('Here are your three notes.'), 'Normal fixture answer must not trigger leakage');
-    check(boundedSubsetFromHistory('List those again, at most three.', 'Servers: kierkegaard, Odysseus, Ajax.', 'Servers: kierkegaard (local), Odysseus, Ajax, kierk.'), 'Grounded bounded subset detection');
+    check(boundedSubsetFromHistory('List those again, at most three.', 'Servers: kierkegaard, Ulises, Ajax.', 'Servers: kierkegaard (local), Ulises, Ajax, kierk.'), 'Grounded bounded subset detection');
     check(boundedSubsetFromHistory('List those again, at most three.', '- Search seed prompts [Pinned]', '- [opaque-id] **Search seed prompts** [PINNED]'), 'Grounded structured tool-output detection');
-    check(!boundedSubsetFromHistory('List those again, at most two.', 'Servers: kierkegaard, Odysseus, Ajax.', 'Servers: kierkegaard, Odysseus, Ajax.'), 'Bounded subset limit enforcement');
+    check(!boundedSubsetFromHistory('List those again, at most two.', 'Servers: kierkegaard, Ulises, Ajax.', 'Servers: kierkegaard, Ulises, Ajax.'), 'Bounded subset limit enforcement');
     report.self_tests = 11; report.status = 'self-test-passed';
   } else if (opt('matrix-only', 'false') === 'true') {
     report.status = 'matrix-only';
@@ -241,11 +241,11 @@ try {
     const endpoint = opt("endpoint", '') || (() => { throw new Error("--endpoint is required"); })();
     const endpointURL = new URL(endpoint);
     check(endpointURL.protocol === 'http:' && (/^(127\.|10\.|192\.168\.|100\.)/.test(endpointURL.hostname)), 'Only explicit local/private inference endpoints allowed');
-    report.model = { endpoint, endpoint_id: opt('endpoint-id', 'preheret'), model: opt('model', 'odysseus-qwen3.5-tools-pre-heretic') };
+    report.model = { endpoint, endpoint_id: opt('endpoint-id', 'preheret'), model: opt('model', 'ulises-qwen3.5-tools-pre-heretic') };
     browser = await chromium.launch({ headless: true, timeout: 15000, args: ['--no-proxy-server'] });
     context = await browser.newContext({ serviceWorkers: 'block', extraHTTPHeaders: { 'Accept-Encoding': 'identity' } });
     context.setDefaultTimeout(10000);
-    await context.addCookies([{ name: 'odysseus_session', value: token, url: base }]);
+    await context.addCookies([{ name: 'ulises_session', value: token, url: base }]);
     const statusRes = await context.request.get(`${base}/api/auth/status`, { timeout: 10000 });
     const status = await statusRes.json();
     check(status.authenticated && status.username === owner, 'Authenticated identity mismatch');
@@ -259,7 +259,7 @@ try {
       const pid = opt('email-process'); check(/^\d+$/.test(pid), 'Invalid email PID');
       const env = fs.readFileSync(`/proc/${pid}/environ`, 'utf8').split('\0');
       emailSafe = fs.readFileSync(`/proc/${pid}/cmdline`, 'utf8').includes('email_server.py')
-        && env.includes('ODYSSEUS_EMAIL_FIXTURE=1') && env.includes(`ODYSSEUS_DATA_DIR=${data}`)
+        && env.includes('ULISES_EMAIL_FIXTURE=1') && env.includes(`ULISES_DATA_DIR=${data}`)
         && report.fixture_email_rows > 0 && fixture.messages.every(m => m.owner);
     }
     report.email_fixture_runtime_verified = emailSafe;
@@ -330,7 +330,7 @@ try {
         const target = page.locator('#model-picker-menu .model-switch-item').filter({ hasText: 'Tools v3 — No-RAG preview' }).first();
         await target.waitFor({ state: 'visible' });
         await target.click();
-        await page.waitForFunction(() => !window.__odysseusModelSwitchPromise);
+        await page.waitForFunction(() => !window.__ulisesModelSwitchPromise);
         await page.waitForFunction(() => document.querySelector('#model-picker-label')?.textContent.includes('No-RAG preview'));
         report.sessions.at(-1).picker_click_verified = true;
       }
@@ -444,7 +444,7 @@ try {
             await page.locator('textarea#message:visible').press('Enter');
             const response = await responsePromise;
             current.http = { status: response.status(), headers_ms: Date.now() - turnStart,
-              headers: Object.fromEntries(Object.entries(response.headers()).filter(([k]) => ['content-type', 'content-encoding', 'cache-control', 'x-accel-buffering', 'x-odysseus-run-id'].includes(k))) };
+              headers: Object.fromEntries(Object.entries(response.headers()).filter(([k]) => ['content-type', 'content-encoding', 'cache-control', 'x-accel-buffering', 'x-ulises-run-id'].includes(k))) };
             save();
             if (!response.ok()) {
               current.http.error_body = (await response.text()).slice(0, 1000);
@@ -604,10 +604,10 @@ try {
         }
         // Task-authorized cleanup: only this created session and its captured run ID.
         if (!inactive && streamStatus.status === 'streaming' && report.sessions.some(s => s.id === caseSession)
-          && activeTurn?.session_id === caseSession && activeTurn.http?.headers?.['x-odysseus-run-id']) {
-          const runId = activeTurn.http.headers['x-odysseus-run-id'];
+          && activeTurn?.session_id === caseSession && activeTurn.http?.headers?.['x-ulises-run-id']) {
+          const runId = activeTurn.http.headers['x-ulises-run-id'];
           const stopped = await context.request.post(`${base}/api/chat/stop/${encodeURIComponent(caseSession)}`, {
-            headers: { 'X-Odysseus-Run-Id': runId }, timeout: 5000 });
+            headers: { 'X-Ulises-Run-Id': runId }, timeout: 5000 });
           const cleanup = { session_id: caseSession, run_id: runId, http: stopped.status(), result: await stopped.json() };
           for (let attempt = 0; attempt < 5; attempt++) {
             const verification = await context.request.get(`${base}/api/chat/stream_status/${encodeURIComponent(caseSession)}`, { timeout: 3000 });

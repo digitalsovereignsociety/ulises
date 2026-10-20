@@ -205,7 +205,7 @@ function _applyTagFilterFromPill(tag) {
   });
 }
 
-document.addEventListener('odysseus:email-filter-tag', (e) => {
+document.addEventListener('ulises:email-filter-tag', (e) => {
   _applyTagFilterFromPill(e.detail?.tag);
 });
 
@@ -345,7 +345,7 @@ function _getActiveEmailContext() {
 
 // Frontend reads via the global so chat.js doesn't need a separate import
 // path (emailLibrary loads lazily in some entry points).
-try { window.__odysseusGetActiveEmailContext = _getActiveEmailContext; } catch (_) {}
+try { window.__ulisesGetActiveEmailContext = _getActiveEmailContext; } catch (_) {}
 
 const _COPY_EMAIL_ICON = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
 
@@ -811,7 +811,7 @@ async function _loadEmailReminderBellVisibility() {
 }
 // Live-update the bell when the reminder channel changes in Settings,
 // so the user doesn't have to reopen Email to see the change apply.
-window.addEventListener('odysseus-reminder-channel-changed', (e) => {
+window.addEventListener('ulises-reminder-channel-changed', (e) => {
   const ch = e?.detail?.channel;
   _syncEmailReminderBellVisibility(ch === 'email');
 });
@@ -1475,12 +1475,12 @@ function _rememberedEmailAccountId() {
 const _libListCache = new Map();
 const _LIB_CACHE_MAX = 24;
 const _LIB_INITIAL_PAGE_SIZE = 100;
-const _LIB_SESSION_CACHE_PREFIX = 'odysseus.email.list.';
+const _LIB_SESSION_CACHE_PREFIX = 'ulises.email.list.';
 const _LIB_SESSION_CACHE_TTL_MS = 10 * 60 * 1000;
-const _LIB_PERSIST_CACHE_PREFIX = 'odysseus.email.list.v2.';
+const _LIB_PERSIST_CACHE_PREFIX = 'ulises.email.list.v2.';
 const _LIB_PERSIST_CACHE_TTL_MS = 6 * 60 * 60 * 1000;
 const _LIB_PERSIST_CACHE_MAX = 12;
-const _LIB_LAST_ACCOUNT_KEY = 'odysseus.email.lastAccountId';
+const _LIB_LAST_ACCOUNT_KEY = 'ulises.email.lastAccountId';
 const _LIB_PREWARM_COOLDOWN_MS = 5 * 60 * 1000;
 let _libPrewarmDelayTimer = null;
 let _libPrewarmIdleHandle = null;
@@ -1898,8 +1898,8 @@ function _initMobileEmailPullRefresh() {
 
 function _isChatInteractionBusy() {
   try {
-    if (window.__odysseusChatBusy) return true;
-    const until = Number(window.__odysseusChatBusyUntil || 0);
+    if (window.__ulisesChatBusy) return true;
+    const until = Number(window.__ulisesChatBusyUntil || 0);
     return until > Date.now();
   } catch (_) {
     return false;
@@ -2011,10 +2011,10 @@ function _scheduleEmailPrewarm(task, { delay = 0 } = {}) {
     }
   }
 
-  window.addEventListener('odysseus:chat-busy-change', handlePriorityChange);
+  window.addEventListener('ulises:chat-busy-change', handlePriorityChange);
   document.addEventListener('visibilitychange', handlePriorityChange);
   _libPrewarmDetachPriorityListeners = () => {
-    window.removeEventListener('odysseus:chat-busy-change', handlePriorityChange);
+    window.removeEventListener('ulises:chat-busy-change', handlePriorityChange);
     document.removeEventListener('visibilitychange', handlePriorityChange);
   };
 
@@ -2243,7 +2243,7 @@ export function _libCacheWriteBack() {
 // Expose the active account id to other modules (document.js uses this when sending).
 // Simple global rather than cross-module import to keep coupling minimal.
 export function _publishActiveAccount() {
-  try { window.__odysseusActiveEmailAccount = state._libAccountId || null; } catch (_) {}
+  try { window.__ulisesActiveEmailAccount = state._libAccountId || null; } catch (_) {}
   try {
     if (state._libAccountId) localStorage.setItem(_LIB_LAST_ACCOUNT_KEY, state._libAccountId);
   } catch (_) {}
@@ -2466,7 +2466,7 @@ export function openEmailLibrary(opts = {}) {
               <button class="memory-toolbar-btn email-filter-settings-btn" id="email-lib-settings-btn" title="Email settings" aria-label="Email settings" aria-expanded="false">
                 ${_EMAIL_SETTINGS_ICON}
               </button>
-              <button class="memory-toolbar-btn email-reminders-clear-btn hidden" id="email-reminders-clear-btn" title="Permanently delete Odysseus reminder emails">
+              <button class="memory-toolbar-btn email-reminders-clear-btn hidden" id="email-reminders-clear-btn" title="Permanently delete Ulises reminder emails">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>
                 Clear
               </button>
@@ -2728,14 +2728,14 @@ export function openEmailLibrary(opts = {}) {
   document.addEventListener('click', state._emailSearchOptionsDismiss);
   _syncSearchOptionsMenu();
   document.getElementById('email-reminders-clear-btn')?.addEventListener('click', async () => {
-    const ok = await styledConfirm('Permanently delete all Odysseus reminder emails?', {
+    const ok = await styledConfirm('Permanently delete all Ulises reminder emails?', {
       confirmText: 'Delete',
       cancelText: 'Cancel',
       danger: true,
     });
     if (!ok) return;
     try {
-      const res = await fetch(`${API_BASE}/api/email/odysseus/reminders?permanent=1${_acct()}`, {
+      const res = await fetch(`${API_BASE}/api/email/ulises/reminders?permanent=1${_acct()}`, {
         method: 'DELETE',
         credentials: 'same-origin',
       });
@@ -6183,7 +6183,7 @@ export async function _toggleCardPreview(card, em) {
 // Global preference: AI summary panels stay collapsed across every email
 // once the user folds one, and stay expanded once they unfold. Stored in
 // localStorage so the choice survives reloads.
-const _SUMMARY_COLLAPSED_KEY = 'odysseus.email.summaryCollapsed';
+const _SUMMARY_COLLAPSED_KEY = 'ulises.email.summaryCollapsed';
 export function _summaryCollapsedPref() {
   try { return localStorage.getItem(_SUMMARY_COLLAPSED_KEY) === '1'; } catch { return false; }
 }

@@ -98,7 +98,7 @@ def control_app(tmp_path, monkeypatch):
     @app.middleware('http')
     async def attribution(req, next):
         if req.headers.get(INTERNAL_TOOL_HEADER) == INTERNAL_TOOL_TOKEN:
-            req.state.current_user = req.headers.get('X-Odysseus-Owner') or INTERNAL_TOOL_USER
+            req.state.current_user = req.headers.get('X-Ulises-Owner') or INTERNAL_TOOL_USER
         return await next(req)
     app.include_router(cookbook_routes.setup_cookbook_routes())
     app.include_router(shell_routes.setup_shell_routes())
@@ -166,7 +166,7 @@ async def test_capability_exact_transport_binding(control_app, substitute):
         changed = dict(headers); payload = dict(body); path = '/api/model/download'; host = '127.0.0.1'
         if substitute == 'body': payload['repo_id'] = 'org/changed'
         if substitute == 'route': path = '/api/model/serve'
-        if substitute == 'owner': changed['X-Odysseus-Owner'] = 'bob'
+        if substitute == 'owner': changed['X-Ulises-Owner'] = 'bob'
         if substitute == 'remote': host = '192.0.2.1'
         if substitute == 'proxy': changed['x-forwarded-for'] = '192.0.2.1'
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app, client=(host, 123)), base_url='http://127.0.0.1') as client:

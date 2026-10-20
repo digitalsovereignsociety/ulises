@@ -35,7 +35,7 @@ This spec covers current security and trust-boundary behavior in:
 
 ## Trust Boundary
 
-Odysseus is a trusted-user private-network app. Admins intentionally have powerful local capabilities: shell, files, email, calendar, MCP, model serving, vault, settings, and API token management. The security model prevents unauthenticated access, non-admin escalation, prompt-injection through untrusted content, and accidental exposure of internal services.
+Ulises is a trusted-user private-network app. Admins intentionally have powerful local capabilities: shell, files, email, calendar, MCP, model serving, vault, settings, and API token management. The security model prevents unauthenticated access, non-admin escalation, prompt-injection through untrusted content, and accidental exposure of internal services.
 
 `THREAT_MODEL.md` owns high-level security framing, but implementation claims here should be verified against current code when the threat model is stale. This spec records the implementation map that contributors should check before changing auth or untrusted-context flows. Security-header runtime details live in `runtime.md`.
 
@@ -47,7 +47,7 @@ Odysseus is a trusted-user private-network app. Admins intentionally have powerf
 - `core.middleware.require_admin()` owns the normal admin gate. Local wrappers must document and test any intentional divergence from that boundary.
 - `src.auth_helpers.effective_user()` owns cookie/API-token owner attribution for selected route code. `require_user()` owns route-level degraded user resolution, `require_privilege()` owns privilege checks, and `owner_filter()` owns shared/null-owner query compatibility.
 
-Reserved usernames include request-only sentinels `internal-tool`, `api`, `demo`, and `system`, plus the storage-only Default/Local owner `__odysseus_local__`. Loaded auth data drops reserved user records, and create/rename flows must reject real users with those names. `src.owner_identity` is the canonical owner vocabulary and `auth_disabled()` parser.
+Reserved usernames include request-only sentinels `internal-tool`, `api`, `demo`, and `system`, plus the storage-only Default/Local owner `__ulises_local__`. Loaded auth data drops reserved user records, and create/rename flows must reject real users with those names. `src.owner_identity` is the canonical owner vocabulary and `auth_disabled()` parser.
 
 ## Auth Runtime Flow
 
@@ -67,16 +67,16 @@ Admin promotion/demotion is a live auth flag change through `AuthManager.set_adm
 
 Cookie requests use the real username. Bearer-token requests are stamped as `request.state.current_user = "api"` plus `api_token_owner`, `api_token_scopes`, and token id. Routes that support API-token access must explicitly use `effective_user()` or route-local scope helpers instead of treating `"api"` as an owner.
 
-Internal loopback calls may stamp `current_user = "internal-tool"` or a validated `X-Odysseus-Owner` username. Network/proxy validation for that bypass lives in `app.py`. Native shell/PID and local Cookbook controls add resource-bound admission and reject an internal header or sentinel as human administration. This boundary is surface-specific: common `core.middleware.require_admin()` still admits a matching internal token or sentinel, including MCP configuration routes; producer-side tool policy is a separate check.
+Internal loopback calls may stamp `current_user = "internal-tool"` or a validated `X-Ulises-Owner` username. Network/proxy validation for that bypass lives in `app.py`. Native shell/PID and local Cookbook controls add resource-bound admission and reject an internal header or sentinel as human administration. This boundary is surface-specific: common `core.middleware.require_admin()` still admits a matching internal token or sentinel, including MCP configuration routes; producer-side tool policy is a separate check.
 
 Missing-owner values remain state-dependent at legacy call sites, but new storage-facing code has one normalization contract:
 
 - Auth-enabled, configured auth with no `current_user` is unauthenticated and should fail closed at route dependencies.
-- `AUTH_ENABLED=false` is an explicit local single-user/no-login mode. Existing route dependencies can still return `""`, and admin gates allow the local operator. `effective_storage_owner()` and `storage_owner_for_request()` normalize an absent owner to `__odysseus_local__` only in this mode. Native shell and local Cookbook administration additionally require a direct loopback connection without proxy forwarding, cross-site indicators, or an internal-tool header. Remote/proxied anonymous traffic remains denied at these controls. Auth-enabled administration still requires a human admin. This mode trusts local programs as well as the local operator: a headerless loopback request cannot identify which local program sent it. Agent program launches retain inherited networking; this is not protection against hostile local code. Use authenticated mode when local programs are outside that trust. Local Cookbook tools use a separate one-use capability for an admitted exact request/operation/native backend and resolved launch body; that capability cannot administer shell, PID, SSH-key, or arbitrary Cookbook state routes.
+- `AUTH_ENABLED=false` is an explicit local single-user/no-login mode. Existing route dependencies can still return `""`, and admin gates allow the local operator. `effective_storage_owner()` and `storage_owner_for_request()` normalize an absent owner to `__ulises_local__` only in this mode. Native shell and local Cookbook administration additionally require a direct loopback connection without proxy forwarding, cross-site indicators, or an internal-tool header. Remote/proxied anonymous traffic remains denied at these controls. Auth-enabled administration still requires a human admin. This mode trusts local programs as well as the local operator: a headerless loopback request cannot identify which local program sent it. Agent program launches retain inherited networking; this is not protection against hostile local code. Use authenticated mode when local programs are outside that trust. Local Cookbook tools use a separate one-use capability for an admitted exact request/operation/native backend and resolved launch body; that capability cannot administer shell, PID, SSH-key, or arbitrary Cookbook state routes.
 - Chat/agent code that reads `get_current_user(request)` directly gets `None` when auth middleware is disabled, because no middleware stamps request state.
 - SQL `NULL`/JSON missing owners remain legacy/shared compatibility data, not the same thing as a logged-out authenticated caller.
 - `"api"` and `"internal-tool"` are request sentinels. They must not be persisted as normal storage owners unless a route explicitly defines that behavior.
-- `__odysseus_local__` is a valid storage owner but never a login or request sentinel. Adoption is incremental: callers that do not use the storage-owner helper can still expose older `None`/empty/null compatibility behavior.
+- `__ulises_local__` is a valid storage owner but never a login or request sentinel. Adoption is incremental: callers that do not use the storage-owner helper can still expose older `None`/empty/null compatibility behavior.
 
 Authenticated `manage_tasks` mutations require an exact stored task-owner match and reject both cross-owner and legacy null-owner rows. The `owner=None` agent path keeps deliberate auth-disabled single-user compatibility, including unscoped list/create/mutation behavior.
 
@@ -135,7 +135,7 @@ Current untrusted surfaces include fetched URLs, web results, emails, memories, 
 
 `scripts/mlx_image_server.py` serves exactly the model selected when the process starts. OpenAI-compatible request `model` fields are accepted but ignored for generation and edits, so an unauthenticated caller cannot select another local directory or Hugging Face repository and drive model-specific script/bridge execution.
 
-Host Docker socket access is a high-trust admin/deployment choice, not a normal container capability. Default Docker Compose does not mount `/var/run/docker.sock`; `src.host_docker_access` only reports local Docker available inside a container when `ODYSSEUS_ENABLE_HOST_DOCKER=true` and the socket exists. Remote SSH Docker/Cookbook workflows remain the safer default.
+Host Docker socket access is a high-trust admin/deployment choice, not a normal container capability. Default Docker Compose does not mount `/var/run/docker.sock`; `src.host_docker_access` only reports local Docker available inside a container when `ULISES_ENABLE_HOST_DOCKER=true` and the socket exists. Remote SSH Docker/Cookbook workflows remain the safer default.
 
 ## Degraded And Compatibility Behavior
 
@@ -168,7 +168,7 @@ Preview validation may expose bounded schema-derived argument guidance before di
 
 Auth-route app configuration uses `_require_admin_user()` to honor explicit disabled-auth operator mode for settings/features, document-style extraction and integrations; user-store administration still requires an admin identity. Settings GET exposes full settings to the disabled-auth operator, while auth-enabled anonymous/non-admin reads remain scrubbed. This is a trusted deployment mode, not an anonymous multi-user grant.
 
-Generated-image serving checks filename syntax before identity, then `effective_user()` (cookie or API-token owner) before disk access. A live process-local registration, gallery owner, linked session owner, or owned-chat metadata reference can authorize access; absence/mismatch returns 404 and database verification errors return 503. Disabled auth skips ownership checks. Responses use private revalidation and nosniff headers. Tool argument parsers strip caller `_odysseus_*` fields before server context injects trusted image/email owner/session attribution; see `gallery-editor-media.md` and `agent-tools.md`.
+Generated-image serving checks filename syntax before identity, then `effective_user()` (cookie or API-token owner) before disk access. A live process-local registration, gallery owner, linked session owner, or owned-chat metadata reference can authorize access; absence/mismatch returns 404 and database verification errors return 503. Disabled auth skips ownership checks. Responses use private revalidation and nosniff headers. Tool argument parsers strip caller `_ulises_*` fields before server context injects trusted image/email owner/session attribution; see `gallery-editor-media.md` and `agent-tools.md`.
 
 ## Upload Route Authorization
 

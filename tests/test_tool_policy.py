@@ -212,7 +212,7 @@ def test_sft_web_session_keeps_workspace_clamp_but_native_terminal_is_exempt():
     )
     assert not al._workspace_tools_disabled_for_request(
         "sft_alex_creator",
-        {"surface": "odysseus-native", "terminal_agent": True},
+        {"surface": "ulises-native", "terminal_agent": True},
     )
     assert not al._workspace_tools_disabled_for_request(
         "pewds", {"surface": "web"}
@@ -3610,10 +3610,10 @@ def test_successful_tool_evidence_prevents_explicit_call_repeat():
 
 def test_absolute_path_routes_to_files_not_web_only():
     intent = al._classify_agent_request(
-        [{"role": "user", "content": "create /tmp/odysseus-sft-demo.txt with two lines"}],
-        "create /tmp/odysseus-sft-demo.txt with two lines",
+        [{"role": "user", "content": "create /tmp/ulises-sft-demo.txt with two lines"}],
+        "create /tmp/ulises-sft-demo.txt with two lines",
     )
-    tools = al._qwen38_router_tool_names("create /tmp/odysseus-sft-demo.txt with two lines")
+    tools = al._qwen38_router_tool_names("create /tmp/ulises-sft-demo.txt with two lines")
 
     assert "files" in intent["domains"]
     assert "write_file" in tools
@@ -3902,7 +3902,7 @@ def test_native_artifact_workspace_uses_bounded_non_coding_guidance():
         "content": "Inspect /workspace/fixtures/reference.png and create /workspace/output.html",
     }]
     context = {
-        "surface": "odysseus-native",
+        "surface": "ulises-native",
         "terminal_agent": True,
         "completion_requirements": {"required_artifacts": ["/workspace/output.html"]},
     }
@@ -3961,7 +3961,7 @@ def test_compact_native_media_analysis_clamps_explicit_ocr_to_native_tool():
 
 def test_native_coding_turn_keeps_coding_workspace_guidance():
     messages = [{"role": "user", "content": "Fix the parser in this repository"}]
-    context = {"surface": "odysseus-native", "terminal_agent": True}
+    context = {"surface": "ulises-native", "terminal_agent": True}
 
     assert al._is_native_artifact_workspace_turn(messages, context) is False
     assert "Workspace coding mode" in al._workspace_coding_rules("/workspace")

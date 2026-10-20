@@ -56,7 +56,7 @@ def _maybe_cascade_calendar_event(task) -> None:
     from core.middleware import INTERNAL_TOOL_HEADER, INTERNAL_TOOL_TOKEN
     headers = {INTERNAL_TOOL_HEADER: INTERNAL_TOOL_TOKEN}
     if task.owner:
-        headers["X-Odysseus-Owner"] = task.owner
+        headers["X-Ulises-Owner"] = task.owner
 
     # Strategy 1: explicit UID marker in prompt.
     event_uid = ""
@@ -626,7 +626,7 @@ def setup_task_routes(task_scheduler) -> APIRouter:
             raise HTTPException(400, "Notification body required")
         row = NotificationLog(
             id=str(uuid.uuid4()), owner=user,
-            task_name=str(body.get("title") or "Odysseus")[:200],
+            task_name=str(body.get("title") or "Ulises")[:200],
             status="error" if body.get("status") == "error" else "success",
             body=message,
         )

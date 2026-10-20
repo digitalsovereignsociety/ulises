@@ -115,7 +115,7 @@ Approval replay injects the sealed first tool result before the resumed model ro
 
 ## Internal Loopback
 
-`do_app_api()` is implemented in `src.tools.system` and re-exported by `src.tool_implementations`. It owns generic app API loopback, OpenAPI discovery, method/path blocklists, and fixed local target behavior. `_internal_headers()` adds the process-secret internal-tool token and optional `X-Odysseus-Owner`; `core.middleware.require_admin()` and auth middleware own the corresponding bypass and owner-stamping rules. Route-specific owner handling must still be audited.
+`do_app_api()` is implemented in `src.tools.system` and re-exported by `src.tool_implementations`. It owns generic app API loopback, OpenAPI discovery, method/path blocklists, and fixed local target behavior. `_internal_headers()` adds the process-secret internal-tool token and optional `X-Ulises-Owner`; `core.middleware.require_admin()` and auth middleware own the corresponding bypass and owner-stamping rules. Route-specific owner handling must still be audited.
 
 ## MCP
 
@@ -136,7 +136,7 @@ When an email reader is active, browser chat passes active email metadata and th
 - ToolIndex can degrade to keyword selection when embeddings, Chroma, index warmup, or vector retrieval timeouts fail.
 - Agent mode can degrade from native function schemas to prompted fenced-block parsing based on provider/tool-support heuristics. Legacy local Ollama `/v1` and native `/api` endpoints normally use text tools unless explicitly supported. Compact native surfaces force native schemas unless a text-recovery path is selected; configured compact/full modes and the external request contract participate in surface selection, so the legacy default is not universal.
 - MCP startup failure is non-critical; route/status surfaces expose per-server errors.
-- `ODYSSEUS_DISABLE_MCP`, missing `mcp`, uncached browser MCP packages, and per-server disabled tools can remove tools without blocking the app.
+- `ULISES_DISABLE_MCP`, missing `mcp`, uncached browser MCP packages, and per-server disabled tools can remove tools without blocking the app.
 - Native browser page execution is unavailable at the common boundary; browser registration and schemas do not override that denial.
 
 ## Request Authority, Resource Identity, And Completion
@@ -169,7 +169,7 @@ Artifact completion is target-specific: off-target/scratch writes and generic su
 
 Chat-scope bearer admission resolves the credential owner and intersects delegated tool grants with server policy; client runtime metadata, retrieval results and prompted tool names cannot widen it. Interactive approval/session options are refused for delegated credentials. Persistent chat grants are server-signed; a normal new turn retires stale pending approvals, while exact first-action replay is one-use. For a non-inherited ungranted launch lacking a backend launch scope, `ToolApprovalStore.create()` may seal exactly one request resource root (or its sealed workspace fallback); inherited children cannot gain this scope. Local reads through delegated credentials, including local `web_fetch`, file-scheme/workspace reads and absolute-path PDF extraction, have an early denial backstop even when the automatic action gate is disabled or bypassed.
 
-`ODYSSEUS_TOOL_APPROVAL_GATE` defaults on; only normalized `0`, `false`, `no` and `off` disable it. The gate does not replace authority/resource checks. Request authority binds owner, request/thread, workspace and admitted operations; child scopes intersect the parent. Owned record revisions, backend/configuration epochs, filesystem identities and process/job generations are revalidated. Captured server producer observations supply evidence; arbitrary tool output or registry membership is not a trusted producer. Expected admission/resource failures become typed denials; unexpected programming errors are not silently converted into authorization success.
+`ULISES_TOOL_APPROVAL_GATE` defaults on; only normalized `0`, `false`, `no` and `off` disable it. The gate does not replace authority/resource checks. Request authority binds owner, request/thread, workspace and admitted operations; child scopes intersect the parent. Owned record revisions, backend/configuration epochs, filesystem identities and process/job generations are revalidated. Captured server producer observations supply evidence; arbitrary tool output or registry membership is not a trusted producer. Expected admission/resource failures become typed denials; unexpected programming errors are not silently converted into authorization success.
 
 Native file tools use the canonical agent workspace and explicit allowed roots, deny control-plane paths and all hardlinked regular files, and validate path/resource identities. `ls`, `glob` and `grep` share one control-plane snapshot per scan; root and bound-resource checks still observe fresh state. Grep normalizes relative-or-basename glob filters before bounded ripgrep batches, validates regex even with no targets, closes stdin and retains a bounded Python fallback with identity revalidation. Empty file writes require explicit clear intent for nonempty existing files; missing/null content is refused, already-empty files can be no-ops, and missing files use exclusive/staged creation without overwriting a competing creator. These checks do not make filesystem operations universally atomic or race-free.
 
@@ -199,7 +199,7 @@ Filesystem postconditions derive exact requested content from the producer trans
 
 ## Trusted MCP Attribution
 
-`src/tool_execution.py` strips caller-provided `_odysseus_*` fields from qualified/legacy MCP JSON and parsed tool arguments. Dispatch then injects trusted owner/session context for email and trusted owner for image MCP tools; missing trusted context does not preserve a forged claim. `_call_mcp_tool()` forwards owner through native/unavailable/disconnected direct fallback paths. Image results from qualified dispatch receive promoted image fields. The image MCP server persists the trimmed owner and registers fresh files; this transport attribution does not replace route authorization.
+`src/tool_execution.py` strips caller-provided `_ulises_*` fields from qualified/legacy MCP JSON and parsed tool arguments. Dispatch then injects trusted owner/session context for email and trusted owner for image MCP tools; missing trusted context does not preserve a forged claim. `_call_mcp_tool()` forwards owner through native/unavailable/disconnected direct fallback paths. Image results from qualified dispatch receive promoted image fields. The image MCP server persists the trimmed owner and registers fresh files; this transport attribution does not replace route authorization.
 
 ## Current Gaps
 

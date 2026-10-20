@@ -62,7 +62,7 @@ const API_BASE = window.location.origin;
 // occasionally splits a single reply into two bogus "turns" by treating a
 // signature/disclaimer as its own message), the user can flip this off to
 // fall back to plain rendering. Survives reloads.
-const _BUBBLES_DISABLED_KEY = 'odysseus.email.bubblesDisabled';
+const _BUBBLES_DISABLED_KEY = 'ulises.email.bubblesDisabled';
 // Threaded chat-bubble email view is DISABLED for now — too buggy to
 // ship. Force plain-text rendering everywhere by always returning true.
 // Re-enable by restoring the localStorage-backed body + the toggle

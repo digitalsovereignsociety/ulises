@@ -16,7 +16,7 @@ const reportPath = process.env.REPORT_PATH
   : path.join(root, `reports/clean-v3-vl-live-${new Date().toISOString().replace(/[:.]/g, '-')}.json`);
 if (!reportPath.startsWith(path.join(root, 'reports') + path.sep)) throw Error('Report must be under reports/');
 if (fs.existsSync(reportPath)) throw Error('Report exists; refuse overwrite');
-const authSessions = JSON.parse(fs.readFileSync(process.env.ODYSSEUS_AUTH_SESSION_FILE || (() => { throw new Error("ODYSSEUS_AUTH_SESSION_FILE is required"); })()));
+const authSessions = JSON.parse(fs.readFileSync(process.env.ULISES_AUTH_SESSION_FILE || (() => { throw new Error("ULISES_AUTH_SESSION_FILE is required"); })()));
 const token = Object.entries(authSessions).find(([, value]) => value?.username === owner)?.[0];
 if (!token) throw Error('Dedicated SFT account has no active auth session');
 const report = { status: 'running', owner, fixture: path.relative(root, fixture), turns: [], checks: {}, cleanup: null };
@@ -32,11 +32,11 @@ try {
   browser = await chromium.launch({ headless: true, args: ['--no-proxy-server'] });
   context = await browser.newContext({ serviceWorkers: 'block',
     ...(process.env.MOBILE === 'true' ? { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true } : {}),
-    extraHTTPHeaders: { 'x-odysseus-routing-experiment': routingMode } });
-  await context.addCookies([{ name: 'odysseus_session', value: token, url: base }]);
+    extraHTTPHeaders: { 'x-ulises-routing-experiment': routingMode } });
+  await context.addCookies([{ name: 'ulises_session', value: token, url: base }]);
   const created = await context.request.post(`${base}/api/session`, { multipart: {
     name: '[clean-v3-vl] basic shapes',
-    model: 'odysseus-qwen3.5-tools-pre-heretic',
+    model: 'ulises-qwen3.5-tools-pre-heretic',
     endpoint_id: endpointId,
     endpoint_url: endpointUrl,
     skip_validation: 'true', rag: 'false',
@@ -47,7 +47,7 @@ try {
 
   const page = await context.newPage();
   await page.goto(`${base}/#${session}`, { waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(id => window.__odysseusSessionReadyId === id, session);
+  await page.waitForFunction(id => window.__ulisesSessionReadyId === id, session);
   const agent = page.locator('#mode-agent-btn');
   if (await agent.getAttribute('aria-pressed') !== 'true') await agent.click();
 
@@ -90,12 +90,12 @@ try {
   const firstText = first.final.toLowerCase();
   if (first.selection_mode !== 'clean_compact_v3_preview') throw Error('First turn did not use clean v3');
   report.checks.first_turn_route = true;
-  report.checks.ocr = firstText.includes('odysseus 42');
+  report.checks.ocr = firstText.includes('ulises 42');
   report.checks.visual_objects = ['red', 'circle', 'blue', 'square'].every(required => firstText.includes(required));
   if (!report.checks.visual_objects) throw Error('First answer missed one or more visual objects');
 
   await page.reload({ waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(id => window.__odysseusSessionReadyId === id, session);
+  await page.waitForFunction(id => window.__ulisesSessionReadyId === id, session);
   await page.waitForFunction(() => document.querySelectorAll('#chat-history .msg').length >= 2);
   const second = await send('What color was the shape on the right?');
   if (second.selection_mode !== 'clean_compact_v3_preview') throw Error('Follow-up did not use clean v3');
@@ -105,10 +105,10 @@ try {
   const third = await send('Look at the original image again very carefully. What exact letters and number are in the heading?');
   if (third.selection_mode !== 'clean_compact_v3_preview') throw Error('OCR retry did not use clean v3');
   report.checks.ocr_retry_route = true;
-  report.checks.ocr_retry_grounding = /odysseus\s*42/i.test(third.final);
+  report.checks.ocr_retry_grounding = /ulises\s*42/i.test(third.final);
   const fourth = await send('Use the OCR tool to extract the heading text from the attached image, not its filename.');
   report.checks.explicit_ocr_called = fourth.tools.some(tool => tool.tool === 'extract_text' && tool.exit_code === 0);
-  report.checks.explicit_ocr_grounding = /odysseus\s*42/i.test(fourth.final);
+  report.checks.explicit_ocr_grounding = /ulises\s*42/i.test(fourth.final);
   const fifth = await send('Run OCR on that same image again, but return only the number this time.');
   report.checks.numeric_ocr_called = fifth.tools.some(tool => tool.tool === 'extract_text' && tool.exit_code === 0);
   report.checks.numeric_ocr_grounding = /\b42\b/.test(fifth.final);

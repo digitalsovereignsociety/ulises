@@ -420,7 +420,7 @@ class DeepResearcher:
             except ValueError:
                 continue
         return bool(
-            any(marker in name for marker in ("odysseus", "heretic", "trial55"))
+            any(marker in name for marker in ("ulises", "heretic", "trial55"))
         )
 
     @staticmethod

@@ -139,7 +139,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
                 # Save to gallery
                 try:
                     from src.database import SessionLocal, GalleryImage
-                    owner = str(arguments.get("_odysseus_owner") or "").strip() or None
+                    owner = str(arguments.get("_ulises_owner") or "").strip() or None
                     db = SessionLocal()
                     db.add(GalleryImage(
                         id=str(uuid.uuid4()),

@@ -86,7 +86,7 @@ DECLARED_GAPS = (
     ),
     Gap(
         "Email over IMAP/SMTP",
-        "covered through the existing ODYSSEUS_EMAIL_FIXTURE path only; no local "
+        "covered through the existing ULISES_EMAIL_FIXTURE path only; no local "
         "mail server, so real account sync and send are untested",
     ),
     Gap(

@@ -164,7 +164,7 @@ def test_silent_local_first_event_retries_without_cache_affinity(monkeypatch):
     monkeypatch.setattr(llm_core, "note_model_activity", lambda *a, **k: None)
     monkeypatch.setattr(llm_core, "_clear_host_dead", lambda *a, **k: None)
     monkeypatch.setattr(llm_core, "is_local_endpoint", lambda u: True)
-    monkeypatch.setenv("ODYSSEUS_FIRST_TOKEN_TIMEOUT", "0.01")
+    monkeypatch.setenv("ULISES_FIRST_TOKEN_TIMEOUT", "0.01")
 
     async def run():
         chunks = []
@@ -197,7 +197,7 @@ def test_role_only_message_does_not_disable_silent_local_watchdog(monkeypatch):
     monkeypatch.setattr(llm_core, "note_model_activity", lambda *a, **k: None)
     monkeypatch.setattr(llm_core, "_clear_host_dead", lambda *a, **k: None)
     monkeypatch.setattr(llm_core, "is_local_endpoint", lambda u: True)
-    monkeypatch.setenv("ODYSSEUS_FIRST_TOKEN_TIMEOUT", "0.01")
+    monkeypatch.setenv("ULISES_FIRST_TOKEN_TIMEOUT", "0.01")
 
     async def run():
         chunks = []
@@ -227,7 +227,7 @@ def test_whitespace_content_does_not_disable_silent_local_watchdog(monkeypatch):
     monkeypatch.setattr(llm_core, "note_model_activity", lambda *a, **k: None)
     monkeypatch.setattr(llm_core, "_clear_host_dead", lambda *a, **k: None)
     monkeypatch.setattr(llm_core, "is_local_endpoint", lambda u: True)
-    monkeypatch.setenv("ODYSSEUS_FIRST_TOKEN_TIMEOUT", "0.01")
+    monkeypatch.setenv("ULISES_FIRST_TOKEN_TIMEOUT", "0.01")
 
     async def run():
         chunks = []
@@ -249,7 +249,7 @@ def test_private_gpu_endpoint_gets_first_event_watchdog_even_if_api_classified(m
     # has an auth record. The private address still identifies a managed
     # service, so it must not be allowed to hang for the full read timeout.
     monkeypatch.setattr(llm_core, "is_local_endpoint", lambda u: False)
-    monkeypatch.delenv("ODYSSEUS_FIRST_TOKEN_TIMEOUT", raising=False)
+    monkeypatch.delenv("ULISES_FIRST_TOKEN_TIMEOUT", raising=False)
 
     assert llm_core._first_token_timeout("http://100.118.44.115:18403/v1", 300) == 60
     assert llm_core._first_token_timeout("https://api.openai.com/v1", 300) == 0

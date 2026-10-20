@@ -59,8 +59,8 @@ def test_all_tui_bridge_mutation_failures_are_terminal_transport_errors():
 
 
 def test_tui_non_coding_turn_caps_stale_persisted_setting():
-    assert _effective_agent_rounds(100, {"surface": "odysseus-tui"}, 20) == 20
-    assert _effective_agent_rounds("bad", {"surface": "odysseus-tui"}, 20) == 20
+    assert _effective_agent_rounds(100, {"surface": "ulises-tui"}, 20) == 20
+    assert _effective_agent_rounds("bad", {"surface": "ulises-tui"}, 20) == 20
 
 
 def test_tui_coding_turn_uses_adaptive_stopping():
@@ -69,7 +69,7 @@ def test_tui_coding_turn_uses_adaptive_stopping():
     )
     assert _effective_agent_rounds(
         100,
-        {"surface": "odysseus-tui"},
+        {"surface": "ulises-tui"},
         20,
         message=prompt,
     ) is None
@@ -78,7 +78,7 @@ def test_tui_coding_turn_uses_adaptive_stopping():
 def test_tui_read_only_turn_keeps_short_round_cap():
     assert _effective_agent_rounds(
         100,
-        {"surface": "odysseus-tui"},
+        {"surface": "ulises-tui"},
         20,
         message="Inspect this local repository and report its top-level files.",
     ) == 20
@@ -107,7 +107,7 @@ def test_unattended_native_terminal_agent_honors_explicit_round_budget():
     assert _effective_agent_rounds(
         6,
         {
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "unattended_mode": True,
             "max_agent_rounds": 30,
@@ -120,7 +120,7 @@ def test_unattended_native_terminal_agent_without_budget_is_finite():
     assert _effective_agent_rounds(
         6,
         {
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "unattended_mode": True,
         },
@@ -132,7 +132,7 @@ def test_attended_native_terminal_agent_keeps_configured_round_limit():
     assert _effective_agent_rounds(
         6,
         {
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "unattended_mode": False,
         },
@@ -142,7 +142,7 @@ def test_attended_native_terminal_agent_keeps_configured_round_limit():
 
 def test_unattended_native_runtime_can_bound_output_without_changing_ui_preset():
     native = {
-        "surface": "odysseus-native",
+        "surface": "ulises-native",
         "terminal_agent": True,
         "unattended_mode": True,
         "max_output_tokens": 8192,
@@ -162,14 +162,14 @@ def test_unattended_native_runtime_can_bound_output_without_changing_ui_preset()
 
 def test_native_runtime_context_preserves_only_a_bounded_output_cap():
     context = _parse_client_runtime_context({
-        "surface": "odysseus-native",
+        "surface": "ulises-native",
         "terminal_agent": True,
         "unattended_mode": True,
         "max_output_tokens": 8192,
     })
     assert context["max_output_tokens"] == 8192
     assert _parse_client_runtime_context({
-        "surface": "odysseus-tui",
+        "surface": "ulises-tui",
         "terminal_agent": True,
         "unattended_mode": True,
         "max_output_tokens": 8192,
@@ -481,7 +481,7 @@ def test_tui_smoke_test_runner_is_repository_agnostic():
     assert "npm test" in command
 
 
-def test_tui_host_shell_test_content_never_assumes_odysseus_test_paths():
+def test_tui_host_shell_test_content_never_assumes_ulises_test_paths():
     broad = json.loads(_tui_local_test_runner_host_shell_content("Run the tests"))
     smoke = json.loads(_tui_local_test_runner_host_shell_content("Run a quick smoke test"))
     full = json.loads(_tui_local_test_runner_host_shell_content("Run the full test suite"))
@@ -522,7 +522,7 @@ def test_filename_edit_in_explicit_workspace_is_coding_request():
 
 
 def test_coding_project_request_gets_a_bounded_workspace_probe():
-    command = _tui_local_fallback_shell_command("I want to work on the Odysseus tui")
+    command = _tui_local_fallback_shell_command("I want to work on the Ulises tui")
     assert command is not None
     assert 'workspace=$PWD' in command
     assert "git rev-parse --show-toplevel" in command
@@ -534,7 +534,7 @@ def test_coding_project_request_gets_a_bounded_workspace_probe():
 def test_invalid_backend_workspace_tools_collapse_to_one_host_action():
     blocks, recovered = _tui_recover_invalid_local_tools(
         [ToolBlock("get_workspace", ""), ToolBlock("ls", '{"path":"/app/data"}')],
-        "I want to work on the Odysseus tui",
+        "I want to work on the Ulises tui",
     )
     assert recovered is True
     assert [block.tool_type for block in blocks] == ["host_shell"]
@@ -615,7 +615,7 @@ def test_network_prompt_routes_away_from_container_shell():
     routed = _route_tui_local_workspace_tools(
         {"bash", "web_search"},
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "session_cwd": "/home/tester",
             "host_shell_bridge": {"url": "http://host.docker.internal:17654/run"},
             "runtime_execution_contract": {
@@ -634,7 +634,7 @@ def test_local_only_prompt_gets_a_small_tool_surface():
     routed = _route_tui_local_workspace_tools(
         {"bash", "web_search", "web_fetch", "manage_memory", "mcp__builtin_browser__browser_click"},
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "session_cwd": "/home/tester",
             "host_shell_bridge": {"url": "http://host.docker.internal:17654/run"},
             "runtime_execution_contract": {
@@ -650,19 +650,19 @@ def test_local_only_prompt_gets_a_small_tool_surface():
 
 
 def test_named_private_repo_discovery_stays_on_tui_host_surface():
-    prompt = "can you find odysseus private maintainer repo"
+    prompt = "can you find ulises private maintainer repo"
     context = _host_bridge_context()
 
     assert _tui_local_workspace_turn(
         prompt,
-        workspace="/home/pewds/odysseus",
+        workspace="/home/pewds/ulises",
         client_runtime_context=context,
     )
     assert _route_tui_local_workspace_tools(
         {"get_workspace", "ls", "host_shell", "web_search"},
         client_runtime_context=context,
         text=prompt,
-        workspace="/home/pewds/odysseus",
+        workspace="/home/pewds/ulises",
     ) == {"host_shell", "ask_user", "update_plan"}
 
 
@@ -679,7 +679,7 @@ def test_bash_block_prompt_stays_on_tui_host_shell_surface():
 def test_tui_session_cwd_test_now_routes_to_host_shell_without_bridge():
     routed = _route_tui_local_workspace_tools(
         {"web_search"},
-        client_runtime_context={"surface": "odysseus-tui", "session_cwd": "/tmp/repo"},
+        client_runtime_context={"surface": "ulises-tui", "session_cwd": "/tmp/repo"},
         text="test now",
         workspace="/tmp/repo",
     )
@@ -690,7 +690,7 @@ def test_tui_session_cwd_test_now_routes_to_host_shell_without_bridge():
 def test_tui_session_cwd_personal_request_does_not_route_to_host_shell_without_bridge():
     routed = _route_tui_local_workspace_tools(
         {"manage_notes"},
-        client_runtime_context={"surface": "odysseus-tui", "session_cwd": "/tmp/repo"},
+        client_runtime_context={"surface": "ulises-tui", "session_cwd": "/tmp/repo"},
         text="What's my notes?",
         workspace="/tmp/repo",
     )
@@ -714,7 +714,7 @@ def test_local_coding_prompt_exposes_transactional_patch_tools():
     routed = _route_tui_local_workspace_tools(
         {"bash", "apply_patch", "todowrite", "web_search"},
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "session_cwd": "/home/tester/project",
             "host_shell_bridge": {"url": "http://host.docker.internal:17654/run", "token": "x"},
             "runtime_execution_contract": {
@@ -734,7 +734,7 @@ def test_local_coding_prompt_routes_exact_edits_to_the_host_bridge():
     routed = _route_tui_local_workspace_tools(
         {"edit_file", "apply_patch", "todowrite"},
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "session_cwd": "/home/tester/project",
             "host_shell_bridge": {"url": "http://host.docker.internal:17654/run", "token": "x"},
             "runtime_execution_contract": {
@@ -751,7 +751,7 @@ def test_explicit_external_lookup_keeps_web_tools():
     routed = _route_tui_local_workspace_tools(
         {"bash", "web_search", "web_fetch"},
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "session_cwd": "/home/tester",
             "host_shell_bridge": {"url": "http://host.docker.internal:17654/run"},
             "runtime_execution_contract": {
@@ -768,7 +768,7 @@ def test_negated_web_request_stays_local_only():
     routed = _route_tui_local_workspace_tools(
         {"bash", "web_search", "web_fetch"},
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "session_cwd": "/home/tester",
             "host_shell_bridge": {"url": "http://host.docker.internal:17654/run"},
             "runtime_execution_contract": {
@@ -798,7 +798,7 @@ def test_tui_local_turn_is_explicitly_narrowed():
         "Find the local IP to SSH into ajax.",
         workspace="/home/tester",
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "session_cwd": "/home/tester",
             "host_shell_bridge": {"url": "http://host.docker.internal:17654/run"},
             "runtime_execution_contract": {
@@ -830,7 +830,7 @@ def test_local_project_turn_is_not_short_circuited_by_web_disabled_guard():
     assert not _web_search_unavailable_for_turn(
         {"web", "files"},
         {"web_search", "web_fetch"},
-        "Find the local Odysseus TUI project; do not search the web.",
+        "Find the local Ulises TUI project; do not search the web.",
         _host_bridge_context(),
         None,
     )
@@ -838,7 +838,7 @@ def test_local_project_turn_is_not_short_circuited_by_web_disabled_guard():
 
 def _host_bridge_context():
     return {
-        "surface": "odysseus-tui",
+        "surface": "ulises-tui",
         "session_cwd": "/home/tester/project",
         "host_shell_bridge": {"url": "http://host.docker.internal:17654/run"},
         "runtime_execution_contract": {
@@ -914,7 +914,7 @@ def test_code_file_named_notes_stays_on_host_workspace():
 
 def test_active_workspace_does_not_hijack_model_picker_or_cookbook_requests():
     for prompt in (
-        "What models are running on Odysseus?",
+        "What models are running on Ulises?",
         "Switch to the Qwen model.",
     ):
         assert _looks_like_explicit_tui_app_or_external_request(prompt)

@@ -1,6 +1,6 @@
 # F1 runtime and architecture assessment
 
-Assessment date: 2026-10-13. Repository: `odysseus-dev/odysseus`.
+Assessment date: 2026-10-13. Repository: `ulises-dev/ulises`.
 Worktree: `worktrees/architecture/frontend-foundation`.
 Branch: `refactor/frontend-architecture-foundation`.
 HEAD, local `upstream/dev`, and the live GitHub official `dev` commit were all
@@ -82,7 +82,7 @@ initialization in new APIs, and helpers grouped by convenience instead of purpos
 | Runtime-generated assets | `/api/generated-image/...` uses a confined data path and owner handling; report/render endpoints, Blob manifests/icons and uploads are runtime concerns outside static source publication. |
 | Docker | `Dockerfile` copies app code and existing static output; `.dockerignore` excludes node_modules. Node/npm in the image support Browser MCP, not frontend startup. |
 | Native installers | `setup.py`, `start-macos.sh`, `launch-windows.ps1`, systemd service: Python dependencies/startup consume the checkout. No frontend build is invoked. |
-| Windows desktop | `Odysseus.spec` and `build-windows-portable.ps1` include the whole static directory. Maintain output here rather than require a new bundle path or compiler. |
+| Windows desktop | `Ulises.spec` and `build-windows-portable.ps1` include the whole static directory. Maintain output here rather than require a new bundle path or compiler. |
 | macOS | `build-macos-app.sh` creates a launcher around the Python checkout. Static serving follows the existing checkout path. Installer execution was not performed on Linux. |
 
 ## PWA limitations and test coverage
@@ -115,13 +115,13 @@ inspected. Refresh this inventory before any later slice.
 
 | PR | Overlap and disposition |
 | --- | --- |
-| [#6470](https://github.com/odysseus-dev/odysseus/pull/6470) | Theme/sidebar redesign touches HTML, SW, shared UI and CSS. F1 changes none of those assets. Future manifest/UI slices need collision review. |
-| [#6695](https://github.com/odysseus-dev/odysseus/pull/6695) | OXS touches bootstrap, HTML, platform, middleware and other backend boundaries. F1 does not establish an extension API or modify that platform. |
-| [#6227](https://github.com/odysseus-dev/odysseus/pull/6227) | Root SW scope/header fix. Independent follow-up dependency for broader offline certification. |
-| [#6394](https://github.com/odysseus-dev/odysseus/pull/6394) | Older CSS extraction touches legacy style/SW assets; requires separate supersession review. |
-| [#6627](https://github.com/odysseus-dev/odysseus/pull/6627) | npm development-dependency update overlaps package/lock files; reconcile the exact Acorn development entry on integration. |
-| [#6585](https://github.com/odysseus-dev/odysseus/pull/6585), [#6647](https://github.com/odysseus-dev/odysseus/pull/6647), [#6652](https://github.com/odysseus-dev/odysseus/pull/6652) | Notes optional-field persistence and agent routing/dispatch. Future characterization must reflect their merged state; F1 changes no Notes or backend behavior. |
-| [#6594](https://github.com/odysseus-dev/odysseus/pull/6594), [#6152](https://github.com/odysseus-dev/odysseus/pull/6152) | Desktop launcher/build and frozen-runtime packaging work. Existing paths stay stable; packaging still needs platform-owner validation. |
+| [#6470](https://github.com/ulises-dev/ulises/pull/6470) | Theme/sidebar redesign touches HTML, SW, shared UI and CSS. F1 changes none of those assets. Future manifest/UI slices need collision review. |
+| [#6695](https://github.com/ulises-dev/ulises/pull/6695) | OXS touches bootstrap, HTML, platform, middleware and other backend boundaries. F1 does not establish an extension API or modify that platform. |
+| [#6227](https://github.com/ulises-dev/ulises/pull/6227) | Root SW scope/header fix. Independent follow-up dependency for broader offline certification. |
+| [#6394](https://github.com/ulises-dev/ulises/pull/6394) | Older CSS extraction touches legacy style/SW assets; requires separate supersession review. |
+| [#6627](https://github.com/ulises-dev/ulises/pull/6627) | npm development-dependency update overlaps package/lock files; reconcile the exact Acorn development entry on integration. |
+| [#6585](https://github.com/ulises-dev/ulises/pull/6585), [#6647](https://github.com/ulises-dev/ulises/pull/6647), [#6652](https://github.com/ulises-dev/ulises/pull/6652) | Notes optional-field persistence and agent routing/dispatch. Future characterization must reflect their merged state; F1 changes no Notes or backend behavior. |
+| [#6594](https://github.com/ulises-dev/ulises/pull/6594), [#6152](https://github.com/ulises-dev/ulises/pull/6152) | Desktop launcher/build and frozen-runtime packaging work. Existing paths stay stable; packaging still needs platform-owner validation. |
 
 PR titles alone do not establish compatibility. This report records the checked
 file overlap and relevant dependencies, not approval of those implementations.

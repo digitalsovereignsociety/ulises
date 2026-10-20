@@ -27,17 +27,17 @@ def test_session_manager_create_and_reload_preserves_cwd(tmp_path, monkeypatch):
         "http://localhost/v1/chat/completions",
         "gpt-4",
         owner="alice",
-        cwd="/home/pewds/odysseus-tui",
+        cwd="/home/pewds/ulises-tui",
     )
 
-    assert created.cwd == "/home/pewds/odysseus-tui"
+    assert created.cwd == "/home/pewds/ulises-tui"
 
     db = session_local()
     try:
         row = db.query(DbSession).filter(DbSession.id == "sid").first()
-        assert row.cwd == "/home/pewds/odysseus-tui"
+        assert row.cwd == "/home/pewds/ulises-tui"
         hydrated = manager._db_to_session_meta(row)
     finally:
         db.close()
 
-    assert hydrated.cwd == "/home/pewds/odysseus-tui"
+    assert hydrated.cwd == "/home/pewds/ulises-tui"

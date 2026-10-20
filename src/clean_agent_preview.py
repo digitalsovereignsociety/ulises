@@ -48,8 +48,8 @@ from src.turn_contract import (
 from src.prompt_security import untrusted_context_message
 from src.model_profiles import (
     model_id_leaf,
-    is_odysseus_merged_tools_model,
-    uses_odysseus_progressive_thinking,
+    is_ulises_merged_tools_model,
+    uses_ulises_progressive_thinking,
 )
 
 ENDPOINT_ID = 'cleanv3'
@@ -215,7 +215,7 @@ PREVIEW_TOOLS = (
 # authoritative for execution. Use the same definition as contract resolution.
 INTERACTIVE_CORE_TOOLS = CONTRACT_CORE_TOOLS
 # The interactive compact-v5 surface above stays unchanged. These tools are
-# added only for a server-validated ``odysseus-native`` request with an active,
+# added only for a server-validated ``ulises-native`` request with an active,
 # confined workspace. This lets the model-specific clean runtime serve native
 # media/artifact tasks without granting the WebUI arbitrary filesystem access.
 NATIVE_WORKSPACE_READ_TOOLS = frozenset({
@@ -320,7 +320,7 @@ def provider_compatible_tool_choice_request(request, model):
     if (
         request.get('tool_choice') == 'required'
         and len(request.get('tools') or []) == 1
-        and ('qwen' in model_name or model_name.startswith('odysseus-'))
+        and ('qwen' in model_name or model_name.startswith('ulises-'))
     ):
         # Raw-policy capture accepts a named tool constraint (and records that
         # turn as excluded from policy loss), but deliberately rejects the
@@ -567,7 +567,7 @@ def masked_shell_pipeline_failure(result):
 
 
 _LOSSLESS_OFFERED_TOOL_ALIASES = {
-    # Common model spelling for Odysseus's reviewable, unsent draft action.
+    # Common model spelling for Ulises's reviewable, unsent draft action.
     # This deliberately does not alias any send operation.
     'create_draft': 'mcp__email__draft_email',
     'email_create_draft': 'mcp__email__draft_email',
@@ -1400,11 +1400,11 @@ def incomplete_broad_web_answer(content, user_text, *, recovery_attempts=0):
 
 
 def progressive_thinking_for_turn(model, offered_schemas, thinking_mode=None):
-    """Use Qwen reasoning only when this turn has no Odysseus tool surface."""
+    """Use Qwen reasoning only when this turn has no Ulises tool surface."""
 
     if str(thinking_mode or '').lower() == 'off':
         return False
-    return uses_odysseus_progressive_thinking(model) and not bool(offered_schemas)
+    return uses_ulises_progressive_thinking(model) and not bool(offered_schemas)
 
 
 def visible_content_after_qwen_thinking(content):
@@ -2357,7 +2357,7 @@ def canonical_tools_for_mode(tools, mode):
 @lru_cache(maxsize=1)
 def contract_builder():
     root = Path(os.environ.get(
-        'ODYSSEUS_TOOL_CONTRACT_ROOT',
+        'ULISES_TOOL_CONTRACT_ROOT',
         str(Path(__file__).resolve().parents[1] / "scripts"),
     )).resolve()
     contract_path = root / 'eval_alltools_unseen_compare.py'
@@ -2366,7 +2366,7 @@ def contract_builder():
         sys.path.insert(0, str(root))
         try:
             spec = importlib.util.spec_from_file_location(
-                'odysseus_preview_v3_contract', contract_path
+                'ulises_preview_v3_contract', contract_path
             )
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
@@ -2431,7 +2431,7 @@ def compact_schemas(schemas, *, model=None):
             )
         elif function.get('name') == 'edit_image':
             function['description'] = (
-                'Edit the previous image using its image_id from the tool result, or the supplied odysseus://attachment/ID for an upload. '
+                'Edit the previous image using its image_id from the tool result, or the supplied ulises://attachment/ID for an upload. '
                 'For adding objects or changing the scene, use action=prompt and prompt=the requested change. '
                 'Sends the actual source image to the configured image model, preserving the rest. '
                 'Use generate_image only for a new independent image, not edits. '
@@ -2562,7 +2562,7 @@ def compact_schemas(schemas, *, model=None):
         elif function.get('name') == 'extract_text':
             function['description'] = 'OCR exact text and numbers from an uploaded image reference or a confined native workspace image.'
             if 'path' in properties:
-                properties['path']['description'] = 'Use the supplied odysseus://attachment/ID reference in chat; native sessions can use /workspace/image.png.'
+                properties['path']['description'] = 'Use the supplied ulises://attachment/ID reference in chat; native sessions can use /workspace/image.png.'
         elif function.get('name') == 'inspect_media':
             # These semantics cannot be inferred from compact JSON shapes.
             # Without them models mistake ``query`` for semantic video search
@@ -3526,7 +3526,7 @@ def evaluate_preview_call(name, args, user_text='', *, allow_execute_code=False,
         # that executor so the model receives a recoverable tool error.
         return decision(True, 'allowed_external_runtime_contract')
     if bare == 'extract_text' and not allow_native_workspace and not re.fullmatch(
-        r'odysseus://attachment/[A-Za-z0-9_-]+(?:\.[A-Za-z0-9]+)?', str(args.get('path') or '')
+        r'ulises://attachment/[A-Za-z0-9_-]+(?:\.[A-Za-z0-9]+)?', str(args.get('path') or '')
     ):
         return decision(False, 'uploaded_image_reference_required')
     if bare in SAFE_ACTIONS:
@@ -3742,7 +3742,7 @@ def _rehydrate_recent_image(message, metadata, owner, *, max_images=3, max_bytes
             continue
         image_mime = mime if mime.startswith('image/') else 'image/png'
         blocks.append({'type': 'image_url', 'image_url': {'url': f'data:{image_mime};base64,{encoded}'}})
-        blocks.append({'type': 'text', 'text': f'Uploaded image reference: odysseus://attachment/{upload_id}'})
+        blocks.append({'type': 'text', 'text': f'Uploaded image reference: ulises://attachment/{upload_id}'})
         used += size
     if len(blocks) > 1:
         message['content'] = blocks
@@ -3879,7 +3879,7 @@ def native_workspace_runtime(client_runtime_context, workspace):
     context = client_runtime_context if isinstance(client_runtime_context, dict) else {}
     return bool(
         workspace
-        and context.get('surface') == 'odysseus-native'
+        and context.get('surface') == 'ulises-native'
         and context.get('terminal_agent') is True
         and context.get('unattended_mode') is True
     )
@@ -3889,7 +3889,7 @@ def native_input_files_clause(client_runtime_context):
     """Describe trusted native inputs without exposing host filesystem paths."""
     context = client_runtime_context if isinstance(client_runtime_context, dict) else {}
     if not (
-        context.get('surface') == 'odysseus-native'
+        context.get('surface') == 'ulises-native'
         and context.get('terminal_agent') is True
     ):
         return ''
@@ -5095,7 +5095,7 @@ def bounded_visual_result_blocks(result, *, max_images=3):
 
 
 def provider_request_messages(messages):
-    """Remove Odysseus-only message fields before calling OpenAI-compatible APIs."""
+    """Remove Ulises-only message fields before calling OpenAI-compatible APIs."""
     cleaned = []
     for message in messages:
         item = dict(message)
@@ -5249,7 +5249,7 @@ async def stream_preview(*, endpoint_url, model, messages, headers, turn_contrac
     # were trained, selected, and benchmarked deterministically at temperature
     # zero; honoring a generic UI preset here materially changes both refusal
     # behavior and tool-call accuracy.
-    if is_odysseus_merged_tools_model(model):
+    if is_ulises_merged_tools_model(model):
         temperature = 0.0
     started = time.monotonic()
     tool_execution_timings = []
@@ -5335,7 +5335,7 @@ async def stream_preview(*, endpoint_url, model, messages, headers, turn_contrac
         'This is a tool preview connected to the authenticated user’s real data. '
     )
     system = (
-        f'You are Odysseus. Current UTC date and time: {datetime.now(timezone.utc).isoformat()}. '
+        f'You are Ulises. Current UTC date and time: {datetime.now(timezone.utc).isoformat()}. '
         + runtime_scope_clause
         + 'Use available tools when needed, including for personal records and current information. '
         'Preserve conversation context on follow-ups and choose arguments yourself. '
@@ -5633,7 +5633,7 @@ async def stream_preview(*, endpoint_url, model, messages, headers, turn_contrac
                     'list_emails', 'search_emails', 'read_email', 'draft_email',
                     'draft_email_reply', 'send_email', 'reply_email', 'list_email_accounts',
                 } for s in offered)
-                    and is_odysseus_merged_tools_model(model) and not native_workspace_enabled):
+                    and is_ulises_merged_tools_model(model) and not native_workspace_enabled):
                 from src.email_task_intent import classify_email_task, scope_email_tools
                 try:
                     intent = await classify_email_task(
@@ -5681,7 +5681,7 @@ async def stream_preview(*, endpoint_url, model, messages, headers, turn_contrac
                                       'destination': 'active_editor' if active_editor_target else intent.destination,
                                       'needs_clarification': intent.needs_clarification})
                         + '\nFor draft/revise, use the interpreted destination: mailbox means '
-                        'create an UNSENT Odysseus email editor document using draft_email or '
+                        'create an UNSENT Ulises email editor document using draft_email or '
                         'draft_email_reply; chat means composed text in chat. When an active '
                         'editor is bound, update it instead of creating another draft. Resolve '
                         'named recipients to contact email addresses before creating a compose '

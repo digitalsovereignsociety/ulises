@@ -149,8 +149,8 @@ def test_calendar_view_change_recovers_a_fully_open_day_drawer():
     handler = calendar_src[view_idx:render_idx]
     assert "const drawerWasPinnedOpen" in handler
     assert "calBody.classList.remove('cal-events-full', 'cal-calendar-full');" in handler
-    assert "localStorage.removeItem('odysseus.cal.detailH');" in handler
-    assert "localStorage.removeItem('odysseus.cal.splitSnap');" in handler
+    assert "localStorage.removeItem('ulises.cal.detailH');" in handler
+    assert "localStorage.removeItem('ulises.cal.splitSnap');" in handler
     assert "_selectedDay = (_view === 'month' || _view === 'week') ? _ds(_currentDate) : null;" in handler
 
 
@@ -221,11 +221,11 @@ def test_day_selection_adjusts_drawer_for_event_count():
     assert "function _adjustDayDrawerForSelection(body, dateStr)" in calendar_src
     assert "if (!events.length)" in calendar_src
     assert "body.classList.add('cal-calendar-full');" in calendar_src
-    assert "localStorage.setItem('odysseus.cal.splitSnap', 'calendar');" in calendar_src
+    assert "localStorage.setItem('ulises.cal.splitSnap', 'calendar');" in calendar_src
     assert "body.classList.contains('cal-calendar-full')" in calendar_src
     assert "detail.getBoundingClientRect().height <= 48" in calendar_src
     assert "const eventRows = Math.min(events.length, 3);" in calendar_src
-    assert "localStorage.removeItem('odysseus.cal.splitSnap');" in calendar_src
+    assert "localStorage.removeItem('ulises.cal.splitSnap');" in calendar_src
     day_click_idx = calendar_src.index("body.querySelectorAll('.cal-day[data-date]')")
     adjust_idx = calendar_src.index("_adjustDayDrawerForSelection(body, d);", day_click_idx)
     second_click_idx = calendar_src.index("if (_selectedDay === d && !drawerAdjusted)", adjust_idx)

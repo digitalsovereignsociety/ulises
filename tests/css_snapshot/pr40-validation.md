@@ -153,22 +153,22 @@ Result: **11396 passed, 53 skipped, 2 xfailed, 185 warnings, 6 subtests passed i
 Declared skip/xfail contracts:
 
 ```text
-SKIPPED [1] tests/smoke/test_calendar_smoke.py:16: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/odysseus-smoke`, which boots this worktree and exports it.
-SKIPPED [1] tests/smoke/test_chat_smoke.py:20: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/odysseus-smoke`, which boots this worktree and exports it.
-SKIPPED [1] tests/smoke/test_chat_smoke.py:35: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/odysseus-smoke`, which boots this worktree and exports it.
-SKIPPED [1] tests/smoke/test_chat_smoke.py:59: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/odysseus-smoke`, which boots this worktree and exports it.
-SKIPPED [1] tests/smoke/test_compare_smoke.py:39: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/odysseus-smoke`, which boots this worktree and exports it.
-SKIPPED [1] tests/smoke/test_cookbook_smoke.py:18: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/odysseus-smoke`, which boots this worktree and exports it.
-SKIPPED [1] tests/smoke/test_cookbook_smoke.py:31: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/odysseus-smoke`, which boots this worktree and exports it.
-SKIPPED [1] tests/smoke/test_cookbook_smoke.py:41: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/odysseus-smoke`, which boots this worktree and exports it.
-SKIPPED [1] tests/smoke/test_documents_rag_smoke.py:31: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/odysseus-smoke`, which boots this worktree and exports it.
-SKIPPED [1] tests/smoke/test_documents_smoke.py:12: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/odysseus-smoke`, which boots this worktree and exports it.
-SKIPPED [1] tests/smoke/test_email_smoke.py:75: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/odysseus-smoke`, which boots this worktree and exports it.
-SKIPPED [1] tests/smoke/test_memory_smoke.py:19: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/odysseus-smoke`, which boots this worktree and exports it.
-SKIPPED [1] tests/smoke/test_notes_smoke.py:11: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/odysseus-smoke`, which boots this worktree and exports it.
-SKIPPED [1] tests/smoke/test_settings_smoke.py:16: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/odysseus-smoke`, which boots this worktree and exports it.
-SKIPPED [1] tests/smoke/test_tasks_smoke.py:16: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/odysseus-smoke`, which boots this worktree and exports it.
-SKIPPED [1] tests/smoke/test_uploads_smoke.py:11: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/odysseus-smoke`, which boots this worktree and exports it.
+SKIPPED [1] tests/smoke/test_calendar_smoke.py:16: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/ulises-smoke`, which boots this worktree and exports it.
+SKIPPED [1] tests/smoke/test_chat_smoke.py:20: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/ulises-smoke`, which boots this worktree and exports it.
+SKIPPED [1] tests/smoke/test_chat_smoke.py:35: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/ulises-smoke`, which boots this worktree and exports it.
+SKIPPED [1] tests/smoke/test_chat_smoke.py:59: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/ulises-smoke`, which boots this worktree and exports it.
+SKIPPED [1] tests/smoke/test_compare_smoke.py:39: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/ulises-smoke`, which boots this worktree and exports it.
+SKIPPED [1] tests/smoke/test_cookbook_smoke.py:18: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/ulises-smoke`, which boots this worktree and exports it.
+SKIPPED [1] tests/smoke/test_cookbook_smoke.py:31: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/ulises-smoke`, which boots this worktree and exports it.
+SKIPPED [1] tests/smoke/test_cookbook_smoke.py:41: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/ulises-smoke`, which boots this worktree and exports it.
+SKIPPED [1] tests/smoke/test_documents_rag_smoke.py:31: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/ulises-smoke`, which boots this worktree and exports it.
+SKIPPED [1] tests/smoke/test_documents_smoke.py:12: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/ulises-smoke`, which boots this worktree and exports it.
+SKIPPED [1] tests/smoke/test_email_smoke.py:75: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/ulises-smoke`, which boots this worktree and exports it.
+SKIPPED [1] tests/smoke/test_memory_smoke.py:19: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/ulises-smoke`, which boots this worktree and exports it.
+SKIPPED [1] tests/smoke/test_notes_smoke.py:11: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/ulises-smoke`, which boots this worktree and exports it.
+SKIPPED [1] tests/smoke/test_settings_smoke.py:16: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/ulises-smoke`, which boots this worktree and exports it.
+SKIPPED [1] tests/smoke/test_tasks_smoke.py:16: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/ulises-smoke`, which boots this worktree and exports it.
+SKIPPED [1] tests/smoke/test_uploads_smoke.py:11: APP_PORT is not set, so there is no instance to drive. Run the suite with `scripts/ulises-smoke`, which boots this worktree and exports it.
 SKIPPED [1] tests/test_ajax_email_live.py:21: opt-in live Ajax endpoint
 SKIPPED [5] tests/test_ajax_email_live.py:55: opt-in live Ajax endpoint
 SKIPPED [12] tests/test_ajax_email_live.py:74: opt-in live Ajax endpoint

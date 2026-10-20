@@ -10,7 +10,7 @@ from mcp_servers import email_server as es
 
 @pytest.fixture
 def indexed_mailbox(monkeypatch, tmp_path):
-    monkeypatch.setenv('ODYSSEUS_EMAIL_FIXTURE', '0')
+    monkeypatch.setenv('ULISES_EMAIL_FIXTURE', '0')
     monkeypatch.setenv('EMAIL_CACHE_DB', str(tmp_path / 'missing-cache.db'))
     monkeypatch.setattr(es, '_ACCOUNT_CACHE', {})
     account_defaults = dict.fromkeys((
@@ -45,7 +45,7 @@ def indexed_mailbox(monkeypatch, tmp_path):
 
 def search(**kwargs):
     result = asyncio.run(es.call_tool('search_emails', {
-        '_odysseus_owner': 'alice', 'query': 'receipt', 'folders': ['INBOX'],
+        '_ulises_owner': 'alice', 'query': 'receipt', 'folders': ['INBOX'],
         'max_results': 1, **kwargs,
     }))
     return '\n'.join(item.text for item in result)
@@ -75,7 +75,7 @@ def test_list_date_refinement_filters_imap_before_limit(indexed_mailbox, monkeyp
             pass
     monkeypatch.setattr(es, '_imap_connect', lambda account=None: Mailbox())
     result = asyncio.run(es.call_tool('list_emails', {
-        '_odysseus_owner': 'alice', 'account': 'account-a', 'max_results': 1,
+        '_ulises_owner': 'alice', 'account': 'account-a', 'max_results': 1,
         'date_from': '2026-07-01T00:00:00Z', 'date_to': '2026-08-01T00:00:00Z',
     }))
     text = '\n'.join(item.text for item in result)
@@ -105,7 +105,7 @@ def test_list_date_refinement_pages_headers_and_preserves_unread_filter(indexed_
             pass
     monkeypatch.setattr(es, '_imap_connect', lambda account=None: Mailbox())
     result = asyncio.run(es.call_tool('list_emails', {
-        '_odysseus_owner': 'alice', 'account': 'account-a', 'max_results': 60,
+        '_ulises_owner': 'alice', 'account': 'account-a', 'max_results': 60,
         'unread_only': True, 'date_from': '2026-07-01', 'date_to': '2026-08-01',
     }))
     text = '\n'.join(item.text for item in result)
@@ -127,7 +127,7 @@ def test_indexed_listing_uses_utc_for_timezone_less_bounds(indexed_mailbox, monk
             env.setenv('TZ', 'Pacific/Honolulu')
             time.tzset()
             result = asyncio.run(es.call_tool('list_emails', {
-                '_odysseus_owner': 'alice', 'account': 'account-a', 'max_results': 1,
+                '_ulises_owner': 'alice', 'account': 'account-a', 'max_results': 1,
                 'date_from': '2026-07-01', 'date_to': '2026-08-01',
             }))
     finally:
@@ -143,7 +143,7 @@ def test_indexed_listing_uses_utc_for_timezone_less_bounds(indexed_mailbox, monk
 ])
 def test_invalid_list_bounds_do_not_broaden_to_the_whole_mailbox(indexed_mailbox, bounds):
     result = asyncio.run(es.call_tool('list_emails', {
-        '_odysseus_owner': 'alice', 'account': 'account-a', **bounds,
+        '_ulises_owner': 'alice', 'account': 'account-a', **bounds,
     }))
     text = '\n'.join(item.text for item in result)
     assert text.startswith('Error: date_'), text
@@ -156,7 +156,7 @@ def test_invalid_multi_account_list_bounds_are_rejected_before_scanning(indexed_
         {**row, 'owner': 'alice'} for row in accounts
     ])
     result = asyncio.run(es.call_tool('list_emails', {
-        '_odysseus_owner': 'alice', 'date_from': 'not-a-date',
+        '_ulises_owner': 'alice', 'date_from': 'not-a-date',
     }))
     text = '\n'.join(item.text for item in result)
     assert text.startswith('Error: date_from'), text
@@ -180,7 +180,7 @@ def test_date_filtered_listing_reuses_indexed_headers_after_imap_search(indexed_
             pass
     monkeypatch.setattr(es, '_imap_connect', lambda account=None: Mailbox())
     result = asyncio.run(es.call_tool('list_emails', {
-        '_odysseus_owner': 'alice', 'account': 'account-a', 'unread_only': True,
+        '_ulises_owner': 'alice', 'account': 'account-a', 'unread_only': True,
         'max_results': 1, 'date_from': '2026-07-01', 'date_to': '2026-08-01',
     }))
     text = '\n'.join(item.text for item in result)
@@ -208,7 +208,7 @@ def test_missing_email_read_identifies_the_selected_folder(indexed_mailbox, monk
             pass
     monkeypatch.setattr(es, '_imap_connect', lambda account=None: Mailbox())
     result = asyncio.run(es.call_tool('read_email', {
-        '_odysseus_owner': 'alice', 'uid': '20', 'folder': folder,
+        '_ulises_owner': 'alice', 'uid': '20', 'folder': folder,
     }))
     text = '\n'.join(item.text for item in result)
     assert 'Error: Email not found with UID 20' in text

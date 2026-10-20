@@ -1,6 +1,6 @@
 """Opt-in real Ajax/harness checks; every tool execution uses local fixtures.
 
-ODYSSEUS_AJAX_TEST_URL=http://host:port/v1/chat/completions pytest -s tests/test_ajax_email_live.py
+ULISES_AJAX_TEST_URL=http://host:port/v1/chat/completions pytest -s tests/test_ajax_email_live.py
 No app server, account, mailbox, browser, or editor mutations are used.
 """
 import json
@@ -14,7 +14,7 @@ from src.tool_policy import ToolPolicy
 from src.tool_schemas import FUNCTION_TOOL_SCHEMAS
 from src.turn_contract import resolve_full_inventory_contract
 
-URL = os.environ.get('ODYSSEUS_AJAX_TEST_URL')
+URL = os.environ.get('ULISES_AJAX_TEST_URL')
 pytestmark = [pytest.mark.asyncio, pytest.mark.skipif(not URL, reason='opt-in live Ajax endpoint')]
 
 

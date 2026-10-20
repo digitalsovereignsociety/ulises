@@ -148,7 +148,7 @@ def test_qwen_capture_converts_single_required_tool_to_named_constraint():
         'tool_choice': 'required',
     }
     compatible = provider_compatible_tool_choice_request(
-        request, 'odysseus-qwen3.5-tools-pre-heretic'
+        request, 'ulises-qwen3.5-tools-pre-heretic'
     )
     assert compatible['tool_choice'] == {
         'type': 'function', 'function': {'name': 'web_search'},
@@ -365,7 +365,7 @@ def test_compact_suggestion_contract_forbids_noop_replacements():
 
 
 def test_interactive_ocr_uses_upload_references_not_arbitrary_workspace_reads():
-    owned_ref = evaluate_preview_call('extract_text', {'path': 'odysseus://attachment/fixture-upload'}, 'OCR this image')
+    owned_ref = evaluate_preview_call('extract_text', {'path': 'ulises://attachment/fixture-upload'}, 'OCR this image')
     assert owned_ref.allowed
     assert owned_ref.effects == ('read_private',)
     assert not evaluate_preview_call('extract_text', {'path': '/etc/passwd'}, 'OCR this image').allowed
@@ -610,7 +610,7 @@ async def test_empty_required_directory_keeps_native_turn_running(monkeypatch, t
         headers={}, turn_contract=contract, session_id='test', owner='test',
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace=str(tmp_path),
         client_runtime_context={
-            'surface': 'odysseus-native', 'terminal_agent': True,
+            'surface': 'ulises-native', 'terminal_agent': True,
             'unattended_mode': True,
             'completion_requirements': {'required_artifacts': [str(output)]},
         }, max_rounds=8,
@@ -872,7 +872,7 @@ async def test_empty_artifact_writer_turn_recovers_via_body_handoff(monkeypatch)
         headers={}, turn_contract=contract, session_id='test', owner='test',
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace='/workspace',
         client_runtime_context={
-            'surface': 'odysseus-native', 'terminal_agent': True,
+            'surface': 'ulises-native', 'terminal_agent': True,
             'unattended_mode': True,
             'completion_requirements': {
                 'required_artifacts': ['/workspace/output.html'],
@@ -965,7 +965,7 @@ async def test_malformed_writer_body_handoff_reopens_writer_after_two_tool_viola
         headers={}, turn_contract=contract, session_id='test', owner='test',
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace='/workspace',
         client_runtime_context={
-            'surface': 'odysseus-native', 'terminal_agent': True,
+            'surface': 'ulises-native', 'terminal_agent': True,
             'unattended_mode': True,
             'completion_requirements': {
                 'required_artifacts': ['/workspace/output.tex'],
@@ -1054,7 +1054,7 @@ async def test_concatenated_writer_arguments_execute_as_bounded_ordered_calls(mo
         headers={}, turn_contract=contract, session_id='test', owner='test',
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace='/workspace',
         client_runtime_context={
-            'surface': 'odysseus-native', 'terminal_agent': True,
+            'surface': 'ulises-native', 'terminal_agent': True,
             'unattended_mode': True,
             'completion_requirements': {
                 'required_artifacts': ['/workspace/results'],
@@ -1202,7 +1202,7 @@ async def test_binary_artifact_completion_requests_python_not_text_writer(monkey
         headers={}, turn_contract=contract, session_id='test', owner='test',
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace='/workspace',
         client_runtime_context={
-            'surface': 'odysseus-native', 'terminal_agent': True,
+            'surface': 'ulises-native', 'terminal_agent': True,
             'unattended_mode': True,
             'completion_requirements': {
                 'required_artifacts': ['/workspace/output.png'],
@@ -1281,7 +1281,7 @@ async def test_action_promise_resumes_tools_then_forces_final_synthesis(monkeypa
         headers={}, turn_contract=contract, session_id='test', owner='test',
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace='/workspace',
         client_runtime_context={
-            'surface': 'odysseus-native', 'terminal_agent': True,
+            'surface': 'ulises-native', 'terminal_agent': True,
             'unattended_mode': True,
         }, max_tokens=8192, max_rounds=6,
     )]
@@ -1367,7 +1367,7 @@ async def test_repeated_off_contract_calls_recover_via_required_artifact_body(mo
         headers={}, turn_contract=contract, session_id='test', owner='test',
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace='/workspace',
         client_runtime_context={
-            'surface': 'odysseus-native', 'terminal_agent': True,
+            'surface': 'ulises-native', 'terminal_agent': True,
             'unattended_mode': True,
             'completion_requirements': {
                 'required_artifacts': ['/workspace/output.html'],
@@ -2597,7 +2597,7 @@ def test_ui_panel_renderer_does_not_claim_unconfirmed_draft_state():
 
 def test_cookbook_renderer_does_not_invent_live_health_from_configuration():
     rendered = cookbook_servers_terminal_response(
-        "2 configured server(s):\n- Ajax → local\n- Odysseus → host",
+        "2 configured server(s):\n- Ajax → local\n- Ulises → host",
         user_text="names and status",
     )
     assert "Live online/offline health is not included" in rendered
@@ -2848,7 +2848,7 @@ def test_cookbook_server_followups_reuse_typed_prior_list_with_limits_and_status
         }]},
         {'role': 'tool', 'tool_call_id': 'call-1', 'content': (
             '4 configured server(s) (default: Ajax):\n'
-            '- kierkegaard → local\n- Odysseus → remote\n'
+            '- kierkegaard → local\n- Ulises → remote\n'
             '- Ajax → remote\n- epictetus → remote'
         )},
     ]
@@ -3450,7 +3450,7 @@ def test_every_compactly_offered_preview_tool_has_valid_policy_permitted_call():
             'path': '/api/hwfit/models?fit_only=true&limit=10&sort=fit',
             }, 'find the best model to run on my hardware'),
             'ask_teacher': ({'problem': 'Check whether this claim is grounded'}, 'ask the teacher model to review this claim'),
-        'extract_text': ({'path': 'odysseus://attachment/fixture.png'}, 'OCR this image'),
+        'extract_text': ({'path': 'ulises://attachment/fixture.png'}, 'OCR this image'),
         'edit_image': ({'image_id': 'owned-image', 'action': 'upscale', 'scale': 2}, 'upscale this image 2x'),
         'generate_image': ({'prompt': 'A city'}, 'Make an image of a city'),
         'bash': ({'command': 'pwd'}, 'run this shell command'),
@@ -3890,7 +3890,7 @@ def test_history_rehydrates_most_recent_owner_checked_image_for_followup(monkeyp
     assert image_turn['role'] == 'user'
     assert image_turn['content'][0] == {'type': 'text', 'text': 'What is shown?'}
     assert image_turn['content'][1]['image_url']['url'].startswith('data:image/png;base64,')
-    assert any(block.get('type') == 'text' and f'odysseus://attachment/{upload_id}' in block.get('text', '')
+    assert any(block.get('type') == 'text' and f'ulises://attachment/{upload_id}' in block.get('text', '')
                for block in image_turn['content'])
     assert result[-1] == {'role': 'user', 'content': 'What color was it?'}
 
@@ -4370,7 +4370,7 @@ def test_v3_schema_uses_configured_versioned_contract_root(tmp_path, monkeypatch
         "    return tools\n",
         encoding='utf-8',
     )
-    monkeypatch.setenv('ODYSSEUS_TOOL_CONTRACT_ROOT', str(contract_root))
+    monkeypatch.setenv('ULISES_TOOL_CONTRACT_ROOT', str(contract_root))
     module.contract_builder.cache_clear()
     try:
         # Probe a tool whose compact description the harness does not
@@ -4526,7 +4526,7 @@ async def test_stream_emits_incremental_text_and_persistable_history(monkeypatch
     raw = [chunk async for chunk in stream_preview(endpoint_url='http://test', model='test', messages=[{'role': 'user', 'content': 'hi'}], headers={}, turn_contract=contract, session_id='test', owner='test', disabled_tools=set(), tool_policy=ToolPolicy())]
     events = [json.loads(s[6:]) for s in raw if '[DONE]' not in s]
     assert [e['delta'] for e in events if 'delta' in e] == ['Hello', ' there']
-    assert requests[0]['messages'][0]['content'].startswith('You are Odysseus.')
+    assert requests[0]['messages'][0]['content'].startswith('You are Ulises.')
     metrics = next(e['data'] for e in events if e.get('type') == 'metrics')
     assert metrics['clean_v3_turn'] == [{'role': 'assistant', 'content': 'Hello there'}]
     assert raw[-1] == 'data: [DONE]\n\n'
@@ -4999,7 +4999,7 @@ async def test_native_workspace_write_allows_evidence_backed_completion(monkeypa
         turn_contract=contract, session_id='test', owner='test', disabled_tools=set(),
         tool_policy=ToolPolicy(), workspace='/tmp/workspace',
         client_runtime_context={
-            'surface': 'odysseus-native', 'terminal_agent': True,
+            'surface': 'ulises-native', 'terminal_agent': True,
             'unattended_mode': True,
         }, max_rounds=2,
     )]
@@ -5133,7 +5133,7 @@ async def test_native_shell_evidence_cannot_finish_with_required_artifact_missin
         )}], turn_contract=contract, session_id='test', owner='test',
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace='/tmp/workspace',
         client_runtime_context={
-            'surface': 'odysseus-native', 'terminal_agent': True,
+            'surface': 'ulises-native', 'terminal_agent': True,
             'unattended_mode': True,
             'completion_requirements': {'required_artifacts': ['/workspace/output.html']},
         }, max_rounds=4,
@@ -5199,7 +5199,7 @@ async def test_native_stream_normalizes_single_clip_exports_before_validation(mo
         headers={}, turn_contract=contract, session_id="test", owner="test",
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace="/tmp/workspace",
         client_runtime_context={
-            "surface": "odysseus-native", "terminal_agent": True,
+            "surface": "ulises-native", "terminal_agent": True,
             "unattended_mode": True,
         }, max_rounds=2,
     )]
@@ -5273,7 +5273,7 @@ async def test_native_stream_explains_how_to_recover_from_timestamp_free_export(
         headers={}, turn_contract=contract, session_id="test", owner="test",
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace="/tmp/workspace",
         client_runtime_context={
-            "surface": "odysseus-native", "terminal_agent": True,
+            "surface": "ulises-native", "terminal_agent": True,
             "unattended_mode": True,
         }, max_rounds=3,
     )]
@@ -5350,7 +5350,7 @@ async def test_native_stream_synthesizes_after_first_post_budget_tool_call(monke
         turn_contract=contract, session_id="test", owner="test", disabled_tools=set(),
         tool_policy=ToolPolicy(), workspace="/tmp/workspace",
         client_runtime_context={
-            "surface": "odysseus-native", "terminal_agent": True,
+            "surface": "ulises-native", "terminal_agent": True,
             "unattended_mode": True,
         }, max_rounds=20,
     )]
@@ -5738,7 +5738,7 @@ async def test_native_stream_reserves_remaining_budget_for_required_artifact(mon
         headers={}, turn_contract=contract, session_id="test", owner="test",
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace="/tmp/workspace",
         client_runtime_context={
-            "surface": "odysseus-native", "terminal_agent": True,
+            "surface": "ulises-native", "terminal_agent": True,
             "unattended_mode": True,
             "completion_requirements": {"required_artifacts": ["/tmp_workspace/results"]},
         }, max_rounds=32,
@@ -5853,7 +5853,7 @@ async def test_native_stream_reserves_wall_time_for_required_artifact(monkeypatc
         headers={}, turn_contract=contract, session_id="test", owner="test",
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace="/tmp/workspace",
         client_runtime_context={
-            "surface": "odysseus-native", "terminal_agent": True,
+            "surface": "ulises-native", "terminal_agent": True,
             "unattended_mode": True,
             "agent_wall_time_seconds": 600,
             "artifact_completion_reserve_seconds": 180,
@@ -5934,7 +5934,7 @@ async def test_detailed_video_answer_requires_second_focused_inspection(monkeypa
         headers={}, turn_contract=contract, session_id="test", owner="test",
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace="/tmp/workspace",
         client_runtime_context={
-            "surface": "odysseus-native", "terminal_agent": True,
+            "surface": "ulises-native", "terminal_agent": True,
             "unattended_mode": True,
         }, max_rounds=4,
     )]
@@ -6007,7 +6007,7 @@ async def test_exact_native_read_gets_tool_free_synthesis_round(monkeypatch):
         headers={}, turn_contract=contract, session_id="test", owner="test",
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace="/tmp/workspace",
         client_runtime_context={
-            "surface": "odysseus-native", "terminal_agent": True,
+            "surface": "ulises-native", "terminal_agent": True,
             "unattended_mode": True,
         }, max_rounds=4,
     )]
@@ -6333,7 +6333,7 @@ async def test_native_stream_does_not_reexecute_an_identical_successful_call(mon
         turn_contract=contract, session_id="test", owner="test", disabled_tools=set(),
         tool_policy=ToolPolicy(), workspace="/tmp/workspace",
         client_runtime_context={
-            "surface": "odysseus-native", "terminal_agent": True,
+            "surface": "ulises-native", "terminal_agent": True,
             "unattended_mode": True,
         }, max_rounds=3,
     )]
@@ -6408,7 +6408,7 @@ async def test_native_stream_permanently_withholds_tool_when_model_ignores_dupli
         turn_contract=contract, session_id="test", owner="test", disabled_tools=set(),
         tool_policy=ToolPolicy(), workspace="/tmp/workspace",
         client_runtime_context={
-            "surface": "odysseus-native", "terminal_agent": True,
+            "surface": "ulises-native", "terminal_agent": True,
             "unattended_mode": True,
         }, max_rounds=4,
     )]
@@ -6477,7 +6477,7 @@ async def test_native_stream_terminates_after_calling_a_permanently_suppressed_t
         turn_contract=contract, session_id="test", owner="test", disabled_tools=set(),
         tool_policy=ToolPolicy(), workspace="/tmp/workspace",
         client_runtime_context={
-            "surface": "odysseus-native", "terminal_agent": True,
+            "surface": "ulises-native", "terminal_agent": True,
             "unattended_mode": True,
         }, max_rounds=20,
     )]
@@ -6566,7 +6566,7 @@ async def test_suppressed_evidence_tool_recovers_missing_artifact_with_writer(
         turn_contract=contract, session_id='test', owner='test',
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace=str(tmp_path),
         client_runtime_context={
-            'surface': 'odysseus-native', 'terminal_agent': True,
+            'surface': 'ulises-native', 'terminal_agent': True,
             'unattended_mode': True,
             'completion_requirements': {'required_artifacts': [output_alias]},
         }, max_rounds=8,
@@ -6654,7 +6654,7 @@ async def test_native_stream_stops_reexecuting_an_identical_failed_call(monkeypa
         )}], headers={}, turn_contract=contract, session_id="test", owner="test",
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace="/tmp/workspace",
         client_runtime_context={
-            "surface": "odysseus-native", "terminal_agent": True,
+            "surface": "ulises-native", "terminal_agent": True,
             "unattended_mode": True,
         }, max_rounds=5,
     )]
@@ -6735,7 +6735,7 @@ async def test_native_stream_recovers_when_declared_workspace_artifact_is_missin
         )}], headers={}, turn_contract=contract, session_id="test", owner="test",
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace=str(tmp_path),
         client_runtime_context={
-            "surface": "odysseus-native", "terminal_agent": True,
+            "surface": "ulises-native", "terminal_agent": True,
             "unattended_mode": True,
         }, max_rounds=4,
     )]
@@ -6861,7 +6861,7 @@ async def test_native_stream_stops_fourth_full_rewrite_to_same_target(monkeypatc
         turn_contract=contract, session_id='test', owner='test',
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace='/tmp/workspace',
         client_runtime_context={
-            'surface': 'odysseus-native', 'terminal_agent': True,
+            'surface': 'ulises-native', 'terminal_agent': True,
             'unattended_mode': True,
             'completion_requirements': {'required_artifacts': ['/tmp_workspace/results/report.md']},
         }, max_rounds=8,
@@ -6926,7 +6926,7 @@ async def test_native_stream_redirects_repeated_filename_image_inference(monkeyp
         turn_contract=contract, session_id='test', owner='test',
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace='/tmp/workspace',
         client_runtime_context={
-            'surface': 'odysseus-native', 'terminal_agent': True,
+            'surface': 'ulises-native', 'terminal_agent': True,
             'unattended_mode': True,
         }, max_rounds=6,
     )]
@@ -7068,7 +7068,7 @@ async def test_native_stream_allows_focused_reinspection_but_blocks_exact_repeat
         turn_contract=contract, session_id='test', owner='test',
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace='/tmp/workspace',
         client_runtime_context={
-            'surface': 'odysseus-native', 'terminal_agent': True,
+            'surface': 'ulises-native', 'terminal_agent': True,
             'unattended_mode': True,
         }, max_rounds=5,
     )]
@@ -7131,7 +7131,7 @@ async def test_native_stream_marks_masked_shell_pipeline_failure_as_error(monkey
         turn_contract=contract, session_id='test', owner='test',
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace='/tmp/workspace',
         client_runtime_context={
-            'surface': 'odysseus-native', 'terminal_agent': True,
+            'surface': 'ulises-native', 'terminal_agent': True,
             'unattended_mode': True,
         }, max_rounds=4,
     )]
@@ -7196,7 +7196,7 @@ async def test_parallel_tool_results_precede_visual_evidence(monkeypatch):
         messages=[{"role": "user", "content": "Inspect and list."}],
         turn_contract=contract, session_id="test", owner="test",
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace="/tmp/workspace",
-        client_runtime_context={"surface": "odysseus-native", "terminal_agent": True,
+        client_runtime_context={"surface": "ulises-native", "terminal_agent": True,
                                 "unattended_mode": True}, max_rounds=2,
     )]
 

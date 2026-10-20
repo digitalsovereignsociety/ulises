@@ -8,12 +8,12 @@ const root = path.resolve(new URL('..', import.meta.url).pathname);
 const base = process.env.BASE_URL || 'http://127.0.0.1:7011';
 const endpointId = process.env.ENDPOINT_ID || '1d1022ef';
 const endpointUrl = process.env.ENDPOINT_URL || (() => { throw new Error("ENDPOINT_URL is required"); })();
-const model = process.env.MODEL || 'odysseus-qwen3.5-tools-pre-heretic';
+const model = process.env.MODEL || 'ulises-qwen3.5-tools-pre-heretic';
 const owner = 'sft_alex_creator';
 const routingMode = 'recent_model_choice';
 const reportPath = path.resolve(process.env.REPORT_PATH || path.join(root, `reports/document-suggestion-followup-${new Date().toISOString().replace(/[:.]/g, '-')}.json`));
 if (!reportPath.startsWith(path.join(root, 'reports') + path.sep) || fs.existsSync(reportPath)) throw Error('Report path must be new and under reports/');
-const auth = JSON.parse(fs.readFileSync(process.env.ODYSSEUS_AUTH_SESSION_FILE || (() => { throw new Error("ODYSSEUS_AUTH_SESSION_FILE is required"); })(), 'utf8'));
+const auth = JSON.parse(fs.readFileSync(process.env.ULISES_AUTH_SESSION_FILE || (() => { throw new Error("ULISES_AUTH_SESSION_FILE is required"); })(), 'utf8'));
 const token = Object.entries(auth).find(([, value]) => value?.username === owner)?.[0];
 if (!token) throw Error(`No active ${owner} session`);
 const original = '# Review fixture\n\nThis sentence is very very long and it has unnecessary words.\n\nThe final sentence is also somewhat verbose and lengthy.\n';
@@ -29,8 +29,8 @@ const parseArgs = event => { try { return JSON.parse(event?.command || '{}'); } 
 let browser, context, page, session = '', docId = '';
 try {
   browser = await chromium.launch({ headless: true, args: ['--no-proxy-server'] });
-  context = await browser.newContext({ viewport: { width: 1280, height: 900 }, serviceWorkers: 'block', extraHTTPHeaders: { 'Accept-Encoding': 'identity', 'x-odysseus-routing-experiment': routingMode } });
-  await context.addCookies([{ name: 'odysseus_session', value: token, url: base }]);
+  context = await browser.newContext({ viewport: { width: 1280, height: 900 }, serviceWorkers: 'block', extraHTTPHeaders: { 'Accept-Encoding': 'identity', 'x-ulises-routing-experiment': routingMode } });
+  await context.addCookies([{ name: 'ulises_session', value: token, url: base }]);
   const created = await context.request.post(`${base}/api/session`, { multipart: {
     name: '[document-suggestion-followup] synthetic', model, endpoint_id: endpointId,
     endpoint_url: endpointUrl, skip_validation: 'true', rag: 'false',
@@ -44,7 +44,7 @@ try {
   docId = (await doc.json()).id;
   page = await context.newPage();
   await page.goto(`${base}/#${session}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
-  await page.waitForFunction(id => window.__odysseusSessionReadyId === id, session, { timeout: 30000 });
+  await page.waitForFunction(id => window.__ulisesSessionReadyId === id, session, { timeout: 30000 });
   await page.waitForFunction(id => window.documentModule?.getCurrentDocId?.() === id, docId, { timeout: 30000 });
   const agent = page.locator('#mode-agent-btn');
   if (await agent.getAttribute('aria-pressed') !== 'true') await agent.click();
@@ -74,7 +74,7 @@ try {
     const fetched = await context.request.get(`${base}/api/document/${encodeURIComponent(docId)}`);
     const current = fetched.ok() ? String((await fetched.json()).current_content || '') : '';
     const pendingSuggestions = await page.evaluate(id => {
-      try { return JSON.parse(localStorage.getItem(`odysseus-suggestions-${id}`) || '[]'); } catch { return []; }
+      try { return JSON.parse(localStorage.getItem(`ulises-suggestions-${id}`) || '[]'); } catch { return []; }
     }, docId);
     const pendingCount = pendingSuggestions.length;
     const checks = {

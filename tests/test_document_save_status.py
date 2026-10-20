@@ -32,7 +32,7 @@ def test_save_status_is_dirty_race_safe_and_reports_failures():
         });
         active -= 1;
       });
-      await page.goto(`${process.env.ODYSSEUS_TEST_STATIC_ORIGIN}/static/js/documentStats.js`);
+      await page.goto(`${process.env.ULISES_TEST_STATIC_ORIGIN}/static/js/documentStats.js`);
       await page.setContent('__ODY_STYLESHEETS__<div id="toast"></div><div id="chat-container"></div><div id="sidebar"></div>');
       await page.evaluate(async () => {
         const mod = await import('/static/js/document.js?v=20260831richtexttools91&save-status-test=1');

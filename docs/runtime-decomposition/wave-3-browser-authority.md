@@ -144,7 +144,7 @@ mechanics remain unchanged and external.
 
 Client invocations are bounded at 20 seconds, below the source-verified 30-second
 read/resend floor, with held-handle kill/wait on timeout/cancellation and no
-Odysseus retries. Immediate producer EOF/reset retries cannot be eliminated by
+Ulises retries. Immediate producer EOF/reset retries cannot be eliminated by
 this wrapper. **No exactly-once claim is made; all effects remain disabled.**
 
 ## Control state and prior unsupported paths
@@ -256,9 +256,9 @@ Live release probe (source checkout mounted read-only, isolated container state)
 
 ```sh
 docker run --rm --network none \
-  -e ODYSSEUS_BROWSER_LIVE_CONTRACT=1 -e ODYSSEUS_DATA_DIR=/tmp/w3-data \
+  -e ULISES_BROWSER_LIVE_CONTRACT=1 -e ULISES_DATA_DIR=/tmp/w3-data \
   -e DATABASE_URL=sqlite:///:memory: -v "$PWD:/app:ro" \
-  --entrypoint python odysseus-maintainer-preview-odysseus:latest \
+  --entrypoint python ulises-maintainer-preview-ulises:latest \
   -m pytest -q -rs -o cache_dir=/tmp/w3-pytest-cache \
   tests/test_browser_producer_live_contract.py
 ```

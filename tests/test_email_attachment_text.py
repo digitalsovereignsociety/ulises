@@ -95,7 +95,7 @@ async def _live_attachment_check(monkeypatch):
     policy = ToolPolicy()
     contract = resolve_full_inventory_contract(schemas=schemas, policy=policy)
     chunks = [c async for c in module.stream_preview(
-        endpoint_url=os.environ['ODYSSEUS_AJAX_TEST_URL'], model='Ajax', headers={},
+        endpoint_url=os.environ['ULISES_AJAX_TEST_URL'], model='Ajax', headers={},
         messages=[{'role': 'user', 'content': 'What email had my latest payslip and how much'}],
         turn_contract=contract, owner='fixture', session_id='fixture-attachment',
         disabled_tools=set(), tool_policy=policy, thinking_mode='off', max_rounds=6,
@@ -108,6 +108,6 @@ async def _live_attachment_check(monkeypatch):
 
 
 @pytest.mark.asyncio
-@pytest.mark.skipif(not os.environ.get('ODYSSEUS_AJAX_TEST_URL'), reason='Opt-in Ajax fixture test')
+@pytest.mark.skipif(not os.environ.get('ULISES_AJAX_TEST_URL'), reason='Opt-in Ajax fixture test')
 async def test_live_ajax_reads_attachment(monkeypatch):
     await _live_attachment_check(monkeypatch)

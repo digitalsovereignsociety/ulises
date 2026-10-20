@@ -82,7 +82,7 @@ def main() -> None:
     parser.add_argument("--run", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--base-url", default="http://127.0.0.1:7011")
-    parser.add_argument("--password", default=os.environ.get("ODYSSEUS_QA_PASSWORD"), required=os.environ.get("ODYSSEUS_QA_PASSWORD") is None)
+    parser.add_argument("--password", default=os.environ.get("ULISES_QA_PASSWORD"), required=os.environ.get("ULISES_QA_PASSWORD") is None)
     parser.add_argument("--min-score", type=int, default=80)
     parser.add_argument("--endpoint-id")
     args = parser.parse_args()

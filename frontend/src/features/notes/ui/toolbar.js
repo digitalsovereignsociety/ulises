@@ -66,7 +66,7 @@ export function createToolbar({
       requestAnimationFrame(() => _applyMasonry(document.querySelector('#notes-pane .notes-pane-body')));
       viewBtn.addEventListener('click', () => {
         app.setViewMode(state.viewMode === 'grid' ? 'list' : 'grid');
-        try { persistence.setItem('odysseus-notes-view', state.viewMode); } catch {}
+        try { persistence.setItem('ulises-notes-view', state.viewMode); } catch {}
         pane.classList.toggle('notes-view-grid', state.viewMode === 'grid');
         _setViewLabel();
         requestAnimationFrame(() => _applyMasonry(document.querySelector('#notes-pane .notes-pane-body')));

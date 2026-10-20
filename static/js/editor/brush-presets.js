@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'odysseus.editor.brush-presets.v1';
+const STORAGE_KEY = 'ulises.editor.brush-presets.v1';
 
 const BUILT_INS = [
   { id: 'soft-round', name: 'Soft Round', size: 80, opacity: 100, flow: 35, softness: 100, spacing: 12, smoothing: 25, blendMode: 'source-over' },

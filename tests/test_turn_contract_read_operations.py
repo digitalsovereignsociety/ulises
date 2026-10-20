@@ -589,7 +589,7 @@ def test_read_operation_copies_arguments_and_audit_is_detached():
     ("manage_notes", {"action": "list", "archived": []}),
     ("manage_documents", {"action": "read"}),
     ("manage_skills", {"action": "view", "name": ""}),
-    ("list_email_accounts", {"_odysseus_owner": "someone-else"}),
+    ("list_email_accounts", {"_ulises_owner": "someone-else"}),
     ("list_email_accounts", {"action": None}),
 ])
 def test_type_rejects_mutations_and_unsafe_argument_shapes(tool, args):

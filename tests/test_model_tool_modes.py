@@ -5,7 +5,7 @@ from src import agent_loop, llm_core
 from src.tool_schemas import FUNCTION_TOOL_SCHEMAS
 from src.model_profiles import (
     GENERIC_TOOL_SCHEMA_PROFILE,
-    ODYSSEUS_COMPACT_TOOL_SCHEMA_PROFILE,
+    ULISES_COMPACT_TOOL_SCHEMA_PROFILE,
     tool_schema_profile,
 )
 
@@ -59,7 +59,7 @@ def test_apply_none_tool_surface_removes_schemas():
 
 
 def test_qwen35_policy_route_honors_explicit_thinking_control(monkeypatch):
-    monkeypatch.setenv("ODYSSEUS_QWEN_ROUTE_THINKING", "off")
+    monkeypatch.setenv("ULISES_QWEN_ROUTE_THINKING", "off")
 
     assert agent_loop._thinking_mode_for_route(
         model="qwen35-9b-policy-run",
@@ -75,7 +75,7 @@ def test_qwen35_policy_route_honors_explicit_thinking_control(monkeypatch):
 
 def test_preheretic_tools_model_forces_thinking_off():
     assert agent_loop._thinking_mode_for_route(
-        model="odysseus-qwen3.5-tools-pre-heretic",
+        model="ulises-qwen3.5-tools-pre-heretic",
         tool_surface="compact",
         domains={"web"},
     ) == "off"
@@ -111,12 +111,12 @@ def test_ajax_c375_defaults_to_compact_and_forces_thinking_off(monkeypatch):
 
 def test_named_schema_profile_aliases_are_accepted_by_settings_api():
     assert model_routes._normalize_model_tool_mode("regular") == "full"
-    assert model_routes._normalize_model_tool_mode("odysseus_compact") == "compact"
+    assert model_routes._normalize_model_tool_mode("ulises_compact") == "compact"
 
 
-def test_odysseus_ajax_names_force_native_tool_transport():
+def test_ulises_ajax_names_force_native_tool_transport():
     assert agent_loop._agent_route_tool_mode(
-        "http://model.invalid/v1", "Odysseus-experiment"
+        "http://model.invalid/v1", "Ulises-experiment"
     ) == (True, False, False)
     assert agent_loop._agent_route_tool_mode(
         "http://model.invalid/v1", "provider/Ajax_trial_99"
@@ -135,10 +135,10 @@ def test_models_select_one_of_two_tool_schema_profiles():
     assert tool_schema_profile("gpt-5.5") == GENERIC_TOOL_SCHEMA_PROFILE
     assert tool_schema_profile("claude-sonnet-5") == GENERIC_TOOL_SCHEMA_PROFILE
     assert (
-        tool_schema_profile("lab/Odysseus-trial55")
-        == ODYSSEUS_COMPACT_TOOL_SCHEMA_PROFILE
+        tool_schema_profile("lab/Ulises-trial55")
+        == ULISES_COMPACT_TOOL_SCHEMA_PROFILE
     )
     assert (
         tool_schema_profile("provider/Ajax_c375")
-        == ODYSSEUS_COMPACT_TOOL_SCHEMA_PROFILE
+        == ULISES_COMPACT_TOOL_SCHEMA_PROFILE
     )

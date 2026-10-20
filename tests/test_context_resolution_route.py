@@ -18,7 +18,7 @@ from src.agent_runtime.context_resolution import (
 )
 from tests.test_foreground_model_routing import _RouteRequest, _chat_stream_endpoint
 
-COMPACT_MODEL = "odysseus-qwen3.5-tools-pre-heretic"
+COMPACT_MODEL = "ulises-qwen3.5-tools-pre-heretic"
 
 
 class _ModelStream:
@@ -421,7 +421,7 @@ class _RegularPath(Exception):
         # Plain chat and image generation leave before the agent loop.
         ("agent_privilege_denied", COMPACT_MODEL, "agent", {"can_use_agent": False}, None, "", False, False, False),
         ("agent_privilege_granted", COMPACT_MODEL, "agent", {"can_use_agent": True}, None, "", False, True, False),
-        ("tui_surface", COMPACT_MODEL, "agent", None, "odysseus-tui", "", False, False, True),
+        ("tui_surface", COMPACT_MODEL, "agent", None, "ulises-tui", "", False, False, True),
         ("image_generation", COMPACT_MODEL, "agent", None, None, "", True, False, False),
     ],
 )

@@ -31,7 +31,7 @@ def test_actual_preheretic_prompt_preserves_referential_antecedent(family, tool)
     ]
     before = deepcopy(messages)
     output, schemas = _build_system_prompt(
-        messages, "odysseus-qwen3.5-tools-pre-heretic", None, None,
+        messages, "ulises-qwen3.5-tools-pre-heretic", None, None,
         relevant_tools={tool}, preserve_conversation=True,
     )
     assert output[1:] == messages[1:]
@@ -45,7 +45,7 @@ def test_legacy_standalone_router_still_uses_latest_only():
     messages = [{"role": "user", "content": "List notes"},
                 {"role": "assistant", "content": "A, B"},
                 {"role": "user", "content": "List those again"}]
-    output, _ = _build_system_prompt(messages, "odysseus-qwen3.5-tools-pre-heretic", None, None)
+    output, _ = _build_system_prompt(messages, "ulises-qwen3.5-tools-pre-heretic", None, None)
     assert output[1:] == messages[-1:]
 
 
@@ -58,7 +58,7 @@ def test_preserve_original_system_and_non_system_injected_evidence():
     messages = [{"role": "system", "content": "Old merged prompt", "_agent_injected": "merged_prompt",
                  "_agent_base_message": original}, call, evidence,
                 {"role": "user", "content": "Continue"}]
-    output, _ = _build_system_prompt(messages, "odysseus-qwen3.5-tools-pre-heretic", None, None,
+    output, _ = _build_system_prompt(messages, "ulises-qwen3.5-tools-pre-heretic", None, None,
                                      preserve_conversation=True)
     assert output[1:] == [original, call, evidence, messages[-1]]
 

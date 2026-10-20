@@ -64,7 +64,7 @@ try {
     const status = el.querySelector('[data-stage]').getBoundingClientRect();
     return bg.left >= status.right && Boolean(el.querySelector('[data-research-spinner] canvas'));
   });
-  await page.screenshot({ path: '/tmp/odysseus-research-cards-mobile.png', fullPage: true });
+  await page.screenshot({ path: '/tmp/ulises-research-cards-mobile.png', fullPage: true });
   console.log(JSON.stringify(checks));
   if (!Object.values(checks).every(Boolean)) process.exitCode = 1;
 } finally { await browser.close(); }

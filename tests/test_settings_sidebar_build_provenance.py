@@ -109,7 +109,7 @@ def test_commit_only_build_still_gets_a_footer():
 
 @requires_node
 def test_non_sha_commit_override_is_left_intact():
-    """`ODYSSEUS_SOURCE_COMMIT` can be any string; truncating a tag to eight
+    """`ULISES_SOURCE_COMMIT` can be any string; truncating a tag to eight
     characters would corrupt it, so only real hashes get shortened."""
     info = _format_build_info(
         {"version": "1.0.3", "source_commit": "release-2026-09-30"}

@@ -512,7 +512,7 @@ async function _selectAddedModelInChat(endpoint) {
     }
   } catch (_) {}
   try {
-    document.dispatchEvent(new CustomEvent('odysseus:auto-select-model', {
+    document.dispatchEvent(new CustomEvent('ulises:auto-select-model', {
       detail: {
         endpointId: endpoint.id || '',
         endpointName: endpoint.name || '',
@@ -777,7 +777,7 @@ function renderFeatherlessPanel(panel, ep, row) {
           <select class="adm-model-tool-mode admin-tools-select" data-ep-model-id="${esc(id)}" data-original-tool-mode="${esc(toolModes[id] || '')}">
             <option value="" ${mode === '' ? 'selected' : ''}>Auto</option>
             <option value="full" ${mode === 'full' ? 'selected' : ''}>Regular tools</option>
-            <option value="compact" ${mode === 'compact' ? 'selected' : ''}>Odysseus compact</option>
+            <option value="compact" ${mode === 'compact' ? 'selected' : ''}>Ulises compact</option>
             <option value="none" ${mode === 'none' ? 'selected' : ''}>Tools off</option>
           </select>
         </div>
@@ -957,7 +957,7 @@ function renderFeatherlessPanel(panel, ep, row) {
 // Preserves only endpoint/auth identifiers, never tokens, secrets, or labels.
 // providerAuthSessionId is ProviderAuthSession.id, independently UUID-generated
 // by routes/chatgpt_subscription_routes.py, not an OAuth token or account ID.
-const CHATGPT_USAGE_EXPANDED_KEY = 'odysseus-chatgpt-usage-expanded';
+const CHATGPT_USAGE_EXPANDED_KEY = 'ulises-chatgpt-usage-expanded';
 
 function _loadExpandedUsageEndpoints() {
   try {
@@ -1367,10 +1367,10 @@ async function loadEndpoints() {
                 </label>
                 <div class="adm-model-tools-col">
                   <span class="adm-model-tools-label" title="Select the tool schema profile for this model">Tools</span>
-                  <select class="adm-model-tool-mode admin-tools-select" data-ep-model-id="${esc(m.id)}" data-original-tool-mode="${esc(m.tool_mode || '')}" data-tool-mode-touched="0" title="Auto uses Odysseus compact for Odysseus/Ajax names and Regular tools for every other model">
+                  <select class="adm-model-tool-mode admin-tools-select" data-ep-model-id="${esc(m.id)}" data-original-tool-mode="${esc(m.tool_mode || '')}" data-tool-mode-touched="0" title="Auto uses Ulises compact for Ulises/Ajax names and Regular tools for every other model">
                     <option value="" ${mode === '' ? 'selected' : ''}>Auto</option>
                     <option value="full" ${mode === 'full' ? 'selected' : ''}>Regular tools</option>
-                    <option value="compact" ${mode === 'compact' ? 'selected' : ''}>Odysseus compact</option>
+                    <option value="compact" ${mode === 'compact' ? 'selected' : ''}>Ulises compact</option>
                     <option value="none" ${mode === 'none' ? 'selected' : ''}>Tools off</option>
                   </select>
                 </div>
@@ -2557,7 +2557,7 @@ function initEndpointForm() {
   document.querySelectorAll('.adm-quickstart-section').forEach((sec) => {
     const head = sec.querySelector('.adm-quickstart-toggle');
     if (!head) return;
-    const key = 'odysseus.addModels.' + sec.id + '.open';
+    const key = 'ulises.addModels.' + sec.id + '.open';
     let open = false;
     try { open = localStorage.getItem(key) === '1'; } catch {}
     const apply = () => {
@@ -3388,7 +3388,7 @@ async function loadTokens() {
         // Codex / Claude integration cards on the Integrations panel are
         // backed by these tokens — let them re-render so the deleted token
         // disappears there too.
-        try { window.dispatchEvent(new CustomEvent('odysseus-integrations-changed')); } catch (_) {}
+        try { window.dispatchEvent(new CustomEvent('ulises-integrations-changed')); } catch (_) {}
       });
     });
     // Toggle permissions panel
@@ -3649,7 +3649,7 @@ function initBackup() {
       const blob = await res.blob();
       const disposition = res.headers.get('Content-Disposition') || '';
       const match = disposition.match(/filename=(.+)/);
-      const filename = match ? match[1] : 'odysseus_backup.json';
+      const filename = match ? match[1] : 'ulises_backup.json';
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = filename;

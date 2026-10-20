@@ -9,9 +9,9 @@ const repositoryRoot = path.join(__dirname, '..', '..');
 const defaultPython = process.platform === 'win32'
   ? path.join(repositoryRoot, '.venv', 'Scripts', 'python.exe')
   : path.join(repositoryRoot, '.venv', 'bin', 'python');
-const python = process.env.ODYSSEUS_TEST_PYTHON || (fs.existsSync(defaultPython) ? defaultPython : 'python');
+const python = process.env.ULISES_TEST_PYTHON || (fs.existsSync(defaultPython) ? defaultPython : 'python');
 const dataDirectory = process.env.PHOTO_EDITOR_E2E_DATA_DIR
-  || fs.mkdtempSync(path.join(os.tmpdir(), 'odysseus-photo-editor-e2e-'));
+  || fs.mkdtempSync(path.join(os.tmpdir(), 'ulises-photo-editor-e2e-'));
 const databasePath = process.env.PHOTO_EDITOR_E2E_DB_PATH
   || path.join(dataDirectory, 'app.db');
 process.env.PHOTO_EDITOR_E2E_DB_PATH = databasePath;
@@ -52,8 +52,8 @@ module.exports = defineConfig({
       ...process.env,
       AUTH_ENABLED: 'false',
       DATABASE_URL: `sqlite:///${databasePath}`,
-      ODYSSEUS_DATA_DIR: dataDirectory,
-      ODYSSEUS_STARTUP_WARMUPS: '0',
+      ULISES_DATA_DIR: dataDirectory,
+      ULISES_STARTUP_WARMUPS: '0',
       RESPONSE_COMPRESSION_ENABLED: 'false',
     },
   },

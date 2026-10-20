@@ -16,7 +16,7 @@ def _clean_path(value: str | None) -> str:
 def _path_pairs() -> list[tuple[str, str]]:
     pairs: list[tuple[str, str]] = []
 
-    mapping = os.environ.get("ODYSSEUS_WORKSPACE_MOUNTS", "")
+    mapping = os.environ.get("ULISES_WORKSPACE_MOUNTS", "")
     for item in mapping.replace(";", ",").split(","):
         if not item.strip() or "=" not in item:
             continue
@@ -26,9 +26,9 @@ def _path_pairs() -> list[tuple[str, str]]:
         if host_path and container_path:
             pairs.append((host_path, container_path))
 
-    host_root = _clean_path(os.environ.get("ODYSSEUS_WORKSPACE_HOST_ROOT"))
+    host_root = _clean_path(os.environ.get("ULISES_WORKSPACE_HOST_ROOT"))
     container_root = _clean_path(
-        os.environ.get("ODYSSEUS_WORKSPACE_CONTAINER_ROOT") or "/workspace"
+        os.environ.get("ULISES_WORKSPACE_CONTAINER_ROOT") or "/workspace"
     )
     if host_root and container_root:
         pairs.append((host_root, container_root))

@@ -8,14 +8,14 @@ import { chromium } from 'playwright';
 const root = path.resolve(new URL('..', import.meta.url).pathname);
 const base = 'http://127.0.0.1:7011';
 const owner = 'sft_alex_creator';
-const model = 'odysseus-qwen3.5-tools-pre-heretic';
+const model = 'ulises-qwen3.5-tools-pre-heretic';
 const selected = new Set((process.env.FAMILIES || 'notes,documents').split(','));
 const specs = [
   {family: 'notes', noun: 'note', tool: 'manage_notes', api: '/api/notes', bodyKey: 'content', actions: ['view', 'read', 'get']},
   {family: 'documents', noun: 'document', tool: 'manage_documents', api: '/api/document', bodyKey: 'current_content', actions: ['read', 'view', 'open', 'get']},
 ].filter(s => selected.has(s.family));
 if (!specs.length) throw Error('No matching families');
-const auth = JSON.parse(fs.readFileSync(process.env.ODYSSEUS_AUTH_SESSION_FILE || (() => { throw new Error("ODYSSEUS_AUTH_SESSION_FILE is required"); })(), 'utf8'));
+const auth = JSON.parse(fs.readFileSync(process.env.ULISES_AUTH_SESSION_FILE || (() => { throw new Error("ULISES_AUTH_SESSION_FILE is required"); })(), 'utf8'));
 const token = Object.entries(auth).find(([, v]) => v?.username === owner)?.[0];
 if (!token) throw Error('No SFT session');
 const reportPath = path.join(root, `reports/record-read-recovery-${new Date().toISOString().replace(/[:.]/g, '-')}.json`);
@@ -32,9 +32,9 @@ let browser, context;
 try {
   browser = await chromium.launch({headless: true, args: ['--no-proxy-server']});
   context = await browser.newContext({serviceWorkers: 'block', extraHTTPHeaders: {
-    'Accept-Encoding': 'identity', 'x-odysseus-routing-experiment': 'recent_model_choice',
+    'Accept-Encoding': 'identity', 'x-ulises-routing-experiment': 'recent_model_choice',
   }});
-  await context.addCookies([{name: 'odysseus_session', value: token, url: base}]);
+  await context.addCookies([{name: 'ulises_session', value: token, url: base}]);
   const session = async label => {
     const response = await context.request.post(`${base}/api/session`, {multipart: {
       name: `[record-read-recovery] ${label}`, model, endpoint_id: '1d1022ef',
@@ -67,7 +67,7 @@ try {
       chat = await session('read and recover');
       page = await context.newPage();
       await page.goto(`${base}/#${chat}`, {waitUntil: 'domcontentloaded'});
-      await page.waitForFunction(id => window.__odysseusSessionReadyId === id, chat, {timeout: 30000});
+      await page.waitForFunction(id => window.__ulisesSessionReadyId === id, chat, {timeout: 30000});
       if (await page.locator('#mode-agent-btn').getAttribute('aria-pressed') !== 'true') await page.locator('#mode-agent-btn').click();
       const prompts = [
         `Read my ${spec.noun} with ID ${missing}. Tell me whether it exists. Do not create anything or substitute another record.`,

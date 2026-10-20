@@ -16,8 +16,8 @@ reference; that file is the standard the refactor works toward.
 ## Running focused subsets (taxonomy markers)
 
 The shared static-server fixture binds an ephemeral loopback port and publishes
-`ODYSSEUS_TEST_STATIC_ORIGIN` to browser tests and their Node subprocesses.
-`ODYSSEUS_TEST_STATIC_PORT` can pin a port for an external client; leave it unset
+`ULISES_TEST_STATIC_ORIGIN` to browser tests and their Node subprocesses.
+`ULISES_TEST_STATIC_PORT` can pin a port for an external client; leave it unset
 for parallel runs. An occupied explicit port is refused rather than reused. The
 server handles each connection on its own thread, so a speculative browser
 connection that never sends a request cannot stall the requests behind it.
@@ -184,20 +184,20 @@ invoking Python interpreter.
 A generated-seed run starts with output like:
 
 ```text
-[order-report] working directory: /path/to/odysseus
+[order-report] working directory: /path/to/ulises
 [order-report] shuffling test order with seed 284734921
 [order-report] reproduce from this working directory with the same test environment:
-[order-report] reproduce with: /path/to/odysseus/venv/bin/python /path/to/odysseus/tests/run_order_report.py --seed 284734921 -- tests/cli/ -q
+[order-report] reproduce with: /path/to/ulises/venv/bin/python /path/to/ulises/tests/run_order_report.py --seed 284734921 -- tests/cli/ -q
 ```
 
 Run the printed command from the reported working directory to reproduce the
 same fixed-seed order:
 
 ```text
-[order-report] working directory: /path/to/odysseus
+[order-report] working directory: /path/to/ulises
 [order-report] shuffling test order with seed 284734921
 [order-report] reproduce from this working directory with the same test environment:
-[order-report] reproduce with: /path/to/odysseus/venv/bin/python /path/to/odysseus/tests/run_order_report.py --seed 284734921 -- tests/cli/ -q
+[order-report] reproduce with: /path/to/ulises/venv/bin/python /path/to/ulises/tests/run_order_report.py --seed 284734921 -- tests/cli/ -q
 ```
 
 Pytest output remains visible between the report header and footer. A failing
@@ -243,9 +243,9 @@ for a route move or a module split. One command boots the worktree and
 runs it:
 
 ```bash
-scripts/odysseus-smoke              # boot, run every area, stop again
-scripts/odysseus-smoke --keep-up    # leave the instance running
-scripts/odysseus-smoke --areas      # the coverage table, without booting
+scripts/ulises-smoke              # boot, run every area, stop again
+scripts/ulises-smoke --keep-up    # leave the instance running
+scripts/ulises-smoke --areas      # the coverage table, without booting
 ```
 
 It reads its target instance out of the environment (`APP_PORT` through
@@ -253,7 +253,7 @@ It reads its target instance out of the environment (`APP_PORT` through
 `pytest` with nothing booted every scenario skips with the reason and
 the full suite stays green. Models are served by a deterministic
 loopback stub, never a live endpoint; email uses the repo's existing
-`ODYSSEUS_EMAIL_FIXTURE` path.
+`ULISES_EMAIL_FIXTURE` path.
 
 The report is a per-area table that also prints the areas the suite
 deliberately does not cover, so it cannot be read as coverage of

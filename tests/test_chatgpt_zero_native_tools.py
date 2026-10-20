@@ -1,10 +1,10 @@
-"""ChatGPT Subscription is model inference only — Odysseus is the only agent.
+"""ChatGPT Subscription is model inference only — Ulises is the only agent.
 
-These regressions pin the zero-native-tool invariant relied on by the Odysseus
+These regressions pin the zero-native-tool invariant relied on by the Ulises
 dogfood benchmark: the ChatGPT/Codex Responses request never declares
 provider-native tools, and the stream handler never executes provider-side
-tool calls. Odysseus' own text tool protocol travels as plain instructions/
-input and is parsed and executed by Odysseus.
+tool calls. Ulises' own text tool protocol travels as plain instructions/
+input and is parsed and executed by Ulises.
 """
 
 import asyncio
@@ -25,7 +25,7 @@ _TOOLS = [
     {"type": "mcp", "server_label": "fs", "server_url": "http://localhost/mcp"},
 ]
 _MESSAGES = [
-    {"role": "system", "content": "You are Odysseus. Use <tool>read_file</tool> protocol when needed."},
+    {"role": "system", "content": "You are Ulises. Use <tool>read_file</tool> protocol when needed."},
     {"role": "user", "content": "List the repo"},
     {"role": "assistant", "content": "<tool>read_file</tool>"},
     {"role": "tool", "content": "README.md"},
@@ -43,7 +43,7 @@ def test_responses_payload_has_no_native_tool_surfaces():
     assert "tool_choice" not in payload
     for key in llm_core.CHATGPT_FORBIDDEN_PAYLOAD_KEYS:
         assert key not in payload
-    # Odysseus protocol text is preserved as plain instructions/input.
+    # Ulises protocol text is preserved as plain instructions/input.
     assert "<tool>read_file</tool>" in payload["instructions"]
     roles = [item["role"] for item in payload["input"]]
     assert roles == ["user", "assistant", "user"]  # tool results become user input text
@@ -159,7 +159,7 @@ def test_stream_transport_never_serializes_tools_even_when_passed(monkeypatch):
     assert set(sent["json"]) <= _ALLOWED_KEYS
     assert "tools" not in sent["json"] and "tool_choice" not in sent["json"]
     assert "run_shell" not in json.dumps(sent["json"])
-    # The Odysseus protocol tag is streamed back verbatim for Odysseus to parse.
+    # The Ulises protocol tag is streamed back verbatim for Ulises to parse.
     deltas = [json.loads(c[6:])["delta"] for c in chunks if c.startswith("data: ") and '"delta"' in c]
     assert deltas == ["<tool>read_file</tool>"]
 

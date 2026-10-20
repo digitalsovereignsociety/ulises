@@ -30,7 +30,7 @@ test('draft and marker persistence retain keys, formats and malformed fallback',
   const values = new Map();
   const storage = { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value), removeItem: key => values.delete(key) };
   const persistence = createNotesPersistence({ storage });
-  assert.equal(persistence._draftKey(null), 'odysseus-note-draft-__new__');
+  assert.equal(persistence._draftKey(null), 'ulises-note-draft-__new__');
   persistence._saveFiredReminders(new Set(['a', 'b']));
   assert.equal(values.get(REMINDER_FIRED_KEY), '["a","b"]');
   assert.deepEqual([...persistence._loadFiredReminders()], ['a', 'b']);
@@ -43,5 +43,5 @@ test('draft and marker persistence retain keys, formats and malformed fallback',
   const failing = createNotesPersistence({ storage: { getItem() { throw Error('blocked'); }, setItem() { throw Error('full'); } } });
   assert.equal(failing._loadDraft('a'), null);
   assert.doesNotThrow(() => failing._saveFiredReminders(new Set(['a'])));
-  assert.throws(() => failing.setItem('odysseus-note-draft-a', '{}'), /full/, 'draft caller must observe backup failure');
+  assert.throws(() => failing.setItem('ulises-note-draft-a', '{}'), /full/, 'draft caller must observe backup failure');
 });

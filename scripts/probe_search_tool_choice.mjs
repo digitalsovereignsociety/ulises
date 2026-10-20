@@ -8,7 +8,7 @@ const model = process.env.MODEL || 'model-f';
 const endpoint = process.env.ENDPOINT_URL || (() => { throw new Error("ENDPOINT_URL is required"); })();
 const prompts = process.env.PROBE_PROMPTS ? JSON.parse(process.env.PROBE_PROMPTS) : ['Catch me up on the biggest AI developments this week. Explain why they matter and link your sources.', 'serch latest ai news pls'];
 const results = [];
-let system = 'You are Odysseus. Use web_search to find current information relevant to the user request.';
+let system = 'You are Ulises. Use web_search to find current information relevant to the user request.';
 if (process.env.CANONICAL_SYSTEM === '1') {
   system = execFileSync((process.env.PYTHON || "python3"), ['-c', `
 import ast, sys

@@ -1178,7 +1178,7 @@ def selected_tools_for_request(message: str) -> frozenset[str] | None:
         # provider-specific markup (notably DeepSeek DSML) that cannot execute.
         web_lookup_fallback = True
     if re.search(
-        r"\buse\s+(?:the\s+)?(?:odysseus\s+)?web_search\b",
+        r"\buse\s+(?:the\s+)?(?:ulises\s+)?web_search\b",
         raw_text,
         re.I,
     ):
@@ -3011,7 +3011,7 @@ def required_read_operation_for_request(message: str, history: Iterable = ()) ->
         re.I,
     ):
         # These are source-grounding constraints, not requests to read the
-        # user's private Odysseus memory store.  Long research/artifact jobs
+        # user's private Ulises memory store.  Long research/artifact jobs
         # often also contain words such as "list" or "show", which must not
         # convert the evidence constraint into a sealed personal-data read.
         return None
@@ -3062,7 +3062,7 @@ def required_read_operation_for_request(message: str, history: Iterable = ()) ->
         # A bounded comparison of explicit public URLs is already a complete
         # web operation. Phrases such as "do not answer from memory" describe
         # evidence discipline and must not be parsed as a request to list the
-        # user's saved Odysseus memories.
+        # user's saved Ulises memories.
         return None
     if re.fullmatch(
         _REQUEST_PREFIX + r"(?:show\s+me\s+)?what(?:['’]?s|s|\s+is)\s+scheduled[?!.]*",
@@ -3734,7 +3734,7 @@ def required_read_operation_for_request(message: str, history: Iterable = ()) ->
             return RequiredReadOperation(tool, {"action": action} if action else {}, maximum)
     if re.fullmatch(
         _REQUEST_PREFIX + r"what\s+(?:mail|email)\s+accounts?\s+(?:are|r)\s+"
-        r"(?:hooked\s+up|connected|configured)(?:\s+to\s+odysseus)?[?!.]*",
+        r"(?:hooked\s+up|connected|configured)(?:\s+to\s+ulises)?[?!.]*",
         text,
         re.I,
     ):
@@ -4887,7 +4887,7 @@ def requested_capabilities(message: str, history: Iterable = (), *, active_docum
             re.I,
         )
     ):
-        # Explicitly asking Odysseus to look online is sufficient web intent,
+        # Explicitly asking Ulises to look online is sufficient web intent,
         # including referential follow-ups such as "Can you look online?".
         return frozenset({"search_browser"})
     if (
@@ -4905,7 +4905,7 @@ def requested_capabilities(message: str, history: Iterable = (), *, active_docum
         )
     ):
         # Product words inside source titles (for example "documentation")
-        # describe remote evidence, not the user's Odysseus document library.
+        # describe remote evidence, not the user's Ulises document library.
         return frozenset({"search_browser"})
     # The browser-confirmed visible editor is a typed target, stronger than
     # incidental nouns inside the requested content or a pasted style guide.

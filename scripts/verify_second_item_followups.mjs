@@ -9,13 +9,13 @@ const root = path.resolve(new URL('..', import.meta.url).pathname);
 const base = process.env.BASE_URL || 'http://127.0.0.1:7011';
 const endpointId = process.env.ENDPOINT_ID || '1d1022ef';
 const endpointUrl = process.env.ENDPOINT_URL || (() => { throw new Error("ENDPOINT_URL is required"); })();
-const model = process.env.MODEL || 'odysseus-qwen3.5-tools-pre-heretic';
+const model = process.env.MODEL || 'ulises-qwen3.5-tools-pre-heretic';
 const owner = 'sft_alex_creator';
 const marker = `ody-second-${crypto.randomUUID()}`;
 const run = new Date().toISOString().replace(/[:.]/g, '-');
 const reportPath = path.resolve(process.env.REPORT_PATH || path.join(root, `reports/second-item-followups-${run}.json`));
 if (!reportPath.startsWith(path.join(root, 'reports') + path.sep) || fs.existsSync(reportPath)) throw Error('Report path must be new and under reports/');
-const auth = JSON.parse(fs.readFileSync(process.env.ODYSSEUS_AUTH_SESSION_FILE || (() => { throw new Error("ODYSSEUS_AUTH_SESSION_FILE is required"); })(), 'utf8'));
+const auth = JSON.parse(fs.readFileSync(process.env.ULISES_AUTH_SESSION_FILE || (() => { throw new Error("ULISES_AUTH_SESSION_FILE is required"); })(), 'utf8'));
 const token = Object.entries(auth).find(([, value]) => value?.username === owner)?.[0];
 if (!token) throw Error(`No active ${owner} session`);
 const report = { run, marker, owner, model, status: 'running', cases: [], cleanup: {}, privacy: 'Synthetic fixture IDs, static prompts, tool names, and boolean checks only.' };
@@ -44,7 +44,7 @@ const sessions = [], taskIds = [], eventIds = [];
 try {
   browser = await chromium.launch({ headless: true, args: ['--no-proxy-server'] });
   context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: 'block', extraHTTPHeaders: { 'Accept-Encoding': 'identity' } });
-  await context.addCookies([{ name: 'odysseus_session', value: token, url: base }]);
+  await context.addCookies([{ name: 'ulises_session', value: token, url: base }]);
   for (const family of ['tasks', 'calendar']) {
     const sessionResponse = await context.request.post(`${base}/api/session`, { multipart: {
       name: `[second-item] ${family}-${marker}`, model, endpoint_id: endpointId,
@@ -76,7 +76,7 @@ try {
     report.cases.push(item); save();
     try {
       await page.goto(`${base}/#${session}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
-      await page.waitForFunction(id => window.__odysseusSessionReadyId === id, session, { timeout: 30000 });
+      await page.waitForFunction(id => window.__ulisesSessionReadyId === id, session, { timeout: 30000 });
       const agent = page.locator('#mode-agent-btn');
       if (await agent.getAttribute('aria-pressed') !== 'true') await agent.click();
       const send = async prompt => {

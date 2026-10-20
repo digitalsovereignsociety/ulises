@@ -16,7 +16,7 @@ const modes = (process.env.REFERENCE_MODES || 'recent_fixture_only').split(',');
 if (!modes.length || new Set(modes).size !== modes.length || modes.some(m =>
     !['recent','recent_no_family_gate','recent_fixture_only'].includes(m)))
   throw Error('Invalid reference experiment modes');
-const report = {status:'running',model:'odysseus-qwen3.5-tools-pre-heretic',
+const report = {status:'running',model:'ulises-qwen3.5-tools-pre-heretic',
   thinking:false,cases,modes,runs:[],scope:'plain-title synthetic notes in 7011 Agent UI; no production default change'};
 const save = () => fs.writeFileSync(manifest,JSON.stringify(report,null,2)+'\n');
 save();

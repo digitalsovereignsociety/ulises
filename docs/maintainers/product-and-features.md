@@ -1,6 +1,6 @@
 # Product and feature proposals
 
-Pewds ([@pewdiepie-archdaemon](https://github.com/pewdiepie-archdaemon)) is the Product Owner for Odysseus and has final authority over product direction. Maintainers own technical feasibility, implementation, and safety.
+Pewds ([@pewdiepie-archdaemon](https://github.com/pewdiepie-archdaemon)) is the Product Owner for Ulises and has final authority over product direction. Maintainers own technical feasibility, implementation, and safety.
 
 ## Which changes require product approval?
 
@@ -27,7 +27,7 @@ A Product Owner proposal is already product-approved; it is not automatically te
 
 ## Community or maintainer initiated
 
-Community proposals start as a Feature Request issue. Check [ROADMAP.md](../../ROADMAP.md) and existing issues first; take early ideas to [Discussions](https://github.com/odysseus-dev/odysseus/discussions/categories/ideas).
+Community proposals start as a Feature Request issue. Check [ROADMAP.md](../../ROADMAP.md) and existing issues first; take early ideas to [Discussions](https://github.com/ulises-dev/ulises/discussions/categories/ideas).
 
 ```text
 Feature proposal
@@ -41,7 +41,7 @@ Record the decision in an issue, proposal, work item, or PR so future maintainer
 
 ## Decision boundaries
 
-The Product Owner decides **what belongs in Odysseus**. Maintainers decide **how approved work is built safely and maintainably**.
+The Product Owner decides **what belongs in Ulises**. Maintainers decide **how approved work is built safely and maintainably**.
 
 A rejected or out-of-scope feature can be maintained independently in a contributor's fork.
 

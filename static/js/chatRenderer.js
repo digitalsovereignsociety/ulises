@@ -1329,7 +1329,7 @@ export function getImageCost(model, quality, size) {
 const _COST_KEY = 'ody-session-cost';
 const _COST_RUNS_KEY = 'ody-session-cost-runs';
 const _MAX_COST_RUNS_PER_SESSION = 256;
-const _COST_LEDGER_LOCK = 'odysseus-session-cost-ledger';
+const _COST_LEDGER_LOCK = 'ulises-session-cost-ledger';
 
 /**
  * Decode one persisted ledger object into a Map.
@@ -1817,7 +1817,7 @@ function _activateEntityAnchor(e, forcedAnchor = null) {
   if (href === '#plan') {
     e.preventDefault();
     e.stopPropagation();
-    if (typeof window.__odysseusOpenPlanReview === 'function') window.__odysseusOpenPlanReview();
+    if (typeof window.__ulisesOpenPlanReview === 'function') window.__ulisesOpenPlanReview();
     return;
   }
   const barePanel = href.match(/^#(calendar|memory|notes|tasks|documents|skills|research)$/);
@@ -2280,7 +2280,7 @@ export function showWelcomeScreen() {
 }
 
 // ── Dynamic action buttons (show 3 most recent, rest under ···) ──
-const _ACTION_RECENTS_KEY = 'odysseus-msg-actions-recent';
+const _ACTION_RECENTS_KEY = 'ulises-msg-actions-recent';
 const _MAX_VISIBLE = 2;
 
 function _getRecentActions() {
@@ -2502,7 +2502,7 @@ export function createMsgFooter(msgElement, { animate = false } = {}) {
 /**
  * Create a footer row for a user message with action buttons (same system as AI footer).
  */
-const _USER_ACTION_RECENTS_KEY = 'odysseus-user-actions-recent';
+const _USER_ACTION_RECENTS_KEY = 'ulises-user-actions-recent';
 
 function _getUserRecentActions() {
   try { return JSON.parse(localStorage.getItem(_USER_ACTION_RECENTS_KEY) || '[]'); } catch { return []; }
@@ -2827,7 +2827,7 @@ export function displayMetrics(messageElement, metrics) {
           compactMsg.className = 'msg msg-ai';
           const compactRole = document.createElement('div');
           compactRole.className = 'role';
-          compactRole.textContent = 'Odysseus';
+          compactRole.textContent = 'Ulises';
           const compactBody = document.createElement('div');
           compactBody.className = 'body';
           compactBody.innerHTML = 'Compacting context <span class="compact-wave">▁▂▃▅▂▁</span>';
@@ -3138,7 +3138,7 @@ export function renderAskUserCard(payload, options) {
             if (accepted !== false) _markAskUserAnswered(card, label);
           } else {
             _markAskUserAnswered(card, label);
-            document.dispatchEvent(new CustomEvent('odysseus:tool-approval', { detail }));
+            document.dispatchEvent(new CustomEvent('ulises:tool-approval', { detail }));
           }
         } else {
           send(label);
@@ -3523,7 +3523,7 @@ export function addMessage(role, content, modelName, metadata) {
     const isCompacted = metadata?.compacted;
     const replyModels = replyModelPair(modelName, metadata);
     const resolvedModel = replyModels.actualModel || replyModels.requestedModel;
-    var _roleText = role === 'user' ? 'You' : (isSlash || isCompacted) ? 'Odysseus' : modelRouteLabel(
+    var _roleText = role === 'user' ? 'You' : (isSlash || isCompacted) ? 'Ulises' : modelRouteLabel(
       replyModels.requestedModel,
       resolvedModel,
       replyModels.requestedEndpointLabel,

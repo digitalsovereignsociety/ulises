@@ -292,7 +292,7 @@ def build_queue(sessions: list[dict[str, Any]]) -> dict[str, Any]:
 
 def render_summary(queue: dict[str, Any]) -> str:
     lines = [
-        "# Historical Odysseus QA Queue", "",
+        "# Historical Ulises QA Queue", "",
         f"- Source sessions: {queue['source_sessions']}",
         f"- Source user turns / teacher seeds: {queue['seed_count']}",
         f"- Unique conversation flows: {queue['unique_flows']}",

@@ -8,7 +8,7 @@ import urllib.request
 
 
 def _get_json(url: str) -> dict:
-    request = urllib.request.Request(url, headers={"User-Agent": "Odysseus/1.0"})
+    request = urllib.request.Request(url, headers={"User-Agent": "Ulises/1.0"})
     with urllib.request.urlopen(request, timeout=8) as response:
         return json.load(response)
 

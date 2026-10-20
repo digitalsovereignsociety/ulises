@@ -338,7 +338,7 @@ def test_native_terminal_sft_owner_keeps_workspace_writers():
     selected = _strip_workspace_tools_for_sft(
         {"bash", "python", "read_file", "write_file"},
         "sft_clawmm_eval",
-        {"surface": "odysseus-native", "terminal_agent": True},
+        {"surface": "ulises-native", "terminal_agent": True},
     )
     assert selected == {"bash", "python", "read_file", "write_file"}
 
@@ -524,7 +524,7 @@ def test_explicit_local_media_paths_are_detected_without_matching_documents():
         "Watch /workspace/fixtures/video.mp4 and save /workspace/clip.mp4"
     ) == ["/workspace/fixtures/video.mp4"]
     runtime = {
-        "surface": "odysseus-native",
+        "surface": "ulises-native",
         "input_files": [
             "/workspace/fixtures/implicit.mp4",
             "/workspace/fixtures/notes.txt",
@@ -537,7 +537,7 @@ def test_explicit_local_media_paths_are_detected_without_matching_documents():
         "/workspace/fixtures/implicit.mp4"
     ]
     assert _runtime_local_media_inputs({
-        "surface": "odysseus-native",
+        "surface": "ulises-native",
         "input_files": ["path=/workspace/fixtures/forwarded.mp4"],
     }) == ["/workspace/fixtures/forwarded.mp4"]
 
@@ -975,7 +975,7 @@ def test_native_runtime_context_can_cap_endpoint_context_budget():
 
 def test_native_local_media_prunes_host_bridge_and_cookbook_tools():
     source = (Path(__file__).parents[1] / "src" / "agent_loop.py").read_text()
-    assert 'client_runtime_context.get("surface") or "") == "odysseus-native"' in source
+    assert 'client_runtime_context.get("surface") or "") == "ulises-native"' in source
     assert '_base_relevant_tools.discard("host_shell")' in source
     assert '_DOMAIN_TOOL_MAP.get("cookbook", set())' in source
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Focused real-route eval for implicit Odysseus memory questions.
+"""Focused real-route eval for implicit Ulises memory questions.
 
-This uses the same Odysseus HTTP chat route as the broader harness evals, then
+This uses the same Ulises HTTP chat route as the broader harness evals, then
 adds memory-specific scoring so the next SFT slice can target the actual gap:
 natural "what do you remember/know about me" questions that should route to
 manage_memory before answering.
@@ -19,9 +19,9 @@ from typing import Any
 import httpx
 
 try:
-    from scripts.eval_odysseus_tool_use import _cookie, run_case
+    from scripts.eval_ulises_tool_use import _cookie, run_case
 except ModuleNotFoundError:
-    from eval_odysseus_tool_use import _cookie, run_case
+    from eval_ulises_tool_use import _cookie, run_case
 
 
 CASES: list[dict[str, Any]] = [
@@ -215,7 +215,7 @@ def main() -> int:
     output.parent.mkdir(parents=True, exist_ok=True)
     records: list[dict[str, Any]] = []
     with httpx.Client(
-        cookies={"odysseus_session": _cookie(Path(args.cookie_file))},
+        cookies={"ulises_session": _cookie(Path(args.cookie_file))},
         follow_redirects=False,
         timeout=args.timeout + 20,
     ) as client:

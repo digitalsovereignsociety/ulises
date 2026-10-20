@@ -34,14 +34,14 @@ TEST_DOCS = [
 
 def _compose_env_names(path: Path) -> set[str]:
     compose = yaml.safe_load(path.read_text(encoding="utf-8"))
-    env = compose["services"]["odysseus"]["environment"]
+    env = compose["services"]["ulises"]["environment"]
     return {entry.split("=", 1)[0] for entry in env}
 
 
 def _upload_limit_env_names() -> set[str]:
     source = (ROOT / "src" / "upload_limits.py").read_text(encoding="utf-8")
-    return set(re.findall(r'"(ODYSSEUS_[A-Z_]*BYTES)"', source)) | {
-        "ODYSSEUS_CHAT_UPLOAD_MAX_BYTES"
+    return set(re.findall(r'"(ULISES_[A-Z_]*BYTES)"', source)) | {
+        "ULISES_CHAT_UPLOAD_MAX_BYTES"
     }
 
 
@@ -85,23 +85,23 @@ def test_browser_image_includes_multilingual_font_support():
 
 def test_host_docker_overlay_mounts_socket_and_adds_docker_group():
     overlay = yaml.safe_load(HOST_DOCKER_OVERLAY.read_text(encoding="utf-8"))
-    service = overlay["services"]["odysseus"]
+    service = overlay["services"]["ulises"]
 
     assert "/var/run/docker.sock:/var/run/docker.sock" in service["volumes"]
     assert "${DOCKER_GID:-963}" in service["group_add"]
-    assert "ODYSSEUS_ENABLE_HOST_DOCKER=true" in service["environment"]
+    assert "ULISES_ENABLE_HOST_DOCKER=true" in service["environment"]
 
 
 def test_host_workspace_overlay_mounts_explicit_host_workspace():
     overlay = yaml.safe_load(HOST_WORKSPACE_OVERLAY.read_text(encoding="utf-8"))
-    service = overlay["services"]["odysseus"]
+    service = overlay["services"]["ulises"]
 
     assert (
-        "${ODYSSEUS_HOST_WORKSPACE_DIR:?set ODYSSEUS_HOST_WORKSPACE_DIR}:${ODYSSEUS_HOST_WORKSPACE_MOUNT:-/host/workspace}:rw,z"
+        "${ULISES_HOST_WORKSPACE_DIR:?set ULISES_HOST_WORKSPACE_DIR}:${ULISES_HOST_WORKSPACE_MOUNT:-/host/workspace}:rw,z"
         in service["volumes"]
     )
     assert (
-        "ODYSSEUS_HOST_WORKSPACE_MOUNT=${ODYSSEUS_HOST_WORKSPACE_MOUNT:-/host/workspace}"
+        "ULISES_HOST_WORKSPACE_MOUNT=${ULISES_HOST_WORKSPACE_MOUNT:-/host/workspace}"
         in service["environment"]
     )
 
@@ -111,10 +111,10 @@ def test_host_network_overlay_uses_host_namespace_without_port_mapping():
 
     assert "network_mode: host" in text
     assert "ports: !reset []" in text
-    assert "SEARXNG_INSTANCE=${ODYSSEUS_HOST_NETWORK_SEARXNG_INSTANCE:-http://127.0.0.1:8080}" in text
-    assert "CHROMADB_HOST=${ODYSSEUS_HOST_NETWORK_CHROMADB_HOST:-127.0.0.1}" in text
-    assert "CHROMADB_PORT=${ODYSSEUS_HOST_NETWORK_CHROMADB_PORT:-8100}" in text
-    assert "ODYSSEUS_CONTAINER_NETWORK_MODE=host" in text
+    assert "SEARXNG_INSTANCE=${ULISES_HOST_NETWORK_SEARXNG_INSTANCE:-http://127.0.0.1:8080}" in text
+    assert "CHROMADB_HOST=${ULISES_HOST_NETWORK_CHROMADB_HOST:-127.0.0.1}" in text
+    assert "CHROMADB_PORT=${ULISES_HOST_NETWORK_CHROMADB_PORT:-8100}" in text
+    assert "ULISES_CONTAINER_NETWORK_MODE=host" in text
     assert '--port "$${APP_PORT:-7011}"' in text
 
 
@@ -125,7 +125,7 @@ def test_docker_entrypoint_gates_socket_group_plumbing_on_explicit_opt_in():
     socket_group_block = script[block_start:block_end]
 
     opt_in_check = socket_group_block.index(
-        "[ \"${ODYSSEUS_ENABLE_HOST_DOCKER:-}\" = \"true\" ]"
+        "[ \"${ULISES_ENABLE_HOST_DOCKER:-}\" = \"true\" ]"
     )
     socket_check = socket_group_block.index("[ -S \"$DOCKER_SOCK\" ]")
     stat_socket = socket_group_block.index("stat -c")
@@ -177,7 +177,7 @@ def test_docker_entrypoint_repairs_cache_parent_without_recursive_walk():
 @pytest.mark.skipif(shutil.which("docker") is None, reason="Docker CLI is unavailable")
 def test_docker_entrypoint_cache_parent_with_nested_volume():
     """Run the real entrypoint against a disposable nested-volume layout."""
-    image = os.environ.get("ODYSSEUS_DOCKER_TEST_IMAGE", "odysseus-odysseus:latest")
+    image = os.environ.get("ULISES_DOCKER_TEST_IMAGE", "ulises-ulises:latest")
     if subprocess.run(
         ["docker", "image", "inspect", image],
         capture_output=True,
@@ -186,7 +186,7 @@ def test_docker_entrypoint_cache_parent_with_nested_volume():
     ).returncode != 0:
         pytest.skip(f"Docker test image is unavailable: {image}")
 
-    volume = f"odysseus-cache-parent-test-{uuid.uuid4().hex}"
+    volume = f"ulises-cache-parent-test-{uuid.uuid4().hex}"
     subprocess.run(
         ["docker", "volume", "create", volume],
         capture_output=True,

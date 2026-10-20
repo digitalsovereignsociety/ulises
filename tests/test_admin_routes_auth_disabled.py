@@ -125,7 +125,7 @@ def test_set_settings_still_403_when_auth_enabled(client, monkeypatch):
 def test_set_settings_admin_session_still_works(client, monkeypatch):
     monkeypatch.setenv("AUTH_ENABLED", "true")
     c, stored = client
-    c.cookies.set("odysseus_session", "session-token")
+    c.cookies.set("ulises_session", "session-token")
     r = c.post("/api/auth/settings", json={"default_model": "admin-model"})
     assert r.status_code == 200
     assert stored.get("default_model") == "admin-model"
@@ -229,7 +229,7 @@ def test_get_settings_scrubbed_for_unauthenticated_and_non_admin_when_auth_enabl
     assert data["default_model"] == "gpt-4o"
 
     # Non-admin authenticated user gets scrubbed settings
-    c.cookies.set("odysseus_session", "user-token")
+    c.cookies.set("ulises_session", "user-token")
     r = c.get("/api/auth/settings")
     assert r.status_code == 200
     data = r.json()
@@ -237,7 +237,7 @@ def test_get_settings_scrubbed_for_unauthenticated_and_non_admin_when_auth_enabl
     assert data["default_model"] == "gpt-4o"
 
     # Admin caller gets full unscrubbed settings
-    c.cookies.set("odysseus_session", "session-token")
+    c.cookies.set("ulises_session", "session-token")
     r = c.get("/api/auth/settings")
     assert r.status_code == 200
     data = r.json()
@@ -248,7 +248,7 @@ def test_get_settings_scrubbed_for_unauthenticated_and_non_admin_when_auth_enabl
 def test_set_settings_403_for_authenticated_non_admin(client, monkeypatch):
     monkeypatch.setenv("AUTH_ENABLED", "true")
     c, stored = client
-    c.cookies.set("odysseus_session", "user-token")
+    c.cookies.set("ulises_session", "user-token")
     r = c.post("/api/auth/settings", json={"default_model": "user-choice"})
     assert r.status_code == 403
     assert stored.get("default_model") != "user-choice"
@@ -262,12 +262,12 @@ def test_features_gated_when_auth_enabled(client, monkeypatch):
     assert c.post("/api/auth/features", json={"web_search": False}).status_code == 403
 
     # Non-admin
-    c.cookies.set("odysseus_session", "user-token")
+    c.cookies.set("ulises_session", "user-token")
     assert c.post("/api/auth/features", json={"web_search": False}).status_code == 403
     assert stored.features["web_search"] is True
 
     # Admin
-    c.cookies.set("odysseus_session", "session-token")
+    c.cookies.set("ulises_session", "session-token")
     r = c.post("/api/auth/features", json={"web_search": False})
     assert r.status_code == 200
     assert stored.features["web_search"] is False
@@ -282,7 +282,7 @@ def test_integrations_gated_when_auth_enabled(client, monkeypatch):
     assert c.post("/api/auth/integrations", json={"name": "a"}).status_code == 403
 
     # Non-admin
-    c.cookies.set("odysseus_session", "user-token")
+    c.cookies.set("ulises_session", "user-token")
     assert c.get("/api/auth/integrations").status_code == 403
     assert c.post("/api/auth/integrations", json={"name": "a"}).status_code == 403
     assert c.put("/api/auth/integrations/int-1", json={"name": "b"}).status_code == 403
@@ -290,7 +290,7 @@ def test_integrations_gated_when_auth_enabled(client, monkeypatch):
     assert c.post("/api/auth/integrations/int-1/test").status_code == 403
 
     # Admin
-    c.cookies.set("odysseus_session", "session-token")
+    c.cookies.set("ulises_session", "session-token")
     assert c.get("/api/auth/integrations").status_code == 200
     assert c.post("/api/auth/integrations", json={"name": "new", "preset": "custom"}).status_code == 200
 
@@ -305,12 +305,12 @@ def test_user_management_requires_admin_when_auth_enabled(client, monkeypatch):
     assert c.put("/api/auth/users/target/password", json={"new_password": "password123"}).status_code == 403
 
     # Non-admin
-    c.cookies.set("odysseus_session", "user-token")
+    c.cookies.set("ulises_session", "user-token")
     assert c.get("/api/auth/users").status_code == 403
     assert c.put("/api/auth/users/target/password", json={"new_password": "password123"}).status_code == 403
 
     # Admin
-    c.cookies.set("odysseus_session", "session-token")
+    c.cookies.set("ulises_session", "session-token")
     assert c.get("/api/auth/users").status_code == 200
 
 
@@ -322,7 +322,7 @@ def test_document_style_extract_gating(client, monkeypatch):
     monkeypatch.setenv("AUTH_ENABLED", "true")
     assert c.post("/api/auth/settings/document-style/extract", files=dummy_file).status_code == 403
 
-    c.cookies.set("odysseus_session", "user-token")
+    c.cookies.set("ulises_session", "user-token")
     assert c.post("/api/auth/settings/document-style/extract", files=dummy_file).status_code == 403
 
     # When auth disabled: unauthenticated passes admin gate (400 for sample length < 80)

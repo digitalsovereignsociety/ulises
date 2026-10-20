@@ -5,14 +5,14 @@ import { chromium } from 'playwright';
 
 const base = process.env.BASE_URL || 'http://127.0.0.1:7011';
 const owner = 'sft_alex_creator';
-const sessions = JSON.parse(fs.readFileSync(process.env.ODYSSEUS_AUTH_SESSION_FILE || (() => { throw new Error("ODYSSEUS_AUTH_SESSION_FILE is required"); })(), 'utf8'));
+const sessions = JSON.parse(fs.readFileSync(process.env.ULISES_AUTH_SESSION_FILE || (() => { throw new Error("ULISES_AUTH_SESSION_FILE is required"); })(), 'utf8'));
 const token = Object.entries(sessions).find(([, value]) => value?.username === owner)?.[0];
 if (!token) throw Error(`No active ${owner} session`);
 
 const browser = await chromium.launch({ headless: true, args: ['--no-proxy-server'] });
 try {
   const context = await browser.newContext({ serviceWorkers: 'block' });
-  await context.addCookies([{ name: 'odysseus_session', value: token, url: base }]);
+  await context.addCookies([{ name: 'ulises_session', value: token, url: base }]);
   const page = await context.newPage();
   await page.goto(base, { waitUntil: 'domcontentloaded', timeout: 30000 });
   await page.waitForSelector('#chat-history');

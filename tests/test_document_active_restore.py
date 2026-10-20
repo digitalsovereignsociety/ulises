@@ -8,7 +8,7 @@ DOC_JS = document_source()
 
 
 def test_active_document_is_persisted_per_session():
-    assert "const _docActiveKey = (sessionId) => 'odysseus-doc-active-' + sessionId;" in DOC_JS
+    assert "const _docActiveKey = (sessionId) => 'ulises-doc-active-' + sessionId;" in DOC_JS
     assert "localStorage.setItem(_docActiveKey(sessionId), docId);" in DOC_JS
     assert "_rememberActiveDoc(docId);" in DOC_JS
 

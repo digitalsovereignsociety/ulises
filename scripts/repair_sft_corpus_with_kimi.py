@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Produce turn-addressed Kimi repairs for audited Odysseus SFT sessions."""
+"""Produce turn-addressed Kimi repairs for audited Ulises SFT sessions."""
 
 from __future__ import annotations
 
@@ -28,9 +28,9 @@ def decrypt(value: str) -> str:
 
 
 def endpoint(endpoint_id: str, model: str) -> dict[str, str]:
-    # Honor the same configured data directory as the live Odysseus service.
+    # Honor the same configured data directory as the live Ulises service.
     # Eval worktrees commonly keep only source under ROOT while 7011 points at
-    # the canonical shared database via ODYSSEUS_DATA_DIR.
+    # the canonical shared database via ULISES_DATA_DIR.
     from src.constants import DATA_DIR
 
     data_dir = Path(DATA_DIR)

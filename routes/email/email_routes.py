@@ -74,7 +74,7 @@ from .email_pollers import _start_poller
 
 logger = logging.getLogger(__name__)
 
-ODYSSEUS_MAIL_ORIGIN = "odysseus-ui"
+ULISES_MAIL_ORIGIN = "ulises-ui"
 EMAIL_READ_ATTACHMENT_VERSION = 2
 _GOOGLE_OAUTH_IMAP_HOST = "imap.gmail.com"
 _GOOGLE_OAUTH_SMTP_HOST = "smtp.gmail.com"
@@ -652,7 +652,7 @@ def _parse_list_unsubscribe_header(value: str | None) -> list[dict]:
     """Parse RFC List-Unsubscribe entries into safe reviewable actions.
 
     We return mailto/http entries but only the mailto kind is executable by the
-    first-pass Odysseus flow. HTTP unsubscribe links are useful evidence but
+    first-pass Ulises flow. HTTP unsubscribe links are useful evidence but
     often contain tracking tokens and should be opened manually unless/until we
     add a browser-confirmed flow.
     """
@@ -1515,12 +1515,12 @@ def _copy_and_delete_email_message(conn, uid: str, dest: str, role: str = "") ->
     return False
 
 
-def _apply_odysseus_headers(msg, kind: str | None = None, ref_id: str | None = None):
-    msg["X-Odysseus-Origin"] = ODYSSEUS_MAIL_ORIGIN
+def _apply_ulises_headers(msg, kind: str | None = None, ref_id: str | None = None):
+    msg["X-Ulises-Origin"] = ULISES_MAIL_ORIGIN
     if kind:
-        msg["X-Odysseus-Kind"] = re.sub(r"[^A-Za-z0-9_.-]", "-", kind)[:64]
+        msg["X-Ulises-Kind"] = re.sub(r"[^A-Za-z0-9_.-]", "-", kind)[:64]
     if ref_id:
-        msg["X-Odysseus-Ref"] = re.sub(r"[^A-Za-z0-9_.:-]", "-", ref_id)[:128]
+        msg["X-Ulises-Ref"] = re.sub(r"[^A-Za-z0-9_.:-]", "-", ref_id)[:128]
 
 
 def _normalize_addr_field(field: str) -> str:
@@ -1930,7 +1930,7 @@ def setup_email_routes():
         return Path(DATA_DIR) / "fixture_email_messages.json"
 
     def _fixture_email_enabled() -> bool:
-        return os.environ.get("ODYSSEUS_EMAIL_FIXTURE") == "1" and _fixture_email_file().exists()
+        return os.environ.get("ULISES_EMAIL_FIXTURE") == "1" and _fixture_email_file().exists()
 
     def _fixture_folder_key(folder: str | None) -> str:
         value = str(folder or "INBOX").strip().lower()
@@ -2306,12 +2306,12 @@ def setup_email_routes():
                 # All emails NOT marked as answered/done (read or unread).
                 status, data = _imap_uid_search(conn, f"(UNANSWERED{from_clause})")
             elif filter_ == "reminders":
-                # Prefer the Odysseus marker header, but include the subject
-                # fallback too. The fallback uses a distinct Odysseus prefix
+                # Prefer the Ulises marker header, but include the subject
+                # fallback too. The fallback uses a distinct Ulises prefix
                 # so ordinary emails containing "Reminder" don't get mixed in.
                 status, data = _imap_uid_search(
                     conn,
-                    f'(OR HEADER X-Odysseus-Kind "reminder" SUBJECT "Reminder (Odysseus):"{from_clause})',
+                    f'(OR HEADER X-Ulises-Kind "reminder" SUBJECT "Reminder (Ulises):"{from_clause})',
                 )
             elif filter_ == "pending_30d":
                 # "What's pending in the last month" — UNANSWERED + delivered
@@ -3200,8 +3200,8 @@ def setup_email_routes():
             msg_out["From"] = email.utils.formataddr((cfg.get("display_name") or "", cfg["from_address"]))
             msg_out["To"] = target
             msg_out["Subject"] = subject
-            msg_out["Message-ID"] = email.utils.make_msgid(domain="odysseus.local")
-            _apply_odysseus_headers(msg_out, "unsubscribe", uid)
+            msg_out["Message-ID"] = email.utils.make_msgid(domain="ulises.local")
+            _apply_ulises_headers(msg_out, "unsubscribe", uid)
             _send_smtp_message(cfg, cfg["from_address"], [target], msg_out.as_string())
             moved = False
             deleted = False
@@ -4903,7 +4903,7 @@ def setup_email_routes():
                 soffice = _shutil.which("soffice") or _shutil.which("libreoffice")
                 if not soffice:
                     return None
-                tmp_dir = _tempfile.mkdtemp(prefix="odysseus-docx-pdf-")
+                tmp_dir = _tempfile.mkdtemp(prefix="ulises-docx-pdf-")
                 try:
                     proc = _subprocess.run(
                         [
@@ -5301,13 +5301,13 @@ def setup_email_routes():
                 if trash_folder:
                     _invalidate_list_cache(account_id, trash_folder)
 
-    @router.delete("/odysseus/reminders")
-    async def delete_odysseus_reminder_emails(
+    @router.delete("/ulises/reminders")
+    async def delete_ulises_reminder_emails(
         account_id: str | None = Query(None),
         permanent: bool = Query(False),
         owner: str = Depends(require_owner),
     ):
-        """Delete email messages stamped as Odysseus reminders."""
+        """Delete email messages stamped as Ulises reminders."""
         if account_id:
             _assert_owns_account(account_id, owner)
         deleted = 0
@@ -5345,12 +5345,12 @@ def setup_email_routes():
                         # Match the Reminders filter: new messages have the
                         # explicit kind header, and subject fallback catches
                         # clients/providers that stripped custom headers.
-                        uids.update(_search_uids(conn, f'(HEADER X-Odysseus-Kind {_search_quote("reminder")})'))
-                        uids.update(_search_uids(conn, f'(SUBJECT {_search_quote("Reminder (Odysseus):")})'))
+                        uids.update(_search_uids(conn, f'(HEADER X-Ulises-Kind {_search_quote("reminder")})'))
+                        uids.update(_search_uids(conn, f'(SUBJECT {_search_quote("Reminder (Ulises):")})'))
                         for addr in own_addrs:
                             addr_q = _search_quote(addr)
-                            uids.update(_search_uids(conn, f'(FROM {addr_q} SUBJECT {_search_quote("Reminder (Odysseus):")})'))
-                            # Legacy reminders created before the Odysseus
+                            uids.update(_search_uids(conn, f'(FROM {addr_q} SUBJECT {_search_quote("Reminder (Ulises):")})'))
+                            # Legacy reminders created before the Ulises
                             # prefix still came from this mailbox as
                             # "Reminder: ..."; include them in Clear without
                             # sweeping unrelated external reminder emails.
@@ -5373,7 +5373,7 @@ def setup_email_routes():
             _invalidate_list_cache(account_id)
             return {"success": True, "deleted": deleted, "folders_checked": folders_checked}
         except Exception as e:
-            logger.error(f"delete_odysseus_reminder_emails failed: {e}")
+            logger.error(f"delete_ulises_reminder_emails failed: {e}")
             return {"success": False, "error": "Mail operation failed"}
 
     @router.post("/move/{uid}")
@@ -5546,7 +5546,7 @@ def setup_email_routes():
         _shutil.copyfile(str(src), str(dest))
         return {"success": True, "token": token, "filename": safe_name, "size": size}
 
-    def _load_odysseus_attachment_source(db, kind: str, item_id: str, owner: str):
+    def _load_ulises_attachment_source(db, kind: str, item_id: str, owner: str):
         from core.database import Document as _Doc, GalleryImage as _GI
         from core.database import Session as _Sess
 
@@ -5592,9 +5592,9 @@ def setup_email_routes():
 
         raise HTTPException(status_code=400, detail="Unknown attachment kind")
 
-    @router.post("/compose-from-odysseus")
-    async def compose_from_odysseus(data: dict, owner: str = Depends(require_owner)):
-        """Stage an Odysseus document or gallery image as a compose upload."""
+    @router.post("/compose-from-ulises")
+    async def compose_from_ulises(data: dict, owner: str = Depends(require_owner)):
+        """Stage an Ulises document or gallery image as a compose upload."""
         kind = str(data.get("kind") or "").strip().lower()
         item_id = str(data.get("id") or "").strip()
         if kind not in {"document", "gallery"} or not item_id:
@@ -5604,7 +5604,7 @@ def setup_email_routes():
 
             db = _SL()
             try:
-                src = _load_odysseus_attachment_source(db, kind, item_id, owner)
+                src = _load_ulises_attachment_source(db, kind, item_id, owner)
                 if "path" in src:
                     return _stage_compose_file(src["filename"], src["path"])
                 return _stage_compose_bytes(src["filename"], src["content"])
@@ -5613,12 +5613,12 @@ def setup_email_routes():
         except HTTPException:
             raise
         except Exception as e:
-            logger.error(f"Failed to stage Odysseus attachment {kind}/{item_id}: {e}")
+            logger.error(f"Failed to stage Ulises attachment {kind}/{item_id}: {e}")
             return {"success": False, "error": "Mail operation failed"}
 
-    @router.post("/compose-from-odysseus-zip")
-    async def compose_from_odysseus_zip(data: dict, owner: str = Depends(require_owner)):
-        """Stage several Odysseus documents/gallery images as one zip attachment."""
+    @router.post("/compose-from-ulises-zip")
+    async def compose_from_ulises_zip(data: dict, owner: str = Depends(require_owner)):
+        """Stage several Ulises documents/gallery images as one zip attachment."""
         raw_items = data.get("items") or []
         if not isinstance(raw_items, list) or not raw_items:
             raise HTTPException(status_code=400, detail="Expected items")
@@ -5650,7 +5650,7 @@ def setup_email_routes():
                         item_id = str(item.get("id") or "").strip()
                         if kind not in {"document", "gallery"} or not item_id:
                             continue
-                        src = _load_odysseus_attachment_source(db, kind, item_id, owner)
+                        src = _load_ulises_attachment_source(db, kind, item_id, owner)
                         zname = unique_name(src["filename"])
                         if "path" in src:
                             zf.write(src["path"], arcname=zname)
@@ -5659,13 +5659,13 @@ def setup_email_routes():
                 content = buf.getvalue()
                 if not content:
                     raise HTTPException(status_code=400, detail="No valid attachments")
-                return _stage_compose_bytes("odysseus-attachments.zip", content)
+                return _stage_compose_bytes("ulises-attachments.zip", content)
             finally:
                 db.close()
         except HTTPException:
             raise
         except Exception as e:
-            logger.error(f"Failed to stage Odysseus zip attachment: {e}")
+            logger.error(f"Failed to stage Ulises zip attachment: {e}")
             return {"success": False, "error": "Mail operation failed"}
 
     @router.post("/compose-from-attachment/{uid}/{index}")
@@ -5724,7 +5724,7 @@ def setup_email_routes():
 
     async def _send_email_sync(
         to, cc, bcc, subject, body, in_reply_to, references, attachments,
-        account_id=None, owner="", odysseus_kind=None, odysseus_ref=None,
+        account_id=None, owner="", ulises_kind=None, ulises_ref=None,
     ):
         """Shared send logic used by both /send and scheduled delivery.
 
@@ -5751,7 +5751,7 @@ def setup_email_routes():
             outer["Cc"] = cc
         outer["Subject"] = subject or ""
         outer["Date"] = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S +0000")
-        _apply_odysseus_headers(outer, odysseus_kind or "scheduled", odysseus_ref)
+        _apply_ulises_headers(outer, ulises_kind or "scheduled", ulises_ref)
         if in_reply_to:
             outer["In-Reply-To"] = in_reply_to
         if references:
@@ -5810,7 +5810,7 @@ def setup_email_routes():
             conn = sqlite3.connect(SCHEDULED_DB)
             conn.execute("""
                 INSERT INTO scheduled_emails
-                (id, to_addr, cc, bcc, subject, body, in_reply_to, references_hdr, attachments, send_at, created_at, status, account_id, odysseus_kind, owner)
+                (id, to_addr, cc, bcc, subject, body, in_reply_to, references_hdr, attachments, send_at, created_at, status, account_id, ulises_kind, owner)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)
             """, (
                 sid,
@@ -5825,7 +5825,7 @@ def setup_email_routes():
                 send_at,
                 datetime.utcnow().isoformat(),
                 req.get("account_id") or None,
-                req.get("odysseus_kind") or "scheduled",
+                req.get("ulises_kind") or "scheduled",
                 owner or "",
             ))
             conn.commit()
@@ -6039,7 +6039,7 @@ def setup_email_routes():
         outer["Date"] = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S +0000")
         # Use a real domain in the Message-ID.  Some receiving providers accept
         # SMTP delivery but silently discard messages carrying the local-only
-        # ``odysseus.local`` domain.
+        # ``ulises.local`` domain.
         from_domain = (cfg.get("from_address") or "").rsplit("@", 1)[-1].strip()
         outer["Message-ID"] = email.utils.make_msgid(domain=from_domain or None)
 
@@ -6047,8 +6047,8 @@ def setup_email_routes():
             outer["In-Reply-To"] = req.in_reply_to
         if req.references:
             outer["References"] = req.references
-        if req.odysseus_kind:
-            _apply_odysseus_headers(outer, req.odysseus_kind)
+        if req.ulises_kind:
+            _apply_ulises_headers(outer, req.ulises_kind)
 
         # Plain + HTML body. Escape user content so a `<script>` or
         # `<img onerror=...>` paste in compose doesn't end up as live HTML

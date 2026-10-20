@@ -228,8 +228,8 @@ def test_every_package_module_evaluates_on_its_own_in_a_browser():
     ]
     script = r'''
       import { chromium } from 'playwright';
-      const origin = process.env.ODYSSEUS_TEST_STATIC_ORIGIN;
-      const urls = JSON.parse(process.env.ODYSSEUS_EMAIL_MODULE_URLS);
+      const origin = process.env.ULISES_TEST_STATIC_ORIGIN;
+      const urls = JSON.parse(process.env.ULISES_EMAIL_MODULE_URLS);
       const browser = await chromium.launch({ headless: true });
       const results = {};
       for (const url of urls) {
@@ -259,7 +259,7 @@ def test_every_package_module_evaluates_on_its_own_in_a_browser():
         text=True,
         env={
             **__import__("os").environ,
-            "ODYSSEUS_EMAIL_MODULE_URLS": json.dumps(urls),
+            "ULISES_EMAIL_MODULE_URLS": json.dumps(urls),
         },
     )
     assert result.returncode == 0, result.stderr
@@ -278,7 +278,7 @@ def test_wrapper_and_entry_module_hand_out_the_same_functions():
     """
     script = r'''
       import { chromium } from 'playwright';
-      const origin = process.env.ODYSSEUS_TEST_STATIC_ORIGIN;
+      const origin = process.env.ULISES_TEST_STATIC_ORIGIN;
       const browser = await chromium.launch({ headless: true });
       const page = await browser.newPage();
       await page.goto(`${origin}/static/js/documentStats.js`);

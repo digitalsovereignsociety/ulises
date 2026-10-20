@@ -11,13 +11,13 @@ function documentFunction(name, text = source) {
 }
 
 (async () => {
-  const engine = process.env.ODYSSEUS_SECURITY_BROWSER || 'chromium';
+  const engine = process.env.ULISES_SECURITY_BROWSER || 'chromium';
   assert(['chromium', 'firefox', 'webkit'].includes(engine), engine);
   const browser = await playwright[engine].launch({ headless: true });
   try {
     // Opt-in positive controls use an explicit vulnerable revision, so these
     // regressions also work after the fix is committed or in a shallow checkout.
-    const baselineRevision = process.env.ODYSSEUS_SECURITY_BASELINE_REVISION;
+    const baselineRevision = process.env.ULISES_SECURITY_BASELINE_REVISION;
     if (baselineRevision) {
       const original = execFileSync('git', ['show', baselineRevision + ':static/js/document.js'], { encoding: 'utf8' });
       const baseline = await browser.newPage();
@@ -26,17 +26,17 @@ function documentFunction(name, text = source) {
         contentType: 'application/javascript',
         body: execFileSync('git', ['show', baselineRevision + ':static/js/chatRenderer.js'], { encoding: 'utf8' }),
       }));
-      await baseline.goto(process.env.ODYSSEUS_TEST_STATIC_ORIGIN + '/static/js/documentStats.js');
+      await baseline.goto(process.env.ULISES_TEST_STATIC_ORIGIN + '/static/js/documentStats.js');
       const originalFunctions = Object.fromEntries([
         '_unfoldEmailHeaderLines', '_parseEmailHeader', '_looksLikeWrappedEmailContent', '_decodeBase64EmailWrapper',
-        '_sanitizeOutgoingEmailBody', '_emailHtmlToPlainText', '_aiReply', '_loadOdysseusAttachItems',
-        '_odysseusAttachLabel', '_escHtml',
+        '_sanitizeOutgoingEmailBody', '_emailHtmlToPlainText', '_aiReply', '_loadUlisesAttachItems',
+        '_ulisesAttachLabel', '_escHtml',
       ].map(name => [name, documentFunction(name, original)]));
       const vulnerable = await baseline.evaluate(async functions => {
         const { recordSessionMetricsCost } = await import('/static/js/chatRenderer-head-harness.js');
         recordSessionMetricsCost({ model: 'gpt-4o', input_tokens: 100, output_tokens: 10,
           endpoint_cost_tracked: true, _costRecordId: 'pollutedByLedger' }, '__proto__');
-        await navigator.locks.request('odysseus-session-cost-ledger', () => {});
+        await navigator.locks.request('ulises-session-cost-ledger', () => {});
         const polluted = Object.hasOwn(Object.prototype, 'pollutedByLedger');
         delete Object.prototype.pollutedByLedger;
         localStorage.clear();
@@ -49,7 +49,7 @@ function documentFunction(name, text = source) {
           Object.fromEntries(Array.from({ length: 256 }, (_, i) => ['seed-' + i, 0.001])) }));
         recordSessionMetricsCost({ model: 'gpt-4o', input_tokens: 100, output_tokens: 10,
           endpoint_cost_tracked: true, _costRecordId: 'overflow-proof' }, '__proto__');
-        await navigator.locks.request('odysseus-session-cost-ledger', () => {});
+        await navigator.locks.request('ulises-session-cost-ledger', () => {});
         const prototypeAfter = Object.getOwnPropertyDescriptors(Object.prototype);
         const overflowUnchanged = Reflect.ownKeys(prototypeBefore).length === Reflect.ownKeys(prototypeAfter).length
           && Reflect.ownKeys(prototypeBefore).every(key => Reflect.ownKeys(prototypeBefore[key])
@@ -80,16 +80,16 @@ function documentFunction(name, text = source) {
         }
         const API_BASE = '';
         const _escHtml = eval('(' + functions._escHtml + ')');
-        const _odysseusAttachLabel = eval('(' + functions._odysseusAttachLabel + ')');
+        const _ulisesAttachLabel = eval('(' + functions._ulisesAttachLabel + ')');
         const spinnerModule = { createLoadingRow: () => document.createElement('div') };
-        const _syncOdysseusAttachSelection = () => {};
+        const _syncUlisesAttachSelection = () => {};
         const fetch = async () => ({ ok: true, json: async () => ({ items: [{ id: 'quote', filename: 'quote.png',
           url: 'data:,bad" onerror="window.executed++' }] }) });
         const menu = document.createElement('div');
-        menu.innerHTML = '<div class="email-odysseus-attach-list"></div>';
+        menu.innerHTML = '<div class="email-ulises-attach-list"></div>';
         document.body.appendChild(menu);
         window.executed = 0;
-        await eval('(' + functions._loadOdysseusAttachItems + ')')(menu, 'gallery');
+        await eval('(' + functions._loadUlisesAttachItems + ')')(menu, 'gallery');
         await new Promise(resolve => setTimeout(resolve, 100));
         return { polluted, executions, gallery: window.executed, injected: !!menu.querySelector('[onerror]'),
           overflowUnchanged, overflowRuns: Object.keys(overflowRuns).length, overflowCostStore };
@@ -112,7 +112,7 @@ function documentFunction(name, text = source) {
       if (request.url().includes('/inert-probe')) probes.push(request.url());
     });
     await page.route('**/api/**', route => route.fulfill({ json: { fonts: {}, value: null } }));
-    await page.goto(process.env.ODYSSEUS_TEST_STATIC_ORIGIN + '/static/js/documentStats.js');
+    await page.goto(process.env.ULISES_TEST_STATIC_ORIGIN + '/static/js/documentStats.js');
     await page.setContent('<!doctype html><textarea id="doc-editor-textarea"></textarea>');
 
     const ledger = await page.evaluate(async () => {
@@ -125,7 +125,7 @@ function documentFunction(name, text = source) {
           localStorage.clear();
           recordSessionMetricsCost(metrics(id), sid);
           // Web Locks settle asynchronously in Chromium.
-          await navigator.locks.request('odysseus-session-cost-ledger', () => {});
+          await navigator.locks.request('ulises-session-cost-ledger', () => {});
           if (Object.hasOwn(Object.prototype, 'pollutedByLedger')) throw new Error('Object.prototype polluted');
           if (localStorage.getItem('ody-session-cost') || localStorage.getItem('ody-session-cost-runs')) {
             throw new Error('Unsafe session key was stored');
@@ -133,24 +133,24 @@ function documentFunction(name, text = source) {
         }
         localStorage.clear();
         recordSessionMetricsCost(metrics('  ' + sid + '  '), 'safe-session');
-        await navigator.locks.request('odysseus-session-cost-ledger', () => {});
+        await navigator.locks.request('ulises-session-cost-ledger', () => {});
         if (localStorage.getItem('ody-session-cost-runs')) throw new Error('Unsafe run key was stored');
       }
       localStorage.clear();
       recordSessionMetricsCost(metrics('valid-run'), 'safe-session');
-      await navigator.locks.request('odysseus-session-cost-ledger', () => {});
+      await navigator.locks.request('ulises-session-cost-ledger', () => {});
       const cost = getSessionCost('safe-session');
       recordSessionMetricsCost(metrics('valid-run'), 'safe-session');
-      await navigator.locks.request('odysseus-session-cost-ledger', () => {});
+      await navigator.locks.request('ulises-session-cost-ledger', () => {});
       // Keys are literal property names, not dot-separated traversal paths.
       recordSessionMetricsCost(metrics('constructor.prototype'), 'safe.__proto__.session');
-      await navigator.locks.request('odysseus-session-cost-ledger', () => {});
+      await navigator.locks.request('ulises-session-cost-ledger', () => {});
       const legacy = metrics('');
       recordSessionMetricsCost(legacy, 'legacy-session');
       recordSessionMetricsCost(legacy, 'legacy-session');
-      await navigator.locks.request('odysseus-session-cost-ledger', () => {});
+      await navigator.locks.request('ulises-session-cost-ledger', () => {});
       for (let i = 0; i < 257; i++) recordSessionMetricsCost(metrics('run-' + i), 'overflow-session');
-      await navigator.locks.request('odysseus-session-cost-ledger', () => {});
+      await navigator.locks.request('ulises-session-cost-ledger', () => {});
       // Snapshot all ordinary-ledger results before the reserved-key fixture
       // deliberately replaces localStorage below.
       const replayCost = getSessionCost('safe-session');
@@ -198,7 +198,7 @@ function documentFunction(name, text = source) {
 
     const names = ['_unfoldEmailHeaderLines', '_parseEmailHeader', '_looksLikeWrappedEmailContent', '_decodeBase64EmailWrapper',
       '_sanitizeOutgoingEmailBody', '_emailHtmlToPlainText', '_aiReply',
-      '_loadOdysseusAttachItems', '_odysseusAttachLabel', '_escHtml',
+      '_loadUlisesAttachItems', '_ulisesAttachLabel', '_escHtml',
       '_normalizeRichLinkUrl', '_smartRichPasteUrl', '_insertSmartRichPasteLink', '_cleanRichTextPasteHtml', 'exportAsPdf'];
     const functions = Object.fromEntries(names.map(name => [name, documentFunction(name)]));
     const email = await page.evaluate(async functions => {
@@ -271,26 +271,26 @@ function documentFunction(name, text = source) {
     const gallery = await page.evaluate(async functions => {
       const API_BASE = '';
       const _escHtml = eval('(' + functions._escHtml + ')');
-      const _odysseusAttachLabel = eval('(' + functions._odysseusAttachLabel + ')');
+      const _ulisesAttachLabel = eval('(' + functions._ulisesAttachLabel + ')');
       const spinnerModule = { createLoadingRow: () => document.createElement('div') };
-      const _syncOdysseusAttachSelection = () => {};
-      const load = eval('(' + functions._loadOdysseusAttachItems + ')');
+      const _syncUlisesAttachSelection = () => {};
+      const load = eval('(' + functions._loadUlisesAttachItems + ')');
       const urls = ['/static/missing.png" onerror="window.executed++" data-injected="yes',
         '/static/missing.png"><svg onload="window.executed++"></svg>', '/static/missing.png',
         'javascript:window.executed++', 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" onload="parent.executed++"/>'];
       const fetch = async () => ({ ok: true, json: async () => ({ items: urls.map((url, i) => ({
         id: 'image-' + i, url, filename: '<b>Picture</b>', title: 'Safe title' })) }) });
       const menu = document.createElement('div');
-      menu.innerHTML = '<div class="email-odysseus-attach-list"></div>';
+      menu.innerHTML = '<div class="email-ulises-attach-list"></div>';
       document.body.appendChild(menu);
       await load(menu, 'gallery');
-      const rows = [...menu.querySelectorAll('.email-odysseus-attach-row')];
+      const rows = [...menu.querySelectorAll('.email-ulises-attach-row')];
       rows[0].click();
       await new Promise(resolve => setTimeout(resolve, 150));
       return { urls, sources: rows.map(row => row.querySelector('img').getAttribute('src')),
         unsafe: menu.querySelectorAll('[onerror], [onload], [data-injected], svg, script').length,
         selected: rows[0].classList.contains('is-selected'),
-        labels: rows.map(row => row.querySelector('.email-odysseus-attach-meta').textContent),
+        labels: rows.map(row => row.querySelector('.email-ulises-attach-meta').textContent),
         executed: window.executed };
     }, functions);
     assert.deepEqual(gallery.sources, gallery.urls);

@@ -1,7 +1,7 @@
 {
   "fixture": "basic-shapes.png",
   "required_facts": {
-    "text": "ODYSSEUS 42",
+    "text": "ULISES 42",
     "left_object": "red circle",
     "right_object": "blue square"
   },

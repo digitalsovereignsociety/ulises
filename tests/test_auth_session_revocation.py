@@ -79,7 +79,7 @@ def test_admin_password_reset_route(admin, password, status):
     auth.reset_user_password.return_value = True
     endpoint = next(route.endpoint for route in setup_auth_routes(auth).routes
                     if route.path == '/api/auth/users/{username}/password')
-    request = SimpleNamespace(cookies={'odysseus_session': 'token'})
+    request = SimpleNamespace(cookies={'ulises_session': 'token'})
     call = endpoint('alice', ResetUserPasswordRequest(new_password=password), request)
     if status:
         with pytest.raises(HTTPException) as exc:
@@ -189,7 +189,7 @@ def test_change_password_route_revokes_other_sessions_after_success(monkeypatch)
         "routes.auth_routes.asyncio.to_thread",
         lambda fn, *args, **kwargs: _immediate_to_thread(fn, *args, **kwargs),
     )
-    request = SimpleNamespace(cookies={"odysseus_session": "current-token"})
+    request = SimpleNamespace(cookies={"ulises_session": "current-token"})
     body = ChangePasswordRequest(current_password="old-password", new_password="new-password")
 
     result = asyncio.run(endpoint(body=body, request=request))
@@ -208,7 +208,7 @@ def test_change_password_route_wrong_password_does_not_revoke(monkeypatch):
         "routes.auth_routes.asyncio.to_thread",
         lambda fn, *args, **kwargs: _immediate_to_thread(fn, *args, **kwargs),
     )
-    request = SimpleNamespace(cookies={"odysseus_session": "current-token"})
+    request = SimpleNamespace(cookies={"ulises_session": "current-token"})
     body = ChangePasswordRequest(current_password="wrong-password", new_password="new-password")
 
     with pytest.raises(HTTPException) as exc:

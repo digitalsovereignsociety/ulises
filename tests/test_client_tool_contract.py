@@ -28,7 +28,7 @@ def test_runtime_context_parser_accepts_exactly_the_shared_client_tool_contract(
         {"name": name} for name in sorted(TUI_CLIENT_TOOL_NAMES)
     ] + [{"name": "not_a_real_tool"}]
     context = _parse_client_runtime_context(json.dumps({
-        "surface": "odysseus-tui",
+        "surface": "ulises-tui",
         "session_cwd": "/tmp/workspace",
         "host_shell_bridge": {
             "url": "http://127.0.0.1:17654/run", "token": "secret",
@@ -41,7 +41,7 @@ def test_runtime_context_parser_accepts_exactly_the_shared_client_tool_contract(
 
 def test_native_cook_context_is_normalized_to_unattended():
     context = _parse_client_runtime_context({
-        "surface": "odysseus-native",
+        "surface": "ulises-native",
         "terminal_agent": True,
         "interaction_mode": "cook",
     })

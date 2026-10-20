@@ -116,35 +116,35 @@ def limits_from_env() -> MediaIngressLimits:
         return parsed
 
     return MediaIngressLimits(
-        max_media_files=value("ODYSSEUS_MEDIA_MAX_FILES", defaults.max_media_files),
+        max_media_files=value("ULISES_MEDIA_MAX_FILES", defaults.max_media_files),
         max_image_source_bytes=value(
-            "ODYSSEUS_MEDIA_MAX_IMAGE_BYTES", defaults.max_image_source_bytes
+            "ULISES_MEDIA_MAX_IMAGE_BYTES", defaults.max_image_source_bytes
         ),
         max_video_source_bytes=value(
-            "ODYSSEUS_MEDIA_MAX_VIDEO_BYTES", defaults.max_video_source_bytes
+            "ULISES_MEDIA_MAX_VIDEO_BYTES", defaults.max_video_source_bytes
         ),
         max_document_source_bytes=value(
-            "ODYSSEUS_MEDIA_MAX_DOCUMENT_BYTES", defaults.max_document_source_bytes
+            "ULISES_MEDIA_MAX_DOCUMENT_BYTES", defaults.max_document_source_bytes
         ),
         max_audio_source_bytes=value(
-            "ODYSSEUS_MEDIA_MAX_AUDIO_BYTES", defaults.max_audio_source_bytes
+            "ULISES_MEDIA_MAX_AUDIO_BYTES", defaults.max_audio_source_bytes
         ),
         max_encoded_bytes=value(
-            "ODYSSEUS_MEDIA_MAX_ENCODED_BYTES", defaults.max_encoded_bytes
+            "ULISES_MEDIA_MAX_ENCODED_BYTES", defaults.max_encoded_bytes
         ),
         max_inline_document_chars=value(
-            "ODYSSEUS_MEDIA_MAX_DOCUMENT_CHARS", defaults.max_inline_document_chars
+            "ULISES_MEDIA_MAX_DOCUMENT_CHARS", defaults.max_inline_document_chars
         ),
-        max_dimension=value("ODYSSEUS_MEDIA_MAX_DIMENSION", defaults.max_dimension),
-        max_image_pixels=value("ODYSSEUS_MEDIA_MAX_PIXELS", defaults.max_image_pixels),
+        max_dimension=value("ULISES_MEDIA_MAX_DIMENSION", defaults.max_dimension),
+        max_image_pixels=value("ULISES_MEDIA_MAX_PIXELS", defaults.max_image_pixels),
         max_video_frames=value(
-            "ODYSSEUS_MEDIA_MAX_VIDEO_FRAMES", defaults.max_video_frames
+            "ULISES_MEDIA_MAX_VIDEO_FRAMES", defaults.max_video_frames
         ),
         video_probe_timeout_s=value(
-            "ODYSSEUS_MEDIA_PROBE_TIMEOUT", defaults.video_probe_timeout_s
+            "ULISES_MEDIA_PROBE_TIMEOUT", defaults.video_probe_timeout_s
         ),
         video_frame_timeout_s=value(
-            "ODYSSEUS_MEDIA_FRAME_TIMEOUT", defaults.video_frame_timeout_s
+            "ULISES_MEDIA_FRAME_TIMEOUT", defaults.video_frame_timeout_s
         ),
     )
 
@@ -413,7 +413,7 @@ def build_multimodal_user_content(
             )
             media_blocks: list[dict[str, Any]] = []
             attachment_encoded_total = 0
-            with tempfile.TemporaryDirectory(prefix="odysseus-video-frames-") as temp_dir:
+            with tempfile.TemporaryDirectory(prefix="ulises-video-frames-") as temp_dir:
                 for index, timestamp in enumerate(timestamps):
                     frame_path = Path(temp_dir) / f"frame-{index:03d}.png"
                     _extract_video_frame(path, timestamp, frame_path, active_limits)

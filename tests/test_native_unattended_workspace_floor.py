@@ -3,7 +3,7 @@ from src.agent_loop import _native_unattended_workspace_read_floor
 
 def test_native_unattended_workspace_keeps_minimal_read_surface():
     context = {
-        "surface": "odysseus-native",
+        "surface": "ulises-native",
         "unattended_mode": True,
         "workspace": "/workspace/run",
     }
@@ -15,7 +15,7 @@ def test_native_unattended_workspace_keeps_minimal_read_surface():
 
 def test_workspace_floor_respects_contract_and_denials():
     context = {
-        "surface": "odysseus-native",
+        "surface": "ulises-native",
         "interaction_mode": "cook",
     }
 
@@ -33,10 +33,10 @@ def test_workspace_floor_respects_contract_and_denials():
 
 def test_interactive_or_missing_workspace_has_no_read_floor():
     assert _native_unattended_workspace_read_floor(
-        {"surface": "odysseus-native"}, "/workspace/run", [], set(), set()
+        {"surface": "ulises-native"}, "/workspace/run", [], set(), set()
     ) == set()
     assert _native_unattended_workspace_read_floor(
-        {"surface": "odysseus-native", "unattended_mode": True},
+        {"surface": "ulises-native", "unattended_mode": True},
         None,
         [],
         set(),

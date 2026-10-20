@@ -159,7 +159,7 @@ async def test_native_product_browser_turn_cannot_bypass_family_contract(
         "message": message,
         "compare_mode": "false",
         "client_runtime_context": json.dumps({
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
         }),
     })
@@ -185,7 +185,7 @@ async def test_native_transcription_turn_does_not_offer_shell_fallbacks(
 
     endpoint = _chat_stream_endpoint(
         monkeypatch, "agent", {},
-        session_model="odysseus-qwen3.5-tools-pre-heretic",
+        session_model="ulises-qwen3.5-tools-pre-heretic",
     )
     message = "Transcribe the speech in /workspace/jo.wav."
     monkeypatch.setattr(
@@ -209,7 +209,7 @@ async def test_native_transcription_turn_does_not_offer_shell_fallbacks(
         "cwd": "/tmp/native-workspace",
         "workspace": "/tmp/native-workspace",
         "client_runtime_context": json.dumps({
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "unattended_mode": True,
             "input_files": ["/workspace/jo.wav"],
@@ -239,7 +239,7 @@ async def test_native_ocr_turn_offers_only_extract_text(
 
     endpoint = _chat_stream_endpoint(
         monkeypatch, "agent", {},
-        session_model="odysseus-qwen3.5-tools-pre-heretic",
+        session_model="ulises-qwen3.5-tools-pre-heretic",
     )
     message = "Extract the exact visible text from /workspace/receipt.png with OCR."
     monkeypatch.setattr(
@@ -263,7 +263,7 @@ async def test_native_ocr_turn_offers_only_extract_text(
         "cwd": "/tmp/native-workspace",
         "workspace": "/tmp/native-workspace",
         "client_runtime_context": json.dumps({
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "unattended_mode": True,
             "input_files": ["/workspace/receipt.png"],
@@ -293,7 +293,7 @@ async def test_native_sft_owner_can_use_confined_read_file_tool(
 
     endpoint = _chat_stream_endpoint(
         monkeypatch, "agent", {},
-        session_model="odysseus-qwen3.5-tools-pre-heretic",
+        session_model="ulises-qwen3.5-tools-pre-heretic",
     )
     message = "Use read_file to read /workspace/sample.txt. Read only."
     monkeypatch.setattr(
@@ -317,7 +317,7 @@ async def test_native_sft_owner_can_use_confined_read_file_tool(
         "cwd": "/tmp/native-workspace",
         "workspace": "/tmp/native-workspace",
         "client_runtime_context": json.dumps({
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "unattended_mode": True,
             "input_files": ["/workspace/sample.txt"],
@@ -337,7 +337,7 @@ async def test_native_sft_owner_can_use_confined_read_file_tool(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('deny_core', [False, True])
-async def test_exact_odysseus_clean_route_offers_only_requested_compact_family(
+async def test_exact_ulises_clean_route_offers_only_requested_compact_family(
     monkeypatch, registered_mcp_manager, deny_core,
 ):
     from routes import chat_routes
@@ -345,7 +345,7 @@ async def test_exact_odysseus_clean_route_offers_only_requested_compact_family(
 
     endpoint = _chat_stream_endpoint(
         monkeypatch, "agent", {},
-        session_model="odysseus-qwen3.5-tools-pre-heretic",
+        session_model="ulises-qwen3.5-tools-pre-heretic",
     )
     if deny_core:
         monkeypatch.setattr(settings, 'get_setting', lambda key, default=None:
@@ -408,7 +408,7 @@ async def test_native_terminal_workspace_keeps_environment_execution_contract(
         "message": message,
         "compare_mode": "false",
         "client_runtime_context": json.dumps({
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
         }),
     })

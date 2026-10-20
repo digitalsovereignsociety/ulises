@@ -2,12 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 
-const url = process.env.ODYSSEUS_UI_TEST_URL;
+const url = process.env.ULISES_UI_TEST_URL;
 test('reply stream tolerates caret setup but never overwrites user input', { skip: !url }, async () => {
   const browser = await chromium.launch();
   try {
     const context = await browser.newContext();
-    await context.addCookies([{ name: 'odysseus_session', value: process.env.ODYSSEUS_UI_TEST_COOKIE, url }]);
+    await context.addCookies([{ name: 'ulises_session', value: process.env.ULISES_UI_TEST_COOKIE, url }]);
     const page = await context.newPage();
     await page.goto(url);
     await page.waitForFunction(() => window.documentModule);

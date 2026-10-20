@@ -7,7 +7,7 @@ import pytest
 @pytest.mark.asyncio
 async def test_fixture_read_preserves_selected_account_for_reply(tmp_path, monkeypatch):
     import routes.email_routes as module
-    monkeypatch.setenv('ODYSSEUS_EMAIL_FIXTURE', '1')
+    monkeypatch.setenv('ULISES_EMAIL_FIXTURE', '1')
     monkeypatch.setattr(module, 'DATA_DIR', str(tmp_path))
     (tmp_path / 'fixture_email_messages.json').write_text(json.dumps({'messages': [
         {'owner': 'fixture-owner', 'uid': '10', 'account_id': 'primary-inbox',

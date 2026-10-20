@@ -154,9 +154,9 @@ _BG_TASKS: set[asyncio.Task] = set()
 _INCOGNITO_CONTEXTS: dict[str, dict[str, Any]] = {}
 _INCOGNITO_CONTEXT_TTL_SECONDS = 6 * 60 * 60
 _INCOGNITO_CONTEXT_MAX_MESSAGES = 80
-_SFT_TRACE_CAPTURE_ENV = "ODYSSEUS_SFT_TRACE_CAPTURE"
-_SFT_TRACE_DIR_ENV = "ODYSSEUS_SFT_TRACE_DIR"
-_RUNTIME_REVISION_ENV = "ODYSSEUS_RUNTIME_REVISION"
+_SFT_TRACE_CAPTURE_ENV = "ULISES_SFT_TRACE_CAPTURE"
+_SFT_TRACE_DIR_ENV = "ULISES_SFT_TRACE_DIR"
+_RUNTIME_REVISION_ENV = "ULISES_RUNTIME_REVISION"
 
 
 def _sft_trace_capture_enabled(owner: str | None) -> bool:
@@ -199,7 +199,7 @@ def _append_sft_trace_record(
         path = os.path.join(trace_dir, f"{owner}.jsonl")
         runtime_revision = os.getenv(_RUNTIME_REVISION_ENV, "").strip()
         record = {
-            "format": "odysseus_sft_trace_turn_v1",
+            "format": "ulises_sft_trace_turn_v1",
             "captured_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             "owner": owner,
             "session_id": session_id,
@@ -735,7 +735,7 @@ def build_uploaded_file_manifest(att_ids: list, upload_handler, owner: Optional[
         ref = attachment_ref({**info, "id": info.get("id") or str(att_id)})
         ref.update({
             "id": ref["attachment_id"],
-            "uri": f"odysseus://attachment/{ref['attachment_id']}",
+            "uri": f"ulises://attachment/{ref['attachment_id']}",
             "read_policy": "owner_checked_upload",
             # Transitional compatibility: existing built-in tools can still use
             # this path, but only after owner, upload-root, and tool-root checks.

@@ -49,7 +49,7 @@ def test_personal_data_search_is_not_mistaken_for_web_search():
         "Find the prior chat where we fixed the parser."
     )
     assert _is_personal_data_search_without_web_target(
-        "Search my previous chats for the Odysseus TUI parser fix."
+        "Search my previous chats for the Ulises TUI parser fix."
     )
     assert _is_personal_data_search_without_web_target(
         "Do I have any events today?"
@@ -292,7 +292,7 @@ async def _clean_route_contract(monkeypatch, message, *, history=(), native=Fals
     with monkeypatch.context() as route_patch:
         endpoint = _chat_stream_endpoint(
             route_patch, "agent", {},
-            session_model="odysseus-qwen3.5-tools-pre-heretic",
+            session_model="ulises-qwen3.5-tools-pre-heretic",
             session_history=history,
         )
         route_patch.setattr(
@@ -317,7 +317,7 @@ async def _clean_route_contract(monkeypatch, message, *, history=(), native=Fals
                 "cwd": "/tmp/native-workspace",
                 "workspace": "/tmp/native-workspace",
                 "client_runtime_context": json.dumps({
-                    "surface": "odysseus-native", "terminal_agent": True,
+                    "surface": "ulises-native", "terminal_agent": True,
                     "unattended_mode": True,
                     "input_files": ["/workspace/paper.pdf"],
                 }),
@@ -449,12 +449,12 @@ def test_native_declared_input_files_establish_workspace_intent():
     from routes.chat_routes import _native_context_has_workspace_inputs
 
     assert _native_context_has_workspace_inputs({
-        "surface": "odysseus-native",
+        "surface": "ulises-native",
         "terminal_agent": True,
         "input_files": ["/workspace/fixtures/video.mp4"],
     })
     assert not _native_context_has_workspace_inputs({
-        "surface": "odysseus-native",
+        "surface": "ulises-native",
         "terminal_agent": False,
         "input_files": ["/workspace/fixtures/video.mp4"],
     })
@@ -616,7 +616,7 @@ def test_explicit_false_disables_web_despite_prompt_web_intent(message):
     assert "web_fetch" in disabled
 
 
-def test_trained_odysseus_route_uses_explicit_web_intent_without_ui_toggle_gate():
+def test_trained_ulises_route_uses_explicit_web_intent_without_ui_toggle_gate():
     """The exact trained model owns intent routing; other models retain the gate."""
     source = _CHAT_ROUTES.read_text(encoding="utf-8")
     assert "_clean_v3_web_intent = bool(" in source

@@ -32,7 +32,7 @@ def test_ajax_does_not_offer_ask_user(model):
     assert any(s['function']['name'] == 'ask_user' for s in tools)
 
 
-@pytest.mark.parametrize('model', [None, 'kimi-k3', 'odysseus-qwen3.5', 'not-ajax'])
+@pytest.mark.parametrize('model', [None, 'kimi-k3', 'ulises-qwen3.5', 'not-ajax'])
 def test_other_models_keep_ask_user(model):
     tools = [s for s in FUNCTION_TOOL_SCHEMAS if s['function']['name'] == 'ask_user']
     assert [s['function']['name'] for s in compact_schemas(tools, model=model)] == ['ask_user']

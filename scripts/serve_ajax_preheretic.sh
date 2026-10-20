@@ -21,7 +21,7 @@ export NCCL_P2P_DISABLE=1
 export VLLM_USE_FLASHINFER_SAMPLER=0
 exec "${VLLM_BIN:-vllm}" serve \
   "${MODEL_PATH:?Set MODEL_PATH explicitly}" \
-  --served-model-name odysseus-qwen3.5-tools-pre-heretic \
+  --served-model-name ulises-qwen3.5-tools-pre-heretic \
   --host 0.0.0.0 --port 19184 --dtype bfloat16 \
   --tensor-parallel-size 2 --data-parallel-size 4 --data-parallel-size-local 4 \
   --distributed-executor-backend mp --disable-custom-all-reduce \

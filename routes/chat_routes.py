@@ -90,7 +90,7 @@ from src.tool_security import delegated_credential_blocked_tools
 from src.workspace_paths import backend_workspace_path
 from src.client_tool_contract import TUI_CLIENT_TOOL_NAMES
 from src.model_profiles import (
-    ODYSSEUS_COMPACT_TOOL_SCHEMA_PROFILE,
+    ULISES_COMPACT_TOOL_SCHEMA_PROFILE,
     tool_schema_profile,
 )
 from src.tool_execution import AgentExecutionBridge, bind_execution_bridge
@@ -132,8 +132,8 @@ def _clean_v3_route_for_model(
     """Select compact runtime by explicit setting, then model-name default."""
     mode = str(configured_mode or "").strip().lower()
     if mode:
-        return mode in {"compact", "odysseus_compact"}
-    return tool_schema_profile(model) == ODYSSEUS_COMPACT_TOOL_SCHEMA_PROFILE
+        return mode in {"compact", "ulises_compact"}
+    return tool_schema_profile(model) == ULISES_COMPACT_TOOL_SCHEMA_PROFILE
 
 
 def _turn_contract_enabled(*, exact_tool_approval, runtime_surface,
@@ -148,7 +148,7 @@ def _turn_contract_enabled(*, exact_tool_approval, runtime_surface,
     """
     return bool(
         exact_tool_approval is None
-        and runtime_surface != "odysseus-tui"
+        and runtime_surface != "ulises-tui"
         and not full_schema_route
         and (not native_workspace_contract or clean_v3_route)
     )
@@ -171,7 +171,7 @@ def _native_runtime_requires_local_browser(client_runtime_context):
     """Use the private browser to verify declared local HTML artifacts."""
     context = client_runtime_context if isinstance(client_runtime_context, dict) else {}
     if not (
-        context.get("surface") == "odysseus-native"
+        context.get("surface") == "ulises-native"
         and context.get("terminal_agent") is True
         and context.get("unattended_mode") is True
     ):
@@ -536,10 +536,10 @@ def _parse_legacy_client_runtime_context(raw: Any) -> Dict[str, Any]:
     else:
         return {}
     surface = str(data.get("surface") or "")
-    if surface not in {"odysseus-tui", "odysseus-native"}:
+    if surface not in {"ulises-tui", "ulises-native"}:
         return {}
     result: Dict[str, Any] = {"surface": surface}
-    if surface == "odysseus-native":
+    if surface == "ulises-native":
         # Native terminal callers may declare workspace artifacts for the
         # evidence ledger, but may not inject verifier shell commands or host
         # bridges.  Paths remain confined by the normal workspace resolver.
@@ -710,7 +710,7 @@ def _native_context_has_workspace_inputs(context: Dict[str, Any] | None) -> bool
     """Treat sanitized native input declarations as workspace intent."""
     data = context if isinstance(context, dict) else {}
     return bool(
-        data.get("surface") == "odysseus-native"
+        data.get("surface") == "ulises-native"
         and data.get("terminal_agent") is True
         and data.get("input_files")
     )
@@ -749,7 +749,7 @@ def _parse_client_runtime_context(raw: Any) -> Dict[str, Any]:
     # separate from interactive preset handling and only retain a finite,
     # validated value for the already-recognized unattended native surface.
     if (
-        context.get("surface") == "odysseus-native"
+        context.get("surface") == "ulises-native"
         and context.get("terminal_agent") is True
         and context.get("unattended_mode") is True
     ):
@@ -795,7 +795,7 @@ def _parse_client_runtime_context(raw: Any) -> Dict[str, Any]:
     # The host bridge is a TUI capability. Native task runtimes execute inside
     # their isolated workspace and must not carry a caller-supplied host bridge
     # into the backend agent context.
-    if context.get("surface") == "odysseus-tui" and isinstance(bridge, dict):
+    if context.get("surface") == "ulises-tui" and isinstance(bridge, dict):
         url = str(bridge.get("url") or "").strip()
         token = str(bridge.get("token") or "").strip()
         from src.agent_tools.subprocess_tools import is_host_shell_bridge_url_allowed
@@ -827,7 +827,7 @@ def _external_execution_bridge(
         ) as client:
             response = await client.post(
                 url,
-                headers={"x-odysseus-execution-token": token},
+                headers={"x-ulises-execution-token": token},
                 json={
                     "tool": tool,
                     "arguments": content,
@@ -882,7 +882,7 @@ def _should_detach_chat_stream(
         else {}
     )
     return not (
-        context.get("surface") == "odysseus-native"
+        context.get("surface") == "ulises-native"
         and context.get("unattended_mode") is True
     )
 
@@ -919,7 +919,7 @@ def _client_runtime_context_system_message(
     *,
     include_directives: bool = True,
 ) -> Dict[str, Any] | None:
-    if not isinstance(context, dict) or context.get("surface") != "odysseus-tui":
+    if not isinstance(context, dict) or context.get("surface") != "ulises-tui":
         return None
     disabled = set(disabled_tools or set())
     host_shell_enabled = "host_shell" not in disabled
@@ -987,7 +987,7 @@ def _client_runtime_context_system_message(
         and not has_contract_facts
     ):
         return None
-    lines = ["## Odysseus TUI runtime contract"]
+    lines = ["## Ulises TUI runtime contract"]
     if session_cwd:
         lines.append(f"- session_cwd: {session_cwd}")
     if turn_controls:
@@ -1118,13 +1118,13 @@ def _client_runtime_context_system_message(
 def _client_runtime_context_requests_workspace_profile(context: Dict[str, Any]) -> bool:
     return (
         isinstance(context, dict)
-        and context.get("surface") == "odysseus-tui"
+        and context.get("surface") == "ulises-tui"
         and context.get("terminal_agent") is True
     )
 
 
 def _client_runtime_context_cwd(context: Dict[str, Any]) -> str:
-    if not isinstance(context, dict) or context.get("surface") != "odysseus-tui":
+    if not isinstance(context, dict) or context.get("surface") != "ulises-tui":
         return ""
     cwd = str(context.get("session_cwd") or "").strip()
     if not cwd or "\n" in cwd or "\r" in cwd:
@@ -1173,7 +1173,7 @@ def _effective_agent_rounds(
     rounds = max(1, min(rounds, 200))
     if (
         isinstance(client_runtime_context, dict)
-        and str(client_runtime_context.get("surface") or "") == "odysseus-native"
+        and str(client_runtime_context.get("surface") or "") == "ulises-native"
         and client_runtime_context.get("terminal_agent") is True
         and client_runtime_context.get("unattended_mode") is True
     ):
@@ -1195,7 +1195,7 @@ def _effective_agent_rounds(
         return None
     if (
         isinstance(client_runtime_context, dict)
-        and str(client_runtime_context.get("surface") or "") == "odysseus-tui"
+        and str(client_runtime_context.get("surface") or "") == "ulises-tui"
     ):
         # Workspace coding uses the same progress-driven stopping contract as
         # Codex-style coding agents. Do not cut an inspect -> edit -> verify
@@ -1228,7 +1228,7 @@ def _effective_native_output_tokens(
     """
     if not (
         isinstance(client_runtime_context, dict)
-        and str(client_runtime_context.get("surface") or "") == "odysseus-native"
+        and str(client_runtime_context.get("surface") or "") == "ulises-native"
         and client_runtime_context.get("terminal_agent") is True
         and client_runtime_context.get("unattended_mode") is True
     ):
@@ -2142,7 +2142,7 @@ def _set_user_time_from_request(request: Request) -> None:
         # Synthetic SFT fixtures can be forced to UTC for fully deterministic
         # batch generation, but interactive SFT accounts should still use the
         # browser timezone so "4pm" lands at 4pm in the calendar UI.
-        force_sft_utc = os.getenv("ODYSSEUS_SFT_FORCE_UTC_TIMEZONE", "0").strip().lower() in {"1", "true", "yes", "on"}
+        force_sft_utc = os.getenv("ULISES_SFT_FORCE_UTC_TIMEZONE", "0").strip().lower() in {"1", "true", "yes", "on"}
         if force_sft_utc and str(effective_user(request) or "").startswith("sft_"):
             set_user_timezone("UTC", 0)
             return
@@ -3245,7 +3245,7 @@ def setup_chat_routes(
         # retains a separate declared execution contract.
         _runtime_surface = str((client_runtime_context or {}).get("surface") or "")
         _native_workspace_contract = bool(
-            _runtime_surface == "odysseus-native"
+            _runtime_surface == "ulises-native"
             and (client_runtime_context or {}).get("terminal_agent") is True
             and (
                 _workspace_agent_intent
@@ -3271,7 +3271,7 @@ def setup_chat_routes(
             image_attachment=any(str(a.get('mime') or '').startswith('image/') for a in (ctx.preprocessed.attachment_meta or [])),
         ) if _use_turn_contract else frozenset()
         if 'image_editing' in _turn_capabilities and ctx.preprocessed.attachment_meta:
-            image_refs = ['odysseus://attachment/' + str(a['id']) for a in ctx.preprocessed.attachment_meta
+            image_refs = ['ulises://attachment/' + str(a['id']) for a in ctx.preprocessed.attachment_meta
                           if a.get('id') and str(a.get('mime') or '').startswith('image/')]
             if image_refs:
                 image_edit_context = {'role': 'system', 'content':
@@ -3313,7 +3313,7 @@ def setup_chat_routes(
         # requested_capabilities already inherits a typed, recently executed
         # family for referential follow-ups. Do not additionally union stale
         # families into an explicit new request: that inflated regular-model
-        # schemas and made family switches less reliable. The exact Odysseus
+        # schemas and made family switches less reliable. The exact Ulises
         # model receives the trained compact form of this same contract below.
         _warm_turn_capabilities = frozenset()
         if _use_turn_contract and _turn_capabilities and "search_browser" not in _turn_capabilities:
@@ -3337,7 +3337,7 @@ def setup_chat_routes(
             "qwen38-tool-router" in _model_lower
             or "qwen35-9b-tool-router" in _model_lower
             or "qwen3.5-9b-tool-router" in _model_lower
-            or "odysseus-qwen3.5-9b" in _model_lower
+            or "ulises-qwen3.5-9b" in _model_lower
         )
         _explicit_past_chat_search_intent = bool(
             isinstance(message, str)
@@ -3601,7 +3601,7 @@ def setup_chat_routes(
                 and not _native_workspace_contract
             ):
                 # The SFT fixture guard protects the WebUI user's backend
-                # filesystem. A server-validated odysseus-native request owns
+                # filesystem. A server-validated ulises-native request owns
                 # a separate confined workspace, matching the exemption in
                 # _strip_workspace_tools_for_sft inside the agent runtime.
                 disabled_tools.update(_SFT_DISABLED_WORKSPACE_TOOLS)
@@ -3776,7 +3776,7 @@ def setup_chat_routes(
                 )
                 from src.tool_routing_experiment import experiment_mode, select_experiment_inventory
                 _experiment_mode = experiment_mode(
-                    request.headers.get('x-odysseus-routing-experiment'), _user,
+                    request.headers.get('x-ulises-routing-experiment'), _user,
                     model=getattr(sess, 'model', ''),
                 )
                 if _experiment_mode != 'baseline':
@@ -4996,7 +4996,7 @@ def setup_chat_routes(
             agent_runs.subscribe(session, _detached_run),
             media_type="text/event-stream",
             headers={
-                "X-Odysseus-Run-Id": _detached_run.run_id,
+                "X-Ulises-Run-Id": _detached_run.run_id,
                 "Cache-Control": "no-cache, no-transform",
                 "X-Accel-Buffering": "no",
             },
@@ -5016,7 +5016,7 @@ def setup_chat_routes(
             agent_runs.subscribe(session_id, _active_run),
             media_type="text/event-stream",
             headers={
-                "X-Odysseus-Run-Id": _active_run.run_id,
+                "X-Ulises-Run-Id": _active_run.run_id,
                 "Cache-Control": "no-cache, no-transform",
                 "X-Accel-Buffering": "no",
             },
@@ -5029,7 +5029,7 @@ def setup_chat_routes(
     @router.post("/api/chat/stop/{session_id}")
     async def chat_stop(request: Request, session_id: str) -> Dict[str, Any]:
         _verify_session_owner(request, session_id)
-        _expected_run_id = request.headers.get("X-Odysseus-Run-Id")
+        _expected_run_id = request.headers.get("X-Ulises-Run-Id")
         stopped = agent_runs.stop(session_id, _expected_run_id)
         return {"stopped": stopped}
 
@@ -5037,7 +5037,7 @@ def setup_chat_routes(
     async def chat_finish(request: Request, session_id: str) -> Dict[str, Any]:
         """Finish an editor run without discarding completed tools or review cards."""
         _verify_session_owner(request, session_id)
-        expected_run_id = request.headers.get("X-Odysseus-Run-Id")
+        expected_run_id = request.headers.get("X-Ulises-Run-Id")
         accepted = agent_runs.request_finish(session_id, expected_run_id)
         return {"accepted": accepted}
 

@@ -30,7 +30,7 @@ function harness(patch = async () => ({})) {
   return {context, data, form, fields, errors,
     input: () => handlers.input(),
     drain: async () => { for (const f of timers.values()) f(); timers.clear(); await new Promise(setImmediate); },
-    draft: () => JSON.parse(data.get('odysseus-note-draft-note1') || 'null'),
+    draft: () => JSON.parse(data.get('ulises-note-draft-note1') || 'null'),
   };
 }
 

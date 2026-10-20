@@ -277,7 +277,7 @@ def test_inline_code_supports_selection_toggle_and_future_typing():
     assert "document.execCommand('removeFormat')" in inline_code
     assert "document.execCommand('styleWithCSS', false, true)" in inline_code
     assert "document.execCommand('fontName'" in inline_code
-    assert "OdysseusInlineCode" in inline_code
+    assert "UlisesInlineCode" in inline_code
     assert "document.execCommand('insertHTML'" in inline_code
 
 
@@ -300,7 +300,7 @@ def test_rich_code_shortcuts_and_active_state_are_wired():
 
 def test_rich_code_styles_are_scoped_and_exported():
     assert ".doc-email-richbody.richtext-mode code" in STYLE
-    assert 'span[style*="OdysseusInlineCode"]' in STYLE
+    assert 'span[style*="UlisesInlineCode"]' in STYLE
     assert ".doc-email-richbody.richtext-mode pre" in STYLE
     assert "'code{padding:" in DOC_JS
     assert "'pre code{padding:0" in DOC_JS

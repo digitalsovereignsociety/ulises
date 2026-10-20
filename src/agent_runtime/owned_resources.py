@@ -268,7 +268,7 @@ def needs_owned_binding(operation):
     if operation.tool not in OWNED_TOOL_NAMESPACES:
         return False
     if operation.tool in {"extract_text", "inspect_media", "transcribe_media"}:
-        return "odysseus://attachment/" in operation.input
+        return "ulises://attachment/" in operation.input
     return True
 
 
@@ -375,7 +375,7 @@ def resolve_owned_operation(operation, *, owner, thread_id, request_id="", docum
             execution_input = json.dumps(args, sort_keys=True)
     elif namespace == "attachments":
         selector = args.get("path")
-        match = re.fullmatch(r"odysseus://attachment/([A-Za-z0-9_-]+(?:\.[A-Za-z0-9]+)?)", selector or "")
+        match = re.fullmatch(r"ulises://attachment/([A-Za-z0-9_-]+(?:\.[A-Za-z0-9]+)?)", selector or "")
         if match is None:
             raise ResourceIdentityError("Malformed attachment selector")
         attachment = _attachment(match[1], owner, thread_id)
@@ -449,6 +449,6 @@ def bound_attachment_path(owner, selector):
         return None
     operation.validate()
     for attachment in operation.attachments:
-        if owner == operation.owner and selector == "odysseus://attachment/" + attachment.record.record_id:
+        if owner == operation.owner and selector == "ulises://attachment/" + attachment.record.record_id:
             return attachment.file.path
     raise ResourceIdentityError("Attachment is not declared by this operation")

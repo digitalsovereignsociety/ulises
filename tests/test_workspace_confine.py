@@ -444,7 +444,7 @@ def test_tui_host_workspace_does_not_trigger_missing_workspace_shortcut():
         "In this workspace, inspect the project.",
         None,
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "session_cwd": "/home/tester/project",
             "host_shell_bridge": {"url": "http://127.0.0.1:47475/run", "token": "x"},
         },
@@ -561,10 +561,10 @@ def test_browse_marks_root_unselectable_and_vet_endpoint(monkeypatch):
     assert ei.value.status_code == 403
 
     monkeypatch.setattr(wr, "owner_is_admin_or_single_user", lambda owner: True)
-    monkeypatch.setenv("ODYSSEUS_WORKSPACE_DEFAULT", home)
+    monkeypatch.setenv("ULISES_WORKSPACE_DEFAULT", home)
     assert default(request=object()) == {"ok": True, "path": home}
 
-    monkeypatch.setenv("ODYSSEUS_WORKSPACE_DEFAULT", "/")
+    monkeypatch.setenv("ULISES_WORKSPACE_DEFAULT", "/")
     assert default(request=object()) == {"ok": False, "path": None}
 
 

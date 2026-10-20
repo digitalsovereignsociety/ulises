@@ -7,11 +7,11 @@ from routes.chat_routes import (
 
 
 def test_preheretic_model_owns_clean_route_independent_of_endpoint_alias():
-    assert _clean_v3_route_for_model("odysseus-qwen3.5-tools-pre-heretic")
+    assert _clean_v3_route_for_model("ulises-qwen3.5-tools-pre-heretic")
 
 
 def test_trial55_base_uses_same_stable_compact_tool_runtime():
-    assert _clean_v3_route_for_model("odysseus-qwen3.5-heretic-trial55-base")
+    assert _clean_v3_route_for_model("ulises-qwen3.5-heretic-trial55-base")
 
 
 def test_ajax_c375_uses_same_stable_compact_tool_runtime():
@@ -19,22 +19,22 @@ def test_ajax_c375_uses_same_stable_compact_tool_runtime():
     assert _clean_v3_route_for_model("openai/ajax_c375")
 
 
-def test_any_odysseus_or_ajax_token_uses_clean_tool_runtime():
-    assert _clean_v3_route_for_model("Odysseus")
-    assert _clean_v3_route_for_model("lab/my-odysseus-experiment")
+def test_any_ulises_or_ajax_token_uses_clean_tool_runtime():
+    assert _clean_v3_route_for_model("Ulises")
+    assert _clean_v3_route_for_model("lab/my-ulises-experiment")
     assert _clean_v3_route_for_model("lab/AJAX-trial-99")
 
 
 def test_partial_name_matches_do_not_capture_regular_models():
     assert not _clean_v3_route_for_model("ajaxian-model")
-    assert not _clean_v3_route_for_model("myodysseusfoo")
+    assert not _clean_v3_route_for_model("myulisesfoo")
 
 
 def test_explicit_schema_setting_overrides_model_name_default():
-    assert not _clean_v3_route_for_model("Odysseus-trial55", "full")
+    assert not _clean_v3_route_for_model("Ulises-trial55", "full")
     assert not _clean_v3_route_for_model("Ajax_c375", "none")
     assert _clean_v3_route_for_model("gpt-5.5", "compact")
-    assert _clean_v3_route_for_model("gpt-5.5", "odysseus_compact")
+    assert _clean_v3_route_for_model("gpt-5.5", "ulises_compact")
 
 
 def test_other_models_keep_regular_harness():
@@ -45,7 +45,7 @@ def test_other_models_keep_regular_harness():
 def test_clean_v3_keeps_contract_ownership_on_native_workspace():
     assert _turn_contract_enabled(
         exact_tool_approval=None,
-        runtime_surface="odysseus-native",
+        runtime_surface="ulises-native",
         native_workspace_contract=True,
         clean_v3_route=True,
     )
@@ -54,7 +54,7 @@ def test_clean_v3_keeps_contract_ownership_on_native_workspace():
 def test_other_models_keep_separate_native_workspace_contract():
     assert not _turn_contract_enabled(
         exact_tool_approval=None,
-        runtime_surface="odysseus-native",
+        runtime_surface="ulises-native",
         native_workspace_contract=True,
         clean_v3_route=False,
     )
@@ -95,7 +95,7 @@ def test_successfully_used_tools_stay_warm_for_the_session():
 def test_tui_and_exact_approval_still_bypass_routed_contract():
     assert not _turn_contract_enabled(
         exact_tool_approval=None,
-        runtime_surface="odysseus-tui",
+        runtime_surface="ulises-tui",
         native_workspace_contract=False,
         clean_v3_route=True,
     )
@@ -103,7 +103,7 @@ def test_tui_and_exact_approval_still_bypass_routed_contract():
 
 def test_native_html_artifact_requires_local_browser_without_public_web():
     context = {
-        "surface": "odysseus-native",
+        "surface": "ulises-native",
         "terminal_agent": True,
         "unattended_mode": True,
         "completion_requirements": {

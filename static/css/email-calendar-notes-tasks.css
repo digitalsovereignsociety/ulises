@@ -398,22 +398,22 @@ select.task-form-input { text-overflow: ellipsis; }
   top: 0;
 }
 .email-compose-chip .att-size { opacity: 0.5; font-size: 10px; flex-shrink: 0; }
-.email-odysseus-attach-thumb img {
+.email-ulises-attach-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
-.email-odysseus-attach-selected:disabled {
+.email-ulises-attach-selected:disabled {
   opacity: 0.45;
   cursor: default;
 }
-.email-odysseus-attach-selected.is-loading {
+.email-ulises-attach-selected.is-loading {
   opacity: 0.72;
   pointer-events: none;
 }
 @media (max-width: 768px) {
-  .email-odysseus-attach-menu {
+  .email-ulises-attach-menu {
     left: 8px !important;
     right: 8px;
     bottom: 8px;
@@ -421,7 +421,7 @@ select.task-form-input { text-overflow: ellipsis; }
     width: auto;
     max-height: 58vh;
   }
-  .email-odysseus-attach-list {
+  .email-ulises-attach-list {
     max-height: calc(58vh - 88px);
   }
 }

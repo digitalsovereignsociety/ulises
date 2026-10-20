@@ -13,7 +13,7 @@ async def test_runtime_info_reports_host_network_container_context(monkeypatch):
         return original_exists(path)
 
     monkeypatch.setattr(app_module.os.path, "exists", fake_exists)
-    monkeypatch.setenv("ODYSSEUS_CONTAINER_NETWORK_MODE", "host")
+    monkeypatch.setenv("ULISES_CONTAINER_NETWORK_MODE", "host")
 
     result = await app_module.runtime_info()
 
@@ -34,7 +34,7 @@ async def test_runtime_info_reports_docker_host_gateway_reachability(monkeypatch
         return original_exists(path)
 
     monkeypatch.setattr(app_module.os.path, "exists", fake_exists)
-    monkeypatch.setenv("ODYSSEUS_CONTAINER_NETWORK_MODE", "bridge")
+    monkeypatch.setenv("ULISES_CONTAINER_NETWORK_MODE", "bridge")
     monkeypatch.setattr(
         app_module.socket,
         "getaddrinfo",
@@ -60,7 +60,7 @@ async def test_runtime_info_reports_default_gateway_address_when_host_dns_missin
         return original_exists(path)
 
     monkeypatch.setattr(app_module.os.path, "exists", fake_exists)
-    monkeypatch.setenv("ODYSSEUS_CONTAINER_NETWORK_MODE", "bridge")
+    monkeypatch.setenv("ULISES_CONTAINER_NETWORK_MODE", "bridge")
     monkeypatch.setattr(
         app_module.socket,
         "getaddrinfo",

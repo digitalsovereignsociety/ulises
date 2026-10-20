@@ -116,7 +116,7 @@ async def test_host_shell_failure_does_not_become_containment_or_effect_evidence
 async def test_routed_bash_and_python_via_bridge_creates_uncontained_external_record():
     """Prove _route_tool_via_bridge generates truthful external records for bash & python."""
     bridge_ctx = {
-        "surface": "odysseus-tui",
+        "surface": "ulises-tui",
         "host_shell_bridge": {
             "url": "http://127.0.0.1:17654/run",
             "token": "bridge-token",

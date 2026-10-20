@@ -79,7 +79,7 @@ async def test_malformed_text_artifact_write_uses_one_bounded_raw_body_handoff(m
         headers={}, turn_contract=contract, session_id='test', owner='test',
         disabled_tools=set(), tool_policy=ToolPolicy(), workspace='/tmp/workspace',
         client_runtime_context={
-            'surface': 'odysseus-native', 'terminal_agent': True,
+            'surface': 'ulises-native', 'terminal_agent': True,
             'unattended_mode': True,
         }, max_tokens=8192, max_rounds=4,
     )]

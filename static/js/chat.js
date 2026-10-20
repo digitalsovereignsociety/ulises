@@ -230,7 +230,7 @@ import { invalidateSettings } from './appConfig.js';
     if (sendButton) sendButton.click();
   }
 
-  document.addEventListener('odysseus:tool-approval', (event) => {
+  document.addEventListener('ulises:tool-approval', (event) => {
     const detail = event && event.detail ? event.detail : {};
     const decision = String(detail.decision || '').toLowerCase();
     if (!detail.approval_id || !['approve', 'approve_task', 'deny'].includes(decision)) return;
@@ -242,7 +242,7 @@ import { invalidateSettings } from './appConfig.js';
     _submitToolApprovalWhenIdle(_pendingToolApproval.approval_id);
   });
 
-  window.addEventListener('odysseus:notes-context-selected', (event) => {
+  window.addEventListener('ulises:notes-context-selected', (event) => {
     const noteIds = event.detail?.noteIds;
     if (!Array.isArray(noteIds) || noteIds.length === 0) return;
 
@@ -261,7 +261,7 @@ import { invalidateSettings } from './appConfig.js';
     _renderSelectedNotesIndicator(noteIds);
   });
 
-  window.addEventListener('odysseus:session-changed', (event) => {
+  window.addEventListener('ulises:session-changed', (event) => {
     const sessionId = event.detail?.sessionId;
     if (sessionId && event.detail?.materialized && _pendingSelectedNoteIds.length) {
       _selectedNoteIdsBySession.set(sessionId, _pendingSelectedNoteIds);
@@ -364,7 +364,7 @@ import { invalidateSettings } from './appConfig.js';
     if (current) return current;
     const activeRowId = document.querySelector('.list-item.active-session[data-session-id], .session-item.active[data-session-id]')?.dataset?.sessionId || '';
     const hashId = _hashSessionCandidate();
-    const lastSelectedId = String(window.__odysseusLastSelectedSessionId || '').trim();
+    const lastSelectedId = String(window.__ulisesLastSelectedSessionId || '').trim();
     const targetId = activeRowId || hashId || lastSelectedId;
     if (!targetId) {
       // New chats are deliberately held in memory until the first prompt.
@@ -380,7 +380,7 @@ import { invalidateSettings } from './appConfig.js';
     }
     if (!adopt) return targetId;
     try {
-      window.__odysseusComposerUserEdited = true;
+      window.__ulisesComposerUserEdited = true;
       if (sm && sm.selectSession) {
         await sm.selectSession(targetId, { keepSidebar: true, showLoading: false });
       } else if (sm && sm.setCurrentSessionId) {
@@ -904,9 +904,9 @@ import { invalidateSettings } from './appConfig.js';
 
   function _setForegroundChatBusy(active) {
     try {
-      window.__odysseusChatBusy = !!active;
-      window.__odysseusChatBusyUntil = active ? Date.now() + 120000 : Date.now() + 1200;
-      window.dispatchEvent(new CustomEvent('odysseus:chat-busy-change', { detail: { active: !!active } }));
+      window.__ulisesChatBusy = !!active;
+      window.__ulisesChatBusyUntil = active ? Date.now() + 120000 : Date.now() + 1200;
+      window.dispatchEvent(new CustomEvent('ulises:chat-busy-change', { detail: { active: !!active } }));
     } catch (_) {}
   }
   let _pendingContinue = null; // Stores the stopped AI element to merge with new response
@@ -972,11 +972,11 @@ import { invalidateSettings } from './appConfig.js';
     if (sessionModule.hasPendingChat && sessionModule.hasPendingChat()) return false;
     const activeRowId = document.querySelector('.list-item.active-session[data-session-id], .session-item.active[data-session-id]')?.dataset?.sessionId || '';
     const hashId = _hashSessionCandidate();
-    const lastSelectedId = String(window.__odysseusLastSelectedSessionId || '').trim();
+    const lastSelectedId = String(window.__ulisesLastSelectedSessionId || '').trim();
     const targetId = activeRowId || hashId || lastSelectedId;
     if (!targetId) return false;
     try {
-      window.__odysseusComposerUserEdited = true;
+      window.__ulisesComposerUserEdited = true;
       if (sessionModule.selectSession) {
         await sessionModule.selectSession(targetId, { keepSidebar: true, showLoading: false });
       } else if (sessionModule.setCurrentSessionId) {
@@ -1043,14 +1043,14 @@ import { invalidateSettings } from './appConfig.js';
       if (pending && pending.modelId) return pending.modelId;
     } catch (_) {}
     try {
-      const lastPicked = window.__odysseusLastPickedRoute || null;
+      const lastPicked = window.__ulisesLastPickedRoute || null;
       if (lastPicked && lastPicked.model && Date.now() - (lastPicked.picked_at || 0) < 10 * 60 * 1000) {
         return lastPicked.model;
       }
     } catch (_) {}
     if (routeSnapshot && routeSnapshot.model) return routeSnapshot.model;
     try {
-      const dc = window.__odysseusDefaultChat || JSON.parse(localStorage.getItem('odysseus-default-chat-cache') || 'null');
+      const dc = window.__ulisesDefaultChat || JSON.parse(localStorage.getItem('ulises-default-chat-cache') || 'null');
       if (dc && dc.model) return dc.model;
     } catch (_) {}
     return '';
@@ -1232,7 +1232,7 @@ import { invalidateSettings } from './appConfig.js';
       document.body.classList.toggle('chat-agent-working', working);
       const scrollBtn = document.getElementById('scroll-bottom-btn');
       if (scrollBtn) scrollBtn.classList.toggle('agent-working', working);
-      window.dispatchEvent(new CustomEvent('odysseus-agent-working-change', { detail: { working } }));
+      window.dispatchEvent(new CustomEvent('ulises-agent-working-change', { detail: { working } }));
     } catch (_) {}
     _setForegroundChatBusy(!!active || !!_sendInFlight);
     return active;
@@ -1257,7 +1257,7 @@ import { invalidateSettings } from './appConfig.js';
     fetch(`/api/chat/stop/${encodeURIComponent(sessionId)}`, {
       method: 'POST',
       credentials: 'same-origin',
-      headers: { 'X-Odysseus-Run-Id': runId },
+      headers: { 'X-Ulises-Run-Id': runId },
     }).catch(() => {});
   }
 
@@ -1441,7 +1441,7 @@ import { invalidateSettings } from './appConfig.js';
       // Clear any pending transitions from + → arrow swap
       submitBtn.classList.remove('anim-spin', 'anim-spin-swap', 'anim-land', 'mic-mode', 'newchat-mode', 'newchat-expanded', 'recording');
       // Ensure arrow icon is showing before launch
-      var icons = window._odysseusBtnIcons;
+      var icons = window._ulisesBtnIcons;
       if (icons) submitBtn.innerHTML = icons.send;
       void submitBtn.offsetWidth;
       // Arrow launches up, then stop icon lands in
@@ -1479,7 +1479,7 @@ import { invalidateSettings } from './appConfig.js';
       if (window._updateSendBtnIcon) {
         setTimeout(window._updateSendBtnIcon, 50);
       } else {
-        var icons = window._odysseusBtnIcons;
+        var icons = window._ulisesBtnIcons;
         submitBtn.innerHTML = icons ? icons.send : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
         submitBtn.title = 'Send message';
         submitBtn.classList.remove('mic-mode', 'newchat-mode');
@@ -1493,10 +1493,10 @@ import { invalidateSettings } from './appConfig.js';
 
   // API key pattern for the guard in handleChatSubmit
   const API_KEY_RE = /^(sk-[a-zA-Z0-9_\-]{20,}|gsk_[a-zA-Z0-9]{20,}|AIza[a-zA-Z0-9_\-]{30,}|xai-[a-zA-Z0-9]{20,})$/;
-  const PLAN_STORAGE_KEY = 'odysseus-active-plan';
+  const PLAN_STORAGE_KEY = 'ulises-active-plan';
 
   const _queuedAgentRequests = [];
-  const QUEUED_AGENT_REQUESTS_KEY = 'odysseus-queued-agent-requests-v1';
+  const QUEUED_AGENT_REQUESTS_KEY = 'ulises-queued-agent-requests-v1';
   let _queuedDrainTimer = null;
   let _queuedPromoteTimer = null;
   let _queuedRequestSeq = 0;
@@ -1593,8 +1593,8 @@ import { invalidateSettings } from './appConfig.js';
 	      const approved = _getStoredPlan() || _extractPlanText(plan);
 	      if (!approved.trim()) return;
 	      _pendingApprovedPlan = approved;
-	      if (window.__odysseusSetPlanMode) window.__odysseusSetPlanMode(false);
-	      if (window.__odysseusSetChatMode) window.__odysseusSetChatMode('agent');
+	      if (window.__ulisesSetPlanMode) window.__ulisesSetPlanMode(false);
+	      if (window.__ulisesSetChatMode) window.__ulisesSetChatMode('agent');
 	      _setComposerAndSend('Execute the approved plan.');
 	    });
 	    actions.querySelector('.plan-inline-clear')?.addEventListener('click', () => {
@@ -1641,8 +1641,8 @@ import { invalidateSettings } from './appConfig.js';
         if (!approved.trim()) return;
         _pendingApprovedPlan = approved;
         panel.remove();
-        if (window.__odysseusSetPlanMode) window.__odysseusSetPlanMode(false);
-        if (window.__odysseusSetChatMode) window.__odysseusSetChatMode('agent');
+        if (window.__ulisesSetPlanMode) window.__ulisesSetPlanMode(false);
+        if (window.__ulisesSetChatMode) window.__ulisesSetChatMode('agent');
         _setComposerAndSend('Execute the approved plan.');
       });
       document.body.appendChild(panel);
@@ -1654,7 +1654,7 @@ import { invalidateSettings } from './appConfig.js';
   }
 
   // chatRenderer handles the #plan link without importing this module back.
-  window.__odysseusOpenPlanReview = _openPlanReview;
+  window.__ulisesOpenPlanReview = _openPlanReview;
 
   function _escapeQueueText(s) {
     return String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -1840,9 +1840,9 @@ import { invalidateSettings } from './appConfig.js';
     // If currently streaming, keyboard Enter can queue a non-empty composer.
     // Clicking the stop icon should still stop normally, even if text exists.
     if (isStreaming) {
-      const queueRequestedAt = Number(window.__odysseusQueueStreamingSubmit || 0);
+      const queueRequestedAt = Number(window.__ulisesQueueStreamingSubmit || 0);
       const shouldQueueStreamingSubmit = queueRequestedAt && Date.now() - queueRequestedAt < 1200;
-      window.__odysseusQueueStreamingSubmit = 0;
+      window.__ulisesQueueStreamingSubmit = 0;
       if (shouldQueueStreamingSubmit && queueStreamingComposerRequest()) {
         return;
       }
@@ -2045,7 +2045,7 @@ import { invalidateSettings } from './appConfig.js';
 
     const selectedRouteForSend = (() => {
       try {
-        const lastPicked = window.__odysseusLastPickedRoute || null;
+        const lastPicked = window.__ulisesLastPickedRoute || null;
         if (lastPicked && lastPicked.model
           && (lastPicked.session_id || null) === (sessionModule.getCurrentSessionId?.() || null)
           && Date.now() - (lastPicked.picked_at || 0) < 10 * 60 * 1000) {
@@ -2100,10 +2100,10 @@ import { invalidateSettings } from './appConfig.js';
       // Auto-create a session using default chat config. Always fetch fresh
       // so that a recent Settings change takes effect without a page reload.
       try {
-        let dc = (typeof window !== 'undefined' && window.__odysseusDefaultChat) || null;
+        let dc = (typeof window !== 'undefined' && window.__ulisesDefaultChat) || null;
         if (!dc || !dc.endpoint_url || !dc.model) {
           try {
-            dc = JSON.parse(localStorage.getItem('odysseus-default-chat-cache') || 'null');
+            dc = JSON.parse(localStorage.getItem('ulises-default-chat-cache') || 'null');
           } catch (_) {}
         }
         try {
@@ -2114,13 +2114,13 @@ import { invalidateSettings } from './appConfig.js';
             _sendPerf.mark('default_chat_fetch_done');
             if (dc && dc.endpoint_url && dc.model) {
               try {
-                window.__odysseusDefaultChat = dc;
-                localStorage.setItem('odysseus-default-chat-cache', JSON.stringify(dc));
+                window.__ulisesDefaultChat = dc;
+                localStorage.setItem('ulises-default-chat-cache', JSON.stringify(dc));
               } catch (_) {}
             }
           }
         } catch (_) {
-          dc = (typeof window !== 'undefined' && window.__odysseusDefaultChat) || null;
+          dc = (typeof window !== 'undefined' && window.__ulisesDefaultChat) || null;
         }
         if (dc.endpoint_url && dc.model) {
           _sendPerf.mark('direct_chat_create_begin');
@@ -2194,7 +2194,7 @@ import { invalidateSettings } from './appConfig.js';
     _sendInFlight = false;
 
     try {
-      const pendingSwitch = window.__odysseusModelSwitchPromise;
+      const pendingSwitch = window.__ulisesModelSwitchPromise;
       if (pendingSwitch && typeof pendingSwitch.then === 'function') {
         await pendingSwitch;
       }
@@ -2210,7 +2210,7 @@ import { invalidateSettings } from './appConfig.js';
 
     // Acquire Web Lock to hint browser not to discard this tab while streaming
     if (navigator.locks) {
-      navigator.locks.request('odysseus-stream-' + streamSessionId, { mode: 'exclusive', ifAvailable: true }, lock => {
+      navigator.locks.request('ulises-stream-' + streamSessionId, { mode: 'exclusive', ifAvailable: true }, lock => {
         if (!lock) return; // Another stream already holds a lock — fine
         return new Promise(resolve => { _webLockRelease = resolve; });
       }).catch(e => console.warn('web lock acquire failed:', e)); // Ignore lock errors — best-effort
@@ -2599,7 +2599,7 @@ import { invalidateSettings } from './appConfig.js';
       // resolve to the email the user is actually looking at instead of
       // making the agent invent a new markdown draft with fake headers.
       try {
-        const getEmailCtx = window.__odysseusGetActiveEmailContext;
+        const getEmailCtx = window.__ulisesGetActiveEmailContext;
         const emCtx = typeof getEmailCtx === 'function' ? getEmailCtx() : null;
         if (activeEmailComposerCtx && activeEmailComposerCtx.sourceUid) {
           fd.append('active_email_uid', String(activeEmailComposerCtx.sourceUid));
@@ -2675,7 +2675,7 @@ import { invalidateSettings } from './appConfig.js';
         fd.append('preset_id', presetsModule.getSelectedPreset());
       }
       try {
-        const effort = window.__odysseusGetReasoningEffort ? window.__odysseusGetReasoningEffort() : null;
+        const effort = window.__ulisesGetReasoningEffort ? window.__ulisesGetReasoningEffort() : null;
         if (effort) {
           fd.append('reasoning_effort', effort);
         }
@@ -2891,7 +2891,7 @@ import { invalidateSettings } from './appConfig.js';
         enableResearchBtn();
         return;
       }
-      const streamRunId = res.headers.get('X-Odysseus-Run-Id') || '';
+      const streamRunId = res.headers.get('X-Ulises-Run-Id') || '';
       if (streamRunId) _rememberStreamRunId(streamSessionId, streamRunId, streamGeneration);
 
       // Mark the chat log busy while streaming so screen readers wait for the
@@ -2936,7 +2936,7 @@ import { invalidateSettings } from './appConfig.js';
           try {
             const response = await fetch(`${API_BASE}/api/chat/finish/${encodeURIComponent(streamSessionId)}`, {
               method: 'POST', credentials: 'same-origin',
-              headers: { 'X-Odysseus-Run-Id': runId },
+              headers: { 'X-Ulises-Run-Id': runId },
             });
             const result = await response.json();
             if (!response.ok || !result.accepted) throw new Error('The run has already finished or changed');
@@ -4054,7 +4054,7 @@ import { invalidateSettings } from './appConfig.js';
                 _editorProgress = null;
                 clearFinishEditorButton();
                 try {
-                  window.dispatchEvent(new CustomEvent('odysseus:agent-final-response', { detail: json }));
+                  window.dispatchEvent(new CustomEvent('ulises:agent-final-response', { detail: json }));
                 } catch (_) {}
                 const finalText = String(json.content || json.delta || '');
                 if (!finalText.trim()) continue;
@@ -4653,7 +4653,7 @@ import { invalidateSettings } from './appConfig.js';
                 }
               } else if (json.type === 'agent_terminal' || json.type === 'chat_terminal') {
                 try {
-                  window.dispatchEvent(new CustomEvent('odysseus:agent-terminal', { detail: json }));
+                  window.dispatchEvent(new CustomEvent('ulises:agent-terminal', { detail: json }));
                 } catch (_) {}
                 // The backend persisted canonical partial output, sanitized
                 // failure metadata, and actual-route provenance before this
@@ -4887,7 +4887,7 @@ import { invalidateSettings } from './appConfig.js';
                 // assistant's prose. Email unsubscribe uses this for the
                 // exact UIDs deleted by an agent follow-up.
                 try {
-                  window.dispatchEvent(new CustomEvent('odysseus:agent-tool-output', { detail: json }));
+                  window.dispatchEvent(new CustomEvent('ulises:agent-tool-output', { detail: json }));
                 } catch (_) {}
                 if (_isBg) continue;
                 // --- Update the current thread node ---
@@ -5998,7 +5998,7 @@ import { invalidateSettings } from './appConfig.js';
             if (_box && sessionModule.getCurrentSessionId() === _timeoutSessionId) {
               var _timeoutMsg = document.createElement('div');
               _timeoutMsg.className = 'msg msg-ai';
-              _timeoutMsg.innerHTML = '<div class="role">Odysseus</div><div class="body" style="opacity:0.6;font-style:italic;">Research clarification timed out. Toggle research again to start over.</div>';
+              _timeoutMsg.innerHTML = '<div class="role">Ulises</div><div class="body" style="opacity:0.6;font-style:italic;">Research clarification timed out. Toggle research again to start over.</div>';
               _box.appendChild(_timeoutMsg);
               uiModule.scrollHistory();
             }
@@ -6314,7 +6314,7 @@ import { invalidateSettings } from './appConfig.js';
       return false;
     }
     if (!res.ok || !res.body) return false;
-    const resumeRunId = res.headers.get('X-Odysseus-Run-Id') || '';
+    const resumeRunId = res.headers.get('X-Ulises-Run-Id') || '';
     if (resumeRunId) _streamRunIds.set(sessionId, resumeRunId);
 
     const box = document.getElementById('chat-history');
@@ -8179,7 +8179,7 @@ import { invalidateSettings } from './appConfig.js';
   // streaming, history-rendered, compare-mode, all of them. Re-attaching
   // per-node listeners on every innerHTML rewrite was the source of the
   // "needs many clicks" bug.
-  if (!window.__odysseus_thread_click_bound) {
+  if (!window.__ulises_thread_click_bound) {
 	    document.body.addEventListener('click', (e) => {
 	      const browserFrame = e.target.closest('.private-browser-preview-frame');
 	      if (browserFrame && browserFrame.querySelector('.private-browser-preview-img[src]')) {
@@ -8226,7 +8226,7 @@ import { invalidateSettings } from './appConfig.js';
         }
       }
     });
-    window.__odysseus_thread_click_bound = true;
+    window.__ulises_thread_click_bound = true;
   }
 
   export default chatModule;

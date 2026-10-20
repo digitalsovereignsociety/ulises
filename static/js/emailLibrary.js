@@ -8,7 +8,7 @@
 // of them.
 //
 // Importing this module evaluates `emailLibrary/index.js`, so the side effects
-// the panel relies on — the `window.__odysseusGetActiveEmailContext` bridge,
+// the panel relies on — the `window.__ulisesGetActiveEmailContext` bridge,
 // the agent tool-output listeners — still happen exactly when they used to.
 //
 // New code should import `./emailLibrary/index.js` directly.

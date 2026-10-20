@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Snapshot or restore durable state for one Odysseus SFT fixture owner.
+"""Snapshot or restore durable state for one Ulises SFT fixture owner.
 
 Sessions and chat messages are intentionally excluded so replay evidence keeps
 working. Only owner-scoped tool data and its dependent rows are managed.
@@ -131,7 +131,7 @@ def snapshot_owner(db_path: Path, owner: str, data_dir: Path | None = None) -> d
                 db, table, f'"{foreign_key}" IN ({placeholders})', tuple(parent_ids),
             )
         return {
-            "format": "odysseus-owner-fixture-v1",
+            "format": "ulises-owner-fixture-v1",
             "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             "source_db": str(db_path),
             "owner": owner,
@@ -212,7 +212,7 @@ def _restore_external(data_dir: Path, external: dict[str, Any], owner: str) -> N
 
 def restore_owner(target_db: Path, snapshot: dict[str, Any], owner: str,
                   data_dir: Path | None = None) -> None:
-    if snapshot.get("format") != "odysseus-owner-fixture-v1":
+    if snapshot.get("format") != "ulises-owner-fixture-v1":
         raise ValueError("unsupported fixture snapshot format")
     if str(snapshot.get("owner") or "") != owner:
         raise ValueError("snapshot owner does not match requested owner")

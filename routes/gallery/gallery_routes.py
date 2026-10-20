@@ -57,7 +57,7 @@ def _pil_image_to_b64(img, *, fmt: str = "PNG") -> str:
 
 
 def _load_sam_backend():
-    model_id = os.getenv("ODYSSEUS_SAM_MODEL", "facebook/sam-vit-base")
+    model_id = os.getenv("ULISES_SAM_MODEL", "facebook/sam-vit-base")
     cached = _SAM_STATE.get(model_id)
     if cached:
         return cached
@@ -93,7 +93,7 @@ def _load_sam_backend():
 
 
 def _load_grounding_backend():
-    model_id = os.getenv("ODYSSEUS_GROUNDING_MODEL", "google/owlvit-base-patch32")
+    model_id = os.getenv("ULISES_GROUNDING_MODEL", "google/owlvit-base-patch32")
     cached = _GROUNDING_STATE.get(model_id)
     if cached:
         return cached
@@ -1449,7 +1449,7 @@ def setup_gallery_routes() -> APIRouter:
             except httpx.TimeoutException:
                 raise HTTPException(504, "OpenAI inpaint timed out (120s)")
 
-        # Self-hosted diffusion server path. Newer Odysseus image
+        # Self-hosted diffusion server path. Newer Ulises image
         # wrappers expose the OpenAI-compatible /v1/images/edits
         # multipart route even when they are local/self-hosted. Older
         # diffusion_server.py exposes /v1/images/inpaint as JSON. Try the
@@ -1510,7 +1510,7 @@ def setup_gallery_routes() -> APIRouter:
                         # A plain SD/SDXL checkpoint often exposes
                         # generation only at /images/edits.
                         # That does not mean the endpoint cannot inpaint:
-                        # Odysseus diffusion_server.py has a dedicated
+                        # Ulises diffusion_server.py has a dedicated
                         # /images/inpaint route that can derive/fallback to
                         # inpaint, img2img crop+composite, or txt2img
                         # crop+composite. Fall through to that route instead

@@ -125,7 +125,7 @@ def test_ask_user_renderer_accepts_scoped_root_and_submit_callback():
     assert "scope.querySelectorAll('.ask-user-card:not(.ask-user-answered)')" in renderer
     assert "if (role === 'user') _answerAskUserCards(box," in renderer
     assert "if (role === 'user') removeAskUserCards(box);" not in renderer
-    assert "document.dispatchEvent(new CustomEvent('odysseus:tool-approval', { detail }))" in renderer
+    assert "document.dispatchEvent(new CustomEvent('ulises:tool-approval', { detail }))" in renderer
 
 
 def test_every_changed_approval_module_is_cache_busted_together():

@@ -806,7 +806,7 @@ class SkillsManager:
         query_tokens = _tokenize(query)
         semantic_scores: Dict[int, float] = {}
         semantic_enabled = str(
-            os.environ.get("ODYSSEUS_SKILL_SEMANTIC_RETRIEVAL", "1")
+            os.environ.get("ULISES_SKILL_SEMANTIC_RETRIEVAL", "1")
         ).strip().lower() not in {"0", "false", "no", "off"}
         if semantic_enabled:
             try:
@@ -817,7 +817,7 @@ class SkillsManager:
                 logger.debug("Semantic skill retrieval unavailable: %s", exc)
         try:
             semantic_threshold = float(
-                os.environ.get("ODYSSEUS_SKILL_SEMANTIC_THRESHOLD", "0.4")
+                os.environ.get("ULISES_SKILL_SEMANTIC_THRESHOLD", "0.4")
             )
         except (TypeError, ValueError):
             semantic_threshold = 0.4

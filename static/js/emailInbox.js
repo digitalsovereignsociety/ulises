@@ -61,7 +61,7 @@ function _openEmailTagFilter(tag) {
   if (!normalized || normalized === 'calendar') return;
   try { openEmailLibrary(); } catch (_) {}
   setTimeout(() => {
-    document.dispatchEvent(new CustomEvent('odysseus:email-filter-tag', { detail: { tag: normalized } }));
+    document.dispatchEvent(new CustomEvent('ulises:email-filter-tag', { detail: { tag: normalized } }));
   }, 0);
 }
 
@@ -154,12 +154,12 @@ let _listSpinner = null;
 let _openEmailRequestSeq = 0;
 let _senderFilter = null;       // email address (lowercased) to filter by, or null
 let _senderFilterLabel = null;  // display label for the active filter chip
-let _showEmailTags = localStorage.getItem('odysseus.email.showTags') !== '0';
+let _showEmailTags = localStorage.getItem('ulises.email.showTags') !== '0';
 
 export function init(documentModule) {
   _docModule = documentModule;
   _bindEvents();
-  document.addEventListener('odysseus:email-tags-toggle', (e) => {
+  document.addEventListener('ulises:email-tags-toggle', (e) => {
     _showEmailTags = e.detail?.show !== false;
     _renderList();
   });
@@ -295,7 +295,7 @@ function _bindEvents() {
     });
   }
 
-  // Delay the lightweight unread badge check so opening Odysseus doesn't
+  // Delay the lightweight unread badge check so opening Ulises doesn't
   // compete with the initial chat/session paint. The full email list now loads
   // only when the inbox is actually opened.
   setTimeout(_refreshUnreadCount, 8000);
@@ -348,7 +348,7 @@ async function _refreshUnreadCount() {
     }
 
     // Compare highest unread UID to the last-seen threshold in localStorage
-    const lastSeen = parseInt(localStorage.getItem('odysseus-email-last-seen-uid') || '0', 10);
+    const lastSeen = parseInt(localStorage.getItem('ulises-email-last-seen-uid') || '0', 10);
     const maxUid = parseInt(data.max_uid || '0', 10) || 0;
 
     // Only show dot if there's a new email above the threshold
@@ -386,7 +386,7 @@ export function markInboxAsSeen() {
       .then(data => {
         const maxUid = parseInt(data.max_uid || '0', 10) || 0;
         if (maxUid > 0) {
-          localStorage.setItem('odysseus-email-last-seen-uid', String(maxUid));
+          localStorage.setItem('ulises-email-last-seen-uid', String(maxUid));
         }
         const dot = document.getElementById('email-unread-dot');
         if (dot) dot.style.display = 'none';
@@ -772,13 +772,13 @@ function _createEmailItem(em) {
 async function _openEmail(em, itemEl, preloadedData = null, mode = 'reply', noteHint = '', prefilledBody = '', mailboxContext = null) {
   const openRequestSeq = ++_openEmailRequestSeq;
   const folderAtStart = mailboxContext?.messageFolder || _currentFolder;
-  const accountAtStart = mailboxContext?.accountId ?? (window.__odysseusActiveEmailAccount || '');
+  const accountAtStart = mailboxContext?.accountId ?? (window.__ulisesActiveEmailAccount || '');
   const accountQueryAtStart = accountAtStart ? `&account_id=${encodeURIComponent(accountAtStart)}` : '';
   const mailboxContextIsCurrent = typeof mailboxContext?.isCurrent === 'function'
     ? mailboxContext.isCurrent
     : () => (
         folderAtStart === _currentFolder &&
-        accountAtStart === (window.__odysseusActiveEmailAccount || '')
+        accountAtStart === (window.__ulisesActiveEmailAccount || '')
       );
   const isCurrentOpen = () => (
     openRequestSeq === _openEmailRequestSeq &&

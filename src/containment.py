@@ -30,7 +30,7 @@ reasoning can widen a boundary it is never shown to. Limits come from
 Enforcement mode
 ----------------
 :data:`CONTAINMENT_MODE` is a module-level constant, deliberately not a setting
-and not an ``ODYSSEUS_*`` variable, so that changing the posture of every
+and not an ``ULISES_*`` variable, so that changing the posture of every
 agent-reachable spawn site is a one-line reviewable diff rather than a
 deployment detail.
 

@@ -18,7 +18,7 @@ UPLOAD_PATH = "/api/personal/upload"
 
 # The route uniquifies the stored name and lists it under the owner's
 # upload dir, so assertions match on the stem rather than the filename.
-STEM = "odysseus-smoke-corpus"
+STEM = "ulises-smoke-corpus"
 FILENAME = f"{STEM}.txt"
 CONTENT = (
     "The release smoke suite indexed this file. "

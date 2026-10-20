@@ -477,12 +477,12 @@ def setup_document_routes(session_manager, upload_handler=None) -> APIRouter:
 
         soffice = shutil.which("soffice") or shutil.which("libreoffice")
         if not soffice:
-            raise HTTPException(503, "Direct conversion requires LibreOffice/soffice on the Odysseus host")
+            raise HTTPException(503, "Direct conversion requires LibreOffice/soffice on the Ulises host")
 
         def convert():
             # Keep cleanup in the worker too: request cancellation must not
             # delete files while LibreOffice is still writing them.
-            with tempfile.TemporaryDirectory(prefix="odysseus-document-convert-") as temp:
+            with tempfile.TemporaryDirectory(prefix="ulises-document-convert-") as temp:
                 tmp_dir = Path(temp)
                 try:
                     proc = subprocess.run(
@@ -1851,7 +1851,7 @@ def setup_document_routes(session_manager, upload_handler=None) -> APIRouter:
         from core.database import Signature
         # COMPOSE_UPLOADS_DIR lives in email_routes — re-derive here so we
         # don't import from a routes file (cycle-prone). Same env override
-        # as email_routes (ODYSSEUS_MAIL_ATTACHMENTS_DIR).
+        # as email_routes (ULISES_MAIL_ATTACHMENTS_DIR).
         from pathlib import Path as _Path
         _COMPOSE_DIR = _Path(MAIL_ATTACHMENTS_DIR) / "_compose"
         _COMPOSE_DIR.mkdir(parents=True, exist_ok=True)

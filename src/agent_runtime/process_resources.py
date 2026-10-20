@@ -56,7 +56,7 @@ def seal_launch_scope(backend, root, *, env=None):
     from src.tool_execution import _agent_subprocess_env
     from src.agent_runtime.resources import PathObservation, FileObjectIdentity
     env = _agent_subprocess_env() if env is None else env
-    extra = tuple(Path(p).resolve().as_posix() for p in str(env.get("ODYSSEUS_PYTHON_TOOL_SITE_PACKAGES", "")).split(os.pathsep)
+    extra = tuple(Path(p).resolve().as_posix() for p in str(env.get("ULISES_PYTHON_TOOL_SITE_PACKAGES", "")).split(os.pathsep)
                   if p and os.path.isabs(p)) if backend.tool_id == "python" else ()
     spec = _owned_spec(root.path, env, 3600, extra)
     return ProcessLaunchScope(backend, root, spec.required,

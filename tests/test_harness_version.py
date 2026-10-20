@@ -19,4 +19,4 @@ def test_runtime_build_version_uses_canonical_harness_version() -> None:
 
 
 def test_original_harness_does_not_ship_benchmark_adapter() -> None:
-    assert not (ROOT / "odysseus_native_harbor_agent.py").exists()
+    assert not (ROOT / "ulises_native_harbor_agent.py").exists()

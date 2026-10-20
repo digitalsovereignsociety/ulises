@@ -147,7 +147,7 @@ across the 88 focused files below (56.60 seconds). The skips are the existing
 `/tmp`-symlink platform case and a containment shortfall case when `RLIMIT_AS`
 can be lowered. The full repository suite was not run.
 
-Tests used `/tmp/odysseus-wave3-validation/bin/python`, an isolated venv with
+Tests used `/tmp/ulises-wave3-validation/bin/python`, an isolated venv with
 system site packages plus `bcrypt`, `pyotp`, `mcp<2` and `pypdfium2`. The command
 was that interpreter followed by `-m pytest -q -rs --disable-warnings
 --maxfail=10` and the exact file arguments below. Earlier overlapping targeted

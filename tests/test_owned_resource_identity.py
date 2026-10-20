@@ -225,11 +225,11 @@ def attachment_store(tmp_path, monkeypatch):
 @pytest.mark.parametrize("change", ["owner", "path", "file", "missing"])
 def test_attachment_ownership_index_and_file_identity_are_pinned(attachment_store, change):
     row, file = attachment_store
-    bound = resolve_owned_operation(ExactOperation.normalize("extract_text", '{"path":"odysseus://attachment/upload.png"}'), owner="alice", thread_id="s")
+    bound = resolve_owned_operation(ExactOperation.normalize("extract_text", '{"path":"ulises://attachment/upload.png"}'), owner="alice", thread_id="s")
     with bind_owned_operation(bound):
-        assert bound_attachment_path("alice", "odysseus://attachment/upload.png") == str(file)
+        assert bound_attachment_path("alice", "ulises://attachment/upload.png") == str(file)
         with pytest.raises(ResourceIdentityError):
-            bound_attachment_path("bob", "odysseus://attachment/upload.png")
+            bound_attachment_path("bob", "ulises://attachment/upload.png")
     if change == "owner":
         row["owner"] = "bob"
     elif change == "path":

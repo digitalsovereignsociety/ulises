@@ -11,7 +11,7 @@ def test_native_terminal_bypasses_chat_preemptive_shortcuts():
 
 def test_native_terminal_context_keeps_safe_artifact_contract_only():
     parsed = _parse_client_runtime_context({
-        "surface": "odysseus-native",
+        "surface": "ulises-native",
         "terminal_agent": True,
         "artifact_recovery_enabled": True,
         "input_files": [
@@ -31,7 +31,7 @@ def test_native_terminal_context_keeps_safe_artifact_contract_only():
     })
 
     assert parsed == {
-        "surface": "odysseus-native",
+        "surface": "ulises-native",
         "terminal_agent": True,
         "artifact_recovery_enabled": True,
         "input_files": ["/workspace/fixtures/video.mp4"],
@@ -51,7 +51,7 @@ def test_native_input_files_are_visible_as_bounded_runtime_facts():
     from src.agent_loop import _client_runtime_context_message
 
     message = _client_runtime_context_message({
-        "surface": "odysseus-native",
+        "surface": "ulises-native",
         "terminal_agent": True,
         "input_files": ["/workspace/fixtures/Dm3nyBNhkp8.mp4"],
     })

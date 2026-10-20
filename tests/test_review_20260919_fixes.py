@@ -1,6 +1,6 @@
 """Regressions for the 2026-09-19 review fixes.
 
-Each test fails on the pre-fix tree; see ~/odysseus-review-20260919.md.
+Each test fails on the pre-fix tree; see ~/ulises-review-20260919.md.
 """
 import json
 

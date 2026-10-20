@@ -59,7 +59,7 @@ def digest(domain, value):
 def incarnation(observation):
     values = observation.to_dict() if hasattr(observation, "to_dict") else dict(observation)
     values.pop("session_incarnation", None)
-    return digest("odysseus.browser.session.v1", values)
+    return digest("ulises.browser.session.v1", values)
 
 
 def browser_digest(url):
@@ -71,7 +71,7 @@ def browser_digest(url):
     parsed = urlsplit(url)
     if parsed.port is None or parsed.port > 65535:
         raise ResourceIdentityError("Invalid browser endpoint port")
-    return digest("odysseus.browser.guid.v1", parsed.path.rsplit("/", 1)[-1])
+    return digest("ulises.browser.guid.v1", parsed.path.rsplit("/", 1)[-1])
 
 
 def page_unavailable():
@@ -241,7 +241,7 @@ async def register_producer(owner, thread_id):
     if (owner, thread_id) in _REGISTRY:
         raise ResourceIdentityError("Browser producer is already registered")
     producer = await trusted_producer()
-    key = "ody-" + digest("odysseus.browser.selector.v1", [owner, thread_id])[:24]
+    key = "ody-" + digest("ulises.browser.selector.v1", [owner, thread_id])[:24]
     STATE_ROOT.mkdir(parents=True, exist_ok=True, mode=0o700)
     cwd = STATE_ROOT / key
     cwd.mkdir(mode=0o700)  # Existing unregistered state is not authoritative.
@@ -428,7 +428,7 @@ async def _observe_registered_locked(record, alias):
         browser = browser_digest(url)
         values = dict(producer_namespace="native:agent-browser", producer_version=PRODUCER_VERSION,
             platform=record.producer.platform, binary_sha256=record.producer.binary_sha256,
-            configuration_digest=digest("odysseus.browser.config.v1", [record.env, str(record.cwd), "{}"]),
+            configuration_digest=digest("ulises.browser.config.v1", [record.env, str(record.cwd), "{}"]),
             session_key=record.key, daemon=first.to_record(), browser_instance_digest=browser)
         observation = BrowserSessionObservation(**{**values, "daemon": first, "session_incarnation": incarnation(values)})
         session = BrowserSessionResource(record.owner, record.thread_id, observation)

@@ -94,7 +94,7 @@ def test_result_reference_uses_the_actual_domain():
 
 
 @pytest.mark.asyncio
-@pytest.mark.skipif(not os.getenv('ODYSSEUS_AJAX_TEST_URL'), reason='Opt-in live Ajax replay')
+@pytest.mark.skipif(not os.getenv('ULISES_AJAX_TEST_URL'), reason='Opt-in live Ajax replay')
 async def test_live_ajax_links_observed_sources_without_local_files(monkeypatch):
     import src.clean_agent_preview as preview
     calls = []
@@ -114,7 +114,7 @@ async def test_live_ajax_links_observed_sources_without_local_files(monkeypatch)
     inventory = resolve_full_inventory_contract(schemas=FUNCTION_TOOL_SCHEMAS, policy=policy)
     contract = select_experiment_inventory(inventory, routed, rows, MODEL_CHOICE_MODE, user_text=prompt)
     events = [json.loads(chunk[6:]) async for chunk in preview.stream_preview(
-        endpoint_url=os.environ['ODYSSEUS_AJAX_TEST_URL'], model='Ajax', headers={},
+        endpoint_url=os.environ['ULISES_AJAX_TEST_URL'], model='Ajax', headers={},
         turn_contract=contract, messages=[{'role': 'user', 'content': prompt}],
         history_session=SimpleNamespace(history=rows), session_id='source-reference-test',
         owner='test', disabled_tools=set(), tool_policy=policy, thinking_mode='off',

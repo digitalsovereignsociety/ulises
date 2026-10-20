@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate non-duplicate Odysseus flow variants from behavioral seed flows."""
+"""Generate non-duplicate Ulises flow variants from behavioral seed flows."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
-from odysseus_related_flow_audit import Flow, flow_matrix
+from ulises_related_flow_audit import Flow, flow_matrix
 from repair_sft_corpus_with_kimi import endpoint, parse_json
 
 ROOT = Path(__file__).resolve().parents[1]

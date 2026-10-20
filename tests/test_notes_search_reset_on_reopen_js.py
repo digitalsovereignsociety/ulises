@@ -32,7 +32,7 @@ def test_module_still_declares_search_query():
 
 
 def test_notes_label_chips_can_be_collapsed_like_calendar_tags():
-    assert "NOTES_LABELS_COLLAPSED_KEY = 'odysseus-notes-labels-collapsed'" in SRC
+    assert "NOTES_LABELS_COLLAPSED_KEY = 'ulises-notes-labels-collapsed'" in SRC
     assert "app.setLabelsCollapsed(!state.labelsCollapsed)" in SRC
     assert "persistence.setItem(NOTES_LABELS_COLLAPSED_KEY" in SRC
     assert "toggle.textContent = state.labelsCollapsed ? '+ Tags' : '− Tags';" in SRC

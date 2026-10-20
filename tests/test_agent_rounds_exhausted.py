@@ -140,7 +140,7 @@ def test_python_html_mutation_queues_native_browser_verification(monkeypatch):
         relevant_tools={"python", "private_browser"},
         workspace="/workspace",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "interaction_mode": "cook",
         },
@@ -183,7 +183,7 @@ def test_unattended_native_round_exhaustion_gets_one_tool_free_final(monkeypatch
         workspace="/workspace",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "interaction_mode": "cook",
             "loaded_files": [{"path": "/workspace/source.mp4"}],
@@ -259,7 +259,7 @@ def test_unattended_native_tool_turn_recovers_reasoning_preamble(monkeypatch):
         workspace="/workspace",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "interaction_mode": "cook",
             "loaded_files": [{"path": "/workspace/source.mp4"}],
@@ -338,7 +338,7 @@ def test_unattended_native_tool_turn_recovers_empty_final(monkeypatch):
         workspace="/workspace",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "interaction_mode": "cook",
             "loaded_files": [{"path": "/workspace/source.mp4"}],
@@ -401,7 +401,7 @@ def test_unattended_force_answer_does_not_rearm_missing_tool_nudge(monkeypatch):
         workspace="/workspace",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "interaction_mode": "cook",
             "loaded_files": [{"path": "/workspace/source.mp4"}],
@@ -461,7 +461,7 @@ def test_native_explicit_script_run_uses_backend_bash_after_write(monkeypatch):
         workspace="/workspace",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "interaction_mode": "cook",
         },
@@ -751,7 +751,7 @@ def test_unattended_intent_nudge_cap_forces_final_answer(monkeypatch):
         relevant_tools={"inspect_media"},
         workspace="/workspace",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "unattended_mode": True,
         },
@@ -806,7 +806,7 @@ def test_unattended_force_answer_rejects_long_planning_tail(monkeypatch):
         relevant_tools={"inspect_media"},
         workspace="/workspace",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "unattended_mode": True,
         },
@@ -849,7 +849,7 @@ def test_unattended_optioned_clarification_forces_best_supported_answer(monkeypa
         relevant_tools={"inspect_media"},
         workspace="/workspace",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "unattended_mode": True,
         },
@@ -1100,7 +1100,7 @@ def test_detached_host_shell_forces_poll_instead_of_substitute_command(monkeypat
         relevant_tools={"host_shell"},
         workspace="/workspace",
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "session_cwd": "/workspace",
             "host_shell_bridge": {
                 "url": "http://127.0.0.1:17654/run",
@@ -1188,7 +1188,7 @@ def test_eval_workspace_prompt_uses_host_tool_then_answers(monkeypatch):
     routed = al._route_tui_local_workspace_tools(
         {"bash", "web_search"},
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "session_cwd": "/home/tester/project",
             "host_shell_bridge": {"url": "http://host.docker.internal:17654/run", "token": "x"},
             "runtime_execution_contract": {"local_workspace_tasks": "use_host_shell_bridge"},
@@ -1209,7 +1209,7 @@ def test_eval_workspace_prompt_uses_host_tool_then_answers(monkeypatch):
         disabled_tools=set(),
         workspace=None,
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "session_cwd": "/home/tester/project",
             "backend_host_limited": True,
             "host_shell_bridge": {"url": "http://host.docker.internal:17654/run", "token": "x"},
@@ -1234,8 +1234,8 @@ def test_tui_coding_turn_recovers_inspects_patches_and_verifies(monkeypatch, exp
     executed = []
 
     runtime_context = {
-        "surface": "odysseus-tui",
-        "session_cwd": "/home/tester/odysseus-tui",
+        "surface": "ulises-tui",
+        "session_cwd": "/home/tester/ulises-tui",
         "backend_host_limited": True,
         "host_shell_bridge": {
             "url": "http://host.docker.internal:17654/run",
@@ -1261,8 +1261,8 @@ def test_tui_coding_turn_recovers_inspects_patches_and_verifies(monkeypatch, exp
                 }
             return "host_shell", {
                 "output": (
-                    "workspace=/home/tester/odysseus-tui\n"
-                    "git_root=/home/tester/odysseus-tui\n"
+                    "workspace=/home/tester/ulises-tui\n"
+                    "git_root=/home/tester/ulises-tui\n"
                     "top_level:\napp.py\ntests/"
                 ),
                 "exit_code": 0,
@@ -1363,7 +1363,7 @@ def test_qwen_tui_coding_summary_reports_verification_retry(monkeypatch):
     executed = []
     test_attempts = 0
     runtime_context = {
-        "surface": "odysseus-tui",
+        "surface": "ulises-tui",
         "session_cwd": "/home/tester/project",
         "host_shell_bridge": {"url": "http://host.docker.internal:17654/run", "token": "x"},
         "runtime_execution_contract": {"local_workspace_tasks": "use_host_shell_bridge"},
@@ -1428,7 +1428,7 @@ def test_tui_coding_turn_replaces_duplicate_edit_with_requested_tests(monkeypatc
     executed = []
     stream_round = 0
     runtime_context = {
-        "surface": "odysseus-tui",
+        "surface": "ulises-tui",
         "session_cwd": "/home/tester/project",
         "host_shell_bridge": {
             "url": "http://host.docker.internal:17654/run",
@@ -1517,7 +1517,7 @@ def test_failed_forced_verifier_allows_an_adapted_test_command(monkeypatch):
     stream_round = 0
     host_attempts = 0
     runtime_context = {
-        "surface": "odysseus-tui",
+        "surface": "ulises-tui",
         "session_cwd": "/home/tester/project-worktree",
         "host_shell_bridge": {
             "url": "http://host.docker.internal:17654/run",
@@ -1715,7 +1715,7 @@ def test_read_only_tui_inspection_is_bounded_but_edit_requests_are_not(monkeypat
 
 def test_tui_host_find_with_pwd_prefix_is_bounded():
     context = {
-        "surface": "odysseus-tui",
+        "surface": "ulises-tui",
         "session_cwd": "/home/tester/project",
         "host_shell_bridge": {"url": "http://host.docker.internal:17654/run", "token": "x"},
         "runtime_execution_contract": {"local_workspace_tasks": "use_host_shell_bridge"},
@@ -1735,7 +1735,7 @@ def test_tui_host_find_with_pwd_prefix_is_bounded():
 
 def test_tui_host_bridge_rejects_broad_source_dumps(monkeypatch):
     context = {
-        "surface": "odysseus-tui",
+        "surface": "ulises-tui",
         "session_cwd": "/home/tester/project",
         "host_shell_bridge": {"url": "http://host.docker.internal:17654/run", "token": "x"},
         "runtime_execution_contract": {"local_workspace_tasks": "use_host_shell_bridge"},
@@ -1821,7 +1821,7 @@ def test_tui_broad_host_read_executes_bounded_equivalent(monkeypatch):
         relevant_tools={"host_shell"},
         workspace=None,
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "session_cwd": "/home/tester/project",
             "host_shell_bridge": {"url": "http://host.docker.internal:17654/run", "token": "x"},
             "runtime_execution_contract": {"local_workspace_tasks": "use_host_shell_bridge"},
@@ -1866,7 +1866,7 @@ def test_tui_local_skill_request_reconciles_normal_tool_policy(monkeypatch):
         tool_policy=al.ToolPolicy(disabled_tools=frozenset({"manage_skills"})),
         workspace=None,
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "session_cwd": "/home/tester/project",
             "host_shell_bridge": {"url": "http://host.docker.internal:17654/run", "token": "x"},
             "runtime_execution_contract": {"local_workspace_tasks": "use_host_shell_bridge"},
@@ -1909,7 +1909,7 @@ def test_eval_identical_tool_evidence_converges_before_round_cap(monkeypatch):
         workspace="/home/tester/project",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "session_cwd": "/home/tester/project",
             "host_shell_bridge": {"url": "http://host.docker.internal:17654/run", "token": "x"},
             "runtime_execution_contract": {
@@ -1985,7 +1985,7 @@ def test_identical_inspections_redirect_to_missing_artifact_before_convergence(m
         workspace="/tmp_workspace",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "terminal_agent": True,
             "session_cwd": "/tmp_workspace",
             "host_shell_bridge": {"url": "http://host.docker.internal:17654/run", "token": "x"},
@@ -2054,7 +2054,7 @@ def test_terminal_artifact_run_reserves_last_round_for_mutation(monkeypatch):
         forced_tools={"pdf_extract", "write_file"},
         workspace="/workspace",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "artifact_recovery_enabled": True,
             "completion_requirements": {
@@ -2203,7 +2203,7 @@ def test_post_redirect_varied_inspection_is_suppressed_until_artifact_mutation(m
         workspace="/tmp_workspace",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "terminal_agent": True,
             "session_cwd": "/tmp_workspace",
             "host_shell_bridge": {
@@ -2313,7 +2313,7 @@ def test_media_artifact_recovery_allows_bounded_source_inspection_before_mutatio
         workspace="/workspace",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "artifact_recovery_enabled": True,
             "loaded_files": [{"path": "/workspace/fixtures/source.mp4"}],
@@ -2403,7 +2403,7 @@ def test_terminal_create_promise_gets_one_continuation(monkeypatch):
         workspace="/workspace",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
         },
     ))
@@ -2452,7 +2452,7 @@ def test_long_terminal_action_promise_gets_one_media_continuation(monkeypatch):
         workspace="/workspace",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "loaded_files": [{"path": "/workspace/source.mp4"}],
         },
@@ -2492,7 +2492,7 @@ def test_unattended_clarification_prose_gets_final_answer_nudge(monkeypatch):
         workspace="/workspace",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "interaction_mode": "cook",
             "unattended_mode": True,
             "terminal_agent": True,
@@ -2539,7 +2539,7 @@ def test_reexamine_terminal_action_promise_gets_media_continuation(monkeypatch):
         workspace="/workspace",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "loaded_files": [{"path": "/workspace/source.mp4"}],
         },
@@ -2590,7 +2590,7 @@ def test_ill_need_to_examine_terminal_promise_gets_media_continuation(monkeypatc
         workspace="/workspace",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "loaded_files": [{"path": "/workspace/source.mp4"}],
         },
@@ -2624,7 +2624,7 @@ def test_refine_search_terminal_promise_gets_continuation(monkeypatch):
         forced_tools={"web_search"},
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
         },
     )))
@@ -2663,7 +2663,7 @@ def test_long_media_answer_without_tool_evidence_is_not_accepted(monkeypatch):
         workspace="/workspace",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "loaded_files": [{"path": "/workspace/source.mp4"}],
         },
@@ -2709,7 +2709,7 @@ def test_long_dangling_answer_colon_gets_one_continuation(monkeypatch):
         workspace="/workspace",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "loaded_files": [{"path": "/workspace/source.mp4"}],
         },
@@ -2772,7 +2772,7 @@ def test_long_announced_answer_without_answer_gets_one_continuation(monkeypatch)
         workspace="/workspace",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "loaded_files": [{"path": "/workspace/source.mp4"}],
         },
@@ -3002,7 +3002,7 @@ def test_terminal_write_file_uses_exact_required_artifact_path(monkeypatch):
         owner="admin",
         force_textual_tool_transport=True,
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "completion_requirements": {
                 "required_artifacts": ["/workspace/meta_analysis.csv"],
@@ -3061,7 +3061,7 @@ def test_terminal_stall_with_missing_artifact_enters_mutation_recovery(monkeypat
         workspace="/tmp_workspace",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "terminal_agent": True,
             "session_cwd": "/tmp_workspace",
             "host_shell_bridge": {
@@ -3180,7 +3180,7 @@ def test_blocked_ad_hoc_http_without_exit_code_enters_artifact_recovery(monkeypa
         workspace="/workspace",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "artifact_recovery_enabled": True,
             "completion_requirements": {
@@ -3278,7 +3278,7 @@ def test_artifact_recovery_suppresses_python_until_text_artifact_written(monkeyp
         owner="admin",
         force_textual_tool_transport=True,
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "artifact_recovery_enabled": True,
             "completion_requirements": {
@@ -3371,7 +3371,7 @@ def test_binary_artifact_recovery_keeps_generation_tools_for_png(monkeypatch):
         owner="admin",
         force_textual_tool_transport=True,
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "artifact_recovery_enabled": True,
             "loaded_files": [{"path": "/workspace/input.png"}],
@@ -3491,7 +3491,7 @@ def test_final_prose_with_missing_artifact_enters_recovery(monkeypatch):
         owner="admin",
         force_textual_tool_transport=True,
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "artifact_recovery_enabled": True,
             "completion_requirements": {
@@ -3611,7 +3611,7 @@ def test_blocked_ad_hoc_http_prefers_native_acquisition_before_artifact_write(mo
         owner="admin",
         force_textual_tool_transport=True,
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "artifact_recovery_enabled": True,
             "completion_requirements": {
@@ -3746,7 +3746,7 @@ def test_failed_trailing_tool_with_missing_artifact_enters_recovery(monkeypatch)
         workspace="/workspace",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "artifact_recovery_enabled": True,
             "completion_requirements": {
@@ -3836,7 +3836,7 @@ def test_failed_trailing_tool_after_explicit_continue_intent_gets_repair_round(m
         workspace="/workspace",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
         },
     )))
@@ -3895,7 +3895,7 @@ def test_complete_answer_still_survives_failed_illustrative_trailing_tool(monkey
         workspace="/workspace",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
         },
     ))
@@ -3953,7 +3953,7 @@ def test_failed_mutation_with_missing_artifact_recovers_before_failure_breaker(m
         owner="admin",
         force_textual_tool_transport=True,
         client_runtime_context={
-            "surface": "odysseus-native",
+            "surface": "ulises-native",
             "terminal_agent": True,
             "artifact_recovery_enabled": True,
             "completion_requirements": {
@@ -4061,7 +4061,7 @@ def test_eval_varied_read_only_inspections_converge_before_round_cap(monkeypatch
         workspace="/home/tester/project",
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "session_cwd": "/home/tester/project",
             "host_shell_bridge": {"url": "http://host.docker.internal:17654/run", "token": "x"},
             "runtime_execution_contract": {
@@ -4189,7 +4189,7 @@ def test_approval_continuation_cannot_fallback_into_host_shell(monkeypatch):
         session_id="approval-fallback-test",
         exact_approval=grant,
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "session_cwd": "/home/tester/project",
             "host_shell_bridge": {"url": "http://host.docker.internal:17654/run", "token": "x"},
             "runtime_execution_contract": {"local_workspace_tasks": "use_host_shell_bridge"},
@@ -4236,7 +4236,7 @@ def test_eval_local_network_tool_budget_forces_final_synthesis(monkeypatch):
         relevant_tools={"host_shell"},
         workspace=None,
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "session_cwd": "/home/tester/project",
             "host_shell_bridge": {"url": "http://host.docker.internal:17654/run", "token": "x"},
             "runtime_execution_contract": {

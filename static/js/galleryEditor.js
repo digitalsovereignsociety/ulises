@@ -1924,7 +1924,7 @@ function _saveState(label) {
 // for "save back to the original photo" behaviour.
 const PERSIST_DEBOUNCE_MS = 800;
 const THUMB_MAX = 160;
-const ACTIVE_EDITOR_SESSION_KEY = 'odysseus-gallery-active-editor-v1';
+const ACTIVE_EDITOR_SESSION_KEY = 'ulises-gallery-active-editor-v1';
 
 // Keep just enough session metadata to reopen the editor after a browser
 // refresh. The actual layered document remains in the server-backed draft.
@@ -2070,7 +2070,7 @@ async function _buildDraftPayloadAsync() {
       index = canvases.length;
       canvases.push(canvas);
     }
-    const token = `data:image/png;base64,ODYSSEUS_CANVAS_TOKEN_${index}`;
+    const token = `data:image/png;base64,ULISES_CANVAS_TOKEN_${index}`;
     tokens.set(canvas, token);
     return { width: canvas.width, height: canvas.height, toDataURL: () => token };
   };
@@ -6878,7 +6878,7 @@ function _openCookbookForDependency(pkgName) {
   tryHighlight();
 }
 
-// Async check whether `rembg` is installed on the Odysseus server.
+// Async check whether `rembg` is installed on the Ulises server.
 // Toggles the "install rembg" notice + the Bg Remove run button. The
 // `/api/cookbook/packages` endpoint is cheap (importlib calls only).
 async function _checkRembgInstalled() {
@@ -6986,7 +6986,7 @@ function _saveProject() {
     return;
   }
   const project = _serializeEditorDocument(state, {
-    type: 'odysseus-gallery-editor-project',
+    type: 'ulises-gallery-editor-project',
   });
   const json = JSON.stringify(project);
   if (json.length > _EDITOR_PROJECT_MAX_BYTES) {
@@ -7019,7 +7019,7 @@ function _loadProjectPrompt() {
       }
       const text = await file.text();
       const proj = JSON.parse(text);
-      if (proj.type !== 'odysseus-gallery-editor-project') {
+      if (proj.type !== 'ulises-gallery-editor-project') {
         if (uiModule) uiModule.showToast('Not a project file', 5000);
         return;
       }

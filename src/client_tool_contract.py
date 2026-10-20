@@ -1,4 +1,4 @@
-"""Single source of truth for tools supplied by the Odysseus TUI host bridge."""
+"""Single source of truth for tools supplied by the Ulises TUI host bridge."""
 
 TUI_ROUTED_BRIDGE_TOOL_NAMES = frozenset({
     "bash", "python", "grep", "ls", "glob", "list_dir", "find_files",

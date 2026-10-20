@@ -38,7 +38,7 @@ def test_native_workspace_contract_includes_transcription_for_media_tasks():
 
 def test_native_input_files_are_named_in_trusted_runtime_clause():
     clause = native_input_files_clause({
-        "surface": "odysseus-native",
+        "surface": "ulises-native",
         "terminal_agent": True,
         "input_files": ["/workspace/fixtures/tutorial.mp4"],
     })

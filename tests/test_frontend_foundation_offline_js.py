@@ -18,7 +18,7 @@ def test_precached_helper_imports_offline_in_a_fresh_page_and_panels_stay_lazy()
     script = r'''
       import assert from 'node:assert/strict';
       import { chromium } from 'playwright';
-      const origin = process.env.ODYSSEUS_TEST_STATIC_ORIGIN;
+      const origin = process.env.ULISES_TEST_STATIC_ORIGIN;
       const browser = await chromium.launch({ headless: true });
       try {
         const context = await browser.newContext({ serviceWorkers: 'allow' });

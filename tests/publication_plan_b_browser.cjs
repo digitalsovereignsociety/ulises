@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const { extractThemeBootstrap } = require('./helpers/theme_bootstrap.cjs');
 
 (async () => {
-  const origin = process.env.ODYSSEUS_TEST_STATIC_ORIGIN;
+  const origin = process.env.ULISES_TEST_STATIC_ORIGIN;
   const browser = await chromium.launch({ headless: true });
   try {
     const page = await browser.newPage();
@@ -122,8 +122,8 @@ const { extractThemeBootstrap } = require('./helpers/theme_bootstrap.cjs');
 
     // Actual theme module: default, legacy local/server selections and custom theme preferences.
     const fonts = await page.evaluate(async origin => {
-      localStorage.setItem('odysseus-theme', JSON.stringify({ name: 'dark', colors: {}, font: 'gohu' }));
-      localStorage.setItem('odysseus-custom-themes', JSON.stringify({ old: { font: 'GohuFont' } }));
+      localStorage.setItem('ulises-theme', JSON.stringify({ name: 'dark', colors: {}, font: 'gohu' }));
+      localStorage.setItem('ulises-custom-themes', JSON.stringify({ old: { font: 'GohuFont' } }));
       const theme = await import(origin + '/static/js/theme.js');
       theme.applyFontDensity(null, null);
       const fallback = document.documentElement.style.getPropertyValue('--font-family');
@@ -150,7 +150,7 @@ const { extractThemeBootstrap } = require('./helpers/theme_bootstrap.cjs');
     assert(bootstrap);
     const early = await page.evaluate(async code => {
       const theme = await import('/static/js/theme.js');
-      localStorage.setItem('odysseus-theme', JSON.stringify({ name: 'dark', colors: theme.THEMES.dark, font: 'gohu' }));
+      localStorage.setItem('ulises-theme', JSON.stringify({ name: 'dark', colors: theme.THEMES.dark, font: 'gohu' }));
       eval(code);
       return document.documentElement.style.getPropertyValue('--font-family');
     }, bootstrap);

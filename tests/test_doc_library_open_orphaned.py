@@ -96,7 +96,7 @@ def test_mobile_explicit_load_restores_full_editor_from_bottom_dock():
       import { chromium } from 'playwright';
       const browser = await chromium.launch({ headless: true });
       const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
-      await page.goto(`${process.env.ODYSSEUS_TEST_STATIC_ORIGIN}/static/js/documentStats.js`);
+      await page.goto(`${process.env.ULISES_TEST_STATIC_ORIGIN}/static/js/documentStats.js`);
       await page.setContent('__ODY_STYLESHEETS__<div id="toast"></div><div id="chat-container"></div><div id="sidebar"></div>');
       const state = await page.evaluate(async () => {
         const mod = await import('/static/js/document.js?v=20260831richtexttools91&mobile-library-open-test=1');

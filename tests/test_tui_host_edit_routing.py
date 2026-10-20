@@ -19,7 +19,7 @@ def test_edit_file_routes_json_arguments_to_host_edit_endpoint(monkeypatch):
             '{"path":"config.txt","old_string":"status=old","new_string":"status=new"}',
             None,
             {
-                "surface": "odysseus-tui",
+                "surface": "ulises-tui",
                 "host_shell_bridge": {
                     "url": "http://127.0.0.1:1/run",
                     "token": "test",
@@ -60,7 +60,7 @@ def test_edit_file_rejects_non_boolean_replace_all_without_host_call(monkeypatch
             '{"path":"config.txt","old_string":"x","new_string":"y","replace_all":"false"}',
             None,
             {
-                "surface": "odysseus-tui",
+                "surface": "ulises-tui",
                 "host_shell_bridge": {
                     "url": "http://127.0.0.1:1/run",
                     "token": "test",

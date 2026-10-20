@@ -85,7 +85,7 @@ async def _cancel_host_shell_bridge_request(
             await client.post(
                 target,
                 json={"request_id": request_id},
-                headers={"X-Odysseus-TUI-Bridge-Token": token},
+                headers={"X-Ulises-TUI-Bridge-Token": token},
             )
     except Exception:
         pass
@@ -729,7 +729,7 @@ class HostShellTool:
                 resp = await client.post(
                     run_url,
                     json=request_body,
-                    headers={"X-Odysseus-TUI-Bridge-Token": token},
+                    headers={"X-Ulises-TUI-Bridge-Token": token},
                 )
                 if resp.status_code >= 400:
                     return {
@@ -757,7 +757,7 @@ class HostShellTool:
                         poll = await client.post(
                             run_url,
                             json={"job_id": auto_job_id},
-                            headers={"X-Odysseus-TUI-Bridge-Token": token},
+                            headers={"X-Ulises-TUI-Bridge-Token": token},
                         )
                         if poll.status_code >= 400:
                             return {
@@ -872,7 +872,7 @@ def _python_with_visible_final_expression(content: str) -> str:
         and final.value.func.id == "print"
     ):
         return content
-    result_name = "__odysseus_final_expression_value__"
+    result_name = "__ulises_final_expression_value__"
     tree.body[-1:] = [
         ast.Assign(targets=[ast.Name(id=result_name, ctx=ast.Store())], value=final.value),
         ast.If(
@@ -899,11 +899,11 @@ def _python_with_visible_final_expression(content: str) -> str:
 
 def _python_with_configured_import_paths(content: str, env: dict | None) -> str:
     """Expose only explicitly configured package roots under Python ``-I``."""
-    raw = str((env or {}).get("ODYSSEUS_PYTHON_TOOL_SITE_PACKAGES", ""))
+    raw = str((env or {}).get("ULISES_PYTHON_TOOL_SITE_PACKAGES", ""))
     paths = [item for item in raw.split(os.pathsep) if item and os.path.isabs(item)]
     if not paths:
         return content
-    return f"import site\n[site.addsitedir(path) for path in {paths!r}]\nexec(compile({content!r}, '<odysseus-python-tool>', 'exec'))"
+    return f"import site\n[site.addsitedir(path) for path in {paths!r}]\nexec(compile({content!r}, '<ulises-python-tool>', 'exec'))"
 
 
 class PythonTool:
@@ -943,7 +943,7 @@ class PythonTool:
         )
         # All Python code acquires the same server-defined boundary, including
         # arithmetic and ordinary imports. Source text never selects a scope.
-        raw_paths = str((_subproc_env or {}).get("ODYSSEUS_PYTHON_TOOL_SITE_PACKAGES", ""))
+        raw_paths = str((_subproc_env or {}).get("ULISES_PYTHON_TOOL_SITE_PACKAGES", ""))
         roots = tuple(path for path in raw_paths.split(os.pathsep) if path and os.path.isabs(path))
         return await _run_owned_command(
             [sys.executable or "python", "-I", "-c", content], ctx,

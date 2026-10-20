@@ -563,7 +563,7 @@ async def test_host_shell_uses_tui_bridge_context(monkeypatch):
         ),
         owner="admin",
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "host_shell_bridge": {
                 "url": "http://host.docker.internal:17654/run",
                 "token": "bridge-token",
@@ -580,7 +580,7 @@ async def test_host_shell_uses_tui_bridge_context(monkeypatch):
     assert bridge_payload["timeout"] == 12
     assert isinstance(bridge_payload["request_id"], str)
     assert bridge_payload["request_id"]
-    assert calls[1][2]["headers"]["X-Odysseus-TUI-Bridge-Token"] == "bridge-token"
+    assert calls[1][2]["headers"]["X-Ulises-TUI-Bridge-Token"] == "bridge-token"
 
 
 @pytest.mark.asyncio
@@ -624,7 +624,7 @@ async def test_host_shell_forwards_detach_and_job_polling(monkeypatch):
     monkeypatch.setattr(auth_mod, "AuthManager", lambda: FakeAuth())
     monkeypatch.setattr(subprocess_tools.httpx, "AsyncClient", FakeAsyncClient)
     context = {
-        "surface": "odysseus-tui",
+        "surface": "ulises-tui",
         "host_shell_bridge": {"url": "http://host.docker.internal:17654/run", "token": "bridge-token"},
     }
 
@@ -1140,7 +1140,7 @@ async def test_legacy_mcp_tools_decode_inline_json_args(monkeypatch):
     from src.tool_execution import _build_mcp_args
 
     cases = {
-        "web_search": ('{"query": "odysseus pr 3681"}', {"query": "odysseus pr 3681"}),
+        "web_search": ('{"query": "ulises pr 3681"}', {"query": "ulises pr 3681"}),
         "web_fetch": ('{"url": "https://example.com"}', {"url": "https://example.com"}),
         "read_file": ('{"path": "/tmp/x.txt"}', {"path": "/tmp/x.txt"}),
         "write_file": ('{"path": "/tmp/x", "content": "hi"}', {"path": "/tmp/x", "content": "hi"}),
@@ -1274,7 +1274,7 @@ async def test_plan_mode_blocks_mutating_email_aliases_without_mcp_inventory(mon
     )
     assert result["exit_code"] == 0
     assert mcp.calls == [
-        ("mcp__email__search_emails", {"query": "x", "_odysseus_owner": "admin-user"}),
+        ("mcp__email__search_emails", {"query": "x", "_ulises_owner": "admin-user"}),
     ]
 
     mcp.calls.clear()
@@ -1286,7 +1286,7 @@ async def test_plan_mode_blocks_mutating_email_aliases_without_mcp_inventory(mon
     )
     assert result["exit_code"] == 0
     assert mcp.calls == [
-        ("mcp__email__scan_email_unsubscribes", {"limit": 1, "_odysseus_owner": "admin-user"}),
+        ("mcp__email__scan_email_unsubscribes", {"limit": 1, "_ulises_owner": "admin-user"}),
     ]
 
 
@@ -1308,7 +1308,7 @@ async def test_bare_email_dispatch_empty_content_calls_with_empty_args(monkeypat
     )
     assert result["exit_code"] == 0
     assert mcp.calls == [
-        ("mcp__email__list_email_accounts", {"_odysseus_owner": "admin-user"}),
+        ("mcp__email__list_email_accounts", {"_ulises_owner": "admin-user"}),
     ]
 
 
@@ -1361,7 +1361,7 @@ async def test_email_mcp_dispatch_includes_hidden_owner(monkeypatch):
     assert desc == "mcp: mcp__email__list_emails"
     assert result["exit_code"] == 0
     assert fake.calls == [
-        ("mcp__email__list_emails", {"folder": "INBOX", "_odysseus_owner": "alice"}),
+        ("mcp__email__list_emails", {"folder": "INBOX", "_ulises_owner": "alice"}),
     ]
 
 
@@ -1383,7 +1383,7 @@ async def test_bare_email_mcp_dispatch_includes_hidden_owner(monkeypatch):
     assert desc == "email: list_emails"
     assert result["exit_code"] == 0
     assert fake.calls == [
-        ("mcp__email__list_emails", {"folder": "INBOX", "_odysseus_owner": "alice"}),
+        ("mcp__email__list_emails", {"folder": "INBOX", "_ulises_owner": "alice"}),
     ]
 
 

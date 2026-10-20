@@ -142,7 +142,7 @@ def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Curate accepted Odysseus SFT traces for one eval report.")
+    parser = argparse.ArgumentParser(description="Curate accepted Ulises SFT traces for one eval report.")
     parser.add_argument("--report", type=Path, required=True, help="Eval actual_results.json path.")
     parser.add_argument("--trace", type=Path, required=True, help="Owner SFT trace JSONL path.")
     parser.add_argument("--out", type=Path, required=True, help="Curated JSONL output path.")
@@ -151,8 +151,8 @@ def main() -> int:
     parser.add_argument("--require-runtime-revision", action="store_true", help="Drop passing rows that lack runtime revision provenance.")
     parser.add_argument(
         "--runtime-revision",
-        default=os.getenv("ODYSSEUS_RUNTIME_REVISION", ""),
-        help="Require this exact runtime revision. Defaults to ODYSSEUS_RUNTIME_REVISION.",
+        default=os.getenv("ULISES_RUNTIME_REVISION", ""),
+        help="Require this exact runtime revision. Defaults to ULISES_RUNTIME_REVISION.",
     )
     args = parser.parse_args()
 

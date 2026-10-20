@@ -61,7 +61,7 @@ in those affected files passed after correction. The foundation-based full run h
 
 These cover existing compaction fixtures/source assertions, namespace containment,
 settings-row CSS baseline drift and readiness expectations. The baseline reproduction used
-`git archive` into `/tmp/odysseus-notes-baseline-OitxsU`, not another branch/worktree.
+`git archive` into `/tmp/ulises-notes-baseline-OitxsU`, not another branch/worktree.
 
 ## Reproducible commands
 
@@ -72,19 +72,19 @@ PR #6704 repairs ten of the foundation's reproduced failures; PR #6693 adds
 remote-only skill gating. Neither changes a file owned by the Notes diff.
 The branch remains on the requested foundation, with no merge or rebase.
 An archive of that latest target plus the exact final Notes code/test overlay is
-validated in `/tmp/odysseus-notes-latest-VmZrgC` using the same full-suite command.
+validated in `/tmp/ulises-notes-latest-VmZrgC` using the same full-suite command.
 The fixture has a local Git index, initialized from the latest target and updated
 with the review files, but no commit. This enables the tracked-publication checks.
 The first archive-only attempt had one Git-metadata failure and seven checkout-only
 skips. Both affected files subsequently passed all 19 tests with metadata present;
 the complete suite was then rerun in that indexed fixture.
-An untouched archive at `/tmp/odysseus-notes-latest-baseline-mfE4ss` reproduced
+An untouched archive at `/tmp/ulises-notes-latest-baseline-mfE4ss` reproduced
 the remaining two containment failures and the readiness failure: three failed,
 87 passed.
 
 These are reproduced local-environment failures, not a claim that official CI is
 currently failing. The readiness assertion expects prewarming enabled, whereas
-the full-run safety command explicitly sets `ODYSSEUS_TOOL_INDEX_PREWARM=0`.
+the full-run safety command explicitly sets `ULISES_TOOL_INDEX_PREWARM=0`.
 With that override absent, all five readiness tests pass on untouched latest `dev`.
 The two namespace tests receive extra `Failed to create stream fd` stderr in this
 host's contained process output. That same output occurs without the Notes overlay;
@@ -158,10 +158,10 @@ python scripts/verify_notes_browser_runtime.py
 docker run --rm --network none \
   --mount type=bind,src="$PWD",dst=/candidate,readonly \
   --workdir /candidate --entrypoint python \
-  <existing-odysseus-image> scripts/verify_frontend_runtime.py
+  <existing-ulises-image> scripts/verify_frontend_runtime.py
 
 CHROMADB_HOST=127.0.0.1 CHROMADB_PORT=1 \
-  ODYSSEUS_STARTUP_WARMUPS=0 ODYSSEUS_TOOL_INDEX_PREWARM=0 \
+  ULISES_STARTUP_WARMUPS=0 ULISES_TOOL_INDEX_PREWARM=0 \
   python -m pytest -q -rfs
 
 git diff --check
@@ -208,7 +208,7 @@ is claimed.
 
 The full-run safety overrides differ from official CI's plain pytest command.
 For the readiness default-contract check, use
-`env -u ODYSSEUS_TOOL_INDEX_PREWARM python -m pytest -q tests/test_readiness.py`.
+`env -u ULISES_TOOL_INDEX_PREWARM python -m pytest -q tests/test_readiness.py`.
 Keep explicit warmup/storage isolation on the disposable live-app probes.
 
 ## Internal checkpoints
@@ -249,11 +249,11 @@ were adopted, and that worktree's clean state was verified afterward.
 
 The following remained open at the read-only GitHub refresh:
 
-- [#6585](https://github.com/odysseus-dev/odysseus/pull/6585): optional Notes field removal in the backend. Existing null-field behavior is retained here.
-- [#6647](https://github.com/odysseus-dev/odysseus/pull/6647): read-only Notes intent routing.
-- [#6652](https://github.com/odysseus-dev/odysseus/pull/6652): `manage_notes` registry dispatch.
-- [#6470](https://github.com/odysseus-dev/odysseus/pull/6470): shared theme, typography, sidebar and modal changes.
-- [#6695](https://github.com/odysseus-dev/odysseus/pull/6695): extension system/platform integration.
+- [#6585](https://github.com/ulises-dev/ulises/pull/6585): optional Notes field removal in the backend. Existing null-field behavior is retained here.
+- [#6647](https://github.com/ulises-dev/ulises/pull/6647): read-only Notes intent routing.
+- [#6652](https://github.com/ulises-dev/ulises/pull/6652): `manage_notes` registry dispatch.
+- [#6470](https://github.com/ulises-dev/ulises/pull/6470): shared theme, typography, sidebar and modal changes.
+- [#6695](https://github.com/ulises-dev/ulises/pull/6695): extension system/platform integration.
 
 Their changes were not merged or reimplemented. Shared UI exceptions, root-SW scope,
 the original last-completion fetch race, temporary-note correlation and canvas-draft

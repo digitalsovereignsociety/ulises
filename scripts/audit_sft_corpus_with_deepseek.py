@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audit an Odysseus SFT JSONL corpus and use DeepSeek for semantic review."""
+"""Audit an Ulises SFT JSONL corpus and use DeepSeek for semantic review."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ DEFAULT_TRACE = ROOT / "data" / "sft_traces" / "sft_alex_creator.jsonl"
 OUT_DIR = ROOT / "data" / "audits"
 
 LEAK_RE = re.compile(
-    r"fake-(?:sender|odysseus)|synthetic (?:sft|fixture)|safe for training|"
+    r"fake-(?:sender|ulises)|synthetic (?:sft|fixture)|safe for training|"
     r"training traces?|you are a fish|prompt injection|harness (?:bug|issue|dump)",
     re.I,
 )

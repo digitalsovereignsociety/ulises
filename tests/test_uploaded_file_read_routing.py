@@ -9,7 +9,7 @@ def _upload(name: str, mime: str = "application/octet-stream") -> dict:
         "id": "upload-1",
         "name": name,
         "mime": mime,
-        "path": f"/tmp/odysseus-uploads/{name}",
+        "path": f"/tmp/ulises-uploads/{name}",
     }
 
 

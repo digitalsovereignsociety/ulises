@@ -146,7 +146,7 @@ def _tui_host_bridge_patch_url(
 ) -> tuple[str, str] | None:
     if not isinstance(client_runtime_context, dict):
         return None
-    if str(client_runtime_context.get("surface") or "").strip() != "odysseus-tui":
+    if str(client_runtime_context.get("surface") or "").strip() != "ulises-tui":
         return None
     bridge = (
         client_runtime_context.get("host_shell_bridge")
@@ -180,7 +180,7 @@ async def _apply_patch_via_tui_host_bridge(
         async with httpx.AsyncClient(timeout=timeout, trust_env=False) as client:
             response = await client.post(
                 url,
-                headers={"x-odysseus-tui-bridge-token": token},
+                headers={"x-ulises-tui-bridge-token": token},
                 json={"patch": patch_text, "request_id": request_id},
             )
         try:
@@ -249,7 +249,7 @@ async def _bridge_post(bridge: Dict, path: str, payload: Dict, *, timeout_s: flo
         async with httpx.AsyncClient(timeout=timeout, trust_env=False) as client:
             response = await client.post(
                 target,
-                headers={"x-odysseus-tui-bridge-token": token},
+                headers={"x-ulises-tui-bridge-token": token},
                 json=payload,
             )
         try:
@@ -311,7 +311,7 @@ async def _cancel_bridge_request(bridge: Dict, request_id: str) -> None:
         async with httpx.AsyncClient(timeout=timeout, trust_env=False) as client:
             await client.post(
                 target,
-                headers={"x-odysseus-tui-bridge-token": token},
+                headers={"x-ulises-tui-bridge-token": token},
                 json={"request_id": request_id},
             )
     except Exception:
@@ -320,7 +320,7 @@ async def _cancel_bridge_request(bridge: Dict, request_id: str) -> None:
 
 def _client_bridge(client_runtime_context: Optional[Dict]) -> Optional[Dict]:
     context = client_runtime_context if isinstance(client_runtime_context, dict) else {}
-    if str(context.get("surface") or "").strip() != "odysseus-tui":
+    if str(context.get("surface") or "").strip() != "ulises-tui":
         return None
     bridge = context.get("host_shell_bridge") or context.get("hostShellBridge")
     if not isinstance(bridge, dict):
@@ -1299,8 +1299,8 @@ _MCP_TOOL_MAP = {
     "web_fetch":      ("web_fetch",  "web_fetch"),
     "generate_image": ("image_gen",  "generate_image"),
 }
-_EMAIL_MCP_OWNER_ARG = "_odysseus_owner"
-_EMAIL_MCP_SESSION_ARG = "_odysseus_session_id"
+_EMAIL_MCP_OWNER_ARG = "_ulises_owner"
+_EMAIL_MCP_SESSION_ARG = "_ulises_session_id"
 
 
 def _parse_qualified_mcp_args(tool: str, content: str) -> tuple[Dict, Optional[str]]:
@@ -1317,7 +1317,7 @@ def _parse_qualified_mcp_args(tool: str, content: str) -> tuple[Dict, Optional[s
         if tool.startswith("mcp__email__"):
             return {}, "Email MCP tool arguments must be a JSON object."
         return {}, None
-    sanitized = {k: v for k, v in parsed.items() if not k.startswith("_odysseus_")}
+    sanitized = {k: v for k, v in parsed.items() if not k.startswith("_ulises_")}
     return sanitized, None
 
 
@@ -1403,11 +1403,11 @@ def _build_mcp_args(tool: str, content: str) -> Dict:
         except (json.JSONDecodeError, TypeError):
             decoded = None
         if isinstance(decoded, dict) and any(k in decoded for k in primaries):
-            return {k: v for k, v in decoded.items() if not k.startswith("_odysseus_")}
+            return {k: v for k, v in decoded.items() if not k.startswith("_ulises_")}
     parser = _MCP_ARG_PARSERS.get(tool)
     res = parser(content) if parser else {}
     if isinstance(res, dict):
-        return {k: v for k, v in res.items() if not k.startswith("_odysseus_")}
+        return {k: v for k, v in res.items() if not k.startswith("_ulises_")}
     return res
 
 
@@ -1441,9 +1441,9 @@ async def _call_mcp_tool(
     qualified = f"mcp__{server_id}__{tool_name}"
     args = _build_mcp_args(tool, content)
     if tool == "generate_image":
-        args.pop("_odysseus_owner", None)
+        args.pop("_ulises_owner", None)
         if owner:
-            args["_odysseus_owner"] = owner
+            args["_ulises_owner"] = owner
     result = await mcp.call_tool(qualified, args)
 
     # Stdio MCP servers can only return TextContent, so an explicit
@@ -1515,7 +1515,7 @@ _SAFE_SUBPROCESS_VARS = frozenset({
     "USER", "LOGNAME", "SHELL", "TMPDIR", "TEMP", "TMP",
     # Python isolation / virtualenvs
     "PYTHONPATH", "PYTHONHOME", "VIRTUAL_ENV",
-    "ODYSSEUS_PYTHON_TOOL_SITE_PACKAGES",
+    "ULISES_PYTHON_TOOL_SITE_PACKAGES",
     # Windows system essentials
     "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT",
     "ALLUSERSPROFILE", "PROGRAMDATA", "COMMONPROGRAMFILES",
@@ -2388,7 +2388,7 @@ async def _execute_tool_block_impl(
                     )
                 else:
                     if isinstance(parsed, dict):
-                        args = {k: v for k, v in parsed.items() if not k.startswith("_odysseus_")}
+                        args = {k: v for k, v in parsed.items() if not k.startswith("_ulises_")}
                     else:
                         _args_error = (
                             f"'{tool}' arguments must be a JSON object, "
@@ -2417,8 +2417,8 @@ async def _execute_tool_block_impl(
                 result = {"error": parse_error, "exit_code": 1}
             else:
                 args = dict(args)
-                args.pop("_odysseus_owner", None)
-                args.pop("_odysseus_session_id", None)
+                args.pop("_ulises_owner", None)
+                args.pop("_ulises_session_id", None)
                 if tool.startswith("mcp__email__"):
                     if owner:
                         args[_EMAIL_MCP_OWNER_ARG] = owner
@@ -2426,7 +2426,7 @@ async def _execute_tool_block_impl(
                         args[_EMAIL_MCP_SESSION_ARG] = session_id
                 elif tool == "mcp__image_gen__generate_image" or tool.startswith("mcp__image_gen__"):
                     if owner:
-                        args["_odysseus_owner"] = owner
+                        args["_ulises_owner"] = owner
                 result = _normalize_mcp_text_error(await dispatched(mcp.call_tool(tool, args)))
                 if tool == "mcp__image_gen__generate_image" or tool.startswith("mcp__image_gen__"):
                     _promote_image_fields(result)

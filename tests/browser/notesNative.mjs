@@ -5,7 +5,7 @@ import { chromium } from 'playwright';
 import { randomUUID } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 
-const origin = process.env.ODYSSEUS_NOTES_RUNTIME_ORIGIN;
+const origin = process.env.ULISES_NOTES_RUNTIME_ORIGIN;
 const evidence = process.env.NOTES_NATIVE_EVIDENCE_DIR;
 if (evidence) fs.mkdirSync(evidence, { recursive: true });
 const browser = await chromium.launch({ headless: true });
@@ -27,7 +27,7 @@ try {
     assert.equal(created.owner, credentials.username);
     await page.goto(origin);
     await page.waitForFunction(() => window.notesModule?.openPanel);
-    await page.evaluate(() => { localStorage.setItem('odysseus-notes-first-open-hint-v1', '1'); window.notesModule.openPanel(); });
+    await page.evaluate(() => { localStorage.setItem('ulises-notes-first-open-hint-v1', '1'); window.notesModule.openPanel(); });
     const card = page.locator(`.note-card[data-note-id="${created.id}"]`);
     await card.waitFor();
     if (evidence) await page.screenshot({ path: path.join(evidence, mobile ? 'native-mobile.png' : 'native-desktop.png'), fullPage: true, animations: 'disabled' });
@@ -48,7 +48,7 @@ try {
     else await card.locator('.note-card-title').click();
     if (mobile) await page.locator('.note-form-content-reader').tap({ position: { x: 5, y: 5 } });
     await page.locator('.note-form-content').fill('Saved by the native Notes application');
-    await page.waitForFunction(id => !localStorage.getItem('odysseus-note-draft-' + id), created.id);
+    await page.waitForFunction(id => !localStorage.getItem('ulises-note-draft-' + id), created.id);
     const fetched = await context.request.get(`${origin}/api/notes`);
     const notes = (await fetched.json()).notes;
     assert.equal(notes.find(note => note.id === created.id).content, 'Saved by the native Notes application');
@@ -58,7 +58,7 @@ try {
     console.log(JSON.stringify({ native: true, mobile, noteId: created.id, crud: true, selectedContext: true }));
   }
   const smoke = spawnSync(process.env.NOTES_TEST_PYTHON, ['-m', 'pytest', '-q', 'tests/smoke/test_notes_smoke.py'], {
-    env: { ...process.env, APP_PORT: new URL(origin).port, ODYSSEUS_ADMIN_USER: credentials.username, ODYSSEUS_ADMIN_PASSWORD: credentials.password },
+    env: { ...process.env, APP_PORT: new URL(origin).port, ULISES_ADMIN_USER: credentials.username, ULISES_ADMIN_PASSWORD: credentials.password },
     encoding: 'utf8', timeout: 90000,
   });
   assert.equal(smoke.status, 0, smoke.stdout + smoke.stderr);

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Execute generated SFT workflows through Odysseus with rollback and gating."""
+"""Execute generated SFT workflows through Ulises with rollback and gating."""
 
 from __future__ import annotations
 
@@ -34,7 +34,7 @@ from core.database import (  # noqa: E402
     ScheduledTask,
     SessionLocal,
 )
-from scripts.eval_odysseus_tool_use import (  # noqa: E402
+from scripts.eval_ulises_tool_use import (  # noqa: E402
     _raise_for_status_with_body,
     _sse_events,
     _visible_event_text,
@@ -221,7 +221,7 @@ def login(client: httpx.Client, base_url: str, owner: str, password: str) -> Non
                 )
     if token:
         _COOKIE_CACHE[owner] = token
-        client.cookies.set("odysseus_session", token)
+        client.cookies.set("ulises_session", token)
         return
     response = client.post(
         base_url.rstrip("/") + "/api/auth/login",
@@ -231,7 +231,7 @@ def login(client: httpx.Client, base_url: str, owner: str, password: str) -> Non
     _raise_for_status_with_body(response)
     if not response.json().get("ok"):
         raise RuntimeError(f"login failed for {owner}")
-    token = client.cookies.get("odysseus_session")
+    token = client.cookies.get("ulises_session")
     if token:
         _COOKIE_CACHE[owner] = token
 
@@ -755,7 +755,7 @@ def main() -> None:
     parser.add_argument("--cases", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--base-url", default="http://127.0.0.1:7011")
-    parser.add_argument("--password", default=os.environ.get("ODYSSEUS_QA_PASSWORD"), required=os.environ.get("ODYSSEUS_QA_PASSWORD") is None)
+    parser.add_argument("--password", default=os.environ.get("ULISES_QA_PASSWORD"), required=os.environ.get("ULISES_QA_PASSWORD") is None)
     parser.add_argument("--endpoint-id", default="f3904562")
     parser.add_argument("--endpoint", default="https://openrouter.ai/api/v1/chat/completions")
     parser.add_argument("--model", default="moonshotai/kimi-k3")
@@ -763,14 +763,14 @@ def main() -> None:
     parser.add_argument(
         "--allow-web-search",
         action="store_true",
-        help="Enable Odysseus public web_search/web_fetch for this replay.",
+        help="Enable Ulises public web_search/web_fetch for this replay.",
     )
     parser.add_argument(
         "--fixture-environments",
         type=Path,
         help=(
             "Install owner-scoped synthetic inventory rows for replay. "
-            "Use only against an isolated app with ODYSSEUS_EMAIL_FIXTURE=1."
+            "Use only against an isolated app with ULISES_EMAIL_FIXTURE=1."
         ),
     )
     parser.add_argument("--turn-timeout", type=float, default=180)
@@ -788,8 +788,8 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.fixture_environments:
-        if os.environ.get("ODYSSEUS_EMAIL_FIXTURE") != "1":
-            parser.error("--fixture-environments requires ODYSSEUS_EMAIL_FIXTURE=1")
+        if os.environ.get("ULISES_EMAIL_FIXTURE") != "1":
+            parser.error("--fixture-environments requires ULISES_EMAIL_FIXTURE=1")
         installed = install_fixture_environments(args.fixture_environments)
         print(f"installed isolated fixture inventory: {installed}", flush=True)
 

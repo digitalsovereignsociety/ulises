@@ -2,8 +2,8 @@
 // Slash command handlers and dispatcher, extracted from chat.js
 
 window.cancelActiveTour = function cancelActiveTour() {
-  document.querySelectorAll('.odysseus-highlight, .odysseus-highlight-click')
-    .forEach(e => e.classList.remove('odysseus-highlight', 'odysseus-highlight-click'));
+  document.querySelectorAll('.ulises-highlight, .ulises-highlight-click')
+    .forEach(e => e.classList.remove('ulises-highlight', 'ulises-highlight-click'));
   document.querySelectorAll('.tour-halo').forEach(e => e.remove());
   document.getElementById('tour-tooltip')?.remove();
   document.body?.classList.remove('tour-active');
@@ -165,7 +165,7 @@ function _normalizeSetupBaseUrl(raw) {
 }
 
 function _clearSetupGuideMessages() {
-  Storage.remove('odysseus-setup-guide-messages');
+  Storage.remove('ulises-setup-guide-messages');
 }
 
 async function _showSetupRetryPrompt() {
@@ -313,7 +313,7 @@ function slashReply(text) {
   div.className = 'msg msg-ai';
   const role = document.createElement('div');
   role.className = 'role';
-  role.textContent = 'Odysseus';
+  role.textContent = 'Ulises';
   div.appendChild(role);
   const body = document.createElement('div');
   body.className = 'body';
@@ -432,7 +432,7 @@ function typewriterReply(text, options = {}) {
     div.className = 'msg msg-ai';
     const role = document.createElement('div');
     role.className = 'role';
-    role.textContent = 'Odysseus';
+    role.textContent = 'Ulises';
     div.appendChild(role);
     const body = document.createElement('div');
     body.className = 'body';
@@ -472,7 +472,7 @@ function typewriterBlocksReply(blocks, options = {}) {
     div.className = 'msg msg-ai';
     const role = document.createElement('div');
     role.className = 'role';
-    role.textContent = 'Odysseus';
+    role.textContent = 'Ulises';
     div.appendChild(role);
     const body = document.createElement('div');
     body.className = 'body';
@@ -663,7 +663,7 @@ async function connectDetectedSetupEndpoint(detected) {
   spinnerDiv.className = 'msg msg-ai';
   const spinnerRole = document.createElement('div');
   spinnerRole.className = 'role';
-  spinnerRole.textContent = 'Odysseus';
+  spinnerRole.textContent = 'Ulises';
   spinnerDiv.appendChild(spinnerRole);
   const spinnerBody = document.createElement('div');
   spinnerBody.className = 'body';
@@ -1270,7 +1270,7 @@ async function _cmdWorkspace(args, ctx) {
     // folder, sensitive dir, filesystem root).
     workspaceModule.vetAndSetWorkspace(path).then(({ ok, path: resolvedPath }) => {
       if (ok) slashReply(`Workspace set: <code>${uiModule.esc(resolvedPath)}</code>`);
-      else slashReply(`Not a usable workspace folder on the Odysseus backend: <code>${uiModule.esc(path)}</code>. If Odysseus is running in Docker, use the container path, usually <code>/app</code>, or use <code>/workspace pick</code>.`);
+      else slashReply(`Not a usable workspace folder on the Ulises backend: <code>${uiModule.esc(path)}</code>. If Ulises is running in Docker, use the container path, usually <code>/app</code>, or use <code>/workspace pick</code>.`);
     });
     return true;
   };
@@ -2129,8 +2129,8 @@ async function _cmdDemo(args, ctx) {
   let _draftObserver = null;
   let _draftPoll = null;
   const _clearTour = () => {
-    document.querySelectorAll('.odysseus-highlight, .odysseus-highlight-click').forEach(e => {
-      e.classList.remove('odysseus-highlight', 'odysseus-highlight-click');
+    document.querySelectorAll('.ulises-highlight, .ulises-highlight-click').forEach(e => {
+      e.classList.remove('ulises-highlight', 'ulises-highlight-click');
     });
     document.querySelectorAll('.tour-halo').forEach(e => e.remove());
     document.getElementById('tour-tooltip')?.remove();
@@ -2316,7 +2316,7 @@ async function _cmdDemo(args, ctx) {
   function showStep(sel, text, mode = 'next', isFirst = false, stepOpts = {}) {
     return new Promise(resolve => {
       if (cancelled) return resolve('cancel');
-      document.querySelectorAll('.odysseus-highlight').forEach(e => e.classList.remove('odysseus-highlight'));
+      document.querySelectorAll('.ulises-highlight').forEach(e => e.classList.remove('ulises-highlight'));
       document.querySelectorAll('.tour-halo').forEach(e => e.remove());
 
       // Support multiple selectors (comma-separated)
@@ -2336,7 +2336,7 @@ async function _cmdDemo(args, ctx) {
       const advanceOnClick = !!stepOpts.advanceOnClick;
       const pulseNext = !!stepOpts.pulseNext;
 
-      targets.forEach(t => t.classList.add('odysseus-highlight'));
+      targets.forEach(t => t.classList.add('ulises-highlight'));
       const halos = breathing ? targets.map(makeHalo) : [];
       // Reset tooltip into the "pre-fade" state so the new step phases in.
       tooltip.classList.remove('tour-fade-in');
@@ -2435,7 +2435,7 @@ async function _cmdDemo(args, ctx) {
           targets.forEach(t => t.removeEventListener(evt, onDocClickCapture, true));
         });
         if (messageInputListener) document.removeEventListener('keydown', messageInputListener, true);
-        if (modelListener) document.removeEventListener('odysseus:model-picked', modelListener);
+        if (modelListener) document.removeEventListener('ulises:model-picked', modelListener);
         if (streamHandle) streamHandle.cancel();
         halos.forEach(h => h.destroy());
       };
@@ -2457,7 +2457,7 @@ async function _cmdDemo(args, ctx) {
       }
       if (sels.includes('#model-picker-btn')) {
         modelListener = onModelPicked;
-        document.addEventListener('odysseus:model-picked', modelListener, { once: true });
+        document.addEventListener('ulises:model-picked', modelListener, { once: true });
       }
 
       tooltip.addEventListener('click', onClick);
@@ -2477,7 +2477,7 @@ async function _cmdDemo(args, ctx) {
   const delay = ms => new Promise(r => setTimeout(r, ms));
 
   // ── Welcome ──
-  await typewriterReply('Welcome to Odysseus! Lets begin the tour!');
+  await typewriterReply('Welcome to Ulises! Lets begin the tour!');
   // Beat between the welcome line and the first hint so it doesn't snap in.
   await delay(900);
 
@@ -2515,8 +2515,8 @@ async function _cmdDemo(args, ctx) {
     { sel: '#sidebar-new-chat-btn', text: 'Start a new chat here. <b>Click it.</b> You can do it!', mode: 'click',
       before() { if (sidebar?.classList.contains('hidden')) sidebar.classList.remove('hidden'); } },
     { sel: '#model-picker-btn',   text: 'Pick your LLM, Local or API.', advanceOnClick: true },
-    { sel: '#mode-agent-btn',     text: '<b>Agent mode</b> gives Odysseus more control of the app when your model supports tools: create a theme, download a model, make a daily task, organize things, and more.', mode: 'click' },
-    { sel: '#web-toggle-btn',     text: 'Toggle tools like <b>web search</b>. Odysseus comes with private built-in <b>SearXNG</b> search.', mode: 'click' },
+    { sel: '#mode-agent-btn',     text: '<b>Agent mode</b> gives Ulises more control of the app when your model supports tools: create a theme, download a model, make a daily task, organize things, and more.', mode: 'click' },
+    { sel: '#web-toggle-btn',     text: 'Toggle tools like <b>web search</b>. Ulises comes with private built-in <b>SearXNG</b> search.', mode: 'click' },
     { sel: '#overflow-plus-btn',  text: 'More tools can be found here, or in your sidebar. <b>Click to peek.</b>',
       advanceOnClick: true, pulseNext: true, afterDelay: 2200 },
     { sel: '#message',            text: 'Write your prompt here. Drag and drop files to attach them. <b>/prompt</b> for random prompt, <b>/help</b> for more.',
@@ -2536,7 +2536,7 @@ async function _cmdDemo(args, ctx) {
     await delay(step.afterDelay || 750);
     // After the message input step, wait for any active stream to finish
     if (step.sel === '#message' && _isStreamingFn()) {
-      document.querySelectorAll('.odysseus-highlight').forEach(e => e.classList.remove('odysseus-highlight'));
+      document.querySelectorAll('.ulises-highlight').forEach(e => e.classList.remove('ulises-highlight'));
       tooltip.style.display = 'none';
       await new Promise(r => {
         const check = setInterval(() => { if (!_isStreamingFn()) { clearInterval(check); r(); } }, 300);
@@ -2546,7 +2546,7 @@ async function _cmdDemo(args, ctx) {
   }
 
   _clearTour();
-  await typewriterReply('Odysseus is yours to explore, enjoy the voyage!');
+  await typewriterReply('Ulises is yours to explore, enjoy the voyage!');
   return true;
 }
 
@@ -2637,7 +2637,7 @@ async function _cmdTourCompare(args, ctx) {
   }
 
   const _clear = () => {
-    document.querySelectorAll('.odysseus-highlight').forEach(e => e.classList.remove('odysseus-highlight'));
+    document.querySelectorAll('.ulises-highlight').forEach(e => e.classList.remove('ulises-highlight'));
     _clearHalos();
     tooltip.remove();
     document.body.classList.remove('tour-active');
@@ -2915,7 +2915,7 @@ async function _cmdTourCookbook(args, ctx) {
     document.querySelectorAll('.tour-halo').forEach(e => e.remove());
   }
   const _clear = () => {
-    document.querySelectorAll('.odysseus-highlight').forEach(e => e.classList.remove('odysseus-highlight'));
+    document.querySelectorAll('.ulises-highlight').forEach(e => e.classList.remove('ulises-highlight'));
     _clearHalos();
     tooltip.remove();
     document.body.classList.remove('tour-active');
@@ -3144,7 +3144,7 @@ async function _cmdTourTheme(args, ctx) {
     document.querySelectorAll('.tour-halo').forEach(e => e.remove());
   }
   const _clear = () => {
-    document.querySelectorAll('.odysseus-highlight').forEach(e => e.classList.remove('odysseus-highlight'));
+    document.querySelectorAll('.ulises-highlight').forEach(e => e.classList.remove('ulises-highlight'));
     _clearHalos();
     tooltip.remove();
     document.body.classList.remove('tour-active');
@@ -3261,7 +3261,7 @@ async function _cmdTourTheme(args, ctx) {
   // work as a fallback (read past without touching anything).
   const steps = [
     { sel: '#theme-popup',
-      text: '<b>Welcome to Theme.</b> Odysseus is yours to customize!',
+      text: '<b>Welcome to Theme.</b> Ulises is yours to customize!',
       placement: 'center-above',
       before: () => _clickTab('theme-tab-browse') },
     { sel: '#themeGrid',
@@ -3493,7 +3493,7 @@ async function _cmdTourSettings(args, ctx) {
       text: '<b>AI Defaults</b> — three roles share the work. Let\'s walk through them.',
       before: () => _clickNav('ai') },
     { sel: '#settings-modal .admin-card:has(#set-defaultModelSelect)',
-      text: '<b>Default Chat Model</b> — your main model. The one Odysseus reaches for whenever you start a new chat.',
+      text: '<b>Default Chat Model</b> — your main model. The one Ulises reaches for whenever you start a new chat.',
       before: () => _clickNav('ai') },
     { sel: '#settings-modal .admin-card:has(#set-utilityModelSelect)',
       text: '<b>Utility Model</b> — your hard-working sidekick. Runs background tasks (compaction, cleanup, auto-naming, summarization) so your chat model doesn\'t burn cycles on chores. <b>Recommend a small local model</b> here — it\'s free and always on.',
@@ -3514,7 +3514,7 @@ async function _cmdTourSettings(args, ctx) {
       text: '<b>Email</b> — sync schedule, drafts, snooze defaults — everything email-flow related.',
       before: () => _clickNav('email') },
     { sel: '#settings-modal .settings-nav-item[data-settings-tab="reminders"]',
-      text: '<b>Reminders</b> — quiet hours and how Odysseus nudges you about calendar + urgent email.',
+      text: '<b>Reminders</b> — quiet hours and how Ulises nudges you about calendar + urgent email.',
       before: () => _clickNav('reminders') },
   ];
 
@@ -3545,7 +3545,7 @@ async function _cmdTourGallery(args, ctx) {
     _msgEl.value = '';
     _msgEl.dispatchEvent(new Event('input', { bubbles: true }));
   }
-  try { localStorage.setItem('odysseus-notes-first-open-hint-v1', '1'); } catch (_) {}
+  try { localStorage.setItem('ulises-notes-first-open-hint-v1', '1'); } catch (_) {}
   document.getElementById('notes-first-open-hint')?.remove();
 
   if (!document.getElementById('tour-styles')) {
@@ -3927,7 +3927,7 @@ async function _cmdTourNotes(args, ctx) {
       text: '<b>Notes</b> is your basic todo list, and also where reminders are managed.',
       placement: 'center-above' },
     { sel: '#notes-pane .notes-pane-body',
-      text: 'Your notes show up here. You can also <b>ask Odysseus in chat</b> to take a note for you.' },
+      text: 'Your notes show up here. You can also <b>ask Ulises in chat</b> to take a note for you.' },
     { sel: '#notes-search',
       text: '<b>Search</b> across every note — title, body, tags, the works.' },
     { sel: '#notes-view-toggle',
@@ -4366,7 +4366,7 @@ async function _cmdTourTask1(args, ctx) {
       text: 'Tasks are <b>paused by default</b> — resume whichever ones make sense for you. (Or pause anything that\'s running.)' },
     { sel: '#tasks-modal .modal-body',
       text: 'When enabled, Tasks use the <b>utility model configured in Settings</b> for cleanup and organization jobs.' },
-  ], 'Use Tasks when you want Odysseus to handle background housekeeping.', {
+  ], 'Use Tasks when you want Ulises to handle background housekeeping.', {
     continueLabel: 'continue →',
     continueText: '<b>Part 1 done.</b> Want to keep going into <b>adding & managing tasks</b>?',
   });
@@ -4390,7 +4390,7 @@ async function _cmdTourTask2(args, ctx) {
     // re-show it when the user moves past this step so the tour lands
     // back where it started.
     { sel: '#message',
-      text: 'You can also <b>just ask in chat</b> — say "every weekday at 9am check for urgent emails" and Odysseus will create the task for you.',
+      text: 'You can also <b>just ask in chat</b> — say "every weekday at 9am check for urgent emails" and Ulises will create the task for you.',
       before: () => document.getElementById('tasks-modal')?.classList.add('hidden'),
       after:  () => document.getElementById('tasks-modal')?.classList.remove('hidden') },
   ], 'That\'s Tasks. Have it run the background bits so you can stay in chat.');
@@ -4479,7 +4479,7 @@ async function _cmdTourResearch(args, ctx) {
     document.querySelectorAll('.tour-halo').forEach(e => e.remove());
   }
   const _clear = () => {
-    document.querySelectorAll('.odysseus-highlight').forEach(e => e.classList.remove('odysseus-highlight'));
+    document.querySelectorAll('.ulises-highlight').forEach(e => e.classList.remove('ulises-highlight'));
     _clearHalos();
     tooltip.remove();
     document.body.classList.remove('tour-active');
@@ -4693,7 +4693,7 @@ async function _cmdTourLibrary(args, ctx) {
     document.querySelectorAll('.tour-halo').forEach(e => e.remove());
   }
   const _clear = () => {
-    document.querySelectorAll('.odysseus-highlight').forEach(e => e.classList.remove('odysseus-highlight'));
+    document.querySelectorAll('.ulises-highlight').forEach(e => e.classList.remove('ulises-highlight'));
     _clearHalos();
     tooltip.remove();
     document.body.classList.remove('tour-active');
@@ -4898,7 +4898,7 @@ async function _cmdPrompt(args, ctx) {
     for (const p of list) all.push(p.prompt);
   }
   if (!all.length) { slashReply('No prompts available'); return true; }
-  const firstUseKey = 'odysseus_prompt_command_used';
+  const firstUseKey = 'ulises_prompt_command_used';
   const firstUse = localStorage.getItem(firstUseKey) !== '1';
   const prompt = firstUse
     ? 'i have no imagination help me'
@@ -5284,7 +5284,7 @@ const _ODYSSEY_QUOTES = [
   "A man who has been through bitter experiences and travelled far enjoys even his sufferings after a time.",
   "For a friend with an understanding heart is worth no less than a brother.",
   "The wine urges me on, the bewitching wine, which sets even a wise man to singing and to laughing gently.",
-  "I am Odysseus, son of Laertes, known to all for my cunning. My fame reaches even unto heaven.",
+  "I am Ulises, son of Laertes, known to all for my cunning. My fame reaches even unto heaven.",
 ];
 
 const _8BALL = [
@@ -5326,7 +5326,7 @@ function _eggRender(html) {
   div.className = 'msg msg-ai';
   const role = document.createElement('div');
   role.className = 'role';
-  role.textContent = 'Odysseus';
+  role.textContent = 'Ulises';
   div.appendChild(role);
   const body = document.createElement('div');
   body.className = 'body';
@@ -5427,7 +5427,7 @@ async function _cmdOdyssey(args, ctx) {
 }
 
 async function _cmdAscii(args, ctx) {
-  const text = args.join(' ') || 'Odysseus';
+  const text = args.join(' ') || 'Ulises';
   const FONT = {
     'A':'  #  \n # # \n#####\n#   #\n#   #','B':'#### \n#   #\n#### \n#   #\n#### ','C':' ####\n#    \n#    \n#    \n ####',
     'D':'#### \n#   #\n#   #\n#   #\n#### ','E':'#####\n#    \n###  \n#    \n#####','F':'#####\n#    \n###  \n#    \n#    ',
@@ -5529,7 +5529,7 @@ async function _cmdWisdom(args, ctx) {
 
 async function _cmdUptime(args, ctx) {
   const now = Date.now();
-  const loaded = window._odysseusLoadTime || now;
+  const loaded = window._ulisesLoadTime || now;
   const diff = now - loaded;
   const h = Math.floor(diff / 3600000);
   const m = Math.floor((diff % 3600000) / 60000);

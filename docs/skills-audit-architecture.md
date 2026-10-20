@@ -4,8 +4,8 @@ The Skills backend separates HTTP transport, model evaluation, agent execution,
 audit orchestration and publication policy. `services/skills/` coordinates those
 responsibilities; `services/memory/skills.py` remains the canonical persistence
 and lifecycle owner. The extraction preserves the existing HTTP and Python
-contracts. [PR #6711](https://github.com/odysseus-dev/odysseus/pull/6711) tracks
-this boundary change under [issue #6710](https://github.com/odysseus-dev/odysseus/issues/6710).
+contracts. [PR #6711](https://github.com/ulises-dev/ulises/pull/6711) tracks
+this boundary change under [issue #6710](https://github.com/ulises-dev/ulises/issues/6710).
 
 ## Responsibilities and dependency boundaries
 
@@ -356,12 +356,12 @@ extra `Failed to create stream fd: No such file or directory` stderr output:
 full-suite load and passed isolated reruns. Its cause was not fully diagnosed.
 These historical failures must be distinguished from new regressions; successful
 CI and maintainer review remain integration gates. Earlier AST comparisons and
-the [maintainer review](https://github.com/odysseus-dev/odysseus/pull/6711#issuecomment-6170115749)
+the [maintainer review](https://github.com/ulises-dev/ulises/pull/6711#issuecomment-6170115749)
 provide historical extraction evidence, not an independent review of later fixes.
 
 ## Known limitations and follow-up boundaries
 
-[Issue #6635](https://github.com/odysseus-dev/odysseus/issues/6635) remains open:
+[Issue #6635](https://github.com/ulises-dev/ulises/issues/6635) remains open:
 manual tests without an appropriate workspace can still fail to execute their
 proposed action. Stream cleanup and exact approvals are preserved, but do not
 supply a missing workspace.

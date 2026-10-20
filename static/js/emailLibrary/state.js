@@ -26,7 +26,7 @@ export const state = {
   _libFilter: 'all',             // all, unread, unanswered
   _libSort: 'recent',            // recent, unread, favorites
   _libHasAttachments: false,
-  _libShowTags: localStorage.getItem('odysseus.email.showTags') !== '0',
+  _libShowTags: localStorage.getItem('ulises.email.showTags') !== '0',
   // Embedded MIME images are shown by default; Email Settings can opt a
   // mailbox back into the manual-load behavior.
   _libViewInlineImages: true,

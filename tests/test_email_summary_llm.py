@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 
-_TMP_DATA = Path(tempfile.mkdtemp(prefix="odysseus-email-summary-"))
+_TMP_DATA = Path(tempfile.mkdtemp(prefix="ulises-email-summary-"))
 os.environ.setdefault("DATA_DIR", str(_TMP_DATA))
 os.environ.setdefault("DATABASE_URL", f"sqlite:///{_TMP_DATA / 'app.db'}")
 
@@ -135,7 +135,7 @@ async def test_scheduled_local_summary_is_preempted_by_foreground_call(monkeypat
     never_release = asyncio.Event()
     observed_workloads = []
 
-    monkeypatch.setenv("ODYSSEUS_LOCAL_MODEL_GATE", "true")
+    monkeypatch.setenv("ULISES_LOCAL_MODEL_GATE", "true")
     monkeypatch.setenv("BACKGROUND_TASK_FOREGROUND_GATE", "false")
     monkeypatch.setattr(llm_core, "_LOCAL_MODEL_LOCKS", {})
     monkeypatch.setattr(llm_core, "_LOCAL_MODEL_CURRENT", {})
@@ -196,7 +196,7 @@ async def test_scheduled_local_summary_is_preempted_by_foreground_call(monkeypat
 async def test_local_model_gate_serializes_per_endpoint_not_globally(monkeypatch):
     import src.llm_core as llm_core
 
-    monkeypatch.setenv("ODYSSEUS_LOCAL_MODEL_GATE", "true")
+    monkeypatch.setenv("ULISES_LOCAL_MODEL_GATE", "true")
     monkeypatch.setattr(llm_core, "_LOCAL_MODEL_LOCKS", {})
     monkeypatch.setattr(llm_core, "_LOCAL_MODEL_CURRENT", {})
     monkeypatch.setattr(llm_core, "_LOCAL_MODEL_WAITING_FOREGROUND", {})

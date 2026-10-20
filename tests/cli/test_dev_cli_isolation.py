@@ -1,4 +1,4 @@
-"""The isolation contract of `odysseus dev`.
+"""The isolation contract of `ulises dev`.
 
 The launcher exists so that two checkouts on one machine cannot share
 runtime state by accident. Every test here pins one of the guarantees
@@ -18,7 +18,7 @@ from tests.helpers.cli_loader import load_script
 
 @pytest.fixture
 def cli():
-    return load_script("odysseus-dev")
+    return load_script("ulises-dev")
 
 
 @pytest.fixture
@@ -72,7 +72,7 @@ def test_root_is_resolved_from_the_working_directory(cli, worktree):
 def test_a_checkout_run_by_a_service_manager_is_not_bootable(cli, worktree, monkeypatch):
     units = worktree.parent / "units"
     units.mkdir()
-    (units / "com.odysseus.server.plist").write_text(
+    (units / "com.ulises.server.plist").write_text(
         f"<plist><string>{worktree.resolve()}/start-macos.sh</string></plist>"
     )
     assert cli.managed_by_service(worktree, unit_dirs=[units]).endswith(".plist")

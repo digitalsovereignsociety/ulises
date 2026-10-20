@@ -4,18 +4,18 @@ import fs from 'node:fs';
 import { chromium } from 'playwright';
 
 const base = 'http://127.0.0.1:7011';
-const auth = JSON.parse(fs.readFileSync(process.env.ODYSSEUS_AUTH_SESSION_FILE || (() => { throw new Error("ODYSSEUS_AUTH_SESSION_FILE is required"); })(), 'utf8'));
+const auth = JSON.parse(fs.readFileSync(process.env.ULISES_AUTH_SESSION_FILE || (() => { throw new Error("ULISES_AUTH_SESSION_FILE is required"); })(), 'utf8'));
 const token = Object.entries(auth).find(([, value]) => value?.username === 'sft_alex_creator')?.[0];
 if (!token) throw Error('Missing test-owner authentication');
 const browser = await chromium.launch({headless: true});
 const context = await browser.newContext({serviceWorkers: 'block'});
-await context.addCookies([{name: 'odysseus_session', value: token, url: base}]);
+await context.addCookies([{name: 'ulises_session', value: token, url: base}]);
 const failures = [];
 try {
   for (const partial of ['', 'Partial answer must remain visible.']) {
     const created = await context.request.post(`${base}/api/session`, {multipart: {
       name: '[error-visibility] synthetic regression',
-      model: 'odysseus-qwen3.5-tools-pre-heretic', endpoint_id: '1d1022ef',
+      model: 'ulises-qwen3.5-tools-pre-heretic', endpoint_id: '1d1022ef',
       endpoint_url: process.env.ENDPOINT_URL || (() => { throw new Error("ENDPOINT_URL is required"); })(), skip_validation: 'true',
     }});
     assert.ok(created.ok());
@@ -23,7 +23,7 @@ try {
     const page = await context.newPage();
     try {
       await page.goto(`${base}/#${id}`, {waitUntil: 'domcontentloaded'});
-      await page.waitForFunction(id => window.__odysseusSessionReadyId === id, id);
+      await page.waitForFunction(id => window.__ulisesSessionReadyId === id, id);
       await page.route('**/api/chat_stream', route => route.fulfill({
         status: 200, contentType: 'text/event-stream',
         body: (partial ? `data: ${JSON.stringify({delta: partial})}\n\n` : '')

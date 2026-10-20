@@ -255,7 +255,7 @@ async def test_scoped_bridge_context_restores_and_replacement_is_ungranted(monke
 
 async def test_tui_endpoint_is_registered_only_at_trusted_admission(monkeypatch):
     from src import tool_execution as execution
-    context = {"surface": "odysseus-tui", "host_shell_bridge": {"url": "http://127.0.0.1:17654/run", "token": "TOKEN"}}
+    context = {"surface": "ulises-tui", "host_shell_bridge": {"url": "http://127.0.0.1:17654/run", "token": "TOKEN"}}
     authority = grant("bash", resources=(NativeBackendResource("bash"),))
     _, denied = await dispatch(authority, "bash", "pwd", client_runtime_context=context)
     assert denied["failure_kind"] == "resource_identity_denied"
@@ -341,7 +341,7 @@ async def test_external_bash_marker_cannot_switch_to_local_background_execution(
 
 @pytest.mark.parametrize("alias", ["host_shell_bridge", "hostShellBridge"])
 def test_host_shell_bridge_aliases_resolve_to_one_external_identity(alias):
-    context = {"surface": "odysseus-tui", alias: {"url": "http://127.0.0.1:17654/run", "token": "TOKEN"}}
+    context = {"surface": "ulises-tui", alias: {"url": "http://127.0.0.1:17654/run", "token": "TOKEN"}}
     resources = seal_backends(["host_shell"], context=context, owner="alice")
     assert len(resources) == 1 and isinstance(resources[0], ExternalResource)
     assert resources[0].external and not resources[0].contained

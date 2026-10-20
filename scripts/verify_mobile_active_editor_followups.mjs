@@ -8,7 +8,7 @@ const root = path.resolve(new URL('..', import.meta.url).pathname);
 const base = process.env.BASE_URL || 'http://127.0.0.1:7011';
 const endpointId = process.env.ENDPOINT_ID || '1d1022ef';
 const endpointUrl = process.env.ENDPOINT_URL || (() => { throw new Error("ENDPOINT_URL is required"); })();
-const model = process.env.MODEL || 'odysseus-qwen3.5-tools-pre-heretic';
+const model = process.env.MODEL || 'ulises-qwen3.5-tools-pre-heretic';
 const owner = 'sft_alex_creator';
 const routingMode = process.env.ROUTING_MODE || 'recent';
 const expectedRoutingMode = routingMode === 'recent' ? 'recent_model_choice' : routingMode;
@@ -17,7 +17,7 @@ const expectExactRouting = process.env.EXPECT_EXACT_ROUTING !== 'false';
 const run = new Date().toISOString().replace(/[:.]/g, '-');
 const reportPath = path.resolve(process.env.REPORT_PATH || path.join(root, `reports/mobile-active-editor-followups-${run}.json`));
 if (!reportPath.startsWith(path.join(root, 'reports') + path.sep) || fs.existsSync(reportPath)) throw Error('Report path must be new and under reports/');
-const auth = JSON.parse(fs.readFileSync(process.env.ODYSSEUS_AUTH_SESSION_FILE || (() => { throw new Error("ODYSSEUS_AUTH_SESSION_FILE is required"); })(), 'utf8'));
+const auth = JSON.parse(fs.readFileSync(process.env.ULISES_AUTH_SESSION_FILE || (() => { throw new Error("ULISES_AUTH_SESSION_FILE is required"); })(), 'utf8'));
 const token = Object.entries(auth).find(([, value]) => value?.username === owner)?.[0];
 if (!token) throw Error(`No active ${owner} session`);
 
@@ -59,9 +59,9 @@ try {
   browser = await chromium.launch({ headless: true, args: ['--no-proxy-server'] });
   context = await browser.newContext({
     viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
-    serviceWorkers: 'block', extraHTTPHeaders: { 'Accept-Encoding': 'identity', 'x-odysseus-routing-experiment': routingMode },
+    serviceWorkers: 'block', extraHTTPHeaders: { 'Accept-Encoding': 'identity', 'x-ulises-routing-experiment': routingMode },
   });
-  await context.addCookies([{ name: 'odysseus_session', value: token, url: base }]);
+  await context.addCookies([{ name: 'ulises_session', value: token, url: base }]);
   for (const spec of cases) {
     const result = { name: spec.name, status: 'running', mobile: true, turns: [], cleanup: { document: false, session: false } };
     report.cases.push(result); save();
@@ -81,7 +81,7 @@ try {
 
       page = await context.newPage();
       await page.goto(`${base}/#${session}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
-      await page.waitForFunction(id => window.__odysseusSessionReadyId === id, session, { timeout: 30000 });
+      await page.waitForFunction(id => window.__ulisesSessionReadyId === id, session, { timeout: 30000 });
       await page.waitForFunction(id => window.documentModule?.getCurrentDocId?.() === id, docId, { timeout: 30000 });
       const agent = page.locator('#mode-agent-btn');
       if (await agent.getAttribute('aria-pressed') !== 'true') await agent.click();

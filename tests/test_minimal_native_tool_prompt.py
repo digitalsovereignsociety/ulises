@@ -274,8 +274,8 @@ def test_calendar_missing_date_guidance_uses_ask_user_not_guessing() -> None:
 def test_qwen35_tool_router_uses_broad_compact_map() -> None:
     from src.agent_loop import _QWEN38_TOOL_ROUTER_PROMPT, _is_qwen38_tool_router
 
-    assert _is_qwen38_tool_router("odysseus-qwen3.5-9b-tool-router-v4-q4")
-    assert _is_qwen38_tool_router("odysseus-qwen3.5-tools-pre-heretic")
+    assert _is_qwen38_tool_router("ulises-qwen3.5-9b-tool-router-v4-q4")
+    assert _is_qwen38_tool_router("ulises-qwen3.5-tools-pre-heretic")
     assert _is_qwen38_tool_router("ajax_c375")
     assert _is_qwen38_tool_router("openai/ajax_c375")
     assert "manage_notes: notes/checklists" in _QWEN38_TOOL_ROUTER_PROMPT
@@ -293,7 +293,7 @@ def test_qwen_tool_router_preserves_explicit_artifact_output_budget() -> None:
     assert _qwen_tool_router_output_budget(8192) == 8192
     assert _qwen_tool_router_output_budget(None) == 1024
     assert _allow_visual_tool_evidence_for_model(
-        "odysseus-qwen3.5-tools-pre-heretic"
+        "ulises-qwen3.5-tools-pre-heretic"
     )
     assert _allow_visual_tool_evidence_for_model("ajax_c375")
     assert not _allow_visual_tool_evidence_for_model(
@@ -308,19 +308,19 @@ def test_qwen_tool_router_replays_final_prose_after_buffering() -> None:
     from src.agent_loop import _should_emit_buffered_qwen_round
 
     assert _should_emit_buffered_qwen_round(
-        odysseus_finetune=False,
+        ulises_finetune=False,
         tool_router=True,
         has_tools=False,
         text="Finished answer",
     )
     assert not _should_emit_buffered_qwen_round(
-        odysseus_finetune=False,
+        ulises_finetune=False,
         tool_router=True,
         has_tools=True,
         text="I should call a tool",
     )
     assert not _should_emit_buffered_qwen_round(
-        odysseus_finetune=False,
+        ulises_finetune=False,
         tool_router=True,
         has_tools=False,
         text="Already streamed final answer",
@@ -475,13 +475,13 @@ def test_qwen35_tui_workspace_uses_coding_only_prompt() -> None:
         None,
         workspace="/workspace/project",
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "host_shell_bridge": {"url": "http://127.0.0.1:1/run", "token": "x"},
         },
     )
 
     content = prompt[0]["content"]
-    assert "Odysseus TUI workspace tools" in content
+    assert "Ulises TUI workspace tools" in content
     assert "old_string" in content
     assert "mcp__email__search_emails" not in content
 
@@ -533,8 +533,8 @@ def test_qwen35_router_repairs_known_dropped_final_letter_artifacts() -> None:
     from src.agent_loop import _normalize_ody_qwen_text_artifacts
 
     assert _normalize_ody_qwen_text_artifacts(
-        "I am Odysseus, an AI assistan."
-    ) == "I am Odysseus, an AI assistant."
+        "I am Ulises, an AI assistan."
+    ) == "I am Ulises, an AI assistant."
 
 
 def test_qwen_tool_router_does_not_get_notes_prompt_override() -> None:
@@ -1395,9 +1395,9 @@ def test_qwen_explicit_note_delete_extracts_exact_title() -> None:
     }
 
 
-def test_recent_odysseus_anchor_refs_reads_persisted_history() -> None:
+def test_recent_ulises_anchor_refs_reads_persisted_history() -> None:
     from core.models import ChatMessage, Session
-    from src.agent_loop import _recent_odysseus_anchor_refs
+    from src.agent_loop import _recent_ulises_anchor_refs
 
     history_session = Session(
         id="s1",
@@ -1424,7 +1424,7 @@ def test_recent_odysseus_anchor_refs_reads_persisted_history() -> None:
         ],
     )
 
-    refs = _recent_odysseus_anchor_refs(
+    refs = _recent_ulises_anchor_refs(
         [{"role": "user", "content": "Update that note."}],
         history_session,
     )

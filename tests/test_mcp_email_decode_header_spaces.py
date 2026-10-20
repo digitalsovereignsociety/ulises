@@ -110,7 +110,7 @@ async def test_mcp_email_accounts_are_filtered_by_hidden_owner(tmp_path, monkeyp
     monkeypatch.setattr(es, "APP_DB", str(db_path))
     es._ACCOUNT_CACHE.clear()
 
-    out = await es.call_tool("list_email_accounts", {"_odysseus_owner": "alice"})
+    out = await es.call_tool("list_email_accounts", {"_ulises_owner": "alice"})
     text = out[0].text
 
     assert "Alice Mail" in text
@@ -151,7 +151,7 @@ async def test_mcp_email_configured_owner_filters_accounts(tmp_path, monkeypatch
     db_path = tmp_path / "app.db"
     _init_accounts_db(db_path)
     monkeypatch.setattr(es, "APP_DB", str(db_path))
-    monkeypatch.setenv("ODYSSEUS_MCP_EMAIL_OWNER", "alice")
+    monkeypatch.setenv("ULISES_MCP_EMAIL_OWNER", "alice")
 
     out = await es.call_tool("list_email_accounts", {})
     text = out[0].text
@@ -220,7 +220,7 @@ async def test_mcp_email_owner_cannot_use_other_owner_account_for_list_read_send
     ]
 
     for tool_name, args in calls:
-        out = await es.call_tool(tool_name, {**args, "_odysseus_owner": "alice"})
+        out = await es.call_tool(tool_name, {**args, "_ulises_owner": "alice"})
         assert "Email account not found for selector" in out[0].text, tool_name
         assert "Bob Mail" not in out[0].text or "Available accounts" in out[0].text
 
@@ -245,7 +245,7 @@ async def test_mcp_send_email_stages_with_visible_owner_account_id(tmp_path, mon
             "subject": "Review",
             "body": "Please review.",
             "account": "Alice Mail",
-            "_odysseus_owner": "alice",
+            "_ulises_owner": "alice",
         },
     )
 
@@ -275,7 +275,7 @@ async def test_mcp_send_email_stages_owner_scoped_pending_draft(tmp_path, monkey
             "to": "recipient@example.com",
             "subject": "Review",
             "body": "Please review.",
-            "_odysseus_owner": "alice",
+            "_ulises_owner": "alice",
         },
     )
 
@@ -330,11 +330,11 @@ async def test_mcp_draft_email_document_uses_hidden_owner(monkeypatch):
             "to": "recipient@example.com",
             "subject": "Draft subject",
             "body": "Draft body",
-            "_odysseus_owner": "alice",
+            "_ulises_owner": "alice",
         },
     )
 
-    assert "Created Odysseus email draft" in out[0].text
+    assert "Created Ulises email draft" in out[0].text
     docs = [obj for obj in saved if isinstance(obj, FakeDocument)]
     assert len(docs) == 1
     assert docs[0].owner == "alice"

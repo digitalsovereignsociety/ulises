@@ -98,7 +98,7 @@ export function checkArchitecture(root) {
       const used = new Set();
       for (const { specifier, line } of imports(fs.readFileSync(path.join(root, 'frontend/src', module.source), 'utf8'), { domain: owner.layer === 'domain' })) {
         const fail = message => { throw new Error(`line ${line}: ${message}: ${specifier}`); };
-        const runtime = new URL(specifier, `https://odysseus.invalid${deployed}`);
+        const runtime = new URL(specifier, `https://ulises.invalid${deployed}`);
         if (!runtime.pathname.startsWith('/static/js/') || !runtime.pathname.endsWith('.js') || runtime.pathname.includes('%')) fail('runtime imports must name canonical static JS paths');
         let target;
         if (specifier.startsWith('.')) {
@@ -148,7 +148,7 @@ export function inventory(root) {
     const targets = [];
     for (const { specifier, dynamic } of imports(fs.readFileSync(path.join(staticRoot, file), 'utf8'))) {
       if (!specifier.startsWith('.') && !specifier.startsWith('/static/')) continue;
-      const target = new URL(specifier, `https://odysseus.invalid/static/${file}`).pathname.slice('/static/'.length);
+      const target = new URL(specifier, `https://ulises.invalid/static/${file}`).pathname.slice('/static/'.length);
       if (dynamic) dynamicLiteralImports++;
       else { staticImports++; targets.push(target); }
       fan.set(target, (fan.get(target) || 0) + 1);

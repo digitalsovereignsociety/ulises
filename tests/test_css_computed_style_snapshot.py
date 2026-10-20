@@ -34,7 +34,7 @@ def static_origin() -> str:
     fallback is the fixed port the fixture used before it moved to an ephemeral
     one, so this still works on a revision that predates that change.
     """
-    return os.environ.get("ODYSSEUS_TEST_STATIC_ORIGIN", "http://127.0.0.1:7011")
+    return os.environ.get("ULISES_TEST_STATIC_ORIGIN", "http://127.0.0.1:7011")
 
 # One conflicting selector used to prove the harness is actually sensitive to
 # source order. `.attach-strip` is declared three times at the top level of

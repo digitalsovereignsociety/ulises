@@ -18,7 +18,7 @@ const cases=[
   ['explicit_ids','Delete all three listed notes using their exact IDs.'],
 ];
 const report={scope:'read-only reference selection; synthetic records; not end-to-end tool accuracy',
-  model:'odysseus-qwen3.5-tools-pre-heretic',thinking:false,
+  model:'ulises-qwen3.5-tools-pre-heretic',thinking:false,
   reference_style:process.env.SHORT_REFS === 'true' ? 'short' : 'uuid',runs:[]};
 for(const [name,prompt,expected,titles=['Groceries','Japan','Today']] of cases){
   const records=titles.map((title,i)=>({id:report.reference_style === 'short' ? `r${i}` : `c03f9510-04f1-4b0f-bb49-4c045eeaa00${i}`,title})).reverse();

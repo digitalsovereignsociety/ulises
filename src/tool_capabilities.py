@@ -546,7 +546,7 @@ def capabilities_for_action(tool_name: Any, content: Any) -> ToolCapabilities:
             except (TypeError, ValueError):
                 payload = None
         if isinstance(payload, Mapping) and re.fullmatch(
-            r'odysseus://attachment/[A-Za-z0-9_-]+(?:\.[A-Za-z0-9]+)?', str(payload.get('path') or '')
+            r'ulises://attachment/[A-Za-z0-9_-]+(?:\.[A-Za-z0-9]+)?', str(payload.get('path') or '')
         ):
             return _capabilities(ToolEffect.READ_PRIVATE,
                                  result_integrity=ResultIntegrity.EXTERNAL_UNTRUSTED)
@@ -683,7 +683,7 @@ POST_EXTERNAL_BLOCKED_EFFECTS = frozenset(
 # only check between injected external content and those tools. Set it to a
 # falsy value to opt out.
 TOOL_APPROVAL_GATE_ENABLED = (
-    str(os.getenv("ODYSSEUS_TOOL_APPROVAL_GATE", "1")).strip().lower()
+    str(os.getenv("ULISES_TOOL_APPROVAL_GATE", "1")).strip().lower()
     not in {"0", "false", "no", "off"}
 )
 

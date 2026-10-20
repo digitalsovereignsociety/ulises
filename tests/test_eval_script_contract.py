@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 
-from scripts.eval_odysseus_tool_use import (
+from scripts.eval_ulises_tool_use import (
     _hard_turn_timeout,
     _command_contract_ok,
     _reported_model,
@@ -10,7 +10,7 @@ from scripts.eval_odysseus_tool_use import (
     _tool_sequence_matches,
     run_case,
 )
-from scripts.eval_odysseus_crud import build_summary
+from scripts.eval_ulises_crud import build_summary
 from scripts.eval_qwen35_tool_router_extended import cleanup_notes
 
 
@@ -190,7 +190,7 @@ def test_eval_local_runtime_context_sends_tui_workspace_form_fields(monkeypatch)
         model="router",
         prompt_mode="auto",
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "session_cwd": "/workspace/project",
         },
         timeout=5,
@@ -198,7 +198,7 @@ def test_eval_local_runtime_context_sends_tui_workspace_form_fields(monkeypatch)
     )
 
     monkeypatch.setattr(
-        "scripts.eval_odysseus_tool_use._cookie",
+        "scripts.eval_ulises_tool_use._cookie",
         lambda _path: "cookie",
     )
     run_case(Client(), args, "local", "inspect this repo", "host_shell")
@@ -252,7 +252,7 @@ def test_eval_local_runtime_context_accepts_cwd_alias(monkeypatch) -> None:
         model="router",
         prompt_mode="auto",
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "cwd": "/workspace/project",
         },
         timeout=5,
@@ -260,7 +260,7 @@ def test_eval_local_runtime_context_accepts_cwd_alias(monkeypatch) -> None:
     )
 
     monkeypatch.setattr(
-        "scripts.eval_odysseus_tool_use._cookie",
+        "scripts.eval_ulises_tool_use._cookie",
         lambda _path: "cookie",
     )
     run_case(Client(), args, "local", "inspect this repo", "host_shell")

@@ -1,4 +1,4 @@
-"""Semantic ranking for the native Odysseus skill registry.
+"""Semantic ranking for the native Ulises skill registry.
 
 This deliberately reuses an already-ready ToolIndex embedding lane. Skill search
 must never trigger a cold embedding-model load in the foreground request path;

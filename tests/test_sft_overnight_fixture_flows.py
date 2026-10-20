@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from types import SimpleNamespace
 
-os.environ.setdefault("ODYSSEUS_QA_PASSWORD", "test")
+os.environ.setdefault("ULISES_QA_PASSWORD", "test")
 
 from scripts import run_sft_overnight_fixture_flows as sft_flows
 

@@ -25,7 +25,7 @@ test('mixed-corrupt project recovers valid layers and remains undoable', async (
   const before = await editorState(page);
   const png = await currentPng(page);
   await loadProject(page, {
-    type: 'odysseus-gallery-editor-project',
+    type: 'ulises-gallery-editor-project',
     v: 5,
     imgWidth: 160,
     imgHeight: 120,
@@ -48,7 +48,7 @@ test('fully corrupt project leaves the open document unchanged', async ({ page }
   await openBlankEditor(page, { width: 320, height: 240 }, 'Recovery E2E');
   const before = await editorState(page);
   await loadProject(page, {
-    type: 'odysseus-gallery-editor-project',
+    type: 'ulises-gallery-editor-project',
     v: 5,
     imgWidth: 160,
     imgHeight: 120,

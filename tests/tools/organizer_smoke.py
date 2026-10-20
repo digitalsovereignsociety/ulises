@@ -2,7 +2,7 @@
 
 No scheduler runs; calendar fixtures are local, with no external sync.
 
-Run with PYTHONPATH=. ODYSSEUS_EDITOR_TEST_ENDPOINT=<chat completions URL>.
+Run with PYTHONPATH=. ULISES_EDITOR_TEST_ENDPOINT=<chat completions URL>.
 """
 import asyncio
 import json
@@ -190,17 +190,17 @@ def visible_answer(events):
 
 
 async def main():
-    if os.environ.get('ODYSSEUS_ORGANIZER_TRACE'):
+    if os.environ.get('ULISES_ORGANIZER_TRACE'):
         original_choice = runner.provider_compatible_tool_choice_request
         original_lines = runner.preview_lines_until_finish
 
         def capture_request(request, model):
             request = original_choice(request, model)
-            if os.environ.get('ODYSSEUS_ORGANIZER_AUTO_CHOICE') and request.get('tools'):
+            if os.environ.get('ULISES_ORGANIZER_AUTO_CHOICE') and request.get('tools'):
                 request = {**request, 'tool_choice': 'auto'}
             print('WIRE_REQUEST', json.dumps({key: request.get(key) for key in
                 ('model', 'tool_choice', 'tools', 'max_tokens', 'stop')}), flush=True)
-            if os.environ.get('ODYSSEUS_ORGANIZER_TRACE_MESSAGES'):
+            if os.environ.get('ULISES_ORGANIZER_TRACE_MESSAGES'):
                 print('WIRE_MESSAGES', json.dumps(request.get('messages', [])), flush=True)
             return request
 
@@ -220,7 +220,7 @@ async def main():
         runner.preview_lines_until_finish = capture_lines
     failures = []
     for case, prompt, expected in CASES:
-        if os.environ.get('ODYSSEUS_ORGANIZER_CASES') and case not in os.environ['ODYSSEUS_ORGANIZER_CASES'].split(','):
+        if os.environ.get('ULISES_ORGANIZER_CASES') and case not in os.environ['ULISES_ORGANIZER_CASES'].split(','):
             continue
         calls = []
         owner = 'fixture-' + case
@@ -250,7 +250,7 @@ async def main():
         events = []
         try:
             async for chunk in runner.stream_preview(
-                endpoint_url=os.environ['ODYSSEUS_EDITOR_TEST_ENDPOINT'], model='Ajax', headers={},
+                endpoint_url=os.environ['ULISES_EDITOR_TEST_ENDPOINT'], model='Ajax', headers={},
                 messages=[{'role': 'user', 'content': prompt}], turn_contract=contract,
                 history_session=SimpleNamespace(history=history),
                 session_id='fixture-organizer-' + case, owner=owner,

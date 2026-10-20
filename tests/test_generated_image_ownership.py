@@ -312,7 +312,7 @@ async def test_existence_oracle_eliminated_during_outage(sample_image):
 
 @pytest.mark.asyncio
 async def test_mcp_image_generation_passes_owner_arg():
-    """_call_mcp_tool passes _odysseus_owner to MCP arguments for generate_image."""
+    """_call_mcp_tool passes _ulises_owner to MCP arguments for generate_image."""
     from src import tool_execution
 
     mock_mcp = MagicMock()
@@ -328,7 +328,7 @@ async def test_mcp_image_generation_passes_owner_arg():
         res = await tool_execution._call_mcp_tool("generate_image", "cat", owner="alice")
         assert res.get("image_url") == "https://host/api/generated-image/1234567890ab.png"
         call_args = mock_mcp.call_tool.call_args[0]
-        assert call_args[1].get("_odysseus_owner") == "alice"
+        assert call_args[1].get("_ulises_owner") == "alice"
 
 
 @pytest.mark.asyncio
@@ -346,7 +346,7 @@ async def test_mcp_fallback_propagates_owner():
 
 @pytest.mark.asyncio
 async def test_trusted_owner_overrides_forged_owner_in_tool_args():
-    """Trusted owner overrides any forged _odysseus_owner in tool block content."""
+    """Trusted owner overrides any forged _ulises_owner in tool block content."""
     import json
     from src import tool_execution
 
@@ -357,18 +357,18 @@ async def test_trusted_owner_overrides_forged_owner_in_tool_args():
         return {"stdout": "Generated image for: cat\n/api/generated-image/1234567890ab.png", "exit_code": 0}
 
     mock_mcp.call_tool.side_effect = fake_call
-    forged_content = json.dumps({"prompt": "cat", "_odysseus_owner": "bob"})
+    forged_content = json.dumps({"prompt": "cat", "_ulises_owner": "bob"})
 
     with patch.object(tool_execution, "get_mcp_manager", return_value=mock_mcp), \
          patch.object(tool_execution, "active_backend_operation", return_value=None):
         await tool_execution._call_mcp_tool("generate_image", forged_content, owner="alice")
         call_args = mock_mcp.call_tool.call_args[0]
-        assert call_args[1].get("_odysseus_owner") == "alice"
+        assert call_args[1].get("_ulises_owner") == "alice"
 
 
 @pytest.mark.asyncio
 async def test_missing_or_empty_owner_removes_forged_owner_claim():
-    """When caller has no trusted owner (None or empty), forged _odysseus_owner is completely removed."""
+    """When caller has no trusted owner (None or empty), forged _ulises_owner is completely removed."""
     import json
     from src import tool_execution
 
@@ -379,19 +379,19 @@ async def test_missing_or_empty_owner_removes_forged_owner_claim():
         return {"stdout": "Generated image for: cat\n/api/generated-image/1234567890ab.png", "exit_code": 0}
 
     mock_mcp.call_tool.side_effect = fake_call
-    forged_content = json.dumps({"prompt": "cat", "_odysseus_owner": "bob"})
+    forged_content = json.dumps({"prompt": "cat", "_ulises_owner": "bob"})
 
     with patch.object(tool_execution, "get_mcp_manager", return_value=mock_mcp), \
          patch.object(tool_execution, "active_backend_operation", return_value=None):
         # Case 1: owner=None
         await tool_execution._call_mcp_tool("generate_image", forged_content, owner=None)
         call_args = mock_mcp.call_tool.call_args[0]
-        assert "_odysseus_owner" not in call_args[1]
+        assert "_ulises_owner" not in call_args[1]
 
         # Case 2: owner=""
         await tool_execution._call_mcp_tool("generate_image", forged_content, owner="")
         call_args = mock_mcp.call_tool.call_args[0]
-        assert "_odysseus_owner" not in call_args[1]
+        assert "_ulises_owner" not in call_args[1]
 
 
 @pytest.mark.asyncio
@@ -404,7 +404,7 @@ async def test_qualified_mcp_image_gen_sanitizes_forged_owner():
 
     mock_mcp = MagicMock()
     mock_mcp.call_tool = AsyncMock(return_value={"stdout": "ok", "exit_code": 0})
-    forged_content = json.dumps({"prompt": "cat", "_odysseus_owner": "bob"})
+    forged_content = json.dumps({"prompt": "cat", "_ulises_owner": "bob"})
 
     with patch.object(tool_execution, "get_mcp_manager", return_value=mock_mcp), \
          patch.object(tool_execution, "_owner_is_admin", return_value=True):
@@ -414,7 +414,7 @@ async def test_qualified_mcp_image_gen_sanitizes_forged_owner():
             owner="alice",
         )
         call_args = mock_mcp.call_tool.call_args[0]
-        assert call_args[1].get("_odysseus_owner") == "alice"
+        assert call_args[1].get("_ulises_owner") == "alice"
 
         # Without owner -> removes forged owner
         await tool_execution._execute_tool_block_impl(
@@ -422,7 +422,7 @@ async def test_qualified_mcp_image_gen_sanitizes_forged_owner():
             owner=None,
         )
         call_args = mock_mcp.call_tool.call_args[0]
-        assert "_odysseus_owner" not in call_args[1]
+        assert "_ulises_owner" not in call_args[1]
 
 
 @pytest.mark.asyncio
@@ -438,7 +438,7 @@ async def test_mcp_disconnected_fallback_does_not_resurrect_forged_owner():
         return {"error": "Server not connected", "exit_code": 1}
 
     mock_mcp.call_tool.side_effect = fake_call
-    forged_content = json.dumps({"query": "python", "_odysseus_owner": "bob"})
+    forged_content = json.dumps({"query": "python", "_ulises_owner": "bob"})
 
     with patch.object(tool_execution, "get_mcp_manager", return_value=mock_mcp), \
          patch.object(tool_execution, "active_backend_operation", return_value=None), \
@@ -479,7 +479,7 @@ async def test_image_gen_server_owner_sanitization():
         # Call with whitespace owner: "   " -> owner becomes None
         await image_gen_server.call_tool(
             "generate_image",
-            {"prompt": "cat", "_odysseus_owner": "   "},
+            {"prompt": "cat", "_ulises_owner": "   "},
         )
         added = mock_db.add.call_args[0][0]
         assert added.owner is None
@@ -487,7 +487,7 @@ async def test_image_gen_server_owner_sanitization():
         # Call with valid owner: "alice" -> owner becomes "alice"
         await image_gen_server.call_tool(
             "generate_image",
-            {"prompt": "cat", "_odysseus_owner": "alice"},
+            {"prompt": "cat", "_ulises_owner": "alice"},
         )
         added = mock_db.add.call_args[0][0]
         assert added.owner == "alice"

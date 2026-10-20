@@ -8,7 +8,7 @@ import {AMBIGUOUS_CASES,expectedNoteTitles,compareNoteState} from './note_test_o
 
 const root = path.resolve(new URL('..', import.meta.url).pathname);
 const base = process.env.BASE_URL || 'http://127.0.0.1:7011';
-const model = process.env.MODEL || 'odysseus-qwen3.5-tools-pre-heretic';
+const model = process.env.MODEL || 'ulises-qwen3.5-tools-pre-heretic';
 const routingMode = process.env.ROUTING_MODE || 'baseline';
 const followupCase = process.env.FOLLOWUP_CASE || 'original';
 const plainTitles = process.env.TITLE_STYLE === 'plain';
@@ -44,7 +44,7 @@ const fixtureTitles = followupCase === 'drinks' ? ['Milk','Tea','Coffee']
 const expectedTitles = expectedNoteTitles(followupCase,fixtureTitles);
 const reportPath = path.resolve(process.env.REPORT_PATH || path.join(root, `reports/multi-note-delete-followup-${new Date().toISOString().replace(/[:.]/g, '-')}.json`));
 if (!reportPath.startsWith(path.join(root, 'reports') + path.sep) || fs.existsSync(reportPath)) throw Error('Report path must be new and under reports/');
-const auth = JSON.parse(fs.readFileSync(process.env.ODYSSEUS_AUTH_SESSION_FILE || (() => { throw new Error("ODYSSEUS_AUTH_SESSION_FILE is required"); })(), 'utf8'));
+const auth = JSON.parse(fs.readFileSync(process.env.ULISES_AUTH_SESSION_FILE || (() => { throw new Error("ULISES_AUTH_SESSION_FILE is required"); })(), 'utf8'));
 const token = Object.entries(auth).find(([, value]) => value?.username === 'sft_alex_creator')?.[0];
 if (!token) throw Error('Dedicated SFT account has no active session');
 const marker = `ody-multinote-${crypto.randomUUID()}`;
@@ -70,9 +70,9 @@ const snapshotNotes=async()=>{
 try {
   browser = await chromium.launch({ headless: true, args: ['--no-proxy-server'] });
   context = await browser.newContext({ serviceWorkers: 'block', extraHTTPHeaders: {
-    'Accept-Encoding': 'identity', 'x-odysseus-routing-experiment': routingMode,
+    'Accept-Encoding': 'identity', 'x-ulises-routing-experiment': routingMode,
   } });
-  await context.addCookies([{ name: 'odysseus_session', value: token, url: base }]);
+  await context.addCookies([{ name: 'ulises_session', value: token, url: base }]);
   const created = await context.request.post(`${base}/api/session`, { multipart: {
     name: `[multi-note-followup] ${marker}`, model,
     endpoint_id: process.env.ENDPOINT_ID || '1d1022ef',
@@ -98,7 +98,7 @@ try {
   }
   page = await context.newPage();
   await page.goto(`${base}/#${session}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
-  await page.waitForFunction(id => window.__odysseusSessionReadyId === id, session, { timeout: 30000 });
+  await page.waitForFunction(id => window.__ulisesSessionReadyId === id, session, { timeout: 30000 });
   const agent = page.locator('#mode-agent-btn');
   if (await agent.getAttribute('aria-pressed') !== 'true') await agent.click();
   const send = async prompt => {

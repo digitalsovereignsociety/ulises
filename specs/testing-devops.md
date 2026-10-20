@@ -12,12 +12,12 @@ This spec covers development and validation surfaces in:
 - `requirements.txt` and `requirements-optional.txt`;
 - `package.json` and `package-lock.json`;
 - `Dockerfile`, `docker-compose.yml`, `docker/gpu.nvidia.yml`, `docker/gpu.amd.yml`, `docker/host-docker.yml`, top-level standalone GPU compose files, and `docker/entrypoint.sh`;
-- `scripts/`, `scripts/odysseus`, `scripts/_lib/cli.py`, `scripts/_completion/*`, `scripts/pr_blocker_audit.py`, and `scripts/odysseus-*`;
+- `scripts/`, `scripts/ulises`, `scripts/_lib/cli.py`, `scripts/_completion/*`, `scripts/pr_blocker_audit.py`, and `scripts/ulises-*`;
 - GPU helper scripts `scripts/check-docker-gpu.sh` and `scripts/check-docker-amd-gpu.sh`;
 - `.github/` templates, workflows, and description-check scripts;
 - contributor workflow docs in `CONTRIBUTING.md` and `website/pr-blocker-audit.md`;
-- platform launchers `launch-windows.ps1`, `launcher.py`, `Odysseus.spec`, `build-windows-portable.ps1`, `start-macos.sh`, `build-macos-app.sh`, and `update_windows.bat`;
-- setup/service files such as `setup.py`, `install-service.sh`, and `odysseus-ui.service`.
+- platform launchers `launch-windows.ps1`, `launcher.py`, `Ulises.spec`, `build-windows-portable.ps1`, `start-macos.sh`, `build-macos-app.sh`, and `update_windows.bat`;
+- setup/service files such as `setup.py`, `install-service.sh`, and `ulises-ui.service`.
 
 ## Test Runtime
 
@@ -84,20 +84,20 @@ Docker Compose is the primary deployment path:
 ```bash
 docker compose up -d --build
 docker compose ps
-docker compose logs --tail=120 odysseus
+docker compose logs --tail=120 ulises
 ```
 
-`docker-compose.yml` starts Odysseus, ChromaDB, SearXNG, and ntfy. It binds services to loopback by default through `APP_BIND`, `CHROMADB_BIND`, and `NTFY_BIND`, persists configurable `APP_DATA_DIR`/`APP_LOGS_DIR`, SSH identity, HuggingFace cache, and user-local Python installs, and gives the Odysseus container host-loopback reachability through `host.docker.internal`.
+`docker-compose.yml` starts Ulises, ChromaDB, SearXNG, and ntfy. It binds services to loopback by default through `APP_BIND`, `CHROMADB_BIND`, and `NTFY_BIND`, persists configurable `APP_DATA_DIR`/`APP_LOGS_DIR`, SSH identity, HuggingFace cache, and user-local Python installs, and gives the Ulises container host-loopback reachability through `host.docker.internal`.
 
-Compose variants forward `ODYSSEUS_TTS_CACHE_MAX_BYTES`, defaulting in the service to 500 MiB, and run the mounted `scripts/migrate_searxng_settings.py` helper so retained SearXNG YAML gains default inheritance without replacement. The helper preserves file metadata and formatting where possible and writes atomically; migration failure is non-fatal to the wrapper command. MCP OAuth callback setup follows `OAUTH_REDIRECT_BASE_URL`, `APP_PUBLIC_URL`, or the launcher/bind `APP_PORT`, so externally remapped deployments should set a public base explicitly.
+Compose variants forward `ULISES_TTS_CACHE_MAX_BYTES`, defaulting in the service to 500 MiB, and run the mounted `scripts/migrate_searxng_settings.py` helper so retained SearXNG YAML gains default inheritance without replacement. The helper preserves file metadata and formatting where possible and writes atomically; migration failure is non-fatal to the wrapper command. MCP OAuth callback setup follows `OAUTH_REDIRECT_BASE_URL`, `APP_PUBLIC_URL`, or the launcher/bind `APP_PORT`, so externally remapped deployments should set a public base explicitly.
 
 `Dockerfile` builds a Python 3.14 slim image with Node/npm, tmux, OpenSSH client, git/cmake, the pinned Docker CLI `29.6.2`, `gosu`, `libmagic1`, and the image-only `python-magic` wrapper.
 
 `docker/entrypoint.sh` owns writable path ownership repair, PUID/PGID user/group creation and privilege drop, optional host-Docker socket group handling, vLLM/CUDA environment defaults, idempotent `setup.py`, and final uvicorn execution.
 
-Docker does not mount the host Docker socket by default. Mounting it would grant powerful host access and is outside the default trust boundary. `docker/host-docker.yml` is the explicit opt-in overlay and sets `ODYSSEUS_ENABLE_HOST_DOCKER=true`; tests guard that the default and GPU compose files do not enable host Docker accidentally.
+Docker does not mount the host Docker socket by default. Mounting it would grant powerful host access and is outside the default trust boundary. `docker/host-docker.yml` is the explicit opt-in overlay and sets `ULISES_ENABLE_HOST_DOCKER=true`; tests guard that the default and GPU compose files do not enable host Docker accidentally.
 
-Compose selects `ODYSSEUS_IMAGE` (default GHCR `latest`) alongside a local build and publishes container port 7000 on default host port 7011. SearXNG is tag-and-digest pinned. `docker/host-workspace.yml` explicitly mounts a selected host workspace; `docker/host-network.yml` opts into Linux host networking, resets published ports, and starts uvicorn on the configured host bind/port. These overlays expand access beyond default deployment. The image includes Chromium, Noto CJK fonts, network inspection utilities, pinned `agent-browser@0.35.0`, and redistribution notices. Entrypoint ownership repair touches HuggingFace cache roots without traversing existing model files.
+Compose selects `ULISES_IMAGE` (default GHCR `latest`) alongside a local build and publishes container port 7000 on default host port 7011. SearXNG is tag-and-digest pinned. `docker/host-workspace.yml` explicitly mounts a selected host workspace; `docker/host-network.yml` opts into Linux host networking, resets published ports, and starts uvicorn on the configured host bind/port. These overlays expand access beyond default deployment. The image includes Chromium, Noto CJK fonts, network inspection utilities, pinned `agent-browser@0.35.0`, and redistribution notices. Entrypoint ownership repair touches HuggingFace cache roots without traversing existing model files.
 
 ## GPU And Platform
 
@@ -119,14 +119,14 @@ AMD helper behavior:
 Native platform launchers:
 
 - `launch-windows.ps1` requires Python 3.11+, creates `venv`, installs `requirements.txt`, runs `setup.py`, discovers per-user Git Bash installs where possible, warns when Git Bash is missing, and starts uvicorn on port 7000 by default.
-- `launcher.py`, `Odysseus.spec`, and `build-windows-portable.ps1` own the PyInstaller-style portable Windows launcher path, including app-root/data-dir differences covered by `src.runtime_paths`.
+- `launcher.py`, `Ulises.spec`, and `build-windows-portable.ps1` own the PyInstaller-style portable Windows launcher path, including app-root/data-dir differences covered by `src.runtime_paths`.
 - `start-macos.sh` reads `.env`, defaults to port 7860 to avoid AirPlay conflicts, prefers Homebrew arm64 Python, installs/tolerates Homebrew Cookbook deps, handles Chroma package conflicts, starts ChromaDB for native runs, runs `setup.py`, and starts uvicorn.
-- `build-macos-app.sh` builds a launcher app around the existing repo venv and logs to `logs/odysseus-app.log`.
+- `build-macos-app.sh` builds a launcher app around the existing repo venv and logs to `logs/ulises-app.log`.
 - `update_windows.bat` owns the tested Windows Docker update flow.
 
 ## Scripts And CLI
 
-`scripts/odysseus` is the umbrella dispatcher for executable `scripts/odysseus-*` commands. It discovers subcommands and executes them through the project venv Python when available.
+`scripts/ulises` is the umbrella dispatcher for executable `scripts/ulises-*` commands. It discovers subcommands and executes them through the project venv Python when available.
 
 `scripts/_lib/cli.py` owns shared CLI behavior:
 
@@ -142,7 +142,7 @@ Native platform launchers:
 and applies it to root, console, rotating-file, and direct-uvicorn logging.
 Shell completions in `scripts/_completion/` introspect CLI `--help` output through the venv and cache subcommands.
 
-`scripts/odysseus-*` provide local CLI surfaces for backup, calendar, contacts, Cookbook, docs, gallery, logs, mail, MCP, memory, notes, personal docs, presets, research, sessions, signatures, skills, tasks, theme, and webhooks.
+`scripts/ulises-*` provide local CLI surfaces for backup, calendar, contacts, Cookbook, docs, gallery, logs, mail, MCP, memory, notes, personal docs, presets, research, sessions, signatures, skills, tasks, theme, and webhooks.
 
 When route/API behavior changes, check whether a matching CLI script depends on the old shape. There is no central CLI scrubber: each credential/log/mail/task/backup/MCP/webhook script owns its own sensitive-output behavior.
 
@@ -195,7 +195,7 @@ Common local checks:
 node --check static/js/changed-file.js
 docker compose config
 docker compose up -d --build
-docker compose logs --tail=120 odysseus
+docker compose logs --tail=120 ulises
 ```
 
 Run the app for user-facing or integration changes. Unit tests and syntax checks do not replace end-to-end verification for UI, Docker, provider, auth, or routing behavior.
@@ -208,13 +208,13 @@ Run the app for user-facing or integration changes. Unit tests and syntax checks
 
 ## Harness And Publication Boundaries
 
-`tests/conftest.py` defaults the static origin to an ephemeral loopback port and publishes/restores `ODYSSEUS_TEST_STATIC_ORIGIN`; an explicit validated port can still collide. Threaded serving avoids idle-connection head-of-line blocking. Per-process random private data/mail/embedding/cache/temp paths and optional xdist basetemp avoid sharing runtime state; explicit basetemp wins. Disposable database helpers use isolated factories/cleanup rather than ORM reloads. A teardown guard removes and fails newly leaked bare `src`/`core` modules, using exact ModuleType/falsey-file detection; preexisting modules and mocks are outside that guard. The Unix socket path length fixture is character-bounded, not a universal byte-length proof.
+`tests/conftest.py` defaults the static origin to an ephemeral loopback port and publishes/restores `ULISES_TEST_STATIC_ORIGIN`; an explicit validated port can still collide. Threaded serving avoids idle-connection head-of-line blocking. Per-process random private data/mail/embedding/cache/temp paths and optional xdist basetemp avoid sharing runtime state; explicit basetemp wins. Disposable database helpers use isolated factories/cleanup rather than ORM reloads. A teardown guard removes and fails newly leaked bare `src`/`core` modules, using exact ModuleType/falsey-file detection; preexisting modules and mocks are outside that guard. The Unix socket path length fixture is character-bounded, not a universal byte-length proof.
 
 `tests/_shards.py` partitions collected files deterministically by weights and lexical tie-breaks across four CI shards; deselection occurs after collection/import. Optional parallel smoke and serial-only guards do not make every test xdist-safe. Pytest CI uses Node 20, locked npm dependencies, cached Chromium downloads keyed by OS/lockfile, system browser libraries, FFmpeg and a functional unprivileged bubblewrap probe. It uses setup-uv cache without automatic prune and pytest skip reasons/duration reporting. These workflow provisions are not evidence that every browser, media or containment test passed on another host.
 
 `tests/helpers/document_source.py` provides ordered implementation membership and lexical construct extraction; email JS helper enumeration is immediate rather than recursive. Stylesheet helpers follow shell order and cache identities; keyframe/hygiene/import/procfs guards are bounded textual or AST checks, not full semantic control-flow/browser proofs. The computed-style fixture, browser artifacts and reported historical suite counts remain specific to their recorded environments.
 
-`scripts/odysseus-dev` owns separate development data/database/browser-cache paths, path-hashed port blocks, service/reserved-port refusal, readiness login and fingerprinted stop state. Hash collisions, released fallback-port races and environment-derived defaults prevent a universal isolation guarantee. `scripts/odysseus-smoke` exercises deterministic model/email HTTP scenarios and reports declared gaps; it is not full browser/product acceptance and cleanup/reused-instance state remains scoped. `scripts/ref_parity_audit.py` compares heuristic added-line probes and exact filtered tree-path sets, not behavioral equivalence; mutable refs can be reread during a run. `scripts/generate_env_reference.py` checks generated reference bytes and handwritten notes from bounded AST/helper/regex discovery, not exhaustive runtime environment use; malformed Python can yield no detected rows and source citations are file-based.
+`scripts/ulises-dev` owns separate development data/database/browser-cache paths, path-hashed port blocks, service/reserved-port refusal, readiness login and fingerprinted stop state. Hash collisions, released fallback-port races and environment-derived defaults prevent a universal isolation guarantee. `scripts/ulises-smoke` exercises deterministic model/email HTTP scenarios and reports declared gaps; it is not full browser/product acceptance and cleanup/reused-instance state remains scoped. `scripts/ref_parity_audit.py` compares heuristic added-line probes and exact filtered tree-path sets, not behavioral equivalence; mutable refs can be reread during a run. `scripts/generate_env_reference.py` checks generated reference bytes and handwritten notes from bounded AST/helper/regex discovery, not exhaustive runtime environment use; malformed Python can yield no detected rows and source citations are file-based.
 
 `.github/workflows/deploy-pages.yml` builds `website/` into `_site`; preview encoding targets website assets and branding lives under `assets/branding/`. Docker excludes both website and branding source roots. The macOS app script uses moved branding with best-effort `sips` icon generation; no native build or license clearance follows from source inspection. Docker publishing emits version/short-SHA trace tags and inspects those plus latest, without registry-enforced immutability. Trivy jobs use the Docker Buildx driver and free local build cache before vulnerability database work; this is CI lifecycle behavior, not an instruction to prune controller state.
 

@@ -213,7 +213,7 @@ def test_delegated_pdf_local_selectors_use_workspace_authority(monkeypatch, cont
 
 def test_delegated_owned_attachment_and_remote_pdf_keep_existing_policy():
     context = ToolRunSecurityContext(delegated_credential=True)
-    assert context.decision_for("extract_text", {"path": "odysseus://attachment/owned.png"}).allowed
+    assert context.decision_for("extract_text", {"path": "ulises://attachment/owned.png"}).allowed
     assert context.decision_for("pdf_extract", {"url": "https://example.com/public.pdf", "query": "fixture"}).allowed
 
 
@@ -364,7 +364,7 @@ async def test_legacy_external_surface_cannot_reenable_hard_denials(monkeypatch,
     bridge = AgentExecutionBridge(forbidden, frozenset({'bash'}), 'inventory-test')
     schemas = [{'type': 'function', 'function': {'name': 'bash', 'description': 'Bound environment command',
                 'parameters': {'type': 'object', 'properties': {'command': {'type': 'string'}}}}}]
-    context = {'surface': 'odysseus-native', 'terminal_agent': True, 'unattended_mode': True} if surface == 'native' else {}
+    context = {'surface': 'ulises-native', 'terminal_agent': True, 'unattended_mode': True} if surface == 'native' else {}
     with bind_execution_bridge(bridge) if surface == 'bridge' else nullcontext():
         _ = [chunk async for chunk in loop.stream_agent_loop(
             'https://provider.invalid/v1', 'gpt-4', [{'role': 'user', 'content': 'Describe the available environment.'}],

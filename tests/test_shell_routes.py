@@ -495,7 +495,7 @@ class TestFindLineBreak:
 
 
 class TestRunningInContainer:
-    """Detect whether the Odysseus process itself runs inside a container."""
+    """Detect whether the Ulises process itself runs inside a container."""
 
     def test_dockerenv_marker_present(self, tmp_path):
         marker = tmp_path / ".dockerenv"
@@ -648,14 +648,14 @@ class TestDockerRowStatus:
 
 class TestHostDockerAccess:
     def test_opt_in_without_socket_is_disabled(self, monkeypatch, tmp_path):
-        monkeypatch.setenv("ODYSSEUS_ENABLE_HOST_DOCKER", "true")
+        monkeypatch.setenv("ULISES_ENABLE_HOST_DOCKER", "true")
 
         assert _host_docker_access_enabled(str(tmp_path / "missing.sock")) is False
 
     def test_regular_file_is_not_accepted(self, monkeypatch, tmp_path):
         socket_path = tmp_path / "docker.sock"
         socket_path.touch()
-        monkeypatch.setenv("ODYSSEUS_ENABLE_HOST_DOCKER", "true")
+        monkeypatch.setenv("ULISES_ENABLE_HOST_DOCKER", "true")
 
         assert _host_docker_access_enabled(str(socket_path)) is False
 
@@ -668,9 +668,9 @@ class TestHostDockerAccess:
         # Not tmp_path: binding under $TMPDIR overruns sun_path on macOS.
         with bound_unix_socket() as socket_path:
             if flag is None:
-                monkeypatch.delenv("ODYSSEUS_ENABLE_HOST_DOCKER", raising=False)
+                monkeypatch.delenv("ULISES_ENABLE_HOST_DOCKER", raising=False)
             else:
-                monkeypatch.setenv("ODYSSEUS_ENABLE_HOST_DOCKER", flag)
+                monkeypatch.setenv("ULISES_ENABLE_HOST_DOCKER", flag)
 
             assert _host_docker_access_enabled(socket_path) is False
 
@@ -679,7 +679,7 @@ class TestHostDockerAccess:
         monkeypatch,
     ):
         with bound_unix_socket() as socket_path:
-            monkeypatch.setenv("ODYSSEUS_ENABLE_HOST_DOCKER", "true")
+            monkeypatch.setenv("ULISES_ENABLE_HOST_DOCKER", "true")
 
             assert _host_docker_access_enabled(socket_path) is True
 
@@ -731,7 +731,7 @@ class TestPackageProbeStatus:
 
         assert _package_installed_from_probe("vllm", probe) is True
         assert status.available is False
-        assert "outside Odysseus" in status.note
+        assert "outside Ulises" in status.note
 
     def test_llama_cpp_is_installed_when_native_llama_server_exists(self):
         probe = {
@@ -748,14 +748,14 @@ class TestPackageProbeStatus:
         assert status.available is False
         assert "package manager or source checkout" in status.note
 
-    def test_apfel_does_not_use_generic_outside_odysseus_note(self):
+    def test_apfel_does_not_use_generic_outside_ulises_note(self):
         status = _package_pip_update_status(
             {"name": "APFEL", "pip": "", "update_cmd": "brew upgrade apfel"},
             {"binaries": {}, "dists": {}, "modules": {}},
         )
 
         assert status.available is False
-        assert "Update this system dependency outside Odysseus." not in status.note
+        assert "Update this system dependency outside Ulises." not in status.note
 
     def test_diffusers_requires_torch_too(self):
         missing_torch = {

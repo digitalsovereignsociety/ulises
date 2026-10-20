@@ -71,7 +71,7 @@ def test_user_agent_tracks_app_version():
     agent = search_core._scholarly_user_agent()
     assert APP_VERSION in agent
     # The pre-fix tree hardcoded 0.20 while APP_VERSION was already 1.0.3.
-    assert "Odysseus/0.20 " not in agent
+    assert "Ulises/0.20 " not in agent
 
 
 def test_outbound_policy_rejection_skips_the_request(monkeypatch):

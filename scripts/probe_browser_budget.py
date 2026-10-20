@@ -60,7 +60,7 @@ async def probe(limit):
             async with asyncio.timeout(240):
                 async for chunk in stream_preview(
                     endpoint_url=os.environ["ENDPOINT_URL"],
-                    model='odysseus-qwen3.5-tools-pre-heretic', headers={}, turn_contract=contract,
+                    model='ulises-qwen3.5-tools-pre-heretic', headers={}, turn_contract=contract,
                     messages=[{'role': 'user', 'content': prompt}],
                     session_id=session, owner='sft_alex_creator', disabled_tools=set(), tool_policy=ToolPolicy(),
                 ):

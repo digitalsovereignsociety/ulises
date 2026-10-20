@@ -8,7 +8,7 @@ const root = path.resolve(new URL('..', import.meta.url).pathname);
 const stamp = new Date().toISOString().replace(/[:.]/g, '-');
 const reportPath = path.join(root, 'reports', `routing-comparison-${stamp}.json`);
 const endpoint = process.env.ENDPOINT_URL || (() => { throw new Error("ENDPOINT_URL is required"); })();
-const model = process.env.MODEL || 'odysseus-qwen3.5-tools-pre-heretic';
+const model = process.env.MODEL || 'ulises-qwen3.5-tools-pre-heretic';
 const report = {status: 'running', model, thinking: false, repetitions: 3, runs: [],
   coverage: '11 read conversation chains plus calendar/notes multi-delete; broader CRUD/mobile gate remains required',
   promotion_eligible: false};

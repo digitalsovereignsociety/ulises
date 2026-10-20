@@ -33,7 +33,7 @@ jobs:
     # dependency-review-action requires GitHub dependency-review support.
     # Keep the blocking gate on the canonical repository; forks and maintainer
     # preview mirrors still run the advisory pip-audit job below.
-    if: github.event_name == 'pull_request' && github.repository == 'odysseus-dev/odysseus'
+    if: github.event_name == 'pull_request' && github.repository == 'ulises-dev/ulises'
     runs-on: ubuntu-latest
     permissions:
       contents: read

@@ -1,8 +1,8 @@
-"""Guards for the generated ODYSSEUS_* configuration reference.
+"""Guards for the generated ULISES_* configuration reference.
 
 `website/configuration-reference.md` is produced by
 `scripts/generate_env_reference.py`. The point of these tests is that adding a
-new `ODYSSEUS_*` read without documenting it fails the suite: the current state -
+new `ULISES_*` read without documenting it fails the suite: the current state -
 most of the configuration surface undiscoverable - happened because nothing
 objected.
 
@@ -49,18 +49,18 @@ def fake_tree(tmp_path, generator, monkeypatch):
     _write(tmp_path, "app.py", """
 import os
 
-DIRECT = os.environ.get("ODYSSEUS_DIRECT_GET", "on")
-GETENV = os.getenv("ODYSSEUS_PLAIN_GETENV")
-SUBSCRIPT = os.environ["ODYSSEUS_SUBSCRIPT"]
+DIRECT = os.environ.get("ULISES_DIRECT_GET", "on")
+GETENV = os.getenv("ULISES_PLAIN_GETENV")
+SUBSCRIPT = os.environ["ULISES_SUBSCRIPT"]
 SPANNING = os.environ.get(
-    "ODYSSEUS_SPANS_TWO_LINES", "spanned"
+    "ULISES_SPANS_TWO_LINES", "spanned"
 )
-os.environ["ODYSSEUS_WRITE_ONLY"] = "1"
+os.environ["ULISES_WRITE_ONLY"] = "1"
 """)
     _write(tmp_path, "src/indirect.py", '''
 import os
 
-NAME_HELD_IN_CONSTANT = "ODYSSEUS_VIA_CONSTANT"
+NAME_HELD_IN_CONSTANT = "ULISES_VIA_CONSTANT"
 FALLBACK = 7
 
 value = os.environ.get(NAME_HELD_IN_CONSTANT, FALLBACK)
@@ -72,17 +72,17 @@ def read_limit(name, default):
     return default if raw is None else int(raw)
 
 
-LIMIT = read_limit("ODYSSEUS_VIA_HELPER", 5 * 1024)
+LIMIT = read_limit("ULISES_VIA_HELPER", 5 * 1024)
 
 
 def flag(environ=None):
     source = os.environ if environ is None else environ
-    return source.get("ODYSSEUS_VIA_MAPPING_ARG", "1")
+    return source.get("ULISES_VIA_MAPPING_ARG", "1")
 
 
 GENERATED = [
     "import os",
-    "if os.environ.get('ODYSSEUS_INSIDE_A_STRING'): pass",
+    "if os.environ.get('ULISES_INSIDE_A_STRING'): pass",
 ]
 ''')
     return tmp_path
@@ -92,14 +92,14 @@ def test_finds_every_read_pattern_it_claims_to(generator, fake_tree):
     found = generator.collect(fake_tree)
 
     assert set(found) == {
-        "ODYSSEUS_DIRECT_GET",
-        "ODYSSEUS_PLAIN_GETENV",
-        "ODYSSEUS_SUBSCRIPT",
-        "ODYSSEUS_SPANS_TWO_LINES",
-        "ODYSSEUS_VIA_CONSTANT",
-        "ODYSSEUS_VIA_HELPER",
-        "ODYSSEUS_VIA_MAPPING_ARG",
-        "ODYSSEUS_INSIDE_A_STRING",
+        "ULISES_DIRECT_GET",
+        "ULISES_PLAIN_GETENV",
+        "ULISES_SUBSCRIPT",
+        "ULISES_SPANS_TWO_LINES",
+        "ULISES_VIA_CONSTANT",
+        "ULISES_VIA_HELPER",
+        "ULISES_VIA_MAPPING_ARG",
+        "ULISES_INSIDE_A_STRING",
     }
 
 
@@ -109,33 +109,33 @@ def test_a_plain_grep_would_miss_what_the_extra_passes_find(generator, fake_tree
     found = set(generator.collect(fake_tree))
 
     assert found - naive == {
-        "ODYSSEUS_SPANS_TWO_LINES",
-        "ODYSSEUS_VIA_CONSTANT",
-        "ODYSSEUS_VIA_HELPER",
-        "ODYSSEUS_VIA_MAPPING_ARG",
+        "ULISES_SPANS_TWO_LINES",
+        "ULISES_VIA_CONSTANT",
+        "ULISES_VIA_HELPER",
+        "ULISES_VIA_MAPPING_ARG",
     }
     # And it over-counts in the other direction: a line-based scan cannot tell a
     # write from a read, which is why the page reports the intersection.
-    assert naive - found == {"ODYSSEUS_WRITE_ONLY"}
+    assert naive - found == {"ULISES_WRITE_ONLY"}
 
 
 def test_records_defaults_and_locations_from_the_source(generator, fake_tree):
     found = generator.collect(fake_tree)
 
-    assert found["ODYSSEUS_DIRECT_GET"].primary.default == "'on'"
-    assert found["ODYSSEUS_SPANS_TWO_LINES"].primary.default == "'spanned'"
+    assert found["ULISES_DIRECT_GET"].primary.default == "'on'"
+    assert found["ULISES_SPANS_TWO_LINES"].primary.default == "'spanned'"
     # One level of indirection is resolved: the name and the default both come
     # from module-level constants.
-    assert found["ODYSSEUS_VIA_CONSTANT"].primary.default == "7"
-    assert found["ODYSSEUS_VIA_HELPER"].primary.default == "5 * 1024"
-    assert found["ODYSSEUS_PLAIN_GETENV"].primary.default is None
+    assert found["ULISES_VIA_CONSTANT"].primary.default == "7"
+    assert found["ULISES_VIA_HELPER"].primary.default == "5 * 1024"
+    assert found["ULISES_PLAIN_GETENV"].primary.default is None
 
-    assert found["ODYSSEUS_DIRECT_GET"].primary.location == "app.py:4"
-    assert found["ODYSSEUS_VIA_HELPER"].primary.path == "src/indirect.py"
+    assert found["ULISES_DIRECT_GET"].primary.location == "app.py:4"
+    assert found["ULISES_VIA_HELPER"].primary.path == "src/indirect.py"
 
 
 def test_environ_writes_are_not_reads(generator, fake_tree):
-    assert "ODYSSEUS_WRITE_ONLY" not in generator.collect(fake_tree)
+    assert "ULISES_WRITE_ONLY" not in generator.collect(fake_tree)
 
 
 def test_an_undocumented_variable_is_reported(generator, fake_tree):
@@ -143,7 +143,7 @@ def test_an_undocumented_variable_is_reported(generator, fake_tree):
     problems = generator.check_notes(generator.collect(fake_tree))
 
     assert problems
-    offender = "ODYSSEUS_VIA_HELPER"
+    offender = "ULISES_VIA_HELPER"
     assert any(offender in problem for problem in problems)
     assert any("VARIABLE_NOTES" in problem for problem in problems)
     assert any("src/indirect.py" in problem for problem in problems)
@@ -159,15 +159,15 @@ def test_a_stale_notes_entry_is_reported(generator):
 def test_renders_one_table_row_per_variable(generator, fake_tree, monkeypatch):
     monkeypatch.setitem(
         generator.VARIABLE_NOTES,
-        "ODYSSEUS_VIA_HELPER",
+        "ULISES_VIA_HELPER",
         ("Search", generator.USER, "A synthetic limit."),
     )
-    found = {"ODYSSEUS_VIA_HELPER": generator.collect(fake_tree)["ODYSSEUS_VIA_HELPER"]}
+    found = {"ULISES_VIA_HELPER": generator.collect(fake_tree)["ULISES_VIA_HELPER"]}
 
     page = generator.render(found, generator.naive_line_scan(fake_tree))
 
     assert page.startswith("---\nlayout: default\n---\n")
-    assert "| `ODYSSEUS_VIA_HELPER` | `5 * 1024` | `src/indirect.py` | A synthetic limit. |" in page
+    assert "| `ULISES_VIA_HELPER` | `5 * 1024` | `src/indirect.py` | A synthetic limit. |" in page
     assert "### Search" in page
 
 
@@ -188,13 +188,13 @@ def test_page_does_not_change_when_an_unrelated_edit_shifts_lines(
     The page used to cite `path:line`, so any PR adding a line above a read had
     to regenerate it and then conflicted with every other PR that had.
     """
-    before = _render_one(generator, fake_tree, "ODYSSEUS_VIA_HELPER", monkeypatch)
+    before = _render_one(generator, fake_tree, "ULISES_VIA_HELPER", monkeypatch)
     source = fake_tree / "src" / "indirect.py"
     source.write_text("import sys\n\n\n" + source.read_text(encoding="utf-8"), encoding="utf-8")
 
-    after = _render_one(generator, fake_tree, "ODYSSEUS_VIA_HELPER", monkeypatch)
+    after = _render_one(generator, fake_tree, "ULISES_VIA_HELPER", monkeypatch)
 
-    assert generator.collect(fake_tree)["ODYSSEUS_VIA_HELPER"].primary.lineno == 19
+    assert generator.collect(fake_tree)["ULISES_VIA_HELPER"].primary.lineno == 19
     assert after == before
 
 
@@ -203,16 +203,16 @@ def test_extra_reads_are_counted_per_file(generator, tmp_path, monkeypatch):
     _write(tmp_path, "app.py", """
 import os
 
-FIRST = os.environ.get("ODYSSEUS_READ_OFTEN", "1")
-SECOND = os.environ.get("ODYSSEUS_READ_OFTEN", "1")
+FIRST = os.environ.get("ULISES_READ_OFTEN", "1")
+SECOND = os.environ.get("ULISES_READ_OFTEN", "1")
 """)
     _write(tmp_path, "src/elsewhere.py", """
 import os
 
-AGAIN = os.getenv("ODYSSEUS_READ_OFTEN")
+AGAIN = os.getenv("ULISES_READ_OFTEN")
 """)
 
-    page = _render_one(generator, tmp_path, "ODYSSEUS_READ_OFTEN", monkeypatch)
+    page = _render_one(generator, tmp_path, "ULISES_READ_OFTEN", monkeypatch)
 
     assert "| `app.py` (+1 more) |" in page
 
@@ -221,7 +221,7 @@ def test_every_variable_read_in_the_repository_is_documented(built):
     _, variables, problems = built
 
     assert not problems, "\n".join(problems)
-    assert variables, "expected the generator to find ODYSSEUS_* reads"
+    assert variables, "expected the generator to find ULISES_* reads"
 
 
 def test_committed_page_matches_the_source(built):

@@ -6,7 +6,7 @@
 
 import { topPortalZ } from './toolWindowZOrder.js';
 
-const LS_RECENT = 'odysseus-recent-colors';
+const LS_RECENT = 'ulises-recent-colors';
 const MAX_RECENT = 12;
 
 let _popover = null;

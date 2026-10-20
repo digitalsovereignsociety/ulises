@@ -26,9 +26,9 @@ def main():
             port = app_port.getsockname()[1]
         env = dict(os.environ)
         env.update(
-            ODYSSEUS_DATA_DIR=str(target / "data"),
+            ULISES_DATA_DIR=str(target / "data"),
             DATABASE_URL="sqlite:///" + str(target / "notes.db"), AUTH_ENABLED="true",
-            ODYSSEUS_STARTUP_WARMUPS="0", ODYSSEUS_TOOL_INDEX_PREWARM="0",
+            ULISES_STARTUP_WARMUPS="0", ULISES_TOOL_INDEX_PREWARM="0",
             CHROMADB_HOST="127.0.0.1", CHROMADB_PORT=str(chroma_guard.getsockname()[1]),
             FASTEMBED_CACHE_PATH=str(target / "fastembed"),
         )
@@ -54,7 +54,7 @@ def main():
                 raise RuntimeError("Disposable Notes server did not become ready")
             result = subprocess.run(
                 ["node", "tests/browser/notesNative.mjs"], cwd=ROOT,
-                env=dict(os.environ, ODYSSEUS_NOTES_RUNTIME_ORIGIN=origin, NOTES_TEST_PYTHON=sys.executable),
+                env=dict(os.environ, ULISES_NOTES_RUNTIME_ORIGIN=origin, NOTES_TEST_PYTHON=sys.executable),
                 capture_output=True, text=True, timeout=120,
             )
             print(result.stdout, end="")

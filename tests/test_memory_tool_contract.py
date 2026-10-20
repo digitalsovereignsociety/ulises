@@ -25,7 +25,7 @@ def memory_state(monkeypatch):
     monkeypatch.setattr(memory_server, "_memory_manager", _MemoryManager(entries))
     monkeypatch.setattr(memory_server, "_memory_vector", None)
     monkeypatch.setattr(memory_server, "_initialized", True)
-    monkeypatch.setenv("ODYSSEUS_MCP_MEMORY_OWNER", "maya")
+    monkeypatch.setenv("ULISES_MCP_MEMORY_OWNER", "maya")
 
 
 @pytest.mark.asyncio

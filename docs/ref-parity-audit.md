@@ -21,7 +21,7 @@ for them.
 ## Running it
 
 ```bash
-git remote add public https://github.com/odysseus-dev/odysseus.git   # once
+git remote add public https://github.com/ulises-dev/ulises.git   # once
 git fetch public dev --no-tags
 
 scripts/ref_parity_audit.py --source public/dev --target lab --since 2026-08-10

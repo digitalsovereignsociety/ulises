@@ -4,7 +4,7 @@ from __future__ import annotations
 UPLOAD_PATH = "/api/upload"
 STATS_PATH = "/api/upload/stats"
 
-FILENAME = "odysseus-smoke-attachment.txt"
+FILENAME = "ulises-smoke-attachment.txt"
 CONTENT = b"Uploaded by the release smoke suite."
 
 

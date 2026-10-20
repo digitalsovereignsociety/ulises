@@ -1,19 +1,19 @@
 """Session wiring for the release smoke suite.
 
 The suite drives a real instance over HTTP. It never starts one: that is
-`scripts/odysseus-smoke`'s job, which boots the worktree through
-`scripts/odysseus-dev` and hands the details over in the environment.
+`scripts/ulises-smoke`'s job, which boots the worktree through
+`scripts/ulises-dev` and hands the details over in the environment.
 Run under a plain `pytest` with no instance up, every scenario skips
 with the reason rather than failing, so the full suite stays green.
 
 Three environment values form the contract, and they are exactly what
-`odysseus dev env` prints plus the dev admin account:
+`ulises dev env` prints plus the dev admin account:
 
   APP_PORT                    - which instance, read through
                                 `internal_api_base()`
-  ODYSSEUS_ADMIN_USER         - the account to authenticate as
-  ODYSSEUS_ADMIN_PASSWORD
-  ODYSSEUS_DATA_DIR           - where the email fixture file goes, read
+  ULISES_ADMIN_USER         - the account to authenticate as
+  ULISES_ADMIN_PASSWORD
+  ULISES_DATA_DIR           - where the email fixture file goes, read
                                 through `src.constants.DATA_DIR`
 """
 from __future__ import annotations
@@ -42,12 +42,12 @@ SESSION_PATH = "/api/session"
 
 _NO_PORT = (
     "APP_PORT is not set, so there is no instance to drive. Run the suite "
-    "with `scripts/odysseus-smoke`, which boots this worktree and exports it."
+    "with `scripts/ulises-smoke`, which boots this worktree and exports it."
 )
 
 
 def _reserved_ports() -> dict:
-    """`odysseus dev`'s own refuse-list, read from the launcher.
+    """`ulises dev`'s own refuse-list, read from the launcher.
 
     The smoke suite writes and deletes real records, so pointing it at a
     port that means something - a normal launch of this checkout, the
@@ -56,7 +56,7 @@ def _reserved_ports() -> dict:
     truth instead of a second copy that can drift.
     """
     try:
-        return dict(load_script("odysseus-dev").RESERVED_PORTS)
+        return dict(load_script("ulises-dev").RESERVED_PORTS)
     except Exception:  # pragma: no cover - launcher absent or unloadable
         return {}
 
@@ -78,12 +78,12 @@ def base_url() -> str:
 
 @pytest.fixture(scope="session")
 def account() -> dict:
-    user = (os.environ.get("ODYSSEUS_ADMIN_USER") or "").strip()
-    password = os.environ.get("ODYSSEUS_ADMIN_PASSWORD") or ""
+    user = (os.environ.get("ULISES_ADMIN_USER") or "").strip()
+    password = os.environ.get("ULISES_ADMIN_PASSWORD") or ""
     if not user or not password:
         pytest.skip(
-            "ODYSSEUS_ADMIN_USER / ODYSSEUS_ADMIN_PASSWORD are not set, so the "
-            "suite cannot authenticate. Run it with `scripts/odysseus-smoke`."
+            "ULISES_ADMIN_USER / ULISES_ADMIN_PASSWORD are not set, so the "
+            "suite cannot authenticate. Run it with `scripts/ulises-smoke`."
         )
     return {"username": user, "password": password}
 
@@ -97,7 +97,7 @@ def _new_client(base_url: str, account: dict) -> httpx.Client:
     except httpx.HTTPError as exc:
         client.close()
         pytest.skip(f"no instance answering at {base_url} ({exc}). Boot one with "
-                    f"`odysseus dev up`, or run `scripts/odysseus-smoke`.")
+                    f"`ulises dev up`, or run `scripts/ulises-smoke`.")
     response = client.post(LOGIN_PATH, json=account)
     if response.status_code != 200:
         client.close()
@@ -147,7 +147,7 @@ def stub_endpoint(client, stub_provider) -> str:
     pointing at a port that has gone away.
     """
     response = client.post(ENDPOINTS_PATH, data={
-        "name": "odysseus-smoke-stub",
+        "name": "ulises-smoke-stub",
         "base_url": stub_provider.base_url,
         "endpoint_kind": "local",
     })
@@ -174,7 +174,7 @@ def stub_endpoint(client, stub_provider) -> str:
 def chat_session(client, stub_endpoint):
     """A chat session bound to the stub provider, deleted afterwards."""
     response = client.post(SESSION_PATH, data={
-        "name": "odysseus-smoke",
+        "name": "ulises-smoke",
         "endpoint_id": stub_endpoint,
         "model": MODEL_PRIMARY,
     })
@@ -243,6 +243,6 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
         )
         return
 
-    header = f"Odysseus release smoke - {internal_api_base()}"
+    header = f"Ulises release smoke - {internal_api_base()}"
     terminalreporter.write_line("")
     terminalreporter.write_line(areas.render_table(results, header=header))

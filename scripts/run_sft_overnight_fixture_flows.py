@@ -21,14 +21,14 @@ if str(ROOT) not in __import__("sys").path:
 
 from core.database import CalendarCal, CalendarEvent, Note, SessionLocal
 from scripts.curate_sft_trace_run import curate_rows, load_trace_rows, write_jsonl
-from scripts.eval_odysseus_live_hard_examples import _parse_tool_args
-from scripts.eval_odysseus_tool_use import _raise_for_status_with_body, _sse_events, _visible_event_text
+from scripts.eval_ulises_live_hard_examples import _parse_tool_args
+from scripts.eval_ulises_tool_use import _raise_for_status_with_body, _sse_events, _visible_event_text
 
 
 DATA_DIR = ROOT / "data"
 DEFAULT_BASE_URL = "http://127.0.0.1:7011"
 DEFAULT_OWNER = "sft_maya_ops"
-DEFAULT_PASSWORD = os.environ["ODYSSEUS_QA_PASSWORD"]
+DEFAULT_PASSWORD = os.environ["ULISES_QA_PASSWORD"]
 DEFAULT_ENDPOINT_ID = "f3904562"
 DEFAULT_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions"
 DEFAULT_MODEL = "moonshotai/kimi-k3"

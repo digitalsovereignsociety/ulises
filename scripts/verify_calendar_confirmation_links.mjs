@@ -6,7 +6,7 @@ import { chromium } from 'playwright';
 const base = 'http://127.0.0.1:7011';
 const marker = `ody-calendar-link-${crypto.randomUUID()}`;
 const reportPath = new URL(`../reports/calendar-confirmation-links-${Date.now()}.json`, import.meta.url);
-const auth = JSON.parse(fs.readFileSync(process.env.ODYSSEUS_AUTH_SESSION_FILE || (() => { throw new Error("ODYSSEUS_AUTH_SESSION_FILE is required"); })(), 'utf8'));
+const auth = JSON.parse(fs.readFileSync(process.env.ULISES_AUTH_SESSION_FILE || (() => { throw new Error("ULISES_AUTH_SESSION_FILE is required"); })(), 'utf8'));
 const token = Object.entries(auth).find(([, v]) => v?.username === 'sft_alex_creator')?.[0];
 if (!token) throw Error('SFT login missing');
 const report = { marker, cases: [], cleanup: {}, status: 'running' };
@@ -20,18 +20,18 @@ const sse = text => text.replace(/\r\n/g, '\n').split('\n\n').flatMap(frame => {
 try {
   browser = await chromium.launch({ headless: true, args: ['--no-proxy-server'] });
   context = await browser.newContext({ serviceWorkers: 'block', extraHTTPHeaders: {
-    'x-odysseus-routing-experiment': 'recent_model_choice',
+    'x-ulises-routing-experiment': 'recent_model_choice',
   } });
-  await context.addCookies([{ name: 'odysseus_session', value: token, url: base }]);
+  await context.addCookies([{ name: 'ulises_session', value: token, url: base }]);
   const created = await context.request.post(`${base}/api/session`, { multipart: {
-    name: marker, model: 'odysseus-qwen3.5-tools-pre-heretic', endpoint_id: '1d1022ef',
+    name: marker, model: 'ulises-qwen3.5-tools-pre-heretic', endpoint_id: '1d1022ef',
     endpoint_url: process.env.ENDPOINT_URL || (() => { throw new Error("ENDPOINT_URL is required"); })(), skip_validation: 'true', rag: 'false',
   } });
   if (!created.ok()) throw Error(`Session create ${created.status()}`);
   session = (await created.json()).id;
   const page = await context.newPage();
   await page.goto(`${base}/#${session}`, { waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(id => window.__odysseusSessionReadyId === id, session);
+  await page.waitForFunction(id => window.__ulisesSessionReadyId === id, session);
   const agent = page.locator('#mode-agent-btn');
   if (await agent.getAttribute('aria-pressed') !== 'true') await agent.click();
   for (const [name, prompt, action] of [

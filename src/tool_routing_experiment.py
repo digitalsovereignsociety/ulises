@@ -9,7 +9,7 @@ from src.turn_contract import FAMILY_TOOLS, canonical_tool, recently_executed_fa
 MODES = frozenset({'baseline', 'recent', 'all'})
 FIXTURE_MODES = frozenset({'recent_no_family_gate', 'recent_fixture_only'})
 MODEL_CHOICE_MODE = 'recent_model_choice'
-MODEL_CHOICE_MODEL = 'odysseus-qwen3.5-tools-pre-heretic'
+MODEL_CHOICE_MODEL = 'ulises-qwen3.5-tools-pre-heretic'
 
 # Scheme-less public hostnames are web references too. Boundaries avoid
 # treating email addresses or local/path/to/file.ext as standalone websites.

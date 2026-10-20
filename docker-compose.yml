@@ -1,28 +1,28 @@
 services:
-  odysseus:
+  ulises:
     # Official multi-arch GHCR image (linux/amd64 + linux/arm64), published by
     # the "ci / docker publish" workflow on every push to main and dev.
     # Docker pulls this image when it is reachable, and only falls back to the
     # local build below when the pull fails (e.g. no network on the host), so
     # hosts without a build toolchain (Portainer stacks, etc.) get the
-    # registry build. For production, pin an immutable tag via ODYSSEUS_IMAGE
-    # — e.g. ghcr.io/odysseus-dev/odysseus:1.0.2-7c8070f (X.Y.Z-<sha>) — since
+    # registry build. For production, pin an immutable tag via ULISES_IMAGE
+    # — e.g. ghcr.io/ulises-dev/ulises:1.0.2-7c8070f (X.Y.Z-<sha>) — since
     # :latest and bare :X.Y.Z tags move on every main push.
-    image: ${ODYSSEUS_IMAGE:-ghcr.io/odysseus-dev/odysseus:latest}
+    image: ${ULISES_IMAGE:-ghcr.io/ulises-dev/ulises:latest}
     build: .
     ports:
       - "${APP_BIND:-127.0.0.1}:${APP_PORT:-7011}:7000"
     volumes:
       - ${APP_DATA_DIR:-./data}:/app/data:z
       - ${APP_LOGS_DIR:-./logs}:/app/logs:z
-      # Cookbook remote-server SSH identity. Odysseus can generate a key here;
+      # Cookbook remote-server SSH identity. Ulises can generate a key here;
       # add the shown public key to each remote server's authorized_keys.
       - ${APP_DATA_DIR:-./data}/ssh:/app/.ssh:z
-      # Cookbook local model cache. Inside Docker, "Local" means the Odysseus
+      # Cookbook local model cache. Inside Docker, "Local" means the Ulises
       # container, so persist its HuggingFace cache under ./data/huggingface.
       - ${APP_DATA_DIR:-./data}/huggingface:/app/.cache/huggingface:z
       # Cookbook-installed Python CLIs/packages (vLLM, llama-cpp-python, etc.)
-      # land under /app/.local for the odysseus user. Persist them so a
+      # land under /app/.local for the ulises user. Persist them so a
       # container recreate does not silently remove installed serve engines.
       - ${APP_DATA_DIR:-./data}/local:/app/.local:z
     extra_hosts:
@@ -44,8 +44,8 @@ services:
       - AUTH_ENABLED=${AUTH_ENABLED:-true}
       - LOCALHOST_BYPASS=${LOCALHOST_BYPASS:-false}
       - COMPANION_BASE_URL=${COMPANION_BASE_URL:-}
-      - ODYSSEUS_ADMIN_USER=${ODYSSEUS_ADMIN_USER:-admin}
-      - ODYSSEUS_ADMIN_PASSWORD=${ODYSSEUS_ADMIN_PASSWORD:-}
+      - ULISES_ADMIN_USER=${ULISES_ADMIN_USER:-admin}
+      - ULISES_ADMIN_PASSWORD=${ULISES_ADMIN_PASSWORD:-}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost,http://127.0.0.1}
       - SECURE_COOKIES=${SECURE_COOKIES:-}
       - EMBEDDING_URL=${EMBEDDING_URL:-}
@@ -54,29 +54,29 @@ services:
       - FASTEMBED_MODEL=${FASTEMBED_MODEL:-sentence-transformers/all-MiniLM-L6-v2}
       - FASTEMBED_CACHE_PATH=${FASTEMBED_CACHE_PATH:-}
       - CLEANUP_INTERVAL_HOURS=${CLEANUP_INTERVAL_HOURS:-24}
-      - ODYSSEUS_INPROCESS_POLLERS=${ODYSSEUS_INPROCESS_POLLERS:-1}
-      - ODYSSEUS_INPROCESS_TASKS=${ODYSSEUS_INPROCESS_TASKS:-1}
-      - ODYSSEUS_QWEN_NATIVE_COMPACT_BUILTINS=${ODYSSEUS_QWEN_NATIVE_COMPACT_BUILTINS:-1}
-      - ODYSSEUS_QWEN_SUPPRESS_LOCAL_CONTEXT=${ODYSSEUS_QWEN_SUPPRESS_LOCAL_CONTEXT:-0}
-      - ODYSSEUS_CAPTURE_MODEL_REQUESTS=${ODYSSEUS_CAPTURE_MODEL_REQUESTS:-0}
-      - ODYSSEUS_MCP_EMAIL_OWNER=${ODYSSEUS_MCP_EMAIL_OWNER:-}
-      - ODYSSEUS_SCRIPT_HOST=${ODYSSEUS_SCRIPT_HOST:-localhost}
-      - ODYSSEUS_CHAT_UPLOAD_MAX_BYTES=${ODYSSEUS_CHAT_UPLOAD_MAX_BYTES:-10485760}
-      - ODYSSEUS_GALLERY_UPLOAD_MAX_BYTES=${ODYSSEUS_GALLERY_UPLOAD_MAX_BYTES:-104857600}
-      - ODYSSEUS_GALLERY_TRANSFORM_UPLOAD_MAX_BYTES=${ODYSSEUS_GALLERY_TRANSFORM_UPLOAD_MAX_BYTES:-26214400}
-      - ODYSSEUS_MEMORY_IMPORT_MAX_BYTES=${ODYSSEUS_MEMORY_IMPORT_MAX_BYTES:-10485760}
-      - ODYSSEUS_PERSONAL_UPLOAD_MAX_BYTES=${ODYSSEUS_PERSONAL_UPLOAD_MAX_BYTES:-26214400}
-      - ODYSSEUS_EMAIL_COMPOSE_UPLOAD_MAX_BYTES=${ODYSSEUS_EMAIL_COMPOSE_UPLOAD_MAX_BYTES:-26214400}
-      - ODYSSEUS_EDITOR_DRAFT_MAX_BYTES=${ODYSSEUS_EDITOR_DRAFT_MAX_BYTES:-268435456}
-      - ODYSSEUS_STT_MAX_AUDIO_BYTES=${ODYSSEUS_STT_MAX_AUDIO_BYTES:-26214400}
-      - ODYSSEUS_ICS_MAX_BYTES=${ODYSSEUS_ICS_MAX_BYTES:-10485760}
-      - ODYSSEUS_TTS_CACHE_MAX_BYTES=${ODYSSEUS_TTS_CACHE_MAX_BYTES}
+      - ULISES_INPROCESS_POLLERS=${ULISES_INPROCESS_POLLERS:-1}
+      - ULISES_INPROCESS_TASKS=${ULISES_INPROCESS_TASKS:-1}
+      - ULISES_QWEN_NATIVE_COMPACT_BUILTINS=${ULISES_QWEN_NATIVE_COMPACT_BUILTINS:-1}
+      - ULISES_QWEN_SUPPRESS_LOCAL_CONTEXT=${ULISES_QWEN_SUPPRESS_LOCAL_CONTEXT:-0}
+      - ULISES_CAPTURE_MODEL_REQUESTS=${ULISES_CAPTURE_MODEL_REQUESTS:-0}
+      - ULISES_MCP_EMAIL_OWNER=${ULISES_MCP_EMAIL_OWNER:-}
+      - ULISES_SCRIPT_HOST=${ULISES_SCRIPT_HOST:-localhost}
+      - ULISES_CHAT_UPLOAD_MAX_BYTES=${ULISES_CHAT_UPLOAD_MAX_BYTES:-10485760}
+      - ULISES_GALLERY_UPLOAD_MAX_BYTES=${ULISES_GALLERY_UPLOAD_MAX_BYTES:-104857600}
+      - ULISES_GALLERY_TRANSFORM_UPLOAD_MAX_BYTES=${ULISES_GALLERY_TRANSFORM_UPLOAD_MAX_BYTES:-26214400}
+      - ULISES_MEMORY_IMPORT_MAX_BYTES=${ULISES_MEMORY_IMPORT_MAX_BYTES:-10485760}
+      - ULISES_PERSONAL_UPLOAD_MAX_BYTES=${ULISES_PERSONAL_UPLOAD_MAX_BYTES:-26214400}
+      - ULISES_EMAIL_COMPOSE_UPLOAD_MAX_BYTES=${ULISES_EMAIL_COMPOSE_UPLOAD_MAX_BYTES:-26214400}
+      - ULISES_EDITOR_DRAFT_MAX_BYTES=${ULISES_EDITOR_DRAFT_MAX_BYTES:-268435456}
+      - ULISES_STT_MAX_AUDIO_BYTES=${ULISES_STT_MAX_AUDIO_BYTES:-26214400}
+      - ULISES_ICS_MAX_BYTES=${ULISES_ICS_MAX_BYTES:-10485760}
+      - ULISES_TTS_CACHE_MAX_BYTES=${ULISES_TTS_CACHE_MAX_BYTES}
       # Host workspace translation is opt-in. Keep the public compose file
       # user-neutral; configure these in a local .env or use the host-workspace
-      # overlay with ODYSSEUS_HOST_WORKSPACE_DIR.
-      - ODYSSEUS_WORKSPACE_HOST_ROOT=${ODYSSEUS_WORKSPACE_HOST_ROOT:-}
-      - ODYSSEUS_WORKSPACE_CONTAINER_ROOT=${ODYSSEUS_WORKSPACE_CONTAINER_ROOT:-/workspace}
-      - ODYSSEUS_WORKSPACE_DEFAULT=${ODYSSEUS_WORKSPACE_DEFAULT:-}
+      # overlay with ULISES_HOST_WORKSPACE_DIR.
+      - ULISES_WORKSPACE_HOST_ROOT=${ULISES_WORKSPACE_HOST_ROOT:-}
+      - ULISES_WORKSPACE_CONTAINER_ROOT=${ULISES_WORKSPACE_CONTAINER_ROOT:-/workspace}
+      - ULISES_WORKSPACE_DEFAULT=${ULISES_WORKSPACE_DEFAULT:-}
       - DATA_BRAVE_API_KEY=${DATA_BRAVE_API_KEY:-}
       - GOOGLE_API_KEY=${GOOGLE_API_KEY:-}
       - GOOGLE_PSE_CX=${GOOGLE_PSE_CX:-}
@@ -86,7 +86,7 @@ services:
       # Externally reachable origin for MCP OAuth callbacks. The container
       # always listens on 7000 and cannot see the host port map above, so
       # remote MCP OAuth needs this set whenever the browser reaches
-      # Odysseus on anything other than http://localhost:7000.
+      # Ulises on anything other than http://localhost:7000.
       - OAUTH_REDIRECT_BASE_URL=${OAUTH_REDIRECT_BASE_URL:-}
       - TAVILY_API_KEY=${TAVILY_API_KEY:-}
       - SERPER_API_KEY=${SERPER_API_KEY:-}
@@ -122,7 +122,7 @@ services:
     restart: unless-stopped
 
   searxng:
-    # Pinned, not :latest — odysseus waits on searxng's healthcheck
+    # Pinned, not :latest — ulises waits on searxng's healthcheck
     # (depends_on: condition: service_healthy), so a broken upstream `latest`
     # tag blocks the whole app from starting. 2026.6.2 crashes on boot with
     # `KeyError: 'default_doi_resolver'`, failing the healthcheck (issue #1414).
@@ -133,7 +133,7 @@ services:
       - -c
       - |
         set -eu
-        if [ ! -s /etc/searxng/settings.yml ] || grep -q 'odysseus-local-searxng-json-2026-05-30\|__SEARXNG_SECRET__' /etc/searxng/settings.yml; then
+        if [ ! -s /etc/searxng/settings.yml ] || grep -q 'ulises-local-searxng-json-2026-05-30\|__SEARXNG_SECRET__' /etc/searxng/settings.yml; then
           secret="$${SEARXNG_SECRET:-}"
           if [ -z "$$secret" ]; then
             secret="$$(python -c 'import secrets; print(secrets.token_urlsafe(48))')"

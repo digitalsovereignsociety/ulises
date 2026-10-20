@@ -93,7 +93,7 @@ def test_page_references_are_not_mistaken_for_named_computers():
         intent = classify_tool_intent(prompt)
         assert intent.category != "workspace"
 
-    intent = classify_tool_intent("check the service on odysseus")
+    intent = classify_tool_intent("check the service on ulises")
     assert intent.needs_tools and intent.category == "workspace"
 
 
@@ -126,7 +126,7 @@ def test_shell_diagnostic_commands_promote_to_agent():
         "df -h",
         "docker ps",
         "nvidia-smi",
-        "can you run journalctl -u odysseus",
+        "can you run journalctl -u ulises",
     ]
     for prompt in prompts:
         intent = classify_tool_intent(prompt)
@@ -141,7 +141,7 @@ def test_shell_command_explanations_stay_plain_chat():
 
 def test_explanatory_calendar_questions_stay_plain_chat():
     assert not message_needs_tools("How do I add an entry to my calendar?")
-    assert not message_needs_tools("What about the built-in Odysseus calendar, is that linked to email?")
+    assert not message_needs_tools("What about the built-in Ulises calendar, is that linked to email?")
     assert not message_needs_tools("Can you explain how calendar reminders work?")
     intent = classify_tool_intent("How do I add an entry to my calendar?")
     assert not intent.needs_tools

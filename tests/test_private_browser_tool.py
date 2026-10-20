@@ -589,7 +589,7 @@ def test_owned_chrome_sweep_never_signals_a_reused_pid(monkeypatch, tmp_path) ->
 def _legacy_pid_file_for(tmp_path, monkeypatch, namespace, session, pid):
     """A pid file in the legacy namespace layout, which only the fallback loop reads."""
     monkeypatch.setenv("XDG_RUNTIME_DIR", str(tmp_path))
-    monkeypatch.setenv("ODYSSEUS_BROWSER_NAMESPACE", namespace)
+    monkeypatch.setenv("ULISES_BROWSER_NAMESPACE", namespace)
     legacy_run = (tmp_path / "agent-browser" / "namespaces"
                   / web_tools._bounded_browser_identity(namespace) / "run")
     legacy_run.mkdir(parents=True, exist_ok=True)
@@ -649,7 +649,7 @@ def test_legacy_daemon_without_identity_keeps_its_pid_file(monkeypatch, tmp_path
 def _pid_file_for(tmp_path, monkeypatch, namespace, session, pid):
     """Write a pid file where the daemon helpers will look for it."""
     monkeypatch.setenv("XDG_RUNTIME_DIR", str(tmp_path))
-    monkeypatch.setenv("ODYSSEUS_BROWSER_NAMESPACE", namespace)
+    monkeypatch.setenv("ULISES_BROWSER_NAMESPACE", namespace)
     candidates = web_tools._browser_pid_file_candidates(tmp_path, namespace, session)
     target = candidates[0]
     target.parent.mkdir(parents=True, exist_ok=True)

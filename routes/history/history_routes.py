@@ -32,12 +32,12 @@ _DATA_IMAGE_RE = re.compile(r"data:image/[^;,\"]+;base64,[A-Za-z0-9+/=\s]+")
 def _sft_trace_file_for_owner(owner: str | None) -> str | None:
     if not str(owner or "").startswith("sft_"):
         return None
-    flag = os.getenv("ODYSSEUS_SFT_TRACE_CAPTURE", "1").strip().lower()
+    flag = os.getenv("ULISES_SFT_TRACE_CAPTURE", "1").strip().lower()
     if flag in {"0", "false", "no", "off"}:
         return None
     try:
         from src.constants import DATA_DIR
-        trace_dir = os.getenv("ODYSSEUS_SFT_TRACE_DIR") or os.path.join(DATA_DIR, "sft_traces")
+        trace_dir = os.getenv("ULISES_SFT_TRACE_DIR") or os.path.join(DATA_DIR, "sft_traces")
         return os.path.join(trace_dir, f"{owner}.jsonl")
     except Exception:
         return None

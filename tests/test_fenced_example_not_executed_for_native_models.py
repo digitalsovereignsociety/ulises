@@ -479,13 +479,13 @@ def test_resolve_tool_blocks_recovers_invoke_markup_for_native_model_with_no_nat
     fenced-example gating."""
     leaked = (
         "I'll search for that now.\n"
-        '<invoke name="web_search"><parameter name="query">odysseus changelog</parameter></invoke>'
+        '<invoke name="web_search"><parameter name="query">ulises changelog</parameter></invoke>'
     )
     blocks, used_native, _ = al._resolve_tool_blocks(leaked, [], round_num=1, is_api_model=True)
     assert used_native is False
     assert len(blocks) == 1
     assert blocks[0].tool_type == "web_search"
-    assert "odysseus changelog" in blocks[0].content
+    assert "ulises changelog" in blocks[0].content
 
 
 def test_resolve_tool_blocks_drops_unoffered_textual_call_for_api_model():
@@ -509,7 +509,7 @@ def test_resolve_tool_blocks_drops_unoffered_textual_call_for_api_model():
 def test_resolve_tool_blocks_keeps_offered_textual_call_for_api_model():
     leaked = (
         '<invoke name="web_search">'
-        '<parameter name="query">odysseus changelog</parameter>'
+        '<parameter name="query">ulises changelog</parameter>'
         '</invoke>'
     )
 

@@ -55,7 +55,7 @@ const persistence = createNotesPersistence({ storage: typeof localStorage === 'u
 const { _loadPendingHighlights, _loadGlowedReminders, _saveGlowedReminders, _loadActiveHighlights, _saveActiveHighlights, _savePendingHighlights, _loadFiredReminders, _saveFiredReminders, _draftKey, _loadDraft, _clearDraft } = persistence;
 const clock = { now: () => Date.now() };
 const app = createNotesState({
- viewMode: (typeof localStorage !== 'undefined' && localStorage.getItem('odysseus-notes-view')) || 'list',
+ viewMode: (typeof localStorage !== 'undefined' && localStorage.getItem('ulises-notes-view')) || 'list',
  labelsCollapsed: typeof localStorage !== 'undefined' && localStorage.getItem(NOTES_LABELS_COLLAPSED_KEY) === '1',
  firedDotDismissedAt: (() => { try { const v = parseInt(persistence.getItem(REMINDER_DISMISSED_AT_KEY) || '0', 10); return Number.isFinite(v) && v > 0 ? v : 0; } catch { return 0; } })(),
 });
@@ -256,7 +256,7 @@ const selectionOperations = createSelectionOperations({
   api,
   fetchNotes: _fetchNotes,
   exitSelection: _exitSelectMode,
-  sendContext: detail => window.dispatchEvent(new CustomEvent('odysseus:notes-context-selected', { detail })),
+  sendContext: detail => window.dispatchEvent(new CustomEvent('ulises:notes-context-selected', { detail })),
   effects: { render: _renderNotes, styledConfirm: uiModule.styledConfirm, showToast: (...args) => uiModule.showToast(...args) }
 });
 const selection = createSelection({

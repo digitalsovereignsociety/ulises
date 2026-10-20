@@ -2499,8 +2499,8 @@ def _migrate_chat_messages_fts():
             "ELSE COALESCE(cm.content, '') END"
         )
         try:
-            conn.execute("CREATE VIRTUAL TABLE IF NOT EXISTS temp._odysseus_fts5_probe USING fts5(content)")
-            conn.execute("DROP TABLE IF EXISTS temp._odysseus_fts5_probe")
+            conn.execute("CREATE VIRTUAL TABLE IF NOT EXISTS temp._ulises_fts5_probe USING fts5(content)")
+            conn.execute("DROP TABLE IF EXISTS temp._ulises_fts5_probe")
         except Exception as e:
             logging.getLogger(__name__).warning(f"chat_messages FTS migration skipped; FTS5 unavailable: {e}")
             return
@@ -2547,12 +2547,12 @@ def _migrate_chat_messages_fts():
         fts_count = conn.execute("SELECT COUNT(*) FROM chat_messages_fts").fetchone()[0]
         if chat_count != fts_count:
             conn.execute(
-                "CREATE TEMP TABLE IF NOT EXISTS _odysseus_fts_message_ids "
+                "CREATE TEMP TABLE IF NOT EXISTS _ulises_fts_message_ids "
                 "(message_id TEXT PRIMARY KEY) WITHOUT ROWID"
             )
-            conn.execute("DELETE FROM temp._odysseus_fts_message_ids")
+            conn.execute("DELETE FROM temp._ulises_fts_message_ids")
             conn.execute(
-                "INSERT OR IGNORE INTO temp._odysseus_fts_message_ids(message_id) "
+                "INSERT OR IGNORE INTO temp._ulises_fts_message_ids(message_id) "
                 "SELECT message_id FROM chat_messages_fts"
             )
             conn.execute(
@@ -2560,7 +2560,7 @@ def _migrate_chat_messages_fts():
                 INSERT INTO chat_messages_fts(content, message_id, session_id, role)
                 SELECT {fts_content_expr_cm}, cm.id, cm.session_id, cm.role
                 FROM chat_messages cm
-                LEFT JOIN temp._odysseus_fts_message_ids known ON known.message_id = cm.id
+                LEFT JOIN temp._ulises_fts_message_ids known ON known.message_id = cm.id
                 WHERE known.message_id IS NULL
                 """
             )

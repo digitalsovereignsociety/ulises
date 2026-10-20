@@ -65,7 +65,7 @@ def test_brave_accepts_standard_headless_env_key(monkeypatch):
 
 
 def test_explicit_headless_provider_overrides_persisted_default(monkeypatch):
-    monkeypatch.setenv("ODYSSEUS_SEARCH_PROVIDER", "brave")
+    monkeypatch.setenv("ULISES_SEARCH_PROVIDER", "brave")
     monkeypatch.setattr("src.settings.load_settings", lambda: {"search_provider": "searxng"})
 
     assert providers._get_search_settings()["search_provider"] == "brave"

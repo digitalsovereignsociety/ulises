@@ -8,7 +8,7 @@ import src.tool_execution as te
 
 def test_tui_host_bridge_patch_url_replaces_run_endpoint():
     assert te._tui_host_bridge_patch_url({
-        "surface": "odysseus-tui",
+        "surface": "ulises-tui",
         "host_shell_bridge": {
             "url": "http://host.docker.internal:17654/run",
             "token": "secret",
@@ -18,7 +18,7 @@ def test_tui_host_bridge_patch_url_replaces_run_endpoint():
 
 def test_tui_host_bridge_patch_requires_authenticated_bridge():
     assert te._tui_host_bridge_patch_url({
-        "surface": "odysseus-tui",
+        "surface": "ulises-tui",
         "host_shell_bridge": {"url": "http://localhost:1234/run"},
     }) is None
 
@@ -51,13 +51,13 @@ def test_apply_patch_via_tui_host_bridge_posts_patch_and_preserves_result(monkey
     result = asyncio.run(te._apply_patch_via_tui_host_bridge(
         "*** Begin Patch\n*** End Patch",
         {
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "host_shell_bridge": {"url": "http://127.0.0.1:17654/run", "token": "secret"},
         },
     ))
     assert result["exit_code"] == 0
     assert seen["url"] == "http://127.0.0.1:17654/patch"
-    assert seen["kwargs"]["headers"]["x-odysseus-tui-bridge-token"] == "secret"
+    assert seen["kwargs"]["headers"]["x-ulises-tui-bridge-token"] == "secret"
     assert re.fullmatch(
         r"[A-Za-z0-9_-]+", seen["kwargs"]["json"]["request_id"]
     )
@@ -91,7 +91,7 @@ def test_apply_patch_via_tui_host_bridge_rejects_malformed_exit_code(monkeypatch
     result = asyncio.run(te._apply_patch_via_tui_host_bridge(
         "*** Begin Patch\n*** End Patch",
         {
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "host_shell_bridge": {
                 "url": "http://127.0.0.1:17654/run",
                 "token": "secret",
@@ -137,7 +137,7 @@ def test_cancelled_apply_patch_notifies_tui_host_bridge(monkeypatch):
         task = asyncio.create_task(te._apply_patch_via_tui_host_bridge(
             "*** Begin Patch\n*** End Patch",
             {
-                "surface": "odysseus-tui",
+                "surface": "ulises-tui",
                 "host_shell_bridge": {
                     "url": "http://127.0.0.1:17654/run", "token": "secret",
                 },
@@ -178,7 +178,7 @@ def test_apply_patch_via_tui_host_bridge_rejects_invalid_success_payload(monkeyp
     result = asyncio.run(te._apply_patch_via_tui_host_bridge(
         "*** Begin Patch\n*** End Patch",
         {
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "host_shell_bridge": {"url": "http://127.0.0.1:17654/run", "token": "secret"},
         },
     ))
@@ -214,7 +214,7 @@ def test_apply_patch_via_tui_host_bridge_infers_failure_from_error_payload(monke
     result = asyncio.run(te._apply_patch_via_tui_host_bridge(
         "*** Begin Patch\n*** End Patch",
         {
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "host_shell_bridge": {"url": "http://127.0.0.1:17654/run", "token": "secret"},
         },
     ))
@@ -248,7 +248,7 @@ def test_apply_patch_bridge_error_overrides_false_success_code(monkeypatch):
     result = asyncio.run(te._apply_patch_via_tui_host_bridge(
         "*** Begin Patch\n*** End Patch",
         {
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "host_shell_bridge": {
                 "url": "http://127.0.0.1:17654/run",
                 "token": "secret",

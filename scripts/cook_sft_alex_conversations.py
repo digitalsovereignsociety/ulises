@@ -17,7 +17,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from odysseus_conversation_qa import (
+from ulises_conversation_qa import (
     DEFAULT_DATA,
     DEFAULT_JUDGE_ENDPOINT,
     DEFAULT_JUDGE_MODEL,
@@ -28,8 +28,8 @@ from odysseus_conversation_qa import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_SEEDS = ROOT / "tmp/odysseus-conversation-qa/sft-alex-all-seeds.json"
-DEFAULT_OUTPUT = ROOT / "tmp/odysseus-conversation-qa/sft-alex-cooked.jsonl"
+DEFAULT_SEEDS = ROOT / "tmp/ulises-conversation-qa/sft-alex-all-seeds.json"
+DEFAULT_OUTPUT = ROOT / "tmp/ulises-conversation-qa/sft-alex-cooked.jsonl"
 LOCK = threading.Lock()
 
 _CREATE_RE = re.compile(
@@ -195,7 +195,7 @@ def cook_batch(endpoint: Any, batch: list[dict[str, Any]]) -> list[dict[str, Any
         if not pending:
             break
         result = teacher_json(endpoint, {
-            "task": "Turn every supplied historical seed into one fresh realistic multi-turn conversation that tests Odysseus tool use.",
+            "task": "Turn every supplied historical seed into one fresh realistic multi-turn conversation that tests Ulises tool use.",
             "rules": [
                 "Return exactly one flow for every source_seed_id; never merge, omit, or duplicate seeds.",
                 "Preserve the seed's behavioral intent, but do not copy its wording mechanically.",
@@ -203,7 +203,7 @@ def cook_batch(endpoint: Any, batch: list[dict[str, Any]]) -> list[dict[str, Any
                 "Every generated flow is replayed independently against a clean fixture. If a later action depends on an object created earlier in the source context, include that creation before using the object.",
                 "Never find, open, or read an invented private object. A new note, document, task, event, skill, email, or research report must be created earlier in that generated flow.",
                 "Each flow has 2-4 user turns and at least one context-dependent follow-up.",
-                "The conversation must naturally require at least one Odysseus tool; for a general question, add an adjacent save, verify, open, or retrieve request.",
+                "The conversation must naturally require at least one Ulises tool; for a general question, add an adjacent save, verify, open, or retrieve request.",
                 "Use natural short wording and occasional realistic misspelling, not regex-like substitutions.",
                 "Do not include record IDs, credentials, real email addresses, destructive shell operations, email sending, purchases, or irreversible actions.",
                 "Expected behavior is semantic and names the appropriate action/tool family without prescribing exact prose.",
@@ -215,7 +215,7 @@ def cook_batch(endpoint: Any, batch: list[dict[str, Any]]) -> list[dict[str, Any
                 "turns": [{"user": "message", "expect": "semantic expected behavior"}],
             }]},
             "canonical_families": sorted(FAMILY_SEEDS),
-            "complete_odysseus_tool_catalog": compact_tool_catalog(),
+            "complete_ulises_tool_catalog": compact_tool_catalog(),
             "seeds": list(pending.values()),
         }, max_tokens=7500, temperature=0.65)
         accepted = validate_flows(result, set(pending), pending)

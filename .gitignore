@@ -26,9 +26,9 @@ secrets.env.*
 
 # Data — all user data stays local
 data/
-# Per-worktree runtime state written by `odysseus dev` (its own data dir,
+# Per-worktree runtime state written by `ulises dev` (its own data dir,
 # logs and stop handle) — disposable, and never shared between checkouts.
-.odysseus-dev/
+.ulises-dev/
 !services/hwfit/data/
 !services/hwfit/data/hf_models.json
 logs/
@@ -122,4 +122,4 @@ docs/windows-port/
 compound.config.json
 *.error.log
 _scratch/
-/odysseus/
+/ulises/

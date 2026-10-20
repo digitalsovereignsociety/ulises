@@ -178,7 +178,7 @@ the increase from the initial F1 run's 179 passes. No test failed in this pass.
 | Isolated Docker runtime command below | Passed, networking disabled; no source tree, node_modules or Node on PATH |
 | Complete inventory, whitespace and documentation links | All 18 changed files matched the inventory; checks passed |
 
-The one skip remains the existing test requiring `odysseus-odysseus:latest`.
+The one skip remains the existing test requiring `ulises-ulises:latest`.
 No new skip or waiver was introduced. Windows/macOS executable builds, a fresh
 full Dockerfile build, the full pytest suite, Firefox/WebKit and CI's exact
 Python 3.11/Node 20 versions remain unexecuted locally. Native Git semantics,
@@ -212,9 +212,9 @@ uncommitted; commit, push and PR creation require separate authorization.
 
 ## Verified repository state
 
-Repository: `odysseus-dev/odysseus`. Branch:
+Repository: `ulises-dev/ulises`. Branch:
 `refactor/frontend-architecture-foundation`. Worktree:
-`/home/alteixeira20/Projects/Odysseus/worktrees/architecture/frontend-foundation`.
+`/home/alteixeira20/Projects/Ulises/worktrees/architecture/frontend-foundation`.
 Initial worktree was clean. HEAD and local official `upstream/dev` are
 `8feb50e89468235cd3e0986da80edbd3acaf2c40`. The live official GitHub `dev` SHA
 matched at both initial and final verification. This is PR #6495's merge commit.
@@ -280,7 +280,7 @@ Starlette 1.8.0; Node 22.23.1; Playwright 1.62.1 with installed Chromium.
 CI remains Python 3.11 and Node 20; that exact interpreter pair was not executed
 locally. Use the repository virtualenv, not the system Python missing dependencies.
 The interpreter used here was
-`/home/alteixeira20/.venvs/odysseus-pr-6495/bin/python`.
+`/home/alteixeira20/.venvs/ulises-pr-6495/bin/python`.
 
 The historical counts below are coordinator-executed checks in this worktree, excluding
 delegated claims and earlier repeated subsets. Delegation was discontinued on
@@ -306,8 +306,8 @@ user instruction; no delegated implementation was integrated.
 
 The skipped test is
 `tests/test_docker_devops_hardening.py:187`, which requires the unavailable
-`odysseus-odysseus:latest` image. It was not relabeled or bypassed. F1's separate
-Docker runtime probe used the available `odysseus-maintainer-preview-odysseus:latest`,
+`ulises-ulises:latest` image. It was not relabeled or bypassed. F1's separate
+Docker runtime probe used the available `ulises-maintainer-preview-ulises:latest`,
 image ID `sha256:cc2d47e2327d573af01c6b027f23d2ab0f2ee9b85d658e9eb8065bd02b9c3515`,
 with Python 3.14.7, FastAPI 0.141.1 and Starlette 1.6.0. This proves compatibility
 of current candidate code/assets with that image's runtime dependencies, not a
@@ -316,7 +316,7 @@ fresh build of the full repository Dockerfile or a deployment.
 Reproduce the final focused command with the actual tested interpreter:
 
 ```sh
-/home/alteixeira20/.venvs/odysseus-pr-6495/bin/python -m pytest -q -rs \
+/home/alteixeira20/.venvs/ulises-pr-6495/bin/python -m pytest -q -rs \
   tests/test_frontend_build.py tests/test_frontend_foundation_offline_js.py \
   tests/test_frontend_module_graph.py tests/test_frontend_module_version_parity.py \
   tests/test_action_menu_order.py tests/test_panel_loader_js.py \
@@ -337,12 +337,12 @@ ENDPOINT_URL=http://127.0.0.1:1 node --test \
 
 python3 scripts/build_frontend.py --check
 node scripts/check_frontend.mjs
-/home/alteixeira20/.venvs/odysseus-pr-6495/bin/python scripts/verify_frontend_runtime.py
+/home/alteixeira20/.venvs/ulises-pr-6495/bin/python scripts/verify_frontend_runtime.py
 
 docker run --rm --network none \
-  --mount type=bind,src=/home/alteixeira20/Projects/Odysseus/worktrees/architecture/frontend-foundation,dst=/candidate,readonly \
+  --mount type=bind,src=/home/alteixeira20/Projects/Ulises/worktrees/architecture/frontend-foundation,dst=/candidate,readonly \
   --workdir /candidate --entrypoint python \
-  odysseus-maintainer-preview-odysseus:latest scripts/verify_frontend_runtime.py
+  ulises-maintainer-preview-ulises:latest scripts/verify_frontend_runtime.py
 ```
 
 `ENDPOINT_URL` satisfies the existing oracle's import-time configuration requirement.
@@ -354,9 +354,9 @@ Syntax commands executed:
 
 ```sh
 bash -c 'shopt -s globstar nullglob; for f in static/app.js static/js/**/*.js frontend/src/**/*.js scripts/check_frontend.mjs tests/frontendArchitecture.test.mjs; do node --check "$f" || exit; done'
-/home/alteixeira20/.venvs/odysseus-pr-6495/bin/python -m compileall -q app.py core routes src services scripts tests
+/home/alteixeira20/.venvs/ulises-pr-6495/bin/python -m compileall -q app.py core routes src services scripts tests
 git diff --check
-git diff --exit-code -- static app.py Dockerfile .dockerignore Odysseus.spec build-macos-app.sh build-windows-portable.ps1 launcher.py core routes src services
+git diff --exit-code -- static app.py Dockerfile .dockerignore Ulises.spec build-macos-app.sh build-windows-portable.ps1 launcher.py core routes src services
 git check-attr text eol -- frontend/src/shared/actionMenuOrder.js static/js/actionMenuOrder.js
 sha256sum frontend/src/shared/actionMenuOrder.js static/js/actionMenuOrder.js
 ```
@@ -396,7 +396,7 @@ No emitted JS bytes, URLs, boot scripts or cache manifests changed in this lane.
 ## Remaining risks and limits
 
 Root offline reload is not certified: existing SW scope is `/static/`, and open
-[#6227](https://github.com/odysseus-dev/odysseus/pull/6227) proposes the independent
+[#6227](https://github.com/ulises-dev/ulises/pull/6227) proposes the independent
 scope/header correction. F1 preserves and tests actual offline module behavior
 at the current scope. No first-use offline guarantee is claimed for optional
 CDN libraries, Mermaid or server APIs.

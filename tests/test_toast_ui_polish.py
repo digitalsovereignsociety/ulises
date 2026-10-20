@@ -15,7 +15,7 @@ def test_notification_history_does_not_clutter_navigation_or_capture_toasts():
     assert 'id="rail-notifications"' not in html
     assert 'id="sidebar-notifications-btn"' not in html
     assert "data-notification-history-trigger" not in html
-    assert "odysseus.notification-history" not in ui
+    assert "ulises.notification-history" not in ui
     assert "_recordNotification" not in ui
     assert ".notification-history-panel" not in css
 

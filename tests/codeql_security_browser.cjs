@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const { extractThemeBootstrap } = require('./helpers/theme_bootstrap.cjs');
 
 (async () => {
-  const origin = process.env.ODYSSEUS_TEST_STATIC_ORIGIN;
+  const origin = process.env.ULISES_TEST_STATIC_ORIGIN;
   const browser = await chromium.launch({ headless: true });
   try {
     const page = await browser.newPage();
@@ -162,12 +162,12 @@ const { extractThemeBootstrap } = require('./helpers/theme_bootstrap.cjs');
     assert.equal(menus.unsafe, 0);
 
     await page.evaluate(async () => {
-      localStorage.removeItem('odysseus-chatgpt-usage-expanded');
+      localStorage.removeItem('ulises-chatgpt-usage-expanded');
       window.adminTest = await import('/static/js/admin-codeql-harness.js');
       await window.adminTest.loadEndpoints();
     });
     const toggle = id => page.locator(`[data-adm-chatgpt-usage-toggle="session-${id}"]`);
-    const stored = () => page.evaluate(() => JSON.parse(localStorage.getItem('odysseus-chatgpt-usage-expanded') || '[]').sort());
+    const stored = () => page.evaluate(() => JSON.parse(localStorage.getItem('ulises-chatgpt-usage-expanded') || '[]').sort());
     assert.deepEqual(await stored(), []);
     await toggle('a').click();
     assert.deepEqual(await stored(), ['endpoint-a', 'session-a']);

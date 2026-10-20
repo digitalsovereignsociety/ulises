@@ -163,7 +163,7 @@ def test_uploaded_image_edit_uses_owner_scoped_reference(monkeypatch, tmp_path):
         calls.append((prompt, image_path, kwargs))
         return {'image_id': 'edited'}
     monkeypatch.setattr('src.ai_interaction.do_edit_image', edit)
-    args = '{"image_id":"odysseus://attachment/upload.jpg","action":"prompt","prompt":"Make more realistic"}'
+    args = '{"image_id":"ulises://attachment/upload.jpg","action":"prompt","prompt":"Make more realistic"}'
     assert asyncio.run(do_edit_image(args, owner='alice')) == {'image_id': 'edited'}
     assert calls == [('Make more realistic', str(path), {'owner': 'alice', 'size': 'auto'})]
     assert resolutions == [('upload.jpg', {'owner': 'alice', 'allow_admin': False})]

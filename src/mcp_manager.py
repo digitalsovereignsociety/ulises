@@ -24,7 +24,7 @@ def browser_mcp_call_timeout() -> float:
     """Upper bound for one Playwright MCP tool call, in seconds."""
 
     try:
-        value = float(os.environ.get("ODYSSEUS_BROWSER_MCP_CALL_TIMEOUT_S", "90"))
+        value = float(os.environ.get("ULISES_BROWSER_MCP_CALL_TIMEOUT_S", "90"))
     except ValueError:
         return 90.0
     return value if value > 0 else 90.0
@@ -41,7 +41,7 @@ def _format_mcp_connection_error(name: str, command: str = "", args: Optional[Li
             f"{raw_error}\n\n"
             "Browser MCP could not start. On fresh installs, cache the Playwright MCP package once before connecting:\n\n"
             "npx -y @playwright/mcp@latest --version\n\n"
-            "Then restart Odysseus and reconnect the Browser MCP server."
+            "Then restart Ulises and reconnect the Browser MCP server."
         )
 
     return raw_error
@@ -187,7 +187,7 @@ class McpManager:
                 configuration_incarnation((transport, url, command, args, env)))
             if server_id == "memory":
                 effective_env = {**os.environ, **(env or {})}
-                self._resource_owners[server_id] = str(effective_env.get("ODYSSEUS_MCP_MEMORY_OWNER") or effective_env.get("ODYSSEUS_MEMORY_OWNER") or "").strip()
+                self._resource_owners[server_id] = str(effective_env.get("ULISES_MCP_MEMORY_OWNER") or effective_env.get("ULISES_MEMORY_OWNER") or "").strip()
             if transport == "stdio":
                 res = await self._connect_stdio(server_id, name, command, args or [], env or {})
             elif transport == "sse":

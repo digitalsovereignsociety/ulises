@@ -11,7 +11,7 @@ from src import tool_execution as te
 
 def _context(url):
     return {
-        "surface": "odysseus-tui",
+        "surface": "ulises-tui",
         "host_shell_bridge": {"url": url, "token": "secret"},
     }
 
@@ -43,7 +43,7 @@ def test_cancel_preserves_validated_bridge_authority(monkeypatch, url):
     assert seen[0].url.host == httpx.URL(url).host
     assert seen[0].url.port == 17654
     assert seen[0].url.path == "/cancel"
-    assert seen[0].headers["x-odysseus-tui-bridge-token"] == "secret"
+    assert seen[0].headers["x-ulises-tui-bridge-token"] == "secret"
 
 
 @pytest.mark.parametrize("suffix", ["?", "#", "/run?", "/run#"])
@@ -223,7 +223,7 @@ def test_host_shell_cancellation_preserves_authority(monkeypatch, authority, suf
         "http://" + authority + suffix, "secret", "request-1",
     ))
     assert [str(request.url) for request in seen] == ["http://" + authority + "/cancel"]
-    assert seen[0].headers["x-odysseus-tui-bridge-token"] == "secret"
+    assert seen[0].headers["x-ulises-tui-bridge-token"] == "secret"
 
 
 @pytest.mark.parametrize("authority", ["127.0.0.1:17654", "[::1]:17654"])
@@ -319,7 +319,7 @@ def test_bridge_requests_ignore_environment_proxies(monkeypatch, proxy_var):
                 assert result["exit_code"] == 0
             assert not proxy_requests, "bridge traffic and its token reached an environment proxy"
             assert len(direct_requests) == 7
-            assert all(headers[b"x-odysseus-tui-bridge-token"] == b"secret"
+            assert all(headers[b"x-ulises-tui-bridge-token"] == b"secret"
                        for _, headers, _ in direct_requests)
 
     asyncio.run(asyncio.wait_for(scenario(), 10))

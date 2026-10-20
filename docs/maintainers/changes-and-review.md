@@ -43,7 +43,7 @@ A high-risk review should verify the threat or failure model, exact final commit
 
 ## Cross-area changes and CODEOWNERS
 
-Touching multiple areas does **not** automatically require multiple approvals. Consult domain expertise when needed. `.github/CODEOWNERS` currently contains no ownership rules; the per-area map is under discussion in [issue #593](https://github.com/odysseus-dev/odysseus/issues/593). Once populated, it helps identify reviewers and accountable contacts; it is not a blanket approval requirement by itself.
+Touching multiple areas does **not** automatically require multiple approvals. Consult domain expertise when needed. `.github/CODEOWNERS` currently contains no ownership rules; the per-area map is under discussion in [issue #593](https://github.com/ulises-dev/ulises/issues/593). Once populated, it helps identify reviewers and accountable contacts; it is not a blanket approval requirement by itself.
 
 ## Validation and UI evidence
 

@@ -74,7 +74,7 @@ for legacy_name, canonical_name in pairs:
     env = os.environ.copy()
     env["PYTHONDONTWRITEBYTECODE"] = "1"
     env["PYTHON_DOTENV_DISABLED"] = "1"
-    env["ODYSSEUS_INPROCESS_POLLERS"] = "0"
+    env["ULISES_INPROCESS_POLLERS"] = "0"
 
     result = subprocess.run(
         [sys.executable, "-c", code],

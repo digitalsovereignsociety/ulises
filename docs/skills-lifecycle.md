@@ -22,5 +22,5 @@ Reference reviewed: NousResearch/hermes-agent, MIT license, commit
 cfdbbb6e35010ace89fbe8243ee82fa4de143e10, cloned to
 <configured-path> In particular tools/skills_tool.py and
 agent/prompt_builder.py use progressive disclosure and task-triggered procedure
-loading. These changes adapt that approach to Odysseus's existing registry;
+loading. These changes adapt that approach to Ulises's existing registry;
 no Hermes implementation code was copied.

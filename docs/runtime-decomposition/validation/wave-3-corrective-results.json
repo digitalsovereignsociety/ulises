@@ -86,7 +86,7 @@
         "test_bare_email_mcp_dispatch_includes_hidden_owner"
       ],
       "classification": "A / B",
-      "resolution": "Added surface: odysseus-tui to bridge context; implemented resource_identity on _FakeMcpManager; sealed workspace for write_file; asserted fail-closed on invalid bridge URL"
+      "resolution": "Added surface: ulises-tui to bridge context; implemented resource_identity on _FakeMcpManager; sealed workspace for write_file; asserted fail-closed on invalid bridge URL"
     },
     "tests/test_tool_approvals.py": {
       "nodes": [

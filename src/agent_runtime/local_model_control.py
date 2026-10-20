@@ -14,7 +14,7 @@ import time
 
 from src.agent_runtime.resources import NativeBackendResource, ResourceIdentityError
 
-CAPABILITY_HEADER = "X-Odysseus-Local-Model-Capability"
+CAPABILITY_HEADER = "X-Ulises-Local-Model-Capability"
 _ROUTES = {"download_model": "/api/model/download", "serve_model": "/api/model/serve",
            "serve_preset": "/api/model/serve"}
 _PENDING = {}
@@ -71,7 +71,7 @@ def model_control_headers(tool, content, owner, payload, *, scheduled=False):
         resource = backend.resource
     capability = _Capability(authority, operation, resource, _ROUTES[tool], _digest(payload), time.monotonic() + 60)
     token = secrets.token_urlsafe(32)
-    headers.update({CAPABILITY_HEADER: token, "X-Odysseus-Owner": authority.owner})
+    headers.update({CAPABILITY_HEADER: token, "X-Ulises-Owner": authority.owner})
     with _LOCK:
         _PENDING[token] = capability
     try:
@@ -96,7 +96,7 @@ def consume_model_control(request, payload):
         if (capability is None or capability.deadline < time.monotonic()
                 or request.method != "POST" or request.url.path != capability.path
                 or payload.get("remote_host") or _digest(payload) != capability.payload_digest
-                or request.headers.get("X-Odysseus-Owner", "") != capability.authority.owner
+                or request.headers.get("X-Ulises-Owner", "") != capability.authority.owner
                 or getattr(request.state, "current_user", None) not in
                     (None, INTERNAL_TOOL_USER, capability.authority.owner)):
             raise ResourceIdentityError("Local model capability binding changed or expired")

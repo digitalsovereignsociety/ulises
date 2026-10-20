@@ -1,4 +1,4 @@
-"""Shared fixture email wiring for local Odysseus self-evals."""
+"""Shared fixture email wiring for local Ulises self-evals."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ class FixtureEmailMcpManager:
         if not tool.startswith("mcp__email__"):
             return {"error": f"MCP server for {tool} not connected", "exit_code": 1}
         args = dict(args or {})
-        owner = str(args.pop("_odysseus_owner", "") or "").strip() or None
+        owner = str(args.pop("_ulises_owner", "") or "").strip() or None
         return execute_fixture_email(tool, args, owner=owner)
 
 
@@ -34,7 +34,7 @@ def email_fixture(enabled: bool, *, owner: str = "pewds") -> Iterator[None]:
     fixture_path = Path(DATA_DIR) / "fixture_email_messages.json"
     backup = fixture_path.read_bytes() if fixture_path.exists() else None
     old_mcp_manager = get_mcp_manager()
-    old_fixture_env = os.environ.get("ODYSSEUS_EMAIL_FIXTURE")
+    old_fixture_env = os.environ.get("ULISES_EMAIL_FIXTURE")
     fixture = {
         "messages": [
             {
@@ -57,16 +57,16 @@ def email_fixture(enabled: bool, *, owner: str = "pewds") -> Iterator[None]:
     }
     fixture_path.parent.mkdir(parents=True, exist_ok=True)
     fixture_path.write_text(json.dumps(fixture, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    os.environ["ODYSSEUS_EMAIL_FIXTURE"] = "1"
+    os.environ["ULISES_EMAIL_FIXTURE"] = "1"
     set_mcp_manager(FixtureEmailMcpManager())
     try:
         yield
     finally:
         set_mcp_manager(old_mcp_manager)
         if old_fixture_env is None:
-            os.environ.pop("ODYSSEUS_EMAIL_FIXTURE", None)
+            os.environ.pop("ULISES_EMAIL_FIXTURE", None)
         else:
-            os.environ["ODYSSEUS_EMAIL_FIXTURE"] = old_fixture_env
+            os.environ["ULISES_EMAIL_FIXTURE"] = old_fixture_env
         if backup is not None:
             fixture_path.write_bytes(backup)
         else:

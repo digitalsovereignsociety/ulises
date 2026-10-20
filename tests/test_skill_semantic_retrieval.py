@@ -133,7 +133,7 @@ def test_semantic_ranking_can_be_disabled_without_breaking_lexical_fallback(
     skills = [
         _skill("meeting-coordination", "coordinate calendars and confirm a viable time"),
     ]
-    monkeypatch.setenv("ODYSSEUS_SKILL_SEMANTIC_RETRIEVAL", "0")
+    monkeypatch.setenv("ULISES_SKILL_SEMANTIC_RETRIEVAL", "0")
 
     semantic_only = manager.get_relevant_skills(
         "orchestrate attendees without double booking anyone",

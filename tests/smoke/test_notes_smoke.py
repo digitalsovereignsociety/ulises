@@ -3,7 +3,7 @@ from __future__ import annotations
 
 NOTES_PATH = "/api/notes"
 
-TITLE = "Odysseus smoke note"
+TITLE = "Ulises smoke note"
 BODY = "Created by the release smoke suite."
 EDITED_BODY = "Edited by the release smoke suite."
 

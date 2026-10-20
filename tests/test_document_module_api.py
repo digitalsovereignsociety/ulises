@@ -106,7 +106,7 @@ def _module_surface():
       import { chromium } from 'playwright';
       const browser = await chromium.launch({ headless: true });
       const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
-      await page.goto(`${process.env.ODYSSEUS_TEST_STATIC_ORIGIN}/static/js/documentStats.js`);
+      await page.goto(`${process.env.ULISES_TEST_STATIC_ORIGIN}/static/js/documentStats.js`);
       await page.setContent('<div id="toast"></div><div id="chat-container"></div><div id="sidebar"></div>');
       const surface = await page.evaluate(async () => {
         const mod = await import('/static/js/document.js?v=module-api-surface-1');

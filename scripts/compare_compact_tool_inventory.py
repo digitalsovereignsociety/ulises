@@ -39,9 +39,9 @@ def run(job):
     try:
         response = httpx.post(
             os.environ["ENDPOINT_URL"],
-            json={"model": "odysseus-qwen3.5-tools-pre-heretic", "temperature": 0,
+            json={"model": "ulises-qwen3.5-tools-pre-heretic", "temperature": 0,
                   "max_tokens": 256, "chat_template_kwargs": {"enable_thinking": False},
-                  "messages": [{"role": "system", "content": "You are Odysseus. Use the available tools to fulfill the request. Answer normally when no tool is needed."},
+                  "messages": [{"role": "system", "content": "You are Ulises. Use the available tools to fulfill the request. Answer normally when no tool is needed."},
                                {"role": "user", "content": prompt}], "tools": schemas},
             timeout=90,
         )

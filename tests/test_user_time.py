@@ -109,7 +109,7 @@ def test_interactive_sft_user_keeps_browser_timezone_by_default(monkeypatch):
         headers = {"x-tz-offset": "540", "x-tz-name": "Asia/Tokyo"}
 
     clear_user_time_context()
-    monkeypatch.delenv("ODYSSEUS_SFT_FORCE_UTC_TIMEZONE", raising=False)
+    monkeypatch.delenv("ULISES_SFT_FORCE_UTC_TIMEZONE", raising=False)
     monkeypatch.setattr(chat_routes, "effective_user", lambda _request: "sft_alex_creator")
 
     chat_routes._set_user_time_from_request(Request())
@@ -125,7 +125,7 @@ def test_sft_user_can_still_force_utc_timezone(monkeypatch):
         headers = {"x-tz-offset": "540", "x-tz-name": "Asia/Tokyo"}
 
     clear_user_time_context()
-    monkeypatch.setenv("ODYSSEUS_SFT_FORCE_UTC_TIMEZONE", "1")
+    monkeypatch.setenv("ULISES_SFT_FORCE_UTC_TIMEZONE", "1")
     monkeypatch.setattr(chat_routes, "effective_user", lambda _request: "sft_alex_creator")
 
     chat_routes._set_user_time_from_request(Request())

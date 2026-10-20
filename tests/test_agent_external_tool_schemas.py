@@ -94,7 +94,7 @@ def test_local_qwen_external_tool_route_preserves_assistant_reasoning_continuity
 
     _collect(agent_loop.stream_agent_loop(
         "http://127.0.0.1:19200/v1/chat/completions",
-        "odysseus-qwen3.5-9b-preheretic",
+        "ulises-qwen3.5-9b-preheretic",
         [
             {
                 "role": "assistant",
@@ -451,7 +451,7 @@ def test_known_native_tool_reaches_scoped_bridge_without_redeclared_schema(monke
             fallbacks=[],
             fallback_on_empty=False,
             client_runtime_context={
-                "surface": "odysseus-native",
+                "surface": "ulises-native",
                 "unattended_mode": True,
             },
             _is_teacher_run=True,

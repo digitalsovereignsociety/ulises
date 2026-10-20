@@ -20,7 +20,7 @@ def check_readiness() -> Dict[str, object]:
 
     ``ready`` is True only when every critical check (database, data_dir) passes.
     Harness deployments can also require semantic tool selection by setting
-    ``ODYSSEUS_REQUIRE_TOOL_INDEX_READY=1``.
+    ``ULISES_REQUIRE_TOOL_INDEX_READY=1``.
     ``local_first`` is informational — a remote database is a valid deployment, so
     it never fails readiness, it only reports whether storage stays on this host.
     """
@@ -65,7 +65,7 @@ def check_readiness() -> Dict[str, object]:
     # when the deployment requires the semantic agent surface. Product installs
     # can remain available with deterministic tool-selection fallback.
     require_tool_index = str(
-        os.environ.get("ODYSSEUS_REQUIRE_TOOL_INDEX_READY", "")
+        os.environ.get("ULISES_REQUIRE_TOOL_INDEX_READY", "")
     ).strip().lower() in {"1", "true", "yes", "on"}
     try:
         from src.tool_index import get_tool_index_status, tool_index_prewarm_enabled

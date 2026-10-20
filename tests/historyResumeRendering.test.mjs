@@ -66,7 +66,7 @@ async function setup() {
     window.send = event => controller.enqueue(new TextEncoder().encode('data: ' + (typeof event === 'string' ? event : JSON.stringify(event)) + '\n\n'));
     window.sendError = event => controller.enqueue(new TextEncoder().encode('event: error\ndata: ' + JSON.stringify(event) + '\n\n'));
     window.fetch = async url => String(url).includes('/api/chat/resume/')
-      ? new Response(stream, { headers: { 'X-Odysseus-Run-Id': 'run-1' } })
+      ? new Response(stream, { headers: { 'X-Ulises-Run-Id': 'run-1' } })
       : new Response(JSON.stringify({ history: window.savedHistory }));
   }, { addMessage, resume });
   return page;

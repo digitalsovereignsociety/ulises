@@ -200,12 +200,12 @@ def _package_installed_from_probe(name: str, probe: dict) -> bool:
         )
     if name == "mlx_lama_swift":
         return bool(
-            (binaries.get("odysseus-mlx-inpaint") or binaries.get("mlx-lama-serve"))
+            (binaries.get("ulises-mlx-inpaint") or binaries.get("mlx-lama-serve"))
             and (files.get("mlx.metallib") or files.get("default.metallib"))
         )
     if name == "mlx_ddcolor_swift":
         return bool(
-            (binaries.get("odysseus-mlx-colorize") or binaries.get("mlx-ddcolor-serve"))
+            (binaries.get("ulises-mlx-colorize") or binaries.get("mlx-ddcolor-serve"))
             and (files.get("mlx.metallib") or files.get("default.metallib"))
         )
     if name == "diffusers":
@@ -330,23 +330,23 @@ def _package_status_note(name: str, probe: dict) -> str:
     if name == "mlx_lama_swift":
         if _package_installed_from_probe(name, probe):
             found = [
-                binaries.get("odysseus-mlx-inpaint"),
+                binaries.get("ulises-mlx-inpaint"),
                 binaries.get("mlx-lama-serve"),
             ]
             return f"LaMa/MI-GAN Swift MLX runner: {next((p for p in found if p), 'available')}"
-        if binaries.get("odysseus-mlx-inpaint") or binaries.get("mlx-lama-serve"):
+        if binaries.get("ulises-mlx-inpaint") or binaries.get("mlx-lama-serve"):
             return "LaMa/MI-GAN Swift runner is installed, but mlx.metallib is missing next to the runner."
-        return "LaMa/MI-GAN inpainting models need an Odysseus-compatible mlx-lama-swift bridge on an Apple Silicon Mac."
+        return "LaMa/MI-GAN inpainting models need an Ulises-compatible mlx-lama-swift bridge on an Apple Silicon Mac."
     if name == "mlx_ddcolor_swift":
         if _package_installed_from_probe(name, probe):
             found = [
-                binaries.get("odysseus-mlx-colorize"),
+                binaries.get("ulises-mlx-colorize"),
                 binaries.get("mlx-ddcolor-serve"),
             ]
             return f"DDColor Swift MLX runner: {next((p for p in found if p), 'available')}"
-        if binaries.get("odysseus-mlx-colorize") or binaries.get("mlx-ddcolor-serve"):
+        if binaries.get("ulises-mlx-colorize") or binaries.get("mlx-ddcolor-serve"):
             return "DDColor Swift runner is installed, but mlx.metallib is missing next to the runner."
-        return "DDColor colorization models need an Odysseus-compatible mlx-ddcolor-swift bridge on an Apple Silicon Mac."
+        return "DDColor colorization models need an Ulises-compatible mlx-ddcolor-swift bridge on an Apple Silicon Mac."
     if name in dists:
         return f"{name} {dists[name]}"
     return ""
@@ -370,7 +370,7 @@ def _package_pip_update_status(
 
     if pkg.get("kind") == "system" or not pkg.get("pip"):
         return PackageUpdateStatus(
-            False, "Update this system dependency outside Odysseus."
+            False, "Update this system dependency outside Ulises."
         )
 
     name = pkg.get("name")
@@ -393,7 +393,7 @@ def _package_pip_update_status(
     if name == "vllm" and binaries.get("vllm") and not dists.get("vllm"):
         return PackageUpdateStatus(
             False,
-            "Using a vLLM CLI on PATH without Python package metadata; update it outside Odysseus.",
+            "Using a vLLM CLI on PATH without Python package metadata; update it outside Ulises.",
         )
 
     return PackageUpdateStatus(
@@ -463,8 +463,8 @@ dist_names={{
     'vllm':['vllm'],
     'llama_cpp':['llama-server'],
     'mflux':['mflux-generate-qwen', 'mflux-generate'],
-	    'mlx_lama_swift':['odysseus-mlx-inpaint', 'mlx-lama-serve'],
-	    'mlx_ddcolor_swift':['odysseus-mlx-colorize', 'mlx-ddcolor-serve'],
+	    'mlx_lama_swift':['ulises-mlx-inpaint', 'mlx-lama-serve'],
+	    'mlx_ddcolor_swift':['ulises-mlx-colorize', 'mlx-ddcolor-serve'],
 	    'libreoffice':['soffice', 'libreoffice'],
 	    'tmux':['tmux'],
 	}}
@@ -561,7 +561,7 @@ def _find_line_break(buf):
 EXEC_TIMEOUT = 30  # seconds — shorter than agent's 60s
 STREAM_TIMEOUT = 120  # default for short commands
 MAX_OUTPUT = 200_000  # truncate limit
-TMUX_LOG_DIR = Path(tempfile.gettempdir()) / "odysseus-tmux"
+TMUX_LOG_DIR = Path(tempfile.gettempdir()) / "ulises-tmux"
 PTY_UNSUPPORTED_ERROR = "pty_unsupported"
 # PTY teardown. The PTY child leads its own session (os.setsid), so killing it
 # has to signal the whole process group and then confirm the group is gone —
@@ -988,10 +988,10 @@ async def _generate_tmux(cmd: str, request: Request):
     script_path = TMUX_LOG_DIR / f"{session_id}.sh"
     script_path.write_text(
         f"#!/bin/bash\n"
-        f'ODYSSEUS_USER_SHELL="${{SHELL:-}}"\n'
-        f'if [ -n "$ODYSSEUS_USER_SHELL" ] && [ -x "$ODYSSEUS_USER_SHELL" ]; then\n'
-        f'  ODYSSEUS_USER_PATH="$("$ODYSSEUS_USER_SHELL" -ic \'printf "__ODYSSEUS_PATH__%s\\n" "$PATH"\' 2>/dev/null | sed -n \'s/^__ODYSSEUS_PATH__//p\' | tail -n 1 || true)"\n'
-        f'  if [ -n "$ODYSSEUS_USER_PATH" ]; then export PATH="$ODYSSEUS_USER_PATH:$PATH"; fi\n'
+        f'ULISES_USER_SHELL="${{SHELL:-}}"\n'
+        f'if [ -n "$ULISES_USER_SHELL" ] && [ -x "$ULISES_USER_SHELL" ]; then\n'
+        f'  ULISES_USER_PATH="$("$ULISES_USER_SHELL" -ic \'printf "__ULISES_PATH__%s\\n" "$PATH"\' 2>/dev/null | sed -n \'s/^__ULISES_PATH__//p\' | tail -n 1 || true)"\n'
+        f'  if [ -n "$ULISES_USER_PATH" ]; then export PATH="$ULISES_USER_PATH:$PATH"; fi\n'
         f"fi\n"
         f"{cmd} 2>&1 | tee '{log_path}'\n"
         f"EC=${{PIPESTATUS[0]}}\n"
@@ -1588,7 +1588,7 @@ def setup_shell_routes() -> APIRouter:
                 "desc": "Swift MLX runtime for LaMa / MI-GAN inpainting and object removal",
                 "category": "Image",
                 "target": "remote",
-                "install_hint": "Build an Odysseus-compatible mlx-lama-swift bridge on the selected Apple Silicon Mac and put odysseus-mlx-inpaint or mlx-lama-serve on PATH. Upstream currently ships Swift libraries plus smoke executables, not a stable image-edit CLI.",
+                "install_hint": "Build an Ulises-compatible mlx-lama-swift bridge on the selected Apple Silicon Mac and put ulises-mlx-inpaint or mlx-lama-serve on PATH. Upstream currently ships Swift libraries plus smoke executables, not a stable image-edit CLI.",
             },
             {
                 "name": "mlx_ddcolor_swift",
@@ -1596,7 +1596,7 @@ def setup_shell_routes() -> APIRouter:
                 "desc": "Swift MLX runtime for DDColor automatic image colorization",
                 "category": "Image",
                 "target": "remote",
-                "install_hint": "Build an Odysseus-compatible mlx-ddcolor-swift bridge on the selected Apple Silicon Mac and put odysseus-mlx-colorize or mlx-ddcolor-serve on PATH. Upstream currently ships Swift libraries plus smoke executables, not a stable colorize CLI.",
+                "install_hint": "Build an Ulises-compatible mlx-ddcolor-swift bridge on the selected Apple Silicon Mac and put ulises-mlx-colorize or mlx-ddcolor-serve on PATH. Upstream currently ships Swift libraries plus smoke executables, not a stable colorize CLI.",
             },
             {
                 "name": "mlx_vlm",
@@ -1671,7 +1671,7 @@ def setup_shell_routes() -> APIRouter:
                 "kind": "system",
                 "system_prereqs": ["libreoffice"],
                 "install_cmd": "sudo apt install -y libreoffice || brew install --cask libreoffice",
-                "install_hint": "Install LibreOffice/soffice where Odysseus runs to open DOCX attachments as signable PDF previews. Without it, DOCX opens as readable Markdown.",
+                "install_hint": "Install LibreOffice/soffice where Ulises runs to open DOCX attachments as signable PDF previews. Without it, DOCX opens as readable Markdown.",
             },
         ]
 

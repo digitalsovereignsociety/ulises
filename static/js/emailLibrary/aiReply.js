@@ -59,7 +59,7 @@ async function _runAiReplyFromButton(btn, em, data, mode, noteHint = '') {
   }
 }
 
-const _AI_REPLY_CONTEXT_DRAFT_PREFIX = 'odysseus:email-ai-reply-context:v2:';
+const _AI_REPLY_CONTEXT_DRAFT_PREFIX = 'ulises:email-ai-reply-context:v2:';
 let _aiReplyChoiceOutsideClose = null;
 
 function _aiReplyContextDraftKey(em, data) {

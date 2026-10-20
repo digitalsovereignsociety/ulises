@@ -96,7 +96,7 @@ def test_model_picker_source_invariants():
     # TextContent used to prevent XSS
     assert "nameSpan.textContent = _providerGroupName(provider)" in src
     # Collapsed persistence key
-    assert "odysseus-model-collapsed" in src
+    assert "ulises-model-collapsed" in src
 
 
 def test_composer_reasoning_effort_ui_markup():
@@ -123,7 +123,7 @@ def test_composer_reasoning_effort_ui_markup():
 def test_chat_submit_includes_reasoning_effort():
     """Verify static/js/chat.js sends reasoning_effort when active."""
     src = (ROOT / "static/js/chat.js").read_text(encoding="utf-8")
-    assert "window.__odysseusGetReasoningEffort" in src
+    assert "window.__ulisesGetReasoningEffort" in src
     assert "fd.append('reasoning_effort', effort)" in src
 
 

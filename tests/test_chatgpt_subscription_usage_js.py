@@ -189,7 +189,7 @@ def test_admin_wires_per_account_usage_and_reconnect_by_exact_ids():
     assert "reconnectBtn.dataset.admChatgptReconnect" in usage_block
     assert "formData.append('reconnect_auth_id', authId)" in usage_block
     assert "formData.append('reconnect_endpoint_id', epId)" in usage_block
-    # The browser only ever talks to Odysseus, never to OpenAI directly.
+    # The browser only ever talks to Ulises, never to OpenAI directly.
     assert "chatgpt.com" not in usage_block
     assert "wham/usage" not in usage_block
 
@@ -315,9 +315,9 @@ def test_chatgpt_usage_collapsible_behavior():
         if (helpers._isChatgptUsageExpanded('ep-a', 'auth-a') !== false) throw new Error('should be collapsed by default');
       }}
       helpers._setChatgptUsageExpanded('ep-a', 'auth-a', true);
-      const stored = JSON.parse(storage['odysseus-chatgpt-usage-expanded']);
+      const stored = JSON.parse(storage['ulises-chatgpt-usage-expanded']);
       if (!stored.includes('ep-a') || !stored.includes('auth-a')) throw new Error('storage should have ep and auth ids');
-      if (storage['odysseus-chatgpt-usage-expanded'].includes('Bearer') || storage['odysseus-chatgpt-usage-expanded'].includes('secret')) throw new Error('storage has credentials');
+      if (storage['ulises-chatgpt-usage-expanded'].includes('Bearer') || storage['ulises-chatgpt-usage-expanded'].includes('secret')) throw new Error('storage has credentials');
       if (helpers._isChatgptUsageExpanded('ep-a', 'auth-a') !== true) throw new Error('should be expanded');
       if (helpers._isChatgptUsageExpanded('ep-b', 'auth-b') !== false) throw new Error('b should remain collapsed');
       helpers._setChatgptUsageExpanded('ep-a', 'auth-a', false);

@@ -164,14 +164,14 @@ function makeWorld() {
     document,
     innerWidth: 1024,
     innerHeight: 768,
-    location: { origin: 'http://odysseus.test', hash: '', pathname: '/', href: '/' },
+    location: { origin: 'http://ulises.test', hash: '', pathname: '/', href: '/' },
     addEventListener() {},
     removeEventListener() {},
     chatModule: {
       detachCurrentStream() {},
       showWelcomeScreen() {},
     },
-    __odysseusDefaultChat: {
+    __ulisesDefaultChat: {
       endpoint_url: 'http://model.test',
       model: 'test/model',
       endpoint_id: 'endpoint-1',

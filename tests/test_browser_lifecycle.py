@@ -327,7 +327,7 @@ def test_browser_mcp_call_is_bounded_and_never_replayed(monkeypatch) -> None:
             await asyncio.sleep(3600)
 
     manager._sessions["builtin_browser"] = _Session()
-    monkeypatch.setenv("ODYSSEUS_BROWSER_MCP_CALL_TIMEOUT_S", "0.05")
+    monkeypatch.setenv("ULISES_BROWSER_MCP_CALL_TIMEOUT_S", "0.05")
 
     result = asyncio.run(manager.call_tool(
         "mcp__builtin_browser__browser_navigate", {"url": "https://example.com"}

@@ -9,7 +9,7 @@ const root = path.resolve(new URL('..', import.meta.url).pathname);
 const base = process.env.BASE_URL || 'http://127.0.0.1:7011';
 const endpointId = process.env.ENDPOINT_ID || '1d1022ef';
 const endpointUrl = process.env.ENDPOINT_URL || (() => { throw new Error("ENDPOINT_URL is required"); })();
-const model = process.env.MODEL || 'odysseus-qwen3.5-tools-pre-heretic';
+const model = process.env.MODEL || 'ulises-qwen3.5-tools-pre-heretic';
 const owner = process.env.OWNER || 'sft_alex_creator';
 const routingMode = process.env.ROUTING_MODE || 'baseline';
 const expectCleanRoute = process.env.EXPECT_CLEAN_ROUTE !== 'false';
@@ -21,7 +21,7 @@ const reportPath = path.resolve(process.env.REPORT_PATH || path.join(root, `repo
 if (!reportPath.startsWith(path.join(root, 'reports') + path.sep) || fs.existsSync(reportPath)) throw Error('Report path must be new and under reports/');
 const selected = new Set((process.env.CHAINS || '').split(',').map(x => x.trim()).filter(Boolean));
 const keepSession = process.env.KEEP_SESSION === 'true';
-const auth = JSON.parse(fs.readFileSync(process.env.ODYSSEUS_AUTH_SESSION_FILE || (() => { throw new Error("ODYSSEUS_AUTH_SESSION_FILE is required"); })(), 'utf8'));
+const auth = JSON.parse(fs.readFileSync(process.env.ULISES_AUTH_SESSION_FILE || (() => { throw new Error("ULISES_AUTH_SESSION_FILE is required"); })(), 'utf8'));
 const token = Object.entries(auth).find(([, value]) => value?.username === owner)?.[0];
 if (!token) throw Error(`No active ${owner} session`);
 
@@ -194,9 +194,9 @@ try {
   browser = await chromium.launch({ headless: true, args: ['--no-proxy-server'] });
   context = await browser.newContext({ serviceWorkers: 'block', extraHTTPHeaders: {
     'Accept-Encoding': 'identity',
-    ...(routingMode === 'default' ? {} : {'x-odysseus-routing-experiment': routingMode}),
+    ...(routingMode === 'default' ? {} : {'x-ulises-routing-experiment': routingMode}),
   } });
-  await context.addCookies([{ name: 'odysseus_session', value: token, url: base }]);
+  await context.addCookies([{ name: 'ulises_session', value: token, url: base }]);
   for (const spec of chains) {
     const chain = { name: spec.name, status: 'running', turns: [], cleanup: false };
     report.chains.push(chain); save();
@@ -233,7 +233,7 @@ try {
       await historyReady;
       await page.waitForFunction(id => {
         const history = document.querySelector('#chat-history');
-        return window.__odysseusSessionReadyId === id
+        return window.__ulisesSessionReadyId === id
           && history
           && !history.querySelector('.session-loading-state')
           && !history.classList.contains('no-animate')

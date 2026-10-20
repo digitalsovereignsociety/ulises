@@ -133,7 +133,7 @@ def test_2fa_setup_still_generates_a_server_png():
 
 
 def test_distribution_paths_include_all_notices():
-    for name in ['Odysseus.spec', 'build-windows-portable.ps1', 'build-macos-app.sh', 'Dockerfile']:
+    for name in ['Ulises.spec', 'build-windows-portable.ps1', 'build-macos-app.sh', 'Dockerfile']:
         text = (ROOT / name).read_text()
         assert 'licenses' in text and 'THIRD_PARTY_PROVENANCE.json' in text and 'ACKNOWLEDGMENTS.md' in text
     ignore = (ROOT / '.dockerignore').read_text()

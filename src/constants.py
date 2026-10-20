@@ -12,7 +12,7 @@ BUILTIN_SKILLS_DIR = os.path.join(get_app_root(), "resources", "skills")
 # value tied to HARNESS_VERSION so a version bump cannot leave the running
 # service claiming an older harness build.
 def _load_build_version() -> str:
-    override = os.getenv("ODYSSEUS_BUILD_VERSION", "").strip()
+    override = os.getenv("ULISES_BUILD_VERSION", "").strip()
     if override:
         return override
     try:
@@ -30,7 +30,7 @@ APP_BUILD_VERSION = _load_build_version()
 
 def _load_source_commit() -> str:
     """Identify the source tree loaded by this process for runtime provenance."""
-    override = os.getenv("ODYSSEUS_SOURCE_COMMIT", "").strip()
+    override = os.getenv("ULISES_SOURCE_COMMIT", "").strip()
     if override:
         return override
     try:
@@ -53,11 +53,11 @@ APP_SOURCE_COMMIT = _load_source_commit()
 # Base paths
 BASE_DIR = os.path.join(get_app_root(), "")
 STATIC_DIR = os.path.join(BASE_DIR, "static")
-DATA_DIR = os.getenv("ODYSSEUS_DATA_DIR", get_default_data_dir())
+DATA_DIR = os.getenv("ULISES_DATA_DIR", get_default_data_dir())
 
 # Data file paths
 # Single source of truth: every persisted file/dir lives under DATA_DIR, which
-# is the ONLY place ODYSSEUS_DATA_DIR is read. Import these constants instead of
+# is the ONLY place ULISES_DATA_DIR is read. Import these constants instead of
 # re-deriving paths from __file__ or a relative "data" literal.
 SESSIONS_FILE = os.path.join(DATA_DIR, "sessions.json")
 MEMORY_FILE = os.path.join(DATA_DIR, "memory.json")
@@ -107,7 +107,7 @@ MEMORY_VECTORS_DIR = os.path.join(DATA_DIR, "memory_vectors")
 AGENT_WORKSPACE_DIR = os.path.join(DATA_DIR, "agent_workspace")
 
 # Paths with an intentional dedicated env override, defaulting under DATA_DIR.
-MAIL_ATTACHMENTS_DIR = os.getenv("ODYSSEUS_MAIL_ATTACHMENTS_DIR", os.path.join(DATA_DIR, "mail-attachments"))
+MAIL_ATTACHMENTS_DIR = os.getenv("ULISES_MAIL_ATTACHMENTS_DIR", os.path.join(DATA_DIR, "mail-attachments"))
 # `or` (not os.getenv's default arg) so a PRESENT-but-EMPTY value falls back to
 # the default. docker-compose.yml injects `FASTEMBED_CACHE_PATH=${FASTEMBED_CACHE_PATH:-}`,
 # which sets the var to "" when the host hasn't defined it. os.getenv(name, default)
@@ -182,11 +182,11 @@ DEFAULT_MAX_TOKENS = 32768
 
 
 def internal_api_base() -> str:
-    """Base URL for in-process loopback calls to Odysseus's own API.
+    """Base URL for in-process loopback calls to Ulises's own API.
 
     Agent tools and background jobs reach admin-gated routes by calling the
     running server over HTTP. Resolution order:
-      1. ODYSSEUS_INTERNAL_BASE  - explicit override (e.g. behind a TLS proxy).
+      1. ULISES_INTERNAL_BASE  - explicit override (e.g. behind a TLS proxy).
       2. APP_PORT                - http://127.0.0.1:$APP_PORT (docker-compose).
       3. Fallback http://127.0.0.1:7011 - matches app.py's bind default.
 
@@ -194,7 +194,7 @@ def internal_api_base() -> str:
     call. Without this, loopback tools fail with "All connection attempts
     failed" whenever the server is not on port 7000.
     """
-    override = os.environ.get("ODYSSEUS_INTERNAL_BASE")
+    override = os.environ.get("ULISES_INTERNAL_BASE")
     if override:
         return override.rstrip("/")
     return f"http://127.0.0.1:{os.environ.get('APP_PORT', '7011')}"

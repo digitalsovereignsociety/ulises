@@ -120,7 +120,7 @@ was found that requires expanding this compatibility correction.
    [publication.py:328](../services/skills/publication.py#L328), especially line
    342; the bypassed retrieval condition is
    [skills.py:703](../services/memory/skills.py#L703). Original source:
-   [routes/skills_routes.py:1039](https://github.com/odysseus-dev/odysseus/blob/86b886c611338282af6d4a717246ea4e256f58df/routes/skills_routes.py#L1039).
+   [routes/skills_routes.py:1039](https://github.com/ulises-dev/ulises/blob/86b886c611338282af6d4a717246ea4e256f58df/routes/skills_routes.py#L1039).
    `test_rewrite_cannot_promote_model_text_to_builtin` uses the real manager and
    saves model markdown with `source: builtin`, `status: published` and
    `confidence: 1`. Identity/owner remain pinned, but the lifecycle fields persist
@@ -134,7 +134,7 @@ was found that requires expanding this compatibility correction.
 2. **Preference loading fails open for automatic publication.** Current source:
    [publication.py:13](../services/skills/publication.py#L13) and
    [skills.py:59](../services/memory/skills.py#L59). Original source:
-   [routes/skills_routes.py:710](https://github.com/odysseus-dev/odysseus/blob/86b886c611338282af6d4a717246ea4e256f58df/routes/skills_routes.py#L710).
+   [routes/skills_routes.py:710](https://github.com/ulises-dev/ulises/blob/86b886c611338282af6d4a717246ea4e256f58df/routes/skills_routes.py#L710).
    `test_preferences_read_failure_does_not_enable_auto_publication` makes the
    loader raise `PermissionError`; automatic publication is enabled rather than
    preserving the owner's possible opt-out. Corrective change: distinguish a
@@ -147,7 +147,7 @@ was found that requires expanding this compatibility correction.
    Current source:
    [agent_runner.py:125](../services/skills/agent_runner.py#L125) and
    [job_coordinator.py:49](../services/skills/job_coordinator.py#L49). Original:
-   [routes/skills_routes.py:635](https://github.com/odysseus-dev/odysseus/blob/86b886c611338282af6d4a717246ea4e256f58df/routes/skills_routes.py#L635).
+   [routes/skills_routes.py:635](https://github.com/ulises-dev/ulises/blob/86b886c611338282af6d4a717246ea4e256f58df/routes/skills_routes.py#L635).
    `test_manual_cancellation_cleans_sensitive_continuation` suspends and cancels
    the stream. The stream closes in its originating task, but job status remains
    running and `_run.headers.Authorization` remains resident. Polling still hides
@@ -160,7 +160,7 @@ was found that requires expanding this compatibility correction.
 4. **Approval pauses during retries lead to demotion.** Current source:
    [audit_workflow.py:244](../services/skills/audit_workflow.py#L244), teacher
    retry at line 280 and demotion at line 303. Original:
-   [routes/skills_routes.py:1448](https://github.com/odysseus-dev/odysseus/blob/86b886c611338282af6d4a717246ea4e256f58df/routes/skills_routes.py#L1448)
+   [routes/skills_routes.py:1448](https://github.com/ulises-dev/ulises/blob/86b886c611338282af6d4a717246ea4e256f58df/routes/skills_routes.py#L1448)
    and lines 1484/1507. `test_retry_approval_preserves_publication_and_confidence`
    begins published at .9, fails the first grade, then pauses the rewritten test
    for approval. The result is flagged/draft/.35. The lower-level approval is
@@ -173,7 +173,7 @@ was found that requires expanding this compatibility correction.
 5. **Duplicate losers are binned after keeper publication fails.** Current:
    [publication.py:217](../services/skills/publication.py#L217), including loser
    writes at line 228. Original:
-   [routes/skills_routes.py:914](https://github.com/odysseus-dev/odysseus/blob/86b886c611338282af6d4a717246ea4e256f58df/routes/skills_routes.py#L914).
+   [routes/skills_routes.py:914](https://github.com/ulises-dev/ulises/blob/86b886c611338282af6d4a717246ea4e256f58df/routes/skills_routes.py#L914).
    `test_duplicate_losers_retained_if_keeper_write_fails` raises disk-full during
    keeper publication and still observes a loser binned. Corrective change:
    require confirmed keeper persistence before binning losers when automatic
@@ -183,7 +183,7 @@ was found that requires expanding this compatibility correction.
 
 6. **Reported publication status can disagree with canonical storage.** Current:
    [publication.py:320](../services/skills/publication.py#L320). Original:
-   [routes/skills_routes.py:1017](https://github.com/odysseus-dev/odysseus/blob/86b886c611338282af6d4a717246ea4e256f58df/routes/skills_routes.py#L1017).
+   [routes/skills_routes.py:1017](https://github.com/ulises-dev/ulises/blob/86b886c611338282af6d4a717246ea4e256f58df/routes/skills_routes.py#L1017).
    `test_publication_does_not_report_unpersisted_success` returns False from the
    manager update; the helper reports published while the stored skill remains
    draft. Exceptions are also swallowed by the inspected code. Corrective change:

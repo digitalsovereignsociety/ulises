@@ -18,7 +18,7 @@ def test_runtime_restores_environment_and_removes_files(monkeypatch, tmp_path, f
     caller.mkdir()
     sentinel = caller / "sentinel"
     sentinel.write_text("keep")
-    for name in ("ODYSSEUS_DATA_DIR", "ODYSSEUS_MAIL_ATTACHMENTS_DIR",
+    for name in ("ULISES_DATA_DIR", "ULISES_MAIL_ATTACHMENTS_DIR",
                  "FASTEMBED_CACHE_PATH", "XDG_RUNTIME_DIR", "AGENT_BROWSER_SOCKET_DIR",
                  "TMPDIR", "TMP", "TEMP"):
         monkeypatch.setenv(name, str(caller))
@@ -29,7 +29,7 @@ def test_runtime_restores_environment_and_removes_files(monkeypatch, tmp_path, f
         with isolated_runtime("gw0") as root:
             assert root != caller
             assert "AGENT_BROWSER_SOCKET_DIR" not in os.environ
-            for name in ("ODYSSEUS_DATA_DIR", "ODYSSEUS_MAIL_ATTACHMENTS_DIR",
+            for name in ("ULISES_DATA_DIR", "ULISES_MAIL_ATTACHMENTS_DIR",
                          "FASTEMBED_CACHE_PATH", "XDG_RUNTIME_DIR", "TMPDIR", "TMP", "TEMP"):
                 path = Path(os.environ[name])
                 assert path.is_dir() and path.is_relative_to(root)
@@ -47,7 +47,7 @@ def test_runtime_restores_environment_and_removes_files(monkeypatch, tmp_path, f
 
 
 def test_same_worker_name_gets_distinct_namespaces():
-    data_variable = "ODYSSEUS_DATA_DIR"
+    data_variable = "ULISES_DATA_DIR"
     with isolated_runtime("gw0") as first:
         (first / "data" / "state").write_text("first")
         with isolated_runtime("gw0") as second:
@@ -63,7 +63,7 @@ def test_subprocess_inherits_private_temp_and_data_directories():
     with isolated_runtime("gw1") as root:
         result = subprocess.run(
             [sys.executable, "-c", "import os,tempfile; from pathlib import Path; "
-             "name = 'ODYSSEUS_DATA_DIR'; Path(os.environ[name], 'child').write_text('data'); "
+             "name = 'ULISES_DATA_DIR'; Path(os.environ[name], 'child').write_text('data'); "
              "Path(tempfile.gettempdir(), 'child').write_text('temp')"],
             capture_output=True, text=True, timeout=10,
         )

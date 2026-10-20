@@ -62,7 +62,7 @@ def mcp_mail(tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize("folder,uid", [
-    ("/tmp/odysseus-escape", "42"),          # absolute mailbox name replaced the root
+    ("/tmp/ulises-escape", "42"),          # absolute mailbox name replaced the root
     ("../../escape", "42"),                  # relative traversal
     ("INBOX/../../../escape", "42"),          # hierarchy delimiter + traversal
     ("..", ".."),

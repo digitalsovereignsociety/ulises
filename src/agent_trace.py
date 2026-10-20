@@ -1,4 +1,4 @@
-"""Canonical append-only traces and codecs for Odysseus agent adapters."""
+"""Canonical append-only traces and codecs for Ulises agent adapters."""
 
 from __future__ import annotations
 
@@ -291,7 +291,7 @@ def decode_native_trace(
 ) -> CanonicalTrace:
     """Decode native SSE capture rows into canonical trace events."""
 
-    builder = _TraceBuilder(run_id, "odysseus_native")
+    builder = _TraceBuilder(run_id, "ulises_native")
     run_payload = {"adapter": "native_sse"}
     if runtime_revision:
         run_payload["runtime_revision"] = str(runtime_revision)

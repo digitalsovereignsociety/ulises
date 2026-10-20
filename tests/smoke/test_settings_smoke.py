@@ -9,7 +9,7 @@ from __future__ import annotations
 
 PREFS_PATH = "/api/prefs"
 
-KEY = "odysseus_smoke_preference"
+KEY = "ulises_smoke_preference"
 VALUE = "set-by-the-release-smoke-suite"
 
 

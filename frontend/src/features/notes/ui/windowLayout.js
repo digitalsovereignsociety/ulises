@@ -103,7 +103,7 @@ export function createWindowLayout({
     const z = _topToolWindowZ(backdrop) + 1;
     if (backdrop) backdrop.style.setProperty('z-index', String(z), 'important');
     try {
-      window.dispatchEvent(new CustomEvent('odysseus:modal-opened', {
+      window.dispatchEvent(new CustomEvent('ulises:modal-opened', {
         detail: { id: 'notes-panel', modal: pane },
       }));
     } catch (_) {}

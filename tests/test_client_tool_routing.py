@@ -37,7 +37,7 @@ execute_tool_block = _execute_tool_block_for_unit_tests
 ROOT = Path(__file__).resolve().parent.parent
 
 BRIDGE_CTX = {
-    "surface": "odysseus-tui",
+    "surface": "ulises-tui",
     "session_cwd": "/home/pewds/project",
     "host_shell_bridge": {"url": "http://127.0.0.1:47475/run", "token": "secret"},
 }
@@ -47,7 +47,7 @@ def test_client_bridge_extracts_valid_bridge_only():
     assert _client_bridge(BRIDGE_CTX)["token"] == "secret"
     assert _client_bridge({"host_shell_bridge": BRIDGE_CTX["host_shell_bridge"]}) is None
     assert _client_bridge({
-        "surface": "odysseus-tui",
+        "surface": "ulises-tui",
         "host_shell_bridge": {"url": "http://8.8.8.8:47475/run", "token": "x"},
     }) is None
     assert _client_bridge({"host_shell_bridge": {"url": "", "token": "x"}}) is None
@@ -169,7 +169,7 @@ def test_routed_read_file_preserves_json_line_range():
             execute_tool_block(
                 SimpleNamespace(
                     tool_type="read_file",
-                    content='{"path":"odysseus_tui/client.py","offset":55,"limit":40}',
+                    content='{"path":"ulises_tui/client.py","offset":55,"limit":40}',
                 ),
                 client_runtime_context=dict(BRIDGE_CTX),
             )
@@ -178,10 +178,10 @@ def test_routed_read_file_preserves_json_line_range():
     assert calls == [
         (
             "/read",
-            {"path": "odysseus_tui/client.py", "offset": 55, "limit": 40},
+            {"path": "ulises_tui/client.py", "offset": 55, "limit": 40},
         )
     ]
-    assert desc == "read_file: odysseus_tui/client.py"
+    assert desc == "read_file: ulises_tui/client.py"
     assert result["output"] == "selected lines"
 
 
@@ -607,7 +607,7 @@ def test_agent_turn_cwd_prefers_raw_host_cwd_when_bridge_advertised():
 
 def test_agent_turn_cwd_keeps_session_cwd_without_bridge():
     sess = SimpleNamespace(cwd="/workspace/project")
-    ctx = {"surface": "odysseus-tui", "session_cwd": "/home/pewds/project"}
+    ctx = {"surface": "ulises-tui", "session_cwd": "/home/pewds/project"}
     assert _agent_turn_cwd(sess, ctx) == "/workspace/project"
     assert _agent_turn_cwd(sess, {"surface": "webui"}) == "/workspace/project"
 
@@ -654,7 +654,7 @@ def test_bridge_post_targets_endpoint_paths():
         )
 
     assert posted["url"] == "http://127.0.0.1:47475/write"
-    assert posted["headers"] == {"x-odysseus-tui-bridge-token": "secret"}
+    assert posted["headers"] == {"x-ulises-tui-bridge-token": "secret"}
     assert result["exit_code"] == 0
     assert posted["timeout"].connect == 5.0
     assert posted["timeout"].write == 10.0
@@ -905,7 +905,7 @@ def test_chat_stream_parses_and_injects_tui_runtime_context():
 
 def test_native_runtime_context_accepts_only_loopback_execution_bridge():
     base = {
-        "surface": "odysseus-native",
+        "surface": "ulises-native",
         "terminal_agent": True,
         "interaction_mode": "cook",
         "unattended_mode": True,
@@ -981,8 +981,8 @@ def test_runtime_context_preserves_sanitized_active_skills():
 
     context = _parse_client_runtime_context(
         {
-            "surface": "odysseus-tui",
-            "session_cwd": "/home/pewds/odysseus-tui",
+            "surface": "ulises-tui",
+            "session_cwd": "/home/pewds/ulises-tui",
             "active_skills": ["tdd", "`openai-docs`", "../bad", "tdd"],
             "active_skill_details": [
                 {
@@ -996,7 +996,7 @@ def test_runtime_context_preserves_sanitized_active_skills():
     )
 
     assert context["active_skills"] == ["tdd", "openai-docs"]
-    assert context["session_cwd"] == "/home/pewds/odysseus-tui"
+    assert context["session_cwd"] == "/home/pewds/ulises-tui"
     assert context["active_skill_details"] == [
         {
             "name": "tdd",
@@ -1006,7 +1006,7 @@ def test_runtime_context_preserves_sanitized_active_skills():
     ]
     message = _client_runtime_context_system_message(context)
     assert message is not None
-    assert "session_cwd: /home/pewds/odysseus-tui" in message["content"]
+    assert "session_cwd: /home/pewds/ulises-tui" in message["content"]
     assert "active_skills: tdd, openai-docs" in message["content"]
     assert "tdd: Red-green-refactor workflow" in message["content"]
 
@@ -1014,8 +1014,8 @@ def test_runtime_context_preserves_sanitized_active_skills():
 def test_tui_agent_round_cap_still_bounds_non_coding_turns():
     from routes.chat_routes import _effective_agent_rounds
 
-    assert _effective_agent_rounds(100, {"surface": "odysseus-tui"}, 20) == 20
-    assert _effective_agent_rounds("bad", {"surface": "odysseus-tui"}, 20) == 20
+    assert _effective_agent_rounds(100, {"surface": "ulises-tui"}, 20) == 20
+    assert _effective_agent_rounds("bad", {"surface": "ulises-tui"}, 20) == 20
     assert _effective_agent_rounds(100, {"surface": "webui"}, 20) == 100
 
 
@@ -1024,7 +1024,7 @@ def test_runtime_context_rejects_non_tui_surface_and_accepts_valid_tui_bridge():
 
     assert _parse_client_runtime_context({"surface": "webui", "host_shell_bridge": {"url": "http://127.0.0.1:1/run", "token": "x"}}) == {}
     deceptive = _parse_client_runtime_context({
-        "surface": "odysseus-tui",
+        "surface": "ulises-tui",
         "host_shell_bridge": {
             "url": "http://127.0.0.1:80@8.8.8.8:47475/run",
             "token": "x",
@@ -1033,7 +1033,7 @@ def test_runtime_context_rejects_non_tui_surface_and_accepts_valid_tui_bridge():
     assert "host_shell_bridge" not in deceptive
     context = _parse_client_runtime_context(
         {
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "host_shell_bridge": {"url": "http://192.168.1.50:47475/run", "token": "x"},
             "unattended_mode": True,
             "active_skills": ["tdd"],
@@ -1052,7 +1052,7 @@ def test_agent_runtime_context_can_omit_directives_when_agent_loop_renders_them(
     from routes.chat_routes import _client_runtime_context_system_message
 
     context = {
-        "surface": "odysseus-tui",
+        "surface": "ulises-tui",
         "session_cwd": "/home/tester/project",
         "agent_runtime_directives": ["Treat session_cwd as active."],
     }
@@ -1069,7 +1069,7 @@ def test_native_completion_contract_preserves_safe_workspace_root():
     from routes.chat_routes import _parse_client_runtime_context
 
     context = _parse_client_runtime_context({
-        "surface": "odysseus-native",
+        "surface": "ulises-native",
         "completion_requirements": {
             "required_artifacts": ["/workspace/output.txt"],
             "workspace_root": "/tmp/ody-task-123/workspace",
@@ -1088,7 +1088,7 @@ def test_runtime_contract_is_sanitized_and_prompt_surfaces_actionable_host_facts
 
     context = _parse_client_runtime_context(
         {
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "host_shell_bridge": {
                 "url": "http://host.docker.internal:17654/run",
                 "token": "secret",
@@ -1168,7 +1168,7 @@ def test_tui_runtime_context_cwd_is_sanitized_and_surface_scoped(monkeypatch):
 
     context = _parse_client_runtime_context(
         {
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "session_cwd": "/repo\nmalicious",
         }
     )
@@ -1181,8 +1181,8 @@ def test_tui_runtime_context_cwd_is_sanitized_and_surface_scoped(monkeypatch):
 def test_backend_workspace_path_maps_host_root_to_container_root(monkeypatch):
     from src.workspace_paths import backend_workspace_path
 
-    monkeypatch.setenv("ODYSSEUS_WORKSPACE_HOST_ROOT", "/home/alice")
-    monkeypatch.setenv("ODYSSEUS_WORKSPACE_CONTAINER_ROOT", "/workspace")
+    monkeypatch.setenv("ULISES_WORKSPACE_HOST_ROOT", "/home/alice")
+    monkeypatch.setenv("ULISES_WORKSPACE_CONTAINER_ROOT", "/workspace")
 
     assert backend_workspace_path("/home/alice/project") == "/workspace/project"
 
@@ -1190,9 +1190,9 @@ def test_backend_workspace_path_maps_host_root_to_container_root(monkeypatch):
 def test_backend_workspace_path_keeps_unmapped_paths(monkeypatch):
     from src.workspace_paths import backend_workspace_path
 
-    monkeypatch.delenv("ODYSSEUS_WORKSPACE_HOST_ROOT", raising=False)
-    monkeypatch.delenv("ODYSSEUS_WORKSPACE_CONTAINER_ROOT", raising=False)
-    monkeypatch.delenv("ODYSSEUS_WORKSPACE_MOUNTS", raising=False)
+    monkeypatch.delenv("ULISES_WORKSPACE_HOST_ROOT", raising=False)
+    monkeypatch.delenv("ULISES_WORKSPACE_CONTAINER_ROOT", raising=False)
+    monkeypatch.delenv("ULISES_WORKSPACE_MOUNTS", raising=False)
 
     assert backend_workspace_path("/already/container") == "/already/container"
 
@@ -1201,10 +1201,10 @@ def test_backend_workspace_path_uses_longest_mapping(monkeypatch):
     from src.workspace_paths import backend_workspace_path
 
     monkeypatch.setenv(
-        "ODYSSEUS_WORKSPACE_MOUNTS",
+        "ULISES_WORKSPACE_MOUNTS",
         "/home/alice=/workspace,/home/alice/code=/code",
     )
-    monkeypatch.delenv("ODYSSEUS_WORKSPACE_HOST_ROOT", raising=False)
+    monkeypatch.delenv("ULISES_WORKSPACE_HOST_ROOT", raising=False)
 
     assert backend_workspace_path("/home/alice/code/app") == "/code/app"
 

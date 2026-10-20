@@ -1,9 +1,9 @@
-"""Qwen3.6/Qwen3.8 Odysseus-native model-family regressions."""
+"""Qwen3.6/Qwen3.8 Ulises-native model-family regressions."""
 
 import pytest
 
 from src import llm_core
-from src.agent_loop import _is_odysseus_qwen_native
+from src.agent_loop import _is_ulises_qwen_native
 
 
 @pytest.mark.parametrize(
@@ -17,8 +17,8 @@ from src.agent_loop import _is_odysseus_qwen_native
     ],
 )
 def test_qwen_native_family_accepts_supported_name_variants(model):
-    assert _is_odysseus_qwen_native(model) is True
-    assert llm_core._is_odysseus_qwen_native_model(model) is True
+    assert _is_ulises_qwen_native(model) is True
+    assert llm_core._is_ulises_qwen_native_model(model) is True
 
 
 @pytest.mark.parametrize(
@@ -34,8 +34,8 @@ def test_qwen_native_family_accepts_supported_name_variants(model):
     ],
 )
 def test_qwen_native_family_rejects_other_deployments(model):
-    assert _is_odysseus_qwen_native(model) is False
-    assert llm_core._is_odysseus_qwen_native_model(model) is False
+    assert _is_ulises_qwen_native(model) is False
+    assert llm_core._is_ulises_qwen_native_model(model) is False
 
 
 @pytest.mark.parametrize("model", ["qwen36-27b-mlx", "qwen38-27b-mlx"])

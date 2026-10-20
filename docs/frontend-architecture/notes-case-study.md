@@ -1,7 +1,7 @@
 # Notes reference decomposition
 
 Implementation started: 2026-10-13. Final validation: 2026-10-14.
-Foundation: [PR #6701](https://github.com/odysseus-dev/odysseus/pull/6701),
+Foundation: [PR #6701](https://github.com/ulises-dev/ulises/pull/6701),
 `1cc56cb9d78f3e2399d1d61155b71d771a17b85b`. Branch was safely updated via
 non-destructive fast-forward to latest official `upstream/dev` at
 `86b886c611338282af6d4a717246ea4e256f58df`, incorporating PRs #6704 and #6693.
@@ -139,7 +139,7 @@ consumer, global bridge, bootstrap and offline reference has migrated together.
 
 ## Protected selected Notes/Todos integration
 
-The sender dispatches `odysseus:notes-context-selected` on `window` with
+The sender dispatches `ulises:notes-context-selected` on `window` with
 `{ noteIds, accepted: false }`. Dispatch and acknowledgement remain synchronous.
 Chat owns acceptance, its session/pending selection, the context indicator and
 the `selected_note_ids` send payload. Notes exits selection only after acceptance.
@@ -156,15 +156,15 @@ new-chat reset. Live model execution is not part of that probe.
 
 | Key | Preserved format |
 | --- | --- |
-| `odysseus-notes-view` | `list` or `grid` |
-| `odysseus-notes-labels-collapsed` | `1` or `0` |
-| `odysseus-notes-first-open-hint-v1` | Existing first-open marker |
-| `odysseus-notes-reminder-fired` | JSON array of IDs |
-| `odysseus-notes-reminder-glowed` | JSON array of IDs |
-| `odysseus-notes-reminder-pending-highlight` | JSON array of IDs |
-| `odysseus-notes-reminder-active-highlight` | JSON array of IDs |
-| `odysseus-notes-reminder-dismissed-at` | Decimal millisecond timestamp |
-| `odysseus-note-draft-<id>` and `odysseus-note-draft-__new__` | Existing JSON draft fields and `_ts` |
+| `ulises-notes-view` | `list` or `grid` |
+| `ulises-notes-labels-collapsed` | `1` or `0` |
+| `ulises-notes-first-open-hint-v1` | Existing first-open marker |
+| `ulises-notes-reminder-fired` | JSON array of IDs |
+| `ulises-notes-reminder-glowed` | JSON array of IDs |
+| `ulises-notes-reminder-pending-highlight` | JSON array of IDs |
+| `ulises-notes-reminder-active-highlight` | JSON array of IDs |
+| `ulises-notes-reminder-dismissed-at` | Decimal millisecond timestamp |
+| `ulises-note-draft-<id>` and `ulises-note-draft-__new__` | Existing JSON draft fields and `_ts` |
 
 CRUD, reorder, upload, reminder firing, default-chat lookup, session creation and
 chat-stream requests keep their URLs, methods, credentials, payloads and error
@@ -211,7 +211,7 @@ entry, not a second implementation.
 All new outputs join exact service-worker precache arrays. A real offline test also
 found eight previously missing exact legacy URLs in the Notes graph; those entries
 are now included. The eager Notes graph has 57 exact runtime URLs. Cache naming
-follows the repository's `odysseus-v659-notes-reference` convention. Root offline
+follows the repository's `ulises-v659-notes-reference` convention. Root offline
 reload remains outside certification because the existing worker scope is `/static/`.
 
 Python startup and Docker serve the committed static graph without maintained

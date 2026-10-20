@@ -478,9 +478,9 @@ def test_research_artifact_creation_is_not_stolen_by_task_metadata(prompt):
     assert requested_capabilities(prompt) == {"research"}
 
 
-def test_explicit_odysseus_search_workflow_is_not_stolen_by_task_label_or_subject():
+def test_explicit_ulises_search_workflow_is_not_stolen_by_task_label_or_subject():
     prompt = (
-        "Use Odysseus web_search to discover authoritative evidence; do not answer "
+        "Use Ulises web_search to discover authoritative evidence; do not answer "
         "from memory. After each search, check whether its snippets cover every claim. "
         "Fetch the strongest source pages and answer only from retrieved evidence.\n\n"
         "Task: Compare Python pathlib Path.resolve(strict=False), Path.absolute(), "
@@ -708,7 +708,7 @@ def test_current_month_topic_question_routes_web_search():
 
 def test_two_url_comparison_does_not_treat_documentation_as_document_library():
     prompt = (
-        "Use Odysseus web retrieval tools to open both URLs and compare RFC 9309 "
+        "Use Ulises web retrieval tools to open both URLs and compare RFC 9309 "
         "with Google's robots.txt documentation, citing the evidence.\n"
         "https://www.rfc-editor.org/rfc/rfc9309.txt\n"
         "https://developers.google.com/search/docs/crawling-indexing/robots/robots_txt"
@@ -2383,7 +2383,7 @@ def test_explicit_native_web_workflow_outranks_incidental_task_words():
 
 def test_explicit_native_web_workflow_preserves_workspace_artifact_tools():
     message = (
-        "Use Odysseus web_search to locate each RFC, then web_fetch every page. "
+        "Use Ulises web_search to locate each RFC, then web_fetch every page. "
         "Create /tmp_workspace/results/inventory.jsonl, read the local inputs, "
         "and run the Python validator before finishing."
     )
@@ -2396,7 +2396,7 @@ def test_explicit_native_web_workflow_preserves_workspace_artifact_tools():
 
 def test_negative_memory_evidence_rule_does_not_select_personal_memory():
     message = (
-        "Use Odysseus web_search and web_fetch for every paper, then write "
+        "Use Ulises web_search and web_fetch for every paper, then write "
         "/tmp_workspace/results/paper_digest.md. Every value must come from "
         "the fetched page, never memory. Sort every paper list and show the result."
     )
@@ -3174,7 +3174,7 @@ def test_colloquial_inventory_requests_route_to_named_store(message, expected):
 
 
 @pytest.mark.parametrize("message,expected", [
-    ("what mail accounts r hooked up to odysseus?", {"email"}),
+    ("what mail accounts r hooked up to ulises?", {"email"}),
     ("give me up to three doc titles from my library", {"documents"}),
     ("quick memory dump - whats saved?", {"memory"}),
 ])
@@ -3295,7 +3295,7 @@ def test_referential_page_read_selects_fetch(message):
 
 def test_multiple_explicit_text_sources_select_fetch_for_comparison():
     message = (
-        "Use Odysseus web retrieval tools to open both authoritative URLs, "
+        "Use Ulises web retrieval tools to open both authoritative URLs, "
         "compare their evidence, and explain the result citing both sources. "
         "Sources: https://www.rfc-editor.org/rfc/rfc6585.txt and "
         "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/429"

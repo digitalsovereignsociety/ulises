@@ -17,7 +17,7 @@ TurnContract, generic process containment (Wave 3-S), effects/provenance
 2. Playwright MCP (`src/builtin_mcp.py`, server `builtin_browser`) is one global
    `npx @playwright/mcp --headless --isolated --no-sandbox` stdio server owned by
    `src/mcp_manager.py`. Its tools are hidden from the model unless
-   `private_browser` is disabled or `ODYSSEUS_EXPOSE_RAW_BROWSER_MCP` is set
+   `private_browser` is disabled or `ULISES_EXPOSE_RAW_BROWSER_MCP` is set
    (`src/agent_loop.py`, `_should_hide_raw_browser_mcp`). The two runtimes share
    no code; only Chromium discovery overlaps.
 
@@ -51,13 +51,13 @@ TurnContract, generic process containment (Wave 3-S), effects/provenance
 | F5 | Launch failure left the daemon alive | Launch-failure output triggers forced cleanup and a truthful error |
 | F6 | Concurrent actions on one session raced one daemon | Per-session `asyncio.Lock` serializes actions |
 | F7 | Observation after a failed navigation silently showed the old page | Sessions track navigation generation, page URL and failed navigation; such observations are prefixed with an explicit stale notice and flagged `stale_observation`. A batch's navigation outcome comes from its per-command rows; when it cannot be determined the page is treated as unknown |
-| F8 | Recovery recursed through `execute` with a model-visible retry flag and no overall deadline | One deadline per call (action timeout + 75s); at most one retry, only for local read-only HTML open; model-supplied `_odysseus_browser_retry` is ignored |
+| F8 | Recovery recursed through `execute` with a model-visible retry flag and no overall deadline | One deadline per call (action timeout + 75s); at most one retry, only for local read-only HTML open; model-supplied `_ulises_browser_retry` is ignored |
 | F9 | `research_navigator` passed `timeout`, which the tool ignored | Passes `timeout_ms` |
 | F10 | No lifecycle evidence | Every result carries `browser_lifecycle` with stages, timings, ownership, state and cleanup receipt |
 | F11 | Pid lookup assumed `/run/user/<uid>`; containers without `XDG_RUNTIME_DIR` were never cleaned | Runtime root follows agent-browser's own resolution from the launch environment |
 | F12 | Per-call timeout swept every Chrome under the runtime `TMPDIR`, killing other sessions | Per-call cleanup is limited to the session tree; the `TMPDIR` sweep only runs at runtime shutdown |
 | F13 | `read` used a command agent-browser does not have | `read URL` runs `open` and `get text body` in one batch; success requires both rows; `read` without URL extracts the current page |
-| F14 | Playwright MCP calls had no time bound | `builtin_browser` calls are bounded by `ODYSSEUS_BROWSER_MCP_CALL_TIMEOUT_S` (default 90) and are not retried |
+| F14 | Playwright MCP calls had no time bound | `builtin_browser` calls are bounded by `ULISES_BROWSER_MCP_CALL_TIMEOUT_S` (default 90) and are not retried |
 
 ## Lifecycle model
 

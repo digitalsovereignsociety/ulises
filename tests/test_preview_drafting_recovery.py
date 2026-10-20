@@ -12,7 +12,7 @@ from src.turn_contract import resolve_full_inventory_contract
 
 def test_explicit_thinking_off_wins_without_tools(monkeypatch):
     import src.clean_agent_preview as module
-    monkeypatch.setattr(module, 'uses_odysseus_progressive_thinking', lambda model: True)
+    monkeypatch.setattr(module, 'uses_ulises_progressive_thinking', lambda model: True)
     assert module.progressive_thinking_for_turn('Ajax', []) is True
     assert module.progressive_thinking_for_turn('Ajax', [], 'off') is False
 

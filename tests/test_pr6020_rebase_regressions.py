@@ -7,7 +7,7 @@ import json
 import src.agent_loop as agent_loop
 
 
-ODY_QWEN = "odysseus-qwen3-4b"
+ODY_QWEN = "ulises-qwen3-4b"
 NOTES_TOOLS = {
     "manage_notes",
     "manage_calendar",
@@ -93,7 +93,7 @@ def _run_probe(messages, *, relevant_tools, **kwargs):
     )
 
 
-def test_odysseus_notes_mode_clamps_without_overriding_caller_denials(monkeypatch):
+def test_ulises_notes_mode_clamps_without_overriding_caller_denials(monkeypatch):
     prompt_calls, _ = _install_route_probe(monkeypatch)
 
     _run_probe(
@@ -107,7 +107,7 @@ def test_odysseus_notes_mode_clamps_without_overriding_caller_denials(monkeypatc
     assert {"manage_notes", "manage_calendar", "manage_tasks"} <= route["disabled_tools"]
 
 
-def test_odysseus_router_uses_compact_core(monkeypatch):
+def test_ulises_router_uses_compact_core(monkeypatch):
     prompt_calls, _ = _install_route_probe(monkeypatch)
 
     _run_probe(
@@ -119,7 +119,7 @@ def test_odysseus_router_uses_compact_core(monkeypatch):
     assert route["relevant_tools"] == GENERAL_COMPACT_TOOLS
 
 
-def test_odysseus_general_no_tool_mode_has_no_executable_surface(monkeypatch):
+def test_ulises_general_no_tool_mode_has_no_executable_surface(monkeypatch):
     from src.tool_policy import known_tool_names
 
     # The current merged profile takes the compact-router branch. Exercise
@@ -136,7 +136,7 @@ def test_odysseus_general_no_tool_mode_has_no_executable_surface(monkeypatch):
     assert known_tool_names() <= prompt_calls[0]["disabled_tools"]
 
 
-def test_odysseus_calendar_intent_uses_compact_calendar_route(monkeypatch):
+def test_ulises_calendar_intent_uses_compact_calendar_route(monkeypatch):
     prompt_calls, _ = _install_route_probe(monkeypatch)
 
     _run_probe(
@@ -147,7 +147,7 @@ def test_odysseus_calendar_intent_uses_compact_calendar_route(monkeypatch):
     assert prompt_calls[0]["relevant_tools"] == CALENDAR_COMPACT_TOOLS
 
 
-def test_odysseus_calendar_followup_keeps_compact_calendar_route(monkeypatch):
+def test_ulises_calendar_followup_keeps_compact_calendar_route(monkeypatch):
     prompt_calls, _ = _install_route_probe(monkeypatch)
     messages = [
         {"role": "user", "content": "Add lunch tomorrow to my calendar."},
@@ -188,7 +188,7 @@ def test_agent_route_passes_workspace_to_system_prompt(monkeypatch):
     assert prompt_calls[0]["workspace"] == "/tmp/example-repo"
 
 
-def test_odysseus_compact_primary_uses_deterministic_temperature(monkeypatch):
+def test_ulises_compact_primary_uses_deterministic_temperature(monkeypatch):
     _, stream_calls = _install_route_probe(monkeypatch)
 
     _run_probe(

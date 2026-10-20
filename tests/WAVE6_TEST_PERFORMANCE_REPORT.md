@@ -47,7 +47,7 @@ and root hooks.
 | DATABASE_URL and collection engine | Existing foundation forces `sqlite:///:memory:` before import in each process; inherited developer URLs are never opened. |
 | File-backed SQLite | Existing fixtures own temporary engines/files, restore bindings without replacing ORM classes, dispose engines before deletion. |
 | Postgres | Audited tests use mock dialects/DDL engines; this lane does not connect workers to a shared Postgres database. |
-| Runtime data, jobs, publications, process/browser registries | Existing constants derive from private ODYSSEUS_DATA_DIR before collection; narrower fixtures still patch their owned roots. |
+| Runtime data, jobs, publications, process/browser registries | Existing constants derive from private ULISES_DATA_DIR before collection; narrower fixtures still patch their owned roots. |
 | Effects/provenance/evidence | In-memory structures are process-local; file-backed resource publications live under private data/process/browser roots or explicit fixture workspaces. |
 | Attachments and embedding cache | Dedicated environment overrides point inside the owned root. |
 | Search/cache/generated artifacts | Data-derived caches use the owned data root; explicit artifact fixtures use tmp_path. Installed source/browser assets are read together. |

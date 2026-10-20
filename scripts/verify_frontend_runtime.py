@@ -55,11 +55,11 @@ def main() -> int:
         chroma_guard.bind(("127.0.0.1", 0))
         env = dict(os.environ)
         env.update(
-            ODYSSEUS_DATA_DIR=str(target / "data"),
+            ULISES_DATA_DIR=str(target / "data"),
             DATABASE_URL="sqlite:///:memory:",
             AUTH_ENABLED="false",
-            ODYSSEUS_STARTUP_WARMUPS="0",
-            ODYSSEUS_TOOL_INDEX_PREWARM="0",
+            ULISES_STARTUP_WARMUPS="0",
+            ULISES_TOOL_INDEX_PREWARM="0",
             CHROMADB_HOST="127.0.0.1",
             CHROMADB_PORT=str(chroma_guard.getsockname()[1]),
             FASTEMBED_CACHE_PATH=str(target / "fastembed"),

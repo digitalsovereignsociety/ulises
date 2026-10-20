@@ -150,7 +150,7 @@ async def test_python_final_expression_and_opt_in_imports(native_boundary):
     package.mkdir()
     (package / "demo.py").write_text("value = 42\n")
     result = await subprocess_tools.PythonTool().execute("import demo; demo.value", {
-        "subproc_env": {**os.environ, "ODYSSEUS_PYTHON_TOOL_SITE_PACKAGES": str(package)},
+        "subproc_env": {**os.environ, "ULISES_PYTHON_TOOL_SITE_PACKAGES": str(package)},
     })
     assert result["output"] == "42"
     assert result["teardown"]["dead"] is True

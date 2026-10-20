@@ -1,6 +1,6 @@
-# Odysseus maintainer handbook
+# Ulises maintainer handbook
 
-Odysseus maintainers are trusted to act, not to wait for permission. The default is individual responsibility; additional review is required when the **risk** warrants it.
+Ulises maintainers are trusted to act, not to wait for permission. The default is individual responsibility; additional review is required when the **risk** warrants it.
 
 This handbook records the project's maintainer governance and gives reviewers a reusable process. It complements [CONTRIBUTING.md](../../CONTRIBUTING.md) and [SECURITY.md](../../SECURITY.md); it does not replace the PR template, repository protections, or product decisions.
 

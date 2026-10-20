@@ -219,14 +219,14 @@ jobs:
             # Ubuntu 24.04 restricts userns for unconfined applications. Allow
             # only the distro bwrap entry point on this ephemeral pytest VM;
             # retain the global restriction and all unrelated AppArmor policy.
-            sudo tee /etc/apparmor.d/odysseus-ci-bwrap > /dev/null <<'PROFILE'
+            sudo tee /etc/apparmor.d/ulises-ci-bwrap > /dev/null <<'PROFILE'
           abi <abi/4.0>,
           include <tunables/global>
-          profile odysseus-ci-bwrap /usr/bin/bwrap flags=(unconfined) {
+          profile ulises-ci-bwrap /usr/bin/bwrap flags=(unconfined) {
             userns,
           }
           PROFILE
-            sudo apparmor_parser -r /etc/apparmor.d/odysseus-ci-bwrap
+            sudo apparmor_parser -r /etc/apparmor.d/ulises-ci-bwrap
           fi
 
           if ! bwrap_probe; then

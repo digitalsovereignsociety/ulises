@@ -94,7 +94,7 @@
   "tests/test_reserved_username_admin_escalation.py::test_rename_into_reserved_username_is_blocked[api]",
   "tests/test_reserved_username_admin_escalation.py::test_rename_into_reserved_username_is_blocked[demo]",
   "tests/test_reserved_username_admin_escalation.py::test_rename_into_reserved_username_is_blocked[system]",
-  "tests/test_reserved_username_admin_escalation.py::test_rename_into_reserved_username_is_blocked[__odysseus_local__]",
+  "tests/test_reserved_username_admin_escalation.py::test_rename_into_reserved_username_is_blocked[__ulises_local__]",
   "tests/test_reserved_username_admin_escalation.py::test_normal_usernames_still_allowed",
   "tests/test_review_calendar_invitation.py::test_reschedule_and_cancellation_target_same_event",
   "tests/test_review_calendar_invitation.py::test_cancellation_before_invite_does_not_create_event",

@@ -222,12 +222,12 @@ def test_fixture_email_requires_explicit_eval_flag():
     mcp = _EMAIL_MCP_SERVER.read_text(encoding="utf-8")
     helper = _EMAIL_FIXTURE_HELPER.read_text(encoding="utf-8")
 
-    guard = 'os.environ.get("ODYSSEUS_EMAIL_FIXTURE") == "1" and _fixture_email_file().exists()'
+    guard = 'os.environ.get("ULISES_EMAIL_FIXTURE") == "1" and _fixture_email_file().exists()'
     assert guard in routes
     assert guard in mcp
-    assert 'old_fixture_env = os.environ.get("ODYSSEUS_EMAIL_FIXTURE")' in helper
-    assert 'os.environ["ODYSSEUS_EMAIL_FIXTURE"] = "1"' in helper
-    assert 'os.environ.pop("ODYSSEUS_EMAIL_FIXTURE", None)' in helper
+    assert 'old_fixture_env = os.environ.get("ULISES_EMAIL_FIXTURE")' in helper
+    assert 'os.environ["ULISES_EMAIL_FIXTURE"] = "1"' in helper
+    assert 'os.environ.pop("ULISES_EMAIL_FIXTURE", None)' in helper
 
 
 def test_email_client_cache_drops_fixture_rows():
@@ -254,7 +254,7 @@ def test_email_compose_can_attach_gallery_images():
     assert "Gallery images" in frontend_text
     assert 'data-ody-attach-kind="gallery"' in frontend_text
     assert "api/gallery/library" in frontend_text
-    assert "compose-from-odysseus" in frontend_text
+    assert "compose-from-ulises" in frontend_text
 
     assert 'kind not in {"document", "gallery"}' in backend
     assert 'if kind == "gallery":' in backend

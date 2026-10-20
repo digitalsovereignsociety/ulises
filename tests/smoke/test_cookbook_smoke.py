@@ -22,7 +22,7 @@ MODELS_PATH = "/api/hwfit/models"
 STATE_PATH = "/api/cookbook/state"
 GPUS_PATH = "/api/cookbook/gpus"
 
-STATE_MARKER = "odysseusSmokeMarker"
+STATE_MARKER = "ulisesSmokeMarker"
 
 # Everything that can give the instance a catalog: the user catalog and the
 # two caches a Rescan writes, all under the instance's data dir.

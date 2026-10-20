@@ -19,7 +19,7 @@ This spec covers current app runtime wiring in:
 - all route setup functions registered from `app.py`, including canonical `routes/admin_wipe/`, `routes/cleanup/`, `routes/compare/`, `routes/contacts/`, `routes/document/`, `routes/gallery/`, `routes/history/`, `routes/mcp/`, `routes/memory/`, `routes/note/`, `routes/research/`, `routes/search/`, `routes/task/`, `routes/vault/`, and `routes/webhook/` packages plus top-level compatibility shims;
 - `routes/prefs_routes.py`, `routes/workspace_routes.py`, and `companion/routes.py`;
 - `src/generated_images.py` for generated-media file resolution;
-- `launcher.py`, `Odysseus.spec`, and platform launcher scripts where frozen/native startup changes runtime paths;
+- `launcher.py`, `Ulises.spec`, and platform launcher scripts where frozen/native startup changes runtime paths;
 - static entrypoints in `static/index.html`, `static/login.html`, and `static/app.js`.
 
 ## App Orchestrator
@@ -28,7 +28,7 @@ This spec covers current app runtime wiring in:
 
 `src/app_initializer.initialize_managers()` owns shared manager construction. It creates memory, skills, sessions, uploads, personal docs, API keys, presets, chat processor/handler, research handler, model discovery, and optional memory vector store. Route modules receive these dependencies from `app.py`; they should not recreate manager singletons.
 
-`app.py` separately owns runtime singletons and integration hooks for auth, vector RAG, TTS/STT, webhooks, scheduled tasks, MCP, assistant log globals, event bus wiring, AI interaction globals, API-token cache invalidation, and foreground activity tracking. `src.runtime_paths` owns source-versus-frozen app/data path resolution; `src.constants` derives `DATA_DIR` from `ODYSSEUS_DATA_DIR` or that runtime default. `core/constants.py` and `src/constants.py` are both live import paths and are not fully identical today, so new constants need explicit placement/compatibility decisions.
+`app.py` separately owns runtime singletons and integration hooks for auth, vector RAG, TTS/STT, webhooks, scheduled tasks, MCP, assistant log globals, event bus wiring, AI interaction globals, API-token cache invalidation, and foreground activity tracking. `src.runtime_paths` owns source-versus-frozen app/data path resolution; `src.constants` derives `DATA_DIR` from `ULISES_DATA_DIR` or that runtime default. `core/constants.py` and `src/constants.py` are both live import paths and are not fully identical today, so new constants need explicit placement/compatibility decisions.
 
 The shared upload handler is also installed on the session manager and tool helper, and `app.py` injects it into attachment-bearing route factories so durable writers and cleanup use one lifecycle owner.
 
@@ -72,7 +72,7 @@ Upload cleanup first snapshots durable chat, document, gallery, note, and calend
 
 Startup purges leftover incognito sessions, reconciles default scheduled tasks before the task runner starts, and backfills legacy skill owners when possible.
 
-Startup fire-and-forget work includes upload cleanup, background-job monitoring, MCP built-in registration and user-server connection, tool-index warmup, model-endpoint warmup, endpoint keepalive, Cookbook serve lifecycle monitoring, and hourly null-owner sweeps. Skills Audit is scheduled per owner by `TaskScheduler`; app lifespan deliberately does not start a second ownerless audit. The in-process task scheduler is gated by `ODYSSEUS_INPROCESS_TASKS`; email polling is started from email route setup and gated separately by `ODYSSEUS_INPROCESS_POLLERS`. Foreground-gate knobs are `BACKGROUND_TASK_FOREGROUND_GATE`, `BACKGROUND_TASK_QUIET_MS`, `BACKGROUND_TASK_MAX_WAIT_SECONDS`, and `BACKGROUND_TASK_BROWSER_ACTIVE_SECONDS`.
+Startup fire-and-forget work includes upload cleanup, background-job monitoring, MCP built-in registration and user-server connection, tool-index warmup, model-endpoint warmup, endpoint keepalive, Cookbook serve lifecycle monitoring, and hourly null-owner sweeps. Skills Audit is scheduled per owner by `TaskScheduler`; app lifespan deliberately does not start a second ownerless audit. The in-process task scheduler is gated by `ULISES_INPROCESS_TASKS`; email polling is started from email route setup and gated separately by `ULISES_INPROCESS_POLLERS`. Foreground-gate knobs are `BACKGROUND_TASK_FOREGROUND_GATE`, `BACKGROUND_TASK_QUIET_MS`, `BACKGROUND_TASK_MAX_WAIT_SECONDS`, and `BACKGROUND_TASK_BROWSER_ACTIVE_SECONDS`.
 
 Shutdown cancels upload cleanup, stops the task scheduler, closes the webhook manager, and disconnects MCP servers.
 
@@ -82,13 +82,13 @@ Shutdown cancels upload cleanup, stops the task scheduler, closes the webhook ma
 - `.env` is loaded with `utf-8-sig` to tolerate Notepad BOM files.
 - Auth and middleware path checks use Starlette's application-relative route path, so a deployment mounted under `root_path` keeps segment-aware auth exemptions, timeout policy, and login redirects instead of comparing proxy prefixes as application routes.
 - Process-wide MIME registration forces stable `.js` and `.mjs` types across native platforms.
-- Frozen/PyInstaller builds use `src.runtime_paths` so bundled app assets resolve from the executable payload while persistent data defaults to `~/.odysseus/data`; normal source runs still default to the repository `data/` directory unless `ODYSSEUS_DATA_DIR` overrides it.
+- Frozen/PyInstaller builds use `src.runtime_paths` so bundled app assets resolve from the executable payload while persistent data defaults to `~/.ulises/data`; normal source runs still default to the repository `data/` directory unless `ULISES_DATA_DIR` overrides it.
 - Docker detection in `/api/runtime` selects `host.docker.internal` as the Ollama default inside containers and `127.0.0.1` natively. Compose sets Chroma to `chromadb:8000`; native Chroma defaults live in `src/chroma_client.py`.
-- `src.host_docker_access` treats host Docker access from inside the container as opt-in. Default Compose does not mount `/var/run/docker.sock`; `docker/host-docker.yml` plus `ODYSSEUS_ENABLE_HOST_DOCKER=true` are required before local container code considers the host Docker daemon available.
+- `src.host_docker_access` treats host Docker access from inside the container as opt-in. Default Compose does not mount `/var/run/docker.sock`; `docker/host-docker.yml` plus `ULISES_ENABLE_HOST_DOCKER=true` are required before local container code considers the host Docker daemon available.
 - Chroma-backed consumers degrade independently: personal-doc RAG can return route-level 503s, semantic memory vectors can be dropped from chat/memory wiring, and the tool index can fall back when vector retrieval is unavailable.
 - RAG startup failure is throttled so failed clients do not poison later retries.
 - MCP startup is asynchronous and non-critical. User-server connection is bounded, failures surface through MCP status routes, and unbound builtin MCP calls can reconnect after crashes; incarnation-bound calls return failure rather than silently replacing the backend.
-- `/api/health` is liveness only. `src.readiness.check_readiness()` reports database reachability, writable data dir, informational local-first storage metadata and tool-index state. Database/data-dir checks gate `/api/ready`; `ODYSSEUS_REQUIRE_TOOL_INDEX_READY` additionally makes tool-index readiness critical when enabled. Default readiness does not certify RAG, Chroma, MCP, memory vectors or endpoint warmups.
+- `/api/health` is liveness only. `src.readiness.check_readiness()` reports database reachability, writable data dir, informational local-first storage metadata and tool-index state. Database/data-dir checks gate `/api/ready`; `ULISES_REQUIRE_TOOL_INDEX_READY` additionally makes tool-index readiness critical when enabled. Default readiness does not certify RAG, Chroma, MCP, memory vectors or endpoint warmups.
 - `/api/diagnostics/services` is an admin diagnostics endpoint for optional service health. It reports bounded, non-intrusive checks for ChromaDB, SearXNG, email accounts, ntfy, and model provider endpoints with `ok`/`degraded`/`down`/`disabled` style status values and strips secret-bearing URLs/errors. `/api/diagnostics/logs` returns a bounded tail of the app log for admin troubleshooting.
 
 ## Startup Process Reconciliation

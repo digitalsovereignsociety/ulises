@@ -4,7 +4,7 @@ Last updated: dev@86b886c | 2026-10-14
 
 ## Scope
 
-This file records model- or provider+model-specific behavior observed in Odysseus code, tests, Issues, PRs, commits, and provider documentation. It is a compact evidence map, not a runtime matcher. General canonical rules belong in [model-capability-canonical.md](model-capability-canonical.md); provider-wide transport belongs in [the provider map](model-providers/_readme.md).
+This file records model- or provider+model-specific behavior observed in Ulises code, tests, Issues, PRs, commits, and provider documentation. It is a compact evidence map, not a runtime matcher. General canonical rules belong in [model-capability-canonical.md](model-capability-canonical.md); provider-wide transport belongs in [the provider map](model-providers/_readme.md).
 
 The canonical capability layer intentionally has no `src/model_behavior_quirks.py`. Adding a registry before runtime call sites carry structured provider, model, version, and dialect identity would create another model-name matching layer.
 
@@ -53,7 +53,7 @@ Issue and commit references are evidence identifiers, not runtime dependencies. 
   different structured reasoning channels. Provider/dialect evidence chooses
   the channel; generic response-text scanning is not capability discovery.
 - Current runtime recognizes DeepSeek V4 identifiers in its thinking-model patterns; that is request/response handling evidence, not proof that every V4-named endpoint exposes identical capabilities.
-- GPT-OSS deployments can reserve native tool names. Runtime aliases colliding Odysseus tool names at the provider boundary and reverses the alias before local execution; this is dialect compatibility, not extra tool authorization.
+- GPT-OSS deployments can reserve native tool names. Runtime aliases colliding Ulises tool names at the provider boundary and reverses the alias before local execution; this is dialect compatibility, not extra tool authorization.
 - Cohere native and compatibility transports expose different thinking
   controls/channels. The Cohere model list does not itself prove reasoning.
 - MiniMax M2.7 exposes different thinking channels through Anthropic and
@@ -62,7 +62,7 @@ Issue and commit references are evidence identifiers, not runtime dependencies. 
   #1704, #1478). Native engine metadata or a verified endpoint probe outranks
   a model-family name list.
 
-Current `src.model_profiles` is a separate runtime schema/thinking profile helper: bounded `odysseus`/`ajax` tokens in the model ID leaf select compact schema and progressive thinking. It is not the absent canonical behavior registry. `src.utility_effort` validates utility effort against ChatGPT metadata that includes maintained/model-name defaults; callers must not describe those defaults as verified provider capability.
+Current `src.model_profiles` is a separate runtime schema/thinking profile helper: bounded `ulises`/`ajax` tokens in the model ID leaf select compact schema and progressive thinking. It is not the absent canonical behavior registry. `src.utility_effort` validates utility effort against ChatGPT metadata that includes maintained/model-name defaults; callers must not describe those defaults as verified provider capability.
 
 ## Promotion Gate
 

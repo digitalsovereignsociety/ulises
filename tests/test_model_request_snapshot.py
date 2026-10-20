@@ -2,9 +2,9 @@ from src.agent_loop import _model_request_capture_enabled, _model_request_snapsh
 
 
 def test_model_request_capture_is_opt_in(monkeypatch):
-    monkeypatch.delenv("ODYSSEUS_CAPTURE_MODEL_REQUESTS", raising=False)
+    monkeypatch.delenv("ULISES_CAPTURE_MODEL_REQUESTS", raising=False)
     assert not _model_request_capture_enabled()
-    monkeypatch.setenv("ODYSSEUS_CAPTURE_MODEL_REQUESTS", "true")
+    monkeypatch.setenv("ULISES_CAPTURE_MODEL_REQUESTS", "true")
     assert _model_request_capture_enabled()
 
 

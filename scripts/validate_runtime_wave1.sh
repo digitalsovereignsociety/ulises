@@ -2,11 +2,11 @@
 # Focused runtime gate; no model inference or benchmark fixture access.
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
-export ODYSSEUS_TEST_STATIC_PORT=0
+export ULISES_TEST_STATIC_PORT=0
 export PYTHONDONTWRITEBYTECODE=1
 export PYTHON_DOTENV_DISABLED=1
-export ODYSSEUS_DATA_DIR="${ODYSSEUS_DATA_DIR:-/tmp/odysseus-runtime-decomposition-test-state}"
-exec "${ODYSSEUS_TEST_PYTHON:-python3}" -m pytest -q -p no:cacheprovider \
+export ULISES_DATA_DIR="${ULISES_DATA_DIR:-/tmp/ulises-runtime-decomposition-test-state}"
+exec "${ULISES_TEST_PYTHON:-python3}" -m pytest -q -p no:cacheprovider \
   tests/test_runtime_evidence_contract.py tests/test_agent_evidence.py \
   tests/test_completion_boundary.py \
   tests/test_nested_invocation_ownership.py \

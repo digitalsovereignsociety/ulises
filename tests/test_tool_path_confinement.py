@@ -355,4 +355,4 @@ async def test_write_file_dispatch_blocks_cron(monkeypatch):
 def test_application_secrets_are_sensitive_paths(filename):
     from src.tool_execution import _is_sensitive_path
 
-    assert _is_sensitive_path(f"/tmp/odysseus-data/{filename}")
+    assert _is_sensitive_path(f"/tmp/ulises-data/{filename}")

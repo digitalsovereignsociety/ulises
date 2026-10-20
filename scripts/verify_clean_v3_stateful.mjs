@@ -17,7 +17,7 @@ const selected = new Set((process.env.FAMILIES || '').split(',').map(x => x.trim
 if (!reportPath.startsWith(path.join(root, 'reports') + path.sep)) throw Error('Report must be under reports/');
 if (fs.existsSync(reportPath)) throw Error('Report exists; refuse overwrite');
 
-const authSessions = JSON.parse(fs.readFileSync(process.env.ODYSSEUS_AUTH_SESSION_FILE || (() => { throw new Error("ODYSSEUS_AUTH_SESSION_FILE is required"); })(), 'utf8'));
+const authSessions = JSON.parse(fs.readFileSync(process.env.ULISES_AUTH_SESSION_FILE || (() => { throw new Error("ULISES_AUTH_SESSION_FILE is required"); })(), 'utf8'));
 const token = Object.entries(authSessions).find(([, value]) => value?.username === owner)?.[0];
 if (!token) throw Error(`No active ${owner} session`);
 
@@ -241,8 +241,8 @@ const flows = [
 let browser, context;
 try {
   browser = await chromium.launch({ headless: true, args: ['--no-proxy-server'] });
-  context = await browser.newContext({ serviceWorkers: 'block', extraHTTPHeaders: { 'Accept-Encoding': 'identity', 'x-odysseus-routing-experiment': routingMode } });
-  await context.addCookies([{ name: 'odysseus_session', value: token, url: base }]);
+  context = await browser.newContext({ serviceWorkers: 'block', extraHTTPHeaders: { 'Accept-Encoding': 'identity', 'x-ulises-routing-experiment': routingMode } });
+  await context.addCookies([{ name: 'ulises_session', value: token, url: base }]);
 
   for (const spec of flows) {
     const flow = { family: spec.family, status: 'running', turns: [], cleanup: null };
@@ -251,14 +251,14 @@ try {
     try {
       const createdResponse = await context.request.post(`${base}/api/session`, { multipart: {
         name: `[clean-v3-stateful] ${spec.family} ${marker}`,
-        model: 'odysseus-qwen3.5-tools-pre-heretic', endpoint_id: endpointId,
+        model: 'ulises-qwen3.5-tools-pre-heretic', endpoint_id: endpointId,
         endpoint_url: endpointUrl, skip_validation: 'true', rag: 'false',
       }});
       if (!createdResponse.ok()) throw Error(`session create HTTP ${createdResponse.status()}`);
       session = (await createdResponse.json()).id;
       page = await context.newPage();
       await page.goto(`${base}/#${session}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
-      await page.waitForFunction(id => window.__odysseusSessionReadyId === id, session);
+      await page.waitForFunction(id => window.__ulisesSessionReadyId === id, session);
       const agent = page.locator('#mode-agent-btn');
       if (await agent.getAttribute('aria-pressed') !== 'true') await agent.click();
 

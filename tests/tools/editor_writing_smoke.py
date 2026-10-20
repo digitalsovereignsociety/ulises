@@ -1,7 +1,7 @@
 """Opt-in Ajax smoke test: temporary SQLite docs, stubbed web, no real mutations.
 
-Run from repository root with PYTHONPATH=. and ODYSSEUS_EDITOR_TEST_ENDPOINT set.
-Optional ODYSSEUS_EDITOR_ACTIONS selects comma-separated actions.
+Run from repository root with PYTHONPATH=. and ULISES_EDITOR_TEST_ENDPOINT set.
+Optional ULISES_EDITOR_ACTIONS selects comma-separated actions.
 """
 import asyncio, json, os, re, tempfile
 from pathlib import Path
@@ -68,7 +68,7 @@ edit_cases = {
 }
 async def main():
  failures=[]
- selected_actions = os.environ.get('ODYSSEUS_EDITOR_ACTIONS', ','.join([*actions,'edit','update'])).split(',')
+ selected_actions = os.environ.get('ULISES_EDITOR_ACTIONS', ','.join([*actions,'edit','update'])).split(',')
  unknown = set(selected_actions) - (set(actions) | set(edit_cases) | {'edit', 'update'})
  if unknown: raise ValueError('Unknown editor test actions: ' + ', '.join(sorted(unknown)))
  with tempfile.TemporaryDirectory(prefix='editor-fixture-') as tmp:
@@ -77,7 +77,7 @@ async def main():
   for action in selected_actions:
    body='The calendar has events and notes about Python scripts. This sentnce is unecessarily long and it is very very unclear.\n\nKeep this paragraph unchanged.'
    if action=='sources': body='Water freezes at 10 degrees Celsius at standard pressure.\n\nKeep this paragraph unchanged.'
-   rich_fixture = os.environ.get('ODYSSEUS_EDITOR_RICH_FIXTURE') == '1'
+   rich_fixture = os.environ.get('ULISES_EDITOR_RICH_FIXTURE') == '1'
    if rich_fixture and action != 'sources':
     body = ''.join(f'<p>Section {i}: This sentnce has an unecessary delay. That banana is ripe; being patient helps.</p>' for i in range(1, 9)) + '<p><strong>Keep this paragraph unchanged.</strong></p>'
    language = 'richtext' if rich_fixture else 'markdown'
@@ -107,7 +107,7 @@ async def main():
    selected=preserve_bound_editor_selected_tools(prompt,selected_tools_for_request(prompt),active_document=True)
    contract=resolve_turn_contract(capabilities=families,schemas=FUNCTION_TOOL_SCHEMAS,policy=policy,selected_tools=selected)
    events=[]
-   async for chunk in runner.stream_preview(endpoint_url=os.environ['ODYSSEUS_EDITOR_TEST_ENDPOINT'],model='Ajax',headers={},turn_contract=contract,messages=[{'role':'user','content':prompt}],session_id='fixture-editor',owner='fixture-owner',disabled_tools=set(),tool_policy=policy,thinking_mode='off',active_document=doc,max_tokens=int(os.environ.get("ODYSSEUS_EDITOR_MAX_TOKENS", "4096"))):
+   async for chunk in runner.stream_preview(endpoint_url=os.environ['ULISES_EDITOR_TEST_ENDPOINT'],model='Ajax',headers={},turn_contract=contract,messages=[{'role':'user','content':prompt}],session_id='fixture-editor',owner='fixture-owner',disabled_tools=set(),tool_policy=policy,thinking_mode='off',active_document=doc,max_tokens=int(os.environ.get("ULISES_EDITOR_MAX_TOKENS", "4096"))):
     if chunk.startswith('data: ') and '[DONE]' not in chunk:
      event=json.loads(chunk[6:]); events.append(event)
      if event.get('type') == 'tool_output': print('CHECK', action, event.get('tool'), 'round=' + str(event.get('round')), 'error=' + str(event.get('error')), flush=True)
@@ -137,7 +137,7 @@ async def main():
      if event.get('replacement_scope') == 'turn': answer = ''
      answer += event['delta']
    print(json.dumps({'action':action,'pass':ok,'failed_attempts':sum(bool(o.get('error')) for o in outputs),'calls':calls,'suggestions':suggestions,'outputs':outputs,'changed':after!=body,'answer':answer}),flush=True)
-   if os.environ.get('ODYSSEUS_EDITOR_TRACE'):
+   if os.environ.get('ULISES_EDITOR_TRACE'):
     print('EVENTS', json.dumps(events), flush=True)
   engine.dispose()
  if failures: raise SystemExit('Failed writing actions: '+', '.join(failures))

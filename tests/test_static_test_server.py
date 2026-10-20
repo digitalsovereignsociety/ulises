@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_static_origin_is_published_for_node_subprocesses() -> None:
-    origin = os.environ.get("ODYSSEUS_TEST_STATIC_ORIGIN")
+    origin = os.environ.get("ULISES_TEST_STATIC_ORIGIN")
 
     assert origin, "the session fixture must publish the origin it bound"
     assert re.fullmatch(r"http://127\.0\.0\.1:\d+", origin)
@@ -26,13 +26,13 @@ def test_static_origin_is_published_for_node_subprocesses() -> None:
 def test_static_origin_does_not_reuse_the_application_port() -> None:
     """An ephemeral port keeps the suite and a running instance independent."""
 
-    origin = os.environ["ODYSSEUS_TEST_STATIC_ORIGIN"]
+    origin = os.environ["ULISES_TEST_STATIC_ORIGIN"]
 
     assert not origin.endswith(":7011")
 
 
 def test_static_server_serves_this_worktree() -> None:
-    origin = os.environ["ODYSSEUS_TEST_STATIC_ORIGIN"]
+    origin = os.environ["ULISES_TEST_STATIC_ORIGIN"]
     address = urlsplit(origin)
 
     # Chromium may open a speculative connection and never send a request;
@@ -55,5 +55,5 @@ def test_no_test_hardcodes_the_static_server_origin() -> None:
             offenders.append(path.name)
 
     assert offenders == [], (
-        "browser tests must read ODYSSEUS_TEST_STATIC_ORIGIN rather than a fixed port"
+        "browser tests must read ULISES_TEST_STATIC_ORIGIN rather than a fixed port"
     )

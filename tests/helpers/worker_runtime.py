@@ -31,11 +31,11 @@ def configure_runtime(config, runtime):
     parallel = bool(getattr(config.option, "numprocesses", None)) or hasattr(config, "workerinput")
     # This consumes the existing test option; its public read and documented
     # source location remain in the static-server fixture.
-    port_variable = "ODYSSEUS_TEST_STATIC_PORT"
+    port_variable = "ULISES_TEST_STATIC_PORT"
     if parallel and int(os.environ.get(port_variable) or 0):
         raise pytest.UsageError(
             "parallel tests require an ephemeral static-server port; "
-            "unset ODYSSEUS_TEST_STATIC_PORT or use -n 0"
+            "unset ULISES_TEST_STATIC_PORT or use -n 0"
         )
 
 
@@ -51,8 +51,8 @@ def isolated_runtime(worker="main"):
         root = Path(directory)
         with pytest.MonkeyPatch.context() as patcher:
             paths = {
-                "ODYSSEUS_DATA_DIR": root / "data",
-                "ODYSSEUS_MAIL_ATTACHMENTS_DIR": root / "mail",
+                "ULISES_DATA_DIR": root / "data",
+                "ULISES_MAIL_ATTACHMENTS_DIR": root / "mail",
                 "FASTEMBED_CACHE_PATH": root / "fastembed",
                 "XDG_RUNTIME_DIR": root / "runtime",
             }

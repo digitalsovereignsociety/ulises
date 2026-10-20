@@ -73,7 +73,7 @@ jobs:
           context: .
           push: false
           load: true
-          tags: odysseus:ci
+          tags: ulises:ci
 
       - name: Free build cache before vulnerability database download
         run: docker builder prune --all --force
@@ -81,7 +81,7 @@ jobs:
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25  # v0.36.0
         with:
-          image-ref: odysseus:ci
+          image-ref: ulises:ci
           format: table
           ignore-unfixed: true
         env:
@@ -117,7 +117,7 @@ jobs:
           context: .
           push: false
           load: true
-          tags: odysseus:ci
+          tags: ulises:ci
 
       - name: Free build cache before vulnerability database download
         run: docker builder prune --all --force
@@ -125,7 +125,7 @@ jobs:
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25  # v0.36.0
         with:
-          image-ref: odysseus:ci
+          image-ref: ulises:ci
           format: sarif
           output: trivy-results.sarif
           ignore-unfixed: true

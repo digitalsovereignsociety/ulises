@@ -157,7 +157,7 @@ async function main() {
     '-c','import json; from src.tool_schemas import FUNCTION_TOOL_SCHEMAS; print(json.dumps(FUNCTION_TOOL_SCHEMAS))'
   ],{cwd:root,maxBuffer:4*1024*1024,encoding:'utf8'}));
   const report={status:'running',scope:'Actual 7011 fixture history audit; direct proposal replay does not execute tools.',
-    experiment:prefix,model:'odysseus-qwen3.5-tools-pre-heretic',temperature:0,max_tokens:2048,cases,runs:[]};
+    experiment:prefix,model:'ulises-qwen3.5-tools-pre-heretic',temperature:0,max_tokens:2048,cases,runs:[]};
   const save=()=>fs.writeFileSync(file,JSON.stringify(report,null,2)+'\n');
   let captured=[];
   const server=http.createServer(async(req,res)=>{
@@ -180,7 +180,7 @@ async function main() {
   const endpointName=`[schema-thinking-fixture] ${endpointId}`;
   const endpointDB=(operation)=>execFileSync((process.env.PYTHON || "python3"),[
     '-c', `import sqlite3,sys,json
-c=sqlite3.connect('${process.env.ODYSSEUS_DB_PATH || path.join(root, "data", "app.db")}')
+c=sqlite3.connect('${process.env.ULISES_DB_PATH || path.join(root, "data", "app.db")}')
 op,ident,name,url,model=sys.argv[1:]
 if op=='add':
  c.execute('INSERT INTO model_endpoints (id,name,base_url,owner,is_enabled,cached_models,pinned_models,model_type,endpoint_kind,model_refresh_mode,supports_tools,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)',(ident,name,url,'sft_alex_creator',1,json.dumps([model]),json.dumps([model]),'llm','local','manual',1))

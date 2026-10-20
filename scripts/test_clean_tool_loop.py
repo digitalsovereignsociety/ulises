@@ -20,7 +20,7 @@ import jsonschema
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.tool_schemas import FUNCTION_TOOL_SCHEMAS
 from src.turn_contract import FAMILY_TOOLS, requested_capabilities
-CONTRACT_SOURCE = Path(os.environ.get("ODYSSEUS_TOOL_CONTRACT_ROOT", str(Path(__file__).resolve().parents[1] / "scripts")))
+CONTRACT_SOURCE = Path(os.environ.get("ULISES_TOOL_CONTRACT_ROOT", str(Path(__file__).resolve().parents[1] / "scripts")))
 if (CONTRACT_SOURCE / 'eval_alltools_unseen_compare.py').is_file():
     sys.path.insert(0, str(CONTRACT_SOURCE))
     try:
@@ -36,7 +36,7 @@ FAMILIES = tuple(FAMILY_TOOLS)[:10]
 TRAINED_NAMES = set().union(*(FAMILY_TOOLS[f] for f in FAMILIES))
 SCHEMAS = tools_for_mode([s for s in FUNCTION_TOOL_SCHEMAS
                          if s['function']['name'] in TRAINED_NAMES], 'compact_contract_v3')
-SYSTEM = ("You are Odysseus. Current date: 2026-09-09 UTC. Use the available tools "
+SYSTEM = ("You are Ulises. Current date: 2026-09-09 UTC. Use the available tools "
           "when needed, including for current information. Keep conversation context "
           "for follow-ups. Choose tool arguments yourself. If results are insufficient, "
           "you may refine your search or inspect a source, within six tool calls per turn. "
@@ -183,7 +183,7 @@ def run(profile, case, endpoint, model, live):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--endpoint', required=True)
-    parser.add_argument('--model', default='odysseus-qwen3.5-tools-pre-heretic')
+    parser.add_argument('--model', default='ulises-qwen3.5-tools-pre-heretic')
     parser.add_argument('--profiles', default='stable,routed')
     parser.add_argument('--cases', default=','.join(CASES))
     parser.add_argument('--live-search', action='store_true')

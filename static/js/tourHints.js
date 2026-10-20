@@ -6,7 +6,7 @@
 
 import { bindTourHintDismiss } from './tourHintDismiss.js';
 
-const HINT_SEEN_KEY = 'odysseus-hint-drag-to-snap-seen';
+const HINT_SEEN_KEY = 'ulises-hint-drag-to-snap-seen';
 
 // Allow-list of modals where the snap/fullscreen hint makes sense.
 // These are the full-window "tool" modals where users commonly want to

@@ -103,13 +103,13 @@ export function startBackgroundToolJobs({ getSessionId, addMessage, base = '' })
   const busy = () => Boolean(document.querySelector('#chat-history .msg-ai.streaming'));
   const tick = async () => {
     const sid = getSessionId();
-    if (inFlight || !sid || document.hidden || window.__odysseusSessionReadyId !== sid) return;
+    if (inFlight || !sid || document.hidden || window.__ulisesSessionReadyId !== sid) return;
     inFlight = true;
     try {
       const response = await fetch(`${base}/api/research/chat-jobs/${encodeURIComponent(sid)}`, { credentials: 'same-origin' });
       if (!response.ok) return;
       const { jobs = [] } = await response.json();
-      if (getSessionId() !== sid || window.__odysseusSessionReadyId !== sid) return;
+      if (getSessionId() !== sid || window.__ulisesSessionReadyId !== sid) return;
       const box = document.querySelector('#chat-history');
       if (!box) return;
       renderResearchCards(box, jobs);

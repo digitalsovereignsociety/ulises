@@ -7068,7 +7068,7 @@ body.bg-pattern-ascii-fireflies {
     /* (legacy toolbar-toggle styles removed — now using .vis-* classes) */
 
     /* Demo highlight pulse */
-    .odysseus-highlight {
+    .ulises-highlight {
       outline: 2px solid var(--accent, var(--red)) !important;
       outline-offset: 1px;
       box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent, var(--red)) 18%, transparent);
@@ -7196,7 +7196,7 @@ body.bg-pattern-ascii-fireflies {
     @media (prefers-reduced-motion: reduce) {
       .th-cursor, .th-modal-group, .th-zone { animation: none !important; }
     }
-    .odysseus-hl-label {
+    .ulises-hl-label {
       position: absolute;
       top: -22px;
       left: 8px;

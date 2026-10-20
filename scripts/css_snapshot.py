@@ -251,7 +251,7 @@ def main(argv=None):
 
     variants = [v.strip() for v in args.variants.split(",")] if args.variants else None
     shutdown = None
-    origin = args.origin or os.environ.get("ODYSSEUS_TEST_STATIC_ORIGIN")
+    origin = args.origin or os.environ.get("ULISES_TEST_STATIC_ORIGIN")
     if not origin:
         origin, shutdown = serve_repository()
     try:

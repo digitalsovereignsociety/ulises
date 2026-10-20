@@ -353,7 +353,7 @@ def _write_new_file_without_overwrite(path: str, body: str) -> None:
     """
     directory = os.path.dirname(path) or "."
     temporary_path = os.path.join(
-        directory, f".odysseus-write-{secrets.token_hex(16)}.tmp"
+        directory, f".ulises-write-{secrets.token_hex(16)}.tmp"
     )
     fd = os.open(
         temporary_path,
@@ -606,7 +606,7 @@ class ApplyPatchTool:
                     directory = os.path.dirname(path) or "."
                     os.makedirs(directory, exist_ok=True)
                     fd, temp_path = tempfile.mkstemp(
-                        prefix=f".{os.path.basename(path)}.odysseus-",
+                        prefix=f".{os.path.basename(path)}.ulises-",
                         dir=directory,
                     )
                     try:
@@ -628,7 +628,7 @@ class ApplyPatchTool:
                     if os.path.exists(path):
                         directory = os.path.dirname(path) or "."
                         fd, backup_path = tempfile.mkstemp(
-                            prefix=f".{os.path.basename(path)}.odysseus-backup-",
+                            prefix=f".{os.path.basename(path)}.ulises-backup-",
                             dir=directory,
                         )
                         os.close(fd)

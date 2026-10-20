@@ -30,7 +30,7 @@ def test_local_first_check_is_informational_never_fatal():
 def test_tool_index_is_reported_but_not_critical_by_default(monkeypatch):
     import src.tool_index as tool_index
 
-    monkeypatch.delenv("ODYSSEUS_REQUIRE_TOOL_INDEX_READY", raising=False)
+    monkeypatch.delenv("ULISES_REQUIRE_TOOL_INDEX_READY", raising=False)
     monkeypatch.setattr(
         tool_index,
         "get_tool_index_status",
@@ -53,7 +53,7 @@ def test_tool_index_is_reported_but_not_critical_by_default(monkeypatch):
 def test_harness_can_require_tool_index_readiness(monkeypatch):
     import src.tool_index as tool_index
 
-    monkeypatch.setenv("ODYSSEUS_REQUIRE_TOOL_INDEX_READY", "1")
+    monkeypatch.setenv("ULISES_REQUIRE_TOOL_INDEX_READY", "1")
     monkeypatch.setattr(
         tool_index,
         "get_tool_index_status",
@@ -70,7 +70,7 @@ def test_harness_can_require_tool_index_readiness(monkeypatch):
 def test_required_ready_tool_index_allows_readiness(monkeypatch):
     import src.tool_index as tool_index
 
-    monkeypatch.setenv("ODYSSEUS_REQUIRE_TOOL_INDEX_READY", "true")
+    monkeypatch.setenv("ULISES_REQUIRE_TOOL_INDEX_READY", "true")
     monkeypatch.setattr(
         tool_index,
         "get_tool_index_status",

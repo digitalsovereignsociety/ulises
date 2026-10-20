@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 
-const origin = process.env.ODYSSEUS_TEST_STATIC_ORIGIN;
+const origin = process.env.ULISES_TEST_STATIC_ORIGIN;
 const manifest = JSON.parse(fs.readFileSync(new URL('../../frontend/modules.json', import.meta.url), 'utf8'));
 const outputs = manifest.modules.map(entry => '/static/' + entry.deployment);
 const browser = await chromium.launch({ headless: true });

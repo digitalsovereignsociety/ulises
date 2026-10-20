@@ -54,17 +54,17 @@ export function initKeyboardShortcuts(modules) {
     _closeCompareIfActive, _deactivateIncognito, API_BASE
   } = modules;
 
-  window._odysseusKeybinds = { ..._defaultKeybinds };
+  window._ulisesKeybinds = { ..._defaultKeybinds };
 
   // Load saved keybinds
   getSettings()
     .then(s => {
       if (!s.keybinds) return;
-      window._odysseusKeybinds = { ..._defaultKeybinds, ...s.keybinds };
+      window._ulisesKeybinds = { ..._defaultKeybinds, ...s.keybinds };
       // Ctrl+B belongs to browser bookmarks. Migrate the former default when
       // encountered in saved settings instead of continuing to intercept it.
-      if (window._odysseusKeybinds.toggle_sidebar === 'ctrl+b') {
-        window._odysseusKeybinds.toggle_sidebar = _defaultKeybinds.toggle_sidebar;
+      if (window._ulisesKeybinds.toggle_sidebar === 'ctrl+b') {
+        window._ulisesKeybinds.toggle_sidebar = _defaultKeybinds.toggle_sidebar;
       }
     })
     .catch(() => {});
@@ -150,7 +150,7 @@ export function initKeyboardShortcuts(modules) {
   };
 
   document.addEventListener('keydown', (e) => {
-    const kb = window._odysseusKeybinds;
+    const kb = window._ulisesKeybinds;
 
     if (_matchesCombo(e, kb.search)) {
       e.preventDefault();
@@ -212,7 +212,7 @@ export function initKeyboardShortcuts(modules) {
           } else {
             sessionModule.setCurrentSessionId(null);
             el('chat-history').innerHTML = '';
-            el('current-meta').textContent = 'Odysseus Chat';
+            el('current-meta').textContent = 'Ulises Chat';
             Storage.remove('lastSessionId');
             if (chatModule && chatModule.showWelcomeScreen) chatModule.showWelcomeScreen();
           }

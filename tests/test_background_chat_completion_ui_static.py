@@ -9,7 +9,7 @@ CSS = app_css()
 
 
 def test_queued_prompts_are_persisted_per_session_and_restored_on_return():
-    assert "odysseus-queued-agent-requests-v1" in CHAT
+    assert "ulises-queued-agent-requests-v1" in CHAT
     assert "function _persistQueuedRequests()" in CHAT
     assert "function _restoreQueuedRequestsForCurrentSession()" in CHAT
     assert "_restoreQueuedRequestsForCurrentSession();" in CHAT
@@ -17,7 +17,7 @@ def test_queued_prompts_are_persisted_per_session_and_restored_on_return():
 
 
 def test_background_completion_survives_rerender_and_hidden_selected_chat():
-    assert "odysseus-completed-chat-sessions-v1" in SESSIONS
+    assert "ulises-completed-chat-sessions-v1" in SESSIONS
     assert "_persistCompletedSessions();" in SESSIONS
     assert "document.visibilityState === 'visible'" in SESSIONS
     assert "markStreamComplete(streamSessionId, { force: true })" in CHAT

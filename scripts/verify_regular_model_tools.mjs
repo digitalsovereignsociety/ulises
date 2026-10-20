@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Compact real-UI tool-family matrix for enabled non-Odysseus models. */
+/** Compact real-UI tool-family matrix for enabled non-Ulises models. */
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -7,8 +7,8 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const db = (process.env.ODYSSEUS_DB_PATH || path.join(root, "data", "app.db"));
-const sessionsFile = process.env.ODYSSEUS_PATH || (() => { throw new Error("ODYSSEUS_PATH is required"); })();
+const db = (process.env.ULISES_DB_PATH || path.join(root, "data", "app.db"));
+const sessionsFile = process.env.ULISES_PATH || (() => { throw new Error("ULISES_PATH is required"); })();
 const base = process.env.BASE_URL || 'http://127.0.0.1:7011';
 const owner = 'sft_alex_creator';
 const run = new Date().toISOString().replace(/[:.]/g, '-');
@@ -71,7 +71,7 @@ function inventory() {
     const pinned = JSON.parse(endpoint.pinned_models || '[]');
     const cached = JSON.parse(endpoint.cached_models || '[]');
     const models = pinned.length ? pinned : endpoint.endpoint_kind === 'local' ? cached : [];
-    return models.filter(model => !/^odysseus-qwen3\.5-tools-pre-heretic$/i.test(model)).map(model => ({
+    return models.filter(model => !/^ulises-qwen3\.5-tools-pre-heretic$/i.test(model)).map(model => ({
       endpoint_id: endpoint.id, endpoint_name: endpoint.name, endpoint_kind: endpoint.endpoint_kind,
       endpoint_base: endpoint.base_url.replace(/\/$/, ''),
       endpoint_url: `${endpoint.base_url.replace(/\/$/, '')}/chat/completions`, model,
@@ -85,7 +85,7 @@ const models = inventory();
 const report = {
   run, base, owner, status: 'running', workers,
   profile,
-  scope: 'Pinned enabled non-Odysseus models; local endpoints use visible cached models when no pins exist.',
+  scope: 'Pinned enabled non-Ulises models; local endpoints use visible cached models when no pins exist.',
   privacy: 'No prompts, tool outputs, private rows, API keys, or cookies are retained. Only bounded final text and tool/status metadata.',
   scenarios: scenarios.map(([family]) => family), inventory: models, models: [],
 };
@@ -118,7 +118,7 @@ async function runModel(model, token) {
   try {
     browser = await chromium.launch({ headless: true, args: ['--no-proxy-server'] });
     context = await browser.newContext({ serviceWorkers: 'block', extraHTTPHeaders: { 'Accept-Encoding': 'identity' } });
-    await context.addCookies([{ name: 'odysseus_session', value: token, url: base }]);
+    await context.addCookies([{ name: 'ulises_session', value: token, url: base }]);
     page = await context.newPage();
     await page.goto(base, { waitUntil: 'domcontentloaded', timeout: 20000 });
     await page.waitForFunction(() => window.sessionModule?.loadSessions && window.chatModule);
@@ -150,7 +150,7 @@ async function runModel(model, token) {
         await page.locator('textarea#message:visible').fill(prompt);
         await page.locator('textarea#message:visible').press('Enter');
         const response = await responsePromise;
-        activeRunId = response.headers()['x-odysseus-run-id'] || null;
+        activeRunId = response.headers()['x-ulises-run-id'] || null;
         turn.http = response.status();
         const events = parseSSE(await bounded(response.text(), turnTimeout, 'response body'));
         const contract = events.find(event => event.type === 'turn_contract');
@@ -220,7 +220,7 @@ async function runModel(model, token) {
           if (session && activeRunId) {
             try {
               const stopped = await context.request.post(`${base}/api/chat/stop/${encodeURIComponent(session)}`, {
-                headers: { 'X-Odysseus-Run-Id': activeRunId }, timeout: 5000,
+                headers: { 'X-Ulises-Run-Id': activeRunId }, timeout: 5000,
               });
               turn.stop = { http: stopped.status(), ok: stopped.ok() };
             } catch (stopError) { turn.stop = { ok: false, error: String(stopError).split('\n')[0].slice(0, 200) }; }

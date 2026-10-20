@@ -5,8 +5,8 @@
 // the optional delete-after-unsubscribe cleanup.
 //
 // Reached from one place — the Clean action in the email-library header — and
-// it owns its own localStorage keys (`odysseus.email.unsubscribe*`), its own
-// icon set, and the `odysseus:agent-tool-output` listeners that watch an
+// it owns its own localStorage keys (`ulises.email.unsubscribe*`), its own
+// icon set, and the `ulises:agent-tool-output` listeners that watch an
 // agent-browser run finish. Nothing else in the package reads any of that,
 // which is why this is the one module with a single exported entry point.
 
@@ -210,13 +210,13 @@ function _unsubscribeCandidateUids(candidate) {
 }
 
 function _unsubscribeHandledStorageKey() {
-  return `odysseus.email.unsubscribeHandled.${String(state._libAccountId || 'default')}`;
+  return `ulises.email.unsubscribeHandled.${String(state._libAccountId || 'default')}`;
 }
 
 function _unsubscribeScanStorageKey() {
   const account = String(state._libAccountId || 'default');
   const folder = String(state._libFolder || 'INBOX');
-  return `odysseus.email.unsubscribeScan.v2.${account}.${folder}`;
+  return `ulises.email.unsubscribeScan.v2.${account}.${folder}`;
 }
 
 function _readUnsubscribeScanCache() {
@@ -503,7 +503,7 @@ function _handleAgentEmailToolOutput(event) {
   }
 }
 
-window.addEventListener('odysseus:agent-tool-output', _handleAgentEmailToolOutput);
+window.addEventListener('ulises:agent-tool-output', _handleAgentEmailToolOutput);
 
 function _handleAgentUnsubscribeTerminal(event) {
   const modal = document.getElementById('email-unsubscribe-review-modal');
@@ -531,7 +531,7 @@ function _handleAgentUnsubscribeTerminal(event) {
   }
 }
 
-window.addEventListener('odysseus:agent-terminal', _handleAgentUnsubscribeTerminal);
+window.addEventListener('ulises:agent-terminal', _handleAgentUnsubscribeTerminal);
 
 async function _runUnsubscribeCleanup(modal, candidates, action, btn) {
   const uids = [];

@@ -114,7 +114,7 @@ def test_unattended_native_runtime_hides_ask_user_from_model(monkeypatch):
             owner="admin",
             workspace="/workspace",
             client_runtime_context={
-                "surface": "odysseus-native",
+                "surface": "ulises-native",
                 "terminal_agent": True,
                 "unattended_mode": True,
             },
@@ -153,7 +153,7 @@ def test_native_cook_mode_hides_ask_user_without_redundant_flag(monkeypatch):
             owner="admin",
             workspace="/workspace",
             client_runtime_context={
-                "surface": "odysseus-native",
+                "surface": "ulises-native",
                 "terminal_agent": True,
                 "interaction_mode": "cook",
             },
@@ -181,7 +181,7 @@ def test_native_cook_tool_surface_matches_attended_native_except_ask_user(monkey
 
     monkeypatch.setattr(al, "stream_llm_with_fallback", _fake_stream, raising=False)
     common = {
-        "surface": "odysseus-native",
+        "surface": "ulises-native",
         "terminal_agent": True,
     }
     for context in (common, {**common, "interaction_mode": "cook"}):
@@ -248,7 +248,7 @@ def test_attended_native_runtime_keeps_ask_user_available(monkeypatch):
             owner="admin",
             workspace="/workspace",
             client_runtime_context={
-                "surface": "odysseus-native",
+                "surface": "ulises-native",
                 "terminal_agent": True,
             },
         )
@@ -301,7 +301,7 @@ def test_unattended_native_runtime_blocks_unsolicited_ask_user_call(monkeypatch)
             owner="admin",
             workspace="/workspace",
             client_runtime_context={
-                "surface": "odysseus-native",
+                "surface": "ulises-native",
                 "terminal_agent": True,
                 "unattended_mode": True,
             },
@@ -319,7 +319,7 @@ def test_unattended_native_runtime_blocks_unsolicited_ask_user_call(monkeypatch)
 def test_tui_runtime_directives_are_injected_into_model_prompt(monkeypatch):
     directive = al._tui_runtime_directive(
         {
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "agent_runtime_directives": [
                 "Use one focused host_shell diagnostic; do not repeat equivalent probes.",
             ],
@@ -333,8 +333,8 @@ def test_tui_runtime_directives_are_injected_into_model_prompt(monkeypatch):
 def test_model_request_includes_generic_host_network_runtime_context(monkeypatch):
     available = {"ip", "ss", "arp", "nmap", "ssh", "git", "docker"}
 
-    monkeypatch.setenv("ODYSSEUS_CAPTURE_MODEL_REQUESTS", "true")
-    monkeypatch.setenv("ODYSSEUS_CONTAINER_NETWORK_MODE", "host")
+    monkeypatch.setenv("ULISES_CAPTURE_MODEL_REQUESTS", "true")
+    monkeypatch.setenv("ULISES_CONTAINER_NETWORK_MODE", "host")
     monkeypatch.setattr(al.os.path, "exists", lambda path: path == "/.dockerenv")
     monkeypatch.setattr(
         al.shutil,
@@ -376,8 +376,8 @@ def test_model_request_includes_generic_host_network_runtime_context(monkeypatch
 
 
 def test_model_request_includes_tui_client_runtime_context(monkeypatch):
-    monkeypatch.setenv("ODYSSEUS_CAPTURE_MODEL_REQUESTS", "true")
-    monkeypatch.setenv("ODYSSEUS_CONTAINER_NETWORK_MODE", "bridge")
+    monkeypatch.setenv("ULISES_CAPTURE_MODEL_REQUESTS", "true")
+    monkeypatch.setenv("ULISES_CONTAINER_NETWORK_MODE", "bridge")
     monkeypatch.setattr(al.os.path, "exists", lambda path: path == "/.dockerenv")
     monkeypatch.setattr(al, "get_setting", lambda key, default=None: default, raising=False)
     monkeypatch.setattr(al, "get_mcp_manager", lambda: None, raising=False)
@@ -397,10 +397,10 @@ def test_model_request_includes_tui_client_runtime_context(monkeypatch):
             max_rounds=1,
             relevant_tools={"bash"},
             client_runtime_context={
-                "surface": "odysseus-tui",
+                "surface": "ulises-tui",
                 "interaction_mode": "agent",
                 "terminal_agent": True,
-                "session_cwd": "/home/pewds/odysseus-tui",
+                "session_cwd": "/home/pewds/ulises-tui",
                 "turn_controls": {
                     "web": True,
                     "bash": True,
@@ -441,10 +441,10 @@ def test_model_request_includes_tui_client_runtime_context(monkeypatch):
     visible_text = "\n".join(str(message.get("content", "")) for message in untrusted_messages)
 
     assert "client runtime context" in visible_text
-    assert "surface=odysseus-tui" in visible_text
+    assert "surface=ulises-tui" in visible_text
     assert "interaction_mode=agent" in visible_text
     assert "terminal_agent=true" in visible_text
-    assert "session_cwd=/home/pewds/odysseus-tui" in visible_text
+    assert "session_cwd=/home/pewds/ulises-tui" in visible_text
     assert "turn_controls=web, bash, research_tool, no_memory" in visible_text
     assert "network_visible=true" in visible_text
     assert "default_route=true" in visible_text
@@ -458,7 +458,7 @@ def test_model_request_includes_tui_client_runtime_context(monkeypatch):
 
 def test_bridge_backed_local_network_turn_keeps_host_shell_after_rag(monkeypatch):
     context = {
-        "surface": "odysseus-tui",
+        "surface": "ulises-tui",
         "session_cwd": "/home/pewds",
         "host_shell_bridge": {
             "url": "http://127.0.0.1:17654/run",
@@ -487,7 +487,7 @@ def test_tui_local_surface_reconciles_caller_denials_after_routing():
 
 def test_string_runtime_contract_enables_tui_host_workspace_routing():
     context = {
-        "surface": "odysseus-tui",
+        "surface": "ulises-tui",
         "session_cwd": "/home/pewds/project",
         "host_shell_bridge": {
             "url": "http://127.0.0.1:17654/run",
@@ -516,7 +516,7 @@ def test_string_runtime_contract_enables_tui_host_workspace_routing():
 
 def test_bridge_backed_current_directory_turn_does_not_add_web_search():
     context = {
-        "surface": "odysseus-tui",
+        "surface": "ulises-tui",
         "session_cwd": "/tmp/eval-workspace",
         "host_shell_bridge": {
             "url": "http://127.0.0.1:17654/run",
@@ -575,7 +575,7 @@ def test_tui_normal_web_search_still_routes_to_web_search_without_bridge():
 
 def test_bridge_backed_current_directory_question_targets_host_shell():
     context = {
-        "surface": "odysseus-tui",
+        "surface": "ulises-tui",
         "session_cwd": "/tmp/eval-workspace",
         "host_shell_bridge": {
             "url": "http://127.0.0.1:17654/run",
@@ -652,7 +652,7 @@ def test_compact_router_advertises_coding_mutation_tools_for_debugging():
 def test_client_runtime_context_message_accepts_camel_case_turn_contract():
     message = al._client_runtime_context_message(
         {
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "interactionMode": "chat",
             "terminalAgent": False,
             "sessionCwd": "/tmp/work\nignored=true",
@@ -683,7 +683,7 @@ def test_active_client_skill_lands_in_untrusted_prompt_message(monkeypatch):
         mcp_mgr=None,
         relevant_tools={"bash"},
         client_runtime_context={
-            "surface": "odysseus-tui",
+            "surface": "ulises-tui",
             "active_skills": ["tdd"],
         },
     )
@@ -711,7 +711,7 @@ def test_active_client_skill_lands_in_untrusted_prompt_message(monkeypatch):
 
 def test_active_client_skill_requires_toolsets_are_added_to_schema(monkeypatch):
     _patch_fake_skills(monkeypatch)
-    monkeypatch.setenv("ODYSSEUS_CAPTURE_MODEL_REQUESTS", "true")
+    monkeypatch.setenv("ULISES_CAPTURE_MODEL_REQUESTS", "true")
 
     async def _fake_stream(*args, **kwargs):
         yield f"data: {json.dumps({'delta': 'ok'})}\n\n"
@@ -727,7 +727,7 @@ def test_active_client_skill_requires_toolsets_are_added_to_schema(monkeypatch):
             max_rounds=1,
             relevant_tools={"bash"},
             client_runtime_context={
-                "surface": "odysseus-tui",
+                "surface": "ulises-tui",
                 "active_skills": ["tdd"],
             },
         )
@@ -746,7 +746,7 @@ def test_active_client_skill_requires_toolsets_are_added_to_schema(monkeypatch):
 
 def test_active_client_skill_prevents_direct_low_signal_reply(monkeypatch):
     _patch_fake_skills(monkeypatch)
-    monkeypatch.setenv("ODYSSEUS_CAPTURE_MODEL_REQUESTS", "true")
+    monkeypatch.setenv("ULISES_CAPTURE_MODEL_REQUESTS", "true")
 
     class EmptyToolIndex:
         def get_tools_for_query(self, *_args, **_kwargs):
@@ -770,7 +770,7 @@ def test_active_client_skill_prevents_direct_low_signal_reply(monkeypatch):
             max_rounds=1,
             relevant_tools=None,
             client_runtime_context={
-                "surface": "odysseus-tui",
+                "surface": "ulises-tui",
                 "active_skills": ["tdd"],
             },
         )
@@ -794,7 +794,7 @@ def test_active_client_skill_prevents_direct_low_signal_reply(monkeypatch):
 
 
 def test_terminal_agent_mode_prevents_direct_low_signal_reply(monkeypatch):
-    monkeypatch.setenv("ODYSSEUS_CAPTURE_MODEL_REQUESTS", "true")
+    monkeypatch.setenv("ULISES_CAPTURE_MODEL_REQUESTS", "true")
     monkeypatch.setattr(al, "get_setting", lambda key, default=None: default, raising=False)
     monkeypatch.setattr(al, "get_mcp_manager", lambda: None, raising=False)
     monkeypatch.setattr(al, "estimate_tokens", lambda *args, **kwargs: 10, raising=False)
@@ -822,7 +822,7 @@ def test_terminal_agent_mode_prevents_direct_low_signal_reply(monkeypatch):
             max_rounds=1,
             relevant_tools=None,
             client_runtime_context={
-                "surface": "odysseus-tui",
+                "surface": "ulises-tui",
                 "interaction_mode": "agent",
                 "terminal_agent": True,
             },
@@ -860,7 +860,7 @@ def test_chat_mode_can_use_direct_low_signal_reply(monkeypatch):
             max_rounds=1,
             relevant_tools=None,
             client_runtime_context={
-                "surface": "odysseus-tui",
+                "surface": "ulises-tui",
                 "interaction_mode": "chat",
                 "terminal_agent": False,
             },
@@ -876,7 +876,7 @@ def test_chat_mode_can_use_direct_low_signal_reply(monkeypatch):
 
 
 def test_host_shell_schema_hidden_without_tui_bridge(monkeypatch):
-    monkeypatch.setenv("ODYSSEUS_CAPTURE_MODEL_REQUESTS", "true")
+    monkeypatch.setenv("ULISES_CAPTURE_MODEL_REQUESTS", "true")
     monkeypatch.setattr(al, "get_setting", lambda key, default=None: default, raising=False)
     monkeypatch.setattr(al, "get_mcp_manager", lambda: None, raising=False)
     monkeypatch.setattr(al, "estimate_tokens", lambda *args, **kwargs: 10, raising=False)
@@ -896,7 +896,7 @@ def test_host_shell_schema_hidden_without_tui_bridge(monkeypatch):
             max_rounds=1,
             relevant_tools={"host_shell", "bash"},
             client_runtime_context={
-                "surface": "odysseus-tui",
+                "surface": "ulises-tui",
                 "network_visible": True,
             },
         )
@@ -913,7 +913,7 @@ def test_host_shell_schema_hidden_without_tui_bridge(monkeypatch):
 
 
 def test_host_shell_schema_visible_with_tui_bridge_for_lan_request(monkeypatch):
-    monkeypatch.setenv("ODYSSEUS_CAPTURE_MODEL_REQUESTS", "true")
+    monkeypatch.setenv("ULISES_CAPTURE_MODEL_REQUESTS", "true")
     monkeypatch.setattr(al, "get_setting", lambda key, default=None: default, raising=False)
     monkeypatch.setattr(al, "get_mcp_manager", lambda: None, raising=False)
     monkeypatch.setattr(al, "estimate_tokens", lambda *args, **kwargs: 10, raising=False)
@@ -933,7 +933,7 @@ def test_host_shell_schema_visible_with_tui_bridge_for_lan_request(monkeypatch):
             max_rounds=1,
             relevant_tools={"bash"},
             client_runtime_context={
-                "surface": "odysseus-tui",
+                "surface": "ulises-tui",
                 "network_visible": True,
                 "host_shell_bridge": {
                     "url": "http://host.docker.internal:17654/run",
@@ -953,7 +953,7 @@ def test_host_shell_schema_visible_with_tui_bridge_for_lan_request(monkeypatch):
 
 
 def test_host_shell_schema_hidden_for_unsafe_bridge_url(monkeypatch):
-    monkeypatch.setenv("ODYSSEUS_CAPTURE_MODEL_REQUESTS", "true")
+    monkeypatch.setenv("ULISES_CAPTURE_MODEL_REQUESTS", "true")
     monkeypatch.setattr(al, "get_setting", lambda key, default=None: default, raising=False)
     monkeypatch.setattr(al, "get_mcp_manager", lambda: None, raising=False)
     monkeypatch.setattr(al, "estimate_tokens", lambda *args, **kwargs: 10, raising=False)
@@ -973,7 +973,7 @@ def test_host_shell_schema_hidden_for_unsafe_bridge_url(monkeypatch):
             max_rounds=1,
             relevant_tools={"host_shell", "bash"},
             client_runtime_context={
-                "surface": "odysseus-tui",
+                "surface": "ulises-tui",
                 "network_visible": True,
                 "host_shell_bridge": {
                     "url": "http://169.254.169.254/run",
@@ -994,7 +994,7 @@ def test_host_shell_schema_hidden_for_unsafe_bridge_url(monkeypatch):
 
 
 def test_host_shell_schema_seeded_with_tui_bridge_when_retrieval_returns_none(monkeypatch):
-    monkeypatch.setenv("ODYSSEUS_CAPTURE_MODEL_REQUESTS", "true")
+    monkeypatch.setenv("ULISES_CAPTURE_MODEL_REQUESTS", "true")
     monkeypatch.setattr(al, "get_setting", lambda key, default=None: default, raising=False)
     monkeypatch.setattr(al, "get_mcp_manager", lambda: None, raising=False)
     monkeypatch.setattr(al, "estimate_tokens", lambda *args, **kwargs: 10, raising=False)
@@ -1022,7 +1022,7 @@ def test_host_shell_schema_seeded_with_tui_bridge_when_retrieval_returns_none(mo
             max_rounds=1,
             relevant_tools=None,
             client_runtime_context={
-                "surface": "odysseus-tui",
+                "surface": "ulises-tui",
                 "network_visible": True,
                 "host_shell_bridge": {
                     "url": "http://host.docker.internal:17654/run",
@@ -1043,7 +1043,7 @@ def test_host_shell_schema_seeded_with_tui_bridge_when_retrieval_returns_none(mo
 
 
 def test_tui_local_workspace_turn_hides_backend_file_tools(monkeypatch):
-    monkeypatch.setenv("ODYSSEUS_CAPTURE_MODEL_REQUESTS", "true")
+    monkeypatch.setenv("ULISES_CAPTURE_MODEL_REQUESTS", "true")
     monkeypatch.setattr(al, "get_setting", lambda key, default=None: default, raising=False)
     monkeypatch.setattr(al, "get_mcp_manager", lambda: None, raising=False)
     monkeypatch.setattr(al, "estimate_tokens", lambda *args, **kwargs: 10, raising=False)
@@ -1073,10 +1073,10 @@ def test_tui_local_workspace_turn_hides_backend_file_tools(monkeypatch):
                 "ask_user",
                 "update_plan",
             },
-            workspace="/host/home/pewds/odysseus-tui",
+            workspace="/host/home/pewds/ulises-tui",
             client_runtime_context={
-                "surface": "odysseus-tui",
-                "session_cwd": "/home/pewds/odysseus-tui",
+                "surface": "ulises-tui",
+                "session_cwd": "/home/pewds/ulises-tui",
                 "host_shell_bridge": {
                     "url": "http://host.docker.internal:17654/run",
                     "token": "bridge-token",
@@ -1197,7 +1197,7 @@ def test_native_host_shell_call_runs_through_bridge_and_threads_result(monkeypat
             relevant_tools={"bash"},
             owner="admin",
             client_runtime_context={
-                "surface": "odysseus-tui",
+                "surface": "ulises-tui",
                 "network_visible": True,
                 "backend_host_limited": True,
                 "host_shell_bridge": {
@@ -1285,7 +1285,7 @@ def test_model_request_includes_workspace_agents_md_context(tmp_path, monkeypatc
     agents = workspace / "AGENTS.md"
     agents.write_text("Run focused tests before final status.", encoding="utf-8")
 
-    monkeypatch.setenv("ODYSSEUS_CAPTURE_MODEL_REQUESTS", "true")
+    monkeypatch.setenv("ULISES_CAPTURE_MODEL_REQUESTS", "true")
     monkeypatch.setattr(al, "get_setting", lambda key, default=None: default, raising=False)
     monkeypatch.setattr(al, "get_mcp_manager", lambda: None, raising=False)
     monkeypatch.setattr(al, "estimate_tokens", lambda *args, **kwargs: 10, raising=False)

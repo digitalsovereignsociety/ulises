@@ -10,7 +10,7 @@ module.exports = async ({ github, context, core }) => {
   const repo   = context.repo.repo;
   const isMaintainerPreview =
     owner === 'pewdiepie-archdaemon'
-    && repo === 'odysseus-maintainer-preview';
+    && repo === 'ulises-maintainer-preview';
 
   // Strip HTML comments so placeholder text does not count as content.
   function strip(text) {

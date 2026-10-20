@@ -31,7 +31,7 @@ def server_authorized_executor(executor):
         authority = original.pending.request_authority if original is not None else None
         if authority is not None:
             kwargs.setdefault("request_authority", authority)
-        scratch = Path(tempfile.mkdtemp(prefix="odysseus-dispatch-fixture-"))
+        scratch = Path(tempfile.mkdtemp(prefix="ulises-dispatch-fixture-"))
         launch_scopes = (None if parameters.get("workspace") else tuple(
             seal_launch_scope(NativeBackendResource(tool), FilesystemRoot.seal(scratch))
             for tool in ("bash", "python")))

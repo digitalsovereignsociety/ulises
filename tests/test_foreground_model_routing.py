@@ -2718,7 +2718,7 @@ def test_direct_low_signal_fallback_estimates_winning_route_prompt(
     terminal_error,
 ):
     primary = ("https://selected.example/v1", "generic-model", {})
-    backup = ("https://backup.example/v1", "odysseus-qwen-backup", {})
+    backup = ("https://backup.example/v1", "ulises-qwen-backup", {})
     candidate_requests = []
 
     monkeypatch.setattr(agent_loop, "get_setting", lambda key, default=None: default)
@@ -2736,12 +2736,12 @@ def test_direct_low_signal_fallback_estimates_winning_route_prompt(
     monkeypatch.setattr(agent_loop, "_is_casual_low_signal", lambda latest: True)
     monkeypatch.setattr(
         agent_loop,
-        "_is_odysseus_qwen_model",
+        "_is_ulises_qwen_model",
         lambda candidate_model: candidate_model == backup[1],
     )
     monkeypatch.setattr(
         agent_loop,
-        "_minimal_odysseus_general_messages",
+        "_minimal_ulises_general_messages",
         lambda messages, include_memory=True: [
             {"role": "system", "content": "larger backup route prompt"},
             *list(messages),
@@ -3655,7 +3655,7 @@ def test_skill_activation_reaches_later_fallback_request_and_pinned_round(monkey
     requests_by_round = []
     round_number = 0
     primary = ("https://selected.example/v1", "selected-model", {})
-    backup = ("https://backup.example/v1", "odysseus-qwen-backup", {})
+    backup = ("https://backup.example/v1", "ulises-qwen-backup", {})
 
     monkeypatch.setattr(agent_loop, "get_setting", lambda key, default=None: default)
     monkeypatch.setattr(agent_loop, "get_mcp_manager", lambda: None)
@@ -3663,7 +3663,7 @@ def test_skill_activation_reaches_later_fallback_request_and_pinned_round(monkey
     monkeypatch.setattr(agent_loop, "blocked_tools_for_owner", lambda owner: set())
     monkeypatch.setattr(
         agent_loop,
-        "_is_odysseus_qwen_model",
+        "_is_ulises_qwen_model",
         lambda model: model == backup[1],
     )
     monkeypatch.setattr(
@@ -3771,7 +3771,7 @@ def test_skill_activation_reaches_later_fallback_request_and_pinned_round(monkey
     fallback_route_prompt = next(
         message.get("content") or ""
         for message in round_two_requests[1]["messages"]
-        if "route=odysseus-qwen-backup; tools=" in (message.get("content") or "")
+        if "route=ulises-qwen-backup; tools=" in (message.get("content") or "")
     )
     fallback_tool_names = set(fallback_route_prompt.partition("tools=")[2].split(","))
     assert {"grep", "manage_skills"} <= fallback_tool_names
@@ -3781,7 +3781,7 @@ def test_skill_activation_reaches_later_fallback_request_and_pinned_round(monkey
     pinned_route_prompt = next(
         message.get("content") or ""
         for message in round_three_requests[0]["messages"]
-        if "route=odysseus-qwen-backup; tools=" in (message.get("content") or "")
+        if "route=ulises-qwen-backup; tools=" in (message.get("content") or "")
     )
     pinned_tool_names = set(pinned_route_prompt.partition("tools=")[2].split(","))
     assert {"grep", "manage_skills"} <= pinned_tool_names

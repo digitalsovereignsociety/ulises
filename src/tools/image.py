@@ -32,10 +32,10 @@ async def do_edit_image(content: str, owner: Optional[str] = None) -> Dict:
             "exit_code": 1,
         }
 
-    if str(image_id).startswith('odysseus://attachment/'):
+    if str(image_id).startswith('ulises://attachment/'):
         from src.tool_utils import get_upload_handler
         from src.settings import load_settings
-        ref = re.fullmatch(r'odysseus://attachment/([A-Za-z0-9_-]+(?:\.[A-Za-z0-9]+)?)', image_id)
+        ref = re.fullmatch(r'ulises://attachment/([A-Za-z0-9_-]+(?:\.[A-Za-z0-9]+)?)', image_id)
         handler = get_upload_handler()
         info = handler.resolve_upload(ref[1], owner=owner, allow_admin=False) if ref and owner and handler else None
         if not info or not info.get('path') or not handler.is_image_file(info.get('name') or info.get('id') or ref[1], info.get('mime', '')):

@@ -266,7 +266,7 @@ def test_independent_processes_never_duplicate_positions(tmp_path, target):
     from pathlib import Path
     directory = tmp_path / "fx"
     root = Path(__file__).resolve().parents[1]
-    env = {**os.environ, "ODYSSEUS_DATA_DIR": str(tmp_path / "data"), "PYTHONPATH": str(root)}
+    env = {**os.environ, "ULISES_DATA_DIR": str(tmp_path / "data"), "PYTHONPATH": str(root)}
     writers = [subprocess.Popen([sys.executable, "-c", _WRITER, str(directory), str(tmp_path / "ws"), str(i), RUN],
                                 cwd=root, env=env) for i in range(4)]
     assert [writer.wait(timeout=120) for writer in writers] == [0, 0, 0, 0]

@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import { chromium } from 'playwright';
 const base = 'http://127.0.0.1:7011';
-const auth = JSON.parse(fs.readFileSync(process.env.ODYSSEUS_AUTH_SESSION_FILE || (() => { throw new Error("ODYSSEUS_AUTH_SESSION_FILE is required"); })(), 'utf8'));
+const auth = JSON.parse(fs.readFileSync(process.env.ULISES_AUTH_SESSION_FILE || (() => { throw new Error("ULISES_AUTH_SESSION_FILE is required"); })(), 'utf8'));
 const token = Object.entries(auth).find(([, v]) => v?.username === 'sft_alex_creator')?.[0];
 if (!token) throw Error('SFT login missing');
 const reportPath = new URL(`../reports/background-research-chat-${Date.now()}.json`, import.meta.url);
@@ -15,17 +15,17 @@ const parse = text => text.replace(/\r\n/g, '\n').split('\n\n').flatMap(frame =>
 let browser, context, session, job;
 try {
   browser = await chromium.launch({ headless: true, args: ['--no-proxy-server'] });
-  context = await browser.newContext({ serviceWorkers: 'block', extraHTTPHeaders: { 'x-odysseus-routing-experiment': 'recent_model_choice' } });
-  await context.addCookies([{ name: 'odysseus_session', value: token, url: base }]);
+  context = await browser.newContext({ serviceWorkers: 'block', extraHTTPHeaders: { 'x-ulises-routing-experiment': 'recent_model_choice' } });
+  await context.addCookies([{ name: 'ulises_session', value: token, url: base }]);
   const created = await context.request.post(`${base}/api/session`, { multipart: {
-    name: `[background-research-test] ${Date.now()}`, model: 'odysseus-qwen3.5-tools-pre-heretic',
+    name: `[background-research-test] ${Date.now()}`, model: 'ulises-qwen3.5-tools-pre-heretic',
     endpoint_id: '1d1022ef', endpoint_url: process.env.ENDPOINT_URL || (() => { throw new Error("ENDPOINT_URL is required"); })(), skip_validation: 'true', rag: 'false',
   } });
   if (!created.ok()) throw Error(`Session create ${created.status()}`);
   session = (await created.json()).id;
   const page = await context.newPage();
   await page.goto(`${base}/#${session}`, { waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(id => window.__odysseusSessionReadyId === id, session);
+  await page.waitForFunction(id => window.__ulisesSessionReadyId === id, session);
   const agent = page.locator('#mode-agent-btn');
   if (await agent.getAttribute('aria-pressed') !== 'true') await agent.click();
   const send = async prompt => {
@@ -80,7 +80,7 @@ try {
   report.checks.grounded_followup = /list/i.test(text) && /mutab|chang/i.test(text);
   report.checks.followup_no_new_job = !followup.some(e => e.type === 'tool_output' && e.tool === 'trigger_research');
   await page.reload({ waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(id => window.__odysseusSessionReadyId === id, session);
+  await page.waitForFunction(id => window.__ulisesSessionReadyId === id, session);
   await new Promise(resolve => setTimeout(resolve, 3500));
   report.checks.reload_no_duplicate = await page.locator(`#chat-history [data-db-id="${messageId}"]`).count() === 1;
   report.status = Object.values(report.checks).every(Boolean) ? 'passed' : 'failed';

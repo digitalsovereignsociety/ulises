@@ -1,5 +1,5 @@
-const STORAGE_WIDTH = 'odysseus-settings-sidebar-width';
-const STORAGE_COLLAPSED = 'odysseus-settings-sidebar-collapsed';
+const STORAGE_WIDTH = 'ulises-settings-sidebar-width';
+const STORAGE_COLLAPSED = 'ulises-settings-sidebar-collapsed';
 
 export const SETTINGS_SIDEBAR_DEFAULT_WIDTH = 220;
 export const SETTINGS_SIDEBAR_MIN_WIDTH = 150;
@@ -149,7 +149,7 @@ export function formatSettingsBuildInfo(payload) {
   // show both — but never the same number twice.
   if (build && build !== version) parts.push(`build ${build}`);
 
-  // An ODYSSEUS_SOURCE_COMMIT override need not be a sha; leave those intact
+  // An ULISES_SOURCE_COMMIT override need not be a sha; leave those intact
   // and let the CSS ellipsis deal with the width.
   const commitLabel = BUILD_COMMIT_SHA.test(commit)
     ? commit.slice(0, BUILD_COMMIT_SHORT_LEN).toLowerCase()

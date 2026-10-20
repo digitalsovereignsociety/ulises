@@ -12,7 +12,7 @@ ADD_PATH = "/api/memory/add"
 SEARCH_PATH = "/api/memory/search"
 
 # A token that cannot collide with a real memory on a scratch instance.
-TOKEN = "odysseus-smoke-marker-quintile"
+TOKEN = "ulises-smoke-marker-quintile"
 TEXT = f"The release smoke suite stored the token {TOKEN} as a fact."
 
 

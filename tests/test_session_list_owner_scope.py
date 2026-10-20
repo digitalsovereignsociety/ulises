@@ -143,7 +143,7 @@ def test_list_sessions_returns_persisted_cwd(monkeypatch):
             endpoint_url="http://localhost",
             model="gpt-4",
             archived=False,
-            cwd="/home/pewds/odysseus-tui",
+            cwd="/home/pewds/ulises-tui",
         ))
         db.commit()
     finally:
@@ -168,7 +168,7 @@ def test_list_sessions_returns_persisted_cwd(monkeypatch):
 
     result = endpoint(request=MagicMock())
 
-    assert result[0]["cwd"] == "/home/pewds/odysseus-tui"
+    assert result[0]["cwd"] == "/home/pewds/ulises-tui"
 
 
 def test_patch_session_updates_persisted_cwd(monkeypatch):
@@ -216,14 +216,14 @@ def test_patch_session_updates_persisted_cwd(monkeypatch):
         model=None,
         endpoint_url=None,
         endpoint_id=None,
-        cwd="/home/pewds/odysseus-tui",
+        cwd="/home/pewds/ulises-tui",
     )
 
-    assert result["cwd"] == "/home/pewds/odysseus-tui"
+    assert result["cwd"] == "/home/pewds/ulises-tui"
     db = _TS()
     try:
         row = db.query(DbSession).filter(DbSession.id == sid).first()
-        assert row.cwd == "/home/pewds/odysseus-tui"
+        assert row.cwd == "/home/pewds/ulises-tui"
     finally:
         db.close()
 

@@ -66,7 +66,7 @@ docker volume ls --filter "name=chromadb"
 ```
 
 Throughout this guide:
-* `<project>` represents your Compose project (e.g. `odysseus` or `odysseus-maintainer-preview`).
+* `<project>` represents your Compose project (e.g. `ulises` or `ulises-maintainer-preview`).
 * `<container>` represents the running ChromaDB container (e.g. `<project>-chromadb-1`).
 * `<volume>` represents the named volume (e.g. `<project>_chromadb-data`).
 
@@ -111,9 +111,9 @@ zero data loss.
 
 To ensure transactional and referential consistency across SQLite and HNSW segment files:
 
-1. Stop application writers (Odysseus) to prevent any in-flight requests:
+1. Stop application writers (Ulises) to prevent any in-flight requests:
    ```bash
-   docker compose stop odysseus
+   docker compose stop ulises
    ```
 2. Gracefully stop the ChromaDB service. This permits SQLite to checkpoint the Write-Ahead Log (WAL)
    and flushes all in-memory vector index segments to disk:
@@ -285,7 +285,7 @@ Once the seeded volume is proven healthy:
    and attach `${VOLUME}` directly to `/data`.
 4. Bring up the application stack:
    ```bash
-   docker compose up -d odysseus
+   docker compose up -d ulises
    ```
 
 ---
@@ -316,7 +316,7 @@ Once the seeded volume is proven healthy:
    '
    ```
 3. **Application Verification:**
-   Log in to Odysseus, navigate to **Settings -> Memory**, and confirm that memory items,
+   Log in to Ulises, navigate to **Settings -> Memory**, and confirm that memory items,
    tool embeddings, and RAG document queries operate normally.
 
 ---
@@ -338,7 +338,7 @@ If staging verification in Step 7 fails or reveals discrepancies:
    its writable layer remains completely intact:
    ```bash
    docker compose start chromadb
-   docker compose start odysseus
+   docker compose start ulises
    ```
 4. Verify production status on port 8100.
 
@@ -399,10 +399,10 @@ docker rmi "${BACKUP_IMAGE}"
 If an installation has already destroyed its pre-#6166 container writable layer (e.g. prior to following
 this guide), the vector embeddings cannot be restored from disk. In this scenario:
 
-* **RAG Documents:** Re-upload files under **Settings -> Memory -> RAG**. Odysseus automatically re-chunks
+* **RAG Documents:** Re-upload files under **Settings -> Memory -> RAG**. Ulises automatically re-chunks
   and re-indexes documents upon upload.
 * **Semantic Memories:** Text memory records reside authoritatively in `data/app.db` (SQLite). Vector representations
-  are re-indexed automatically when Odysseus connects to a healthy ChromaDB instance.
-* **Tool Index:** Rebuilt automatically by Odysseus upon first query.
+  are re-indexed automatically when Ulises connects to a healthy ChromaDB instance.
+* **Tool Index:** Rebuilt automatically by Ulises upon first query.
 
 Re-indexing is a disaster recovery fallback, not a substitute for preserving existing database state.

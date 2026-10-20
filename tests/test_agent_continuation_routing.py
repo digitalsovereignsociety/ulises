@@ -2,7 +2,7 @@ from src.agent_loop import _classify_agent_request, _is_action_continuation
 
 
 LIVE_TUI_PROMPT = (
-    "Create probe.txt containing exactly ODYSSEUS_BRIDGE_OK, then verify the "
+    "Create probe.txt containing exactly ULISES_BRIDGE_OK, then verify the "
     "file contains exactly that text. Do not change any other file."
 )
 

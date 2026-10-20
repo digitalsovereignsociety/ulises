@@ -100,7 +100,7 @@ def test_implicit_whitespace_noop_effect_digest_describes_actual_empty_bytes(tmp
 @pytest.fixture
 def target():
     """A fresh directory under the system temp root, which _tool_path_roots allows."""
-    with tempfile.TemporaryDirectory(prefix="odysseus-6414-") as directory:
+    with tempfile.TemporaryDirectory(prefix="ulises-6414-") as directory:
         yield os.path.join(directory, "classic-banana-cake.md")
 
 

@@ -142,7 +142,7 @@ def test_empty_retrieval_probe_marks_index_degraded(clean_tool_index):
     ],
 )
 def test_tool_index_prewarm_defaults_on_and_is_explicitly_opt_out(value, expected):
-    environ = {} if value is None else {"ODYSSEUS_TOOL_INDEX_PREWARM": value}
+    environ = {} if value is None else {"ULISES_TOOL_INDEX_PREWARM": value}
     assert tool_index_module.tool_index_prewarm_enabled(environ) is expected
 
 

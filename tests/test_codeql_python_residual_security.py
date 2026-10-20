@@ -82,7 +82,7 @@ def test_context_info_still_reports_host_paths_for_admin(monkeypatch, tmp_path):
 
 # -- py/stack-trace-exposure ---------------------------------------------------
 
-_SECRET = "postgresql://odysseus:hunter2@10.0.0.5/prod /srv/odysseus/data"
+_SECRET = "postgresql://ulises:hunter2@10.0.0.5/prod /srv/ulises/data"
 
 
 def test_readiness_does_not_return_raw_database_error(monkeypatch):
